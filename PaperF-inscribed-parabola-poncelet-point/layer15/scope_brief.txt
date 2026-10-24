@@ -1,0 +1,16 @@
+LAYER 15 (part 2) — SCOPE CHECK: do the paper's Lean hypotheses exclude cases where the CLASSICAL theorem still holds? Do all work inline; do NOT spawn background subagents. Time box 2 hours. Always finish by writing the report. Python only (sympy, mpmath, fractions); no Lean needed; read-only access to the files named here.
+
+INPUTS:
+ - Classical statements: <oc>/tmp/l15f/classical_statements.txt
+ - The paper's Lean hypotheses: <ws>/AFM/PaperF/src/quadparabola_ext/QuadMiquel/Basic.lean (structure GenPos: four nonzero directions, six pairwise non-parallel conditions, four "no three concurrent" conditions, …) and <ws>/AFM/PaperF/src/quadrangle_ext/QuadMiquel/Quadrangle.lean (structure QGen: no three collinear) plus the per-theorem hypotheses (d ≠ ortho a b c; ¬Cospherical {a,b,c,d} for the pedal theorems; opposite sides non-parallel for the diagonal circle). Read the main theorem statements in Parabola.lean, ParabolaPoints.lean, Quadrangle.lean, QuadrangleSym.lean to list EXACTLY which hypotheses each main theorem carries.
+ - The paper: <ws>/AFM/PaperF/paperf.tex (what it claims about scope).
+
+TASK. For every main theorem, list each hypothesis and decide, by exact or 60-digit numerics on explicit configurations, whether the CLASSICAL statement still holds (where it still makes sense) when that hypothesis is dropped. Classify each hypothesis:
+ (N) NECESSARY — dropping it makes the classical statement false or meaningless (give a configuration);
+ (C) CLASSICAL — the classical statement also assumes it (state where);
+ (X) EXCESS — the classical statement still holds without it, so the Lean theorem is narrower than the classical one (give configurations showing it holds there, and say whether the paper discloses this).
+Cases to examine at least:
+ Part A: GenPos when exactly two lines are parallel (does the inscribed-parabola / reflections / Miquel statement survive, with points at infinity excluded appropriately?); three lines concurrent (degenerate triangle); the perpendicular case H3 = H4 (already covered — confirm).
+ Part B: the orthocentric case for the pedal and diagonal theorems; concyclic quadrangles for the nine-point and diagonal theorems (does the Lean need non-concyclicity anywhere it is classically unneeded?); opposite sides parallel for the diagonal theorem (diagonal point at infinity: does a limiting statement survive?); a quadrangle with one point inside the triangle of the others vs convex (sanity).
+ Also: is any hypothesis in the Lean stronger than what is needed even for the Lean's own formula (e.g. QGen fields not used)? Cross-check with the ablation results in <ws>/AFM/PaperF/reports/john_quadparabola_ext.md and john_quadrangle_ext.md (17 unused binders, all inherited auxiliary lemmas).
+OUTPUT: <ws>/AFM/PaperF/layer15/SCOPE_REPORT.md (create the dir) and print it: a table theorem | hypothesis | N/C/X | evidence (configuration + residuals) | disclosed in paper? (line) ; then a list of recommended paper changes for every X. Keep scripts in <ws>/AFM/PaperF/layer15/scope/.

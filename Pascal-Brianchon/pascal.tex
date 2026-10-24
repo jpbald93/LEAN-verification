@@ -1,0 +1,648 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\lean}[1]{\texttt{#1}}
+\newcommand{\br}[1]{[#1]}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\repo}{https://github.com/jpbald93/pascal-hexagon}
+% version-2 commits: pascal-hexagon=be35ffaa75a324131a710d3287b3d703408ad4a0
+\newcommand{\commit}{726da4d}
+\newcommand{\src}[2]{\href{\repo/blob/\commit/PascalHexagon/#1\##2}{\texttt{#1}}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,example,by,fun,have,show,exact,intro,namespace,end,import,private,variable},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={ℙ}{{$\mathbb{P}$}}1 {≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2 {→}{{$\to$}}1
+           {⨯₃}{{$\times_3$}}2 {⬝ᵥ}{{$\cdot_v$}}2 {₁}{{$_1$}}1 {₂}{{$_2$}}1 {₃}{{$_3$}}1
+           {∀}{{$\forall$}}1 {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {'}{{$'$}}1}
+
+\title{Pascal's hexagon theorem over an arbitrary field,\\ formalised in Lean~4}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{28 September 2026; version 2, 22 October 2026 (adds Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formalise Pascal's hexagon theorem in Lean~4 with Mathlib. The statement covers an arbitrary
+conic over an arbitrary field: six points on the zero set of a nonzero ternary quadratic form. It
+places no restriction on the characteristic and allows degenerate conics. The only hypotheses are
+the ones needed for the three intersection points of opposite sides to be defined. Pappus's
+theorem follows as the case of a line pair, and Brianchon's dual-conic formulation as the projective dual. The formal statement uses Mathlib's projective plane
+$\PP(K^3)$, its cross-product construction of lines and intersection points, and its notion of
+collinearity. We also prove the lemmas a reader needs to check that this statement means what it
+says. The proof rests on a single polynomial identity, valid over any commutative ring: the triple
+product of the three Pascal points is, up to sign, the $6\times6$ determinant of the degree-two
+Veronese images of the six vertices. The mathematics is classical. As far as we know, this is the first
+Lean formalisation, without \lean{sorry} or added axioms, for an arbitrary nonzero ternary
+quadratic form over an arbitrary field. It extends the real projective statements formalised in
+HOL~Light and Mizar to arbitrary fields. Those statements assume 17 or 18 non-collinearity
+conditions on the vertices; we replace them by distinctness of consecutive vertices and of
+opposite sides. The development has 32 named theorems in about 670 lines. A
+checking script, tested against deliberately tampered copies of the source, confirms that each of
+them uses only Lean's standard axioms. Version~2 adds Mathlib-only restatements with explicit
+non-degenerate witnesses, and a comparison with independently written formalisations of the textbook
+statements. That comparison proves, outside the main development, Brianchon's theorem for tangent lines
+in characteristic $\ne2$, the five-point (tangent) form of Pascal's theorem and its converse.
+\end{abstract}
+
+\section{Introduction}
+
+Pascal's theorem (1640) is the statement that the three points where opposite sides of a hexagon
+inscribed in a conic meet are collinear. It is number~28 on Wiedijk's list of 100
+theorems~\cite{Wiedijk}. The list records formalisations in HOL~Light, Mizar and Rocq. Mathlib's
+copy of the list has no Lean declaration for it~\cite{Mathlib100}.
+
+We prove the following.
+
+\begin{theorem}[Pascal]\label{thm:pascal}
+Let $K$ be a field and $Q$ a nonzero quadratic form on $K^3$. Let $A,B,C,D,E,F$ be points of the
+projective plane $\PP^2(K)$ with $Q(A)=\dots=Q(F)=0$. Suppose consecutive vertices are distinct,
+$A\neq B$, $B\neq C$, $\dots$, $F\neq A$, and opposite sides are distinct lines,
+$AB\neq DE$, $BC\neq EF$, $CD\neq FA$. Then the points $AB\cap DE$, $BC\cap EF$ and $CD\cap FA$ are
+collinear.
+\end{theorem}
+
+No assumption is made on the characteristic of $K$, on the nondegeneracy of $Q$, or on
+non-consecutive vertices. The hypotheses are exactly what is needed for the six sides to be lines
+and for the three intersection points to exist. If $Q=\ell_1\ell_2$ is a product of two linear forms,
+Theorem~\ref{thm:pascal} is Pappus's theorem (Corollary~\ref{cor:pappus}).
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item A Lean~4 formalisation of Theorem~\ref{thm:pascal} (\lean{PascalHexagon.pascal}). It is
+stated with Mathlib's \lean{Projectivization}, \lean{Projectivization.cross} and
+\lean{Projectivization.IsCollinear}.
+\item A vector form over any integral domain with no distinctness hypotheses at all
+(Theorem~\ref{thm:vector}), and the underlying identity over any commutative ring
+(Proposition~\ref{prop:identity}).
+\item Lemmas that justify the formal statement (Section~\ref{sec:correct}). They show that
+\lean{cross A B} is the unique line through $A$ and $B$, that \lean{cross L M} is the unique point
+on $L$ and $M$, that collinearity is equivalent to the vanishing of a determinant, and that lying on
+the conic does not depend on the chosen representative. We also give a version whose conclusion does
+not mention \lean{cross} at all.
+\item Pappus's theorem as a corollary, and Brianchon's dual-conic formulation as the projective
+dual (Section~\ref{sec:brianchon}).
+\item A tamper-tested checking script that confirms the axiom footprint of every named theorem
+(Section~\ref{sec:gate}).
+\item In version~2 (Section~\ref{sec:l1415}): Mathlib-only restatements of the main results, with
+explicit non-degenerate witnesses for statements with hypotheses, and a comparison with a blind formalisation of the textbook
+statements. The comparison proves all 20 textbook statements, among them Brianchon's theorem for
+tangent lines (characteristic $\ne2$), the tangent form of Pascal's theorem and the
+Braikenridge--Maclaurin converse.
+\end{itemize}
+
+\paragraph{Availability.}
+The code is at \url{\repo}. Line references in this paper are to commit \texttt{\commit}. The
+toolchain is Lean \texttt{v4.33.1}, and Mathlib is pinned in \texttt{lake-manifest.json}. The code is
+released under Apache~2.0. Version~2 of this paper adds the files \lean{PascalHexagon/L14.lean} and
+\lean{PascalHexagon/L15Classical.lean} (Section~\ref{sec:l1415}) in a new commit, \texttt{be35ffaa75a324131a710d3287b3d703408ad4a0}.
+In that commit the root import file and \texttt{gate.sh} gain entries for them, and \texttt{gate.sh}
+also gets a portability fix (Section~\ref{sec:l1415}). The earlier statements and files are
+unchanged, so the line references hold there as well.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Pascal-Brianchon} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Lean name (namespace \lean{PascalHexagon}) & In this paper & Source \\ \midrule
+\lean{pascalDet\_eq\_pascalBracket} & Proposition~\ref{prop:identity}(a) & \src{Bracket.lean}{L11} \\
+\lean{det\_verMatrix\_eq\_neg\_pascalBracket} & Proposition~\ref{prop:identity}(b) & \src{Veronese.lean}{L12} \\
+\lean{pascalDet\_eq\_zero\_of\_quadEval} & Lemma~\ref{lem:poly} & \src{Conic.lean}{L28} \\
+\lean{apply\_eq\_quadEval} & Lemma~\ref{lem:coeffs} & \src{Conic.lean}{L49} \\
+\lean{coeffs\_ne\_zero} & Lemma~\ref{lem:coeffs} & \src{Conic.lean}{L75} \\
+\lean{pascal\_quadraticMap} & Theorem~\ref{thm:vector} & \src{Conic.lean}{L86} \\
+\lean{pascal\_matrix} & Remark~\ref{rem:matrix} & \src{Conic.lean}{L103} \\
+\lean{pascalDet\_standardConic} & Remark~\ref{rem:standard} & \src{StandardConic.lean}{L17} \\
+\lean{isCollinear\_mk\_iff} & Lemma~\ref{lem:collinear} & \src{Correctness.lean}{L64} \\
+\lean{mem\_line\_cross} & Lemma~\ref{lem:incidence}(a) & \src{Correctness.lean}{L91} \\
+\lean{cross\_mem\_lines} & Lemma~\ref{lem:incidence}(a) & \src{Correctness.lean}{L96} \\
+\lean{eq\_cross\_of\_orthogonal} & Lemma~\ref{lem:incidence}(b) & \src{Correctness.lean}{L102} \\
+\lean{eq\_cross\_of\_orthogonal'} & Lemma~\ref{lem:incidence}(b), dual & \src{Correctness.lean}{L112} \\
+\lean{cross\_cross\_spec} & Lemma~\ref{lem:incidence}(c) & \src{Correctness.lean}{L128} \\
+\lean{onConic\_mk\_iff} & Lemma~\ref{lem:onconic} & \src{Correctness.lean}{L146} \\
+\lean{pascal} & Theorem~\ref{thm:pascal} & \src{Projective.lean}{L92} \\
+\lean{pascal'} & Theorem~\ref{thm:pascal}, with \lean{OnConic} & \src{Correctness.lean}{L155} \\
+\lean{pascal\_of\_isCollinear} & Theorem~\ref{thm:pascal-col} & \src{Correctness.lean}{L168} \\
+\lean{linePair\_ne\_zero} & Corollary~\ref{cor:pappus}, proof & \src{Correctness.lean}{L204} \\
+\lean{pappus} & Corollary~\ref{cor:pappus} & \src{Correctness.lean}{L236} \\
+\lean{brianchon} & Theorem~\ref{thm:brianchon} & \src{Brianchon.lean}{L38} \\
+\lean{brianchon\_concurrent} & Theorem~\ref{thm:brianchon}, concurrency & \src{Brianchon.lean}{L61} \\
+\bottomrule
+\end{tabular}
+\caption{The main formal statements. \texttt{gate.sh} checks these 22 theorems and 10 supporting
+lemmas, 32 theorems in all.}
+\label{tab:thms}
+\end{table}
+
+\section{Conventions and the Mathlib interface}\label{sec:conv}
+
+We write vectors of $K^3$ as \lean{Fin 3} $\to$ \lean{K}. The bracket of three vectors is
+$\br{u,v,w}=u\cdot(v\times w)=\det(u,v,w)$. Mathlib provides the cross product \lean{u} $\times_3$ \lean{v} and
+the identity $\br{u,v,w}=\det(u,v,w)$ (\lean{triple\_product\_eq\_det}).
+
+The projective plane is Mathlib's $\mathbb{P}$\,\lean{K (Fin 3} $\to$ \lean{K)}. Its points are nonzero vectors up to
+nonzero scalars. \lean{P.rep} is a chosen representative, and \lean{mk K v hv} is the point of a
+nonzero vector~$v$. Mathlib identifies lines with points of the same space via the dot product:
+\lean{P.orthogonal L} means $P\cdot L=0$, which we read as ``$P$ lies on~$L$''. For distinct points
+$A\ne B$, Mathlib's \lean{cross A B} is the point represented by $A\times B$. It serves both as the
+line through two points and as the intersection point of two lines. Collinearity is Mathlib's
+\lean{IsCollinear}: a set of points is collinear if it lies in a subspace of dimension at most~$2$.
+Mathlib's definition of \lean{cross} requires \lean{[DecidableEq K]}, so the statements that mention
+\lean{cross} carry this hypothesis. It is harmless in classical logic.
+
+A conic is the zero set of a nonzero \lean{QuadraticForm K (Fin 3} $\to$ \lean{K)}. Here ``nonzero'' means
+nonzero as a quadratic form, which is the same as having a nonzero coefficient vector
+(Lemma~\ref{lem:coeffs}). We write \lean{OnConic Q P} for $Q(\lean{P.rep})=0$.
+
+\section{The key identity}\label{sec:identity}
+
+For vectors $A,\dots,F\in K^3$, define the \emph{Pascal determinant}
+\[
+\pi(A,\dots,F)=\br{(A\times B)\times(D\times E),\ (B\times C)\times(E\times F),\ (C\times D)\times(F\times A)}.
+\]
+If $A\ne B$ and $D\ne E$ as projective points and $AB\ne DE$, then $(A\times B)\times(D\times E)$
+represents $AB\cap DE$, and similarly for the other two points. So Pascal's theorem says that
+$\pi$ vanishes. Let $\nu(x,y,z)=(x^2,y^2,z^2,xy,yz,zx)$ be the degree-two Veronese map, and let
+$V(A,\dots,F)$ be the $6\times6$ matrix with rows $\nu(A),\dots,\nu(F)$.
+
+\begin{proposition}\label{prop:identity}
+Over any commutative ring, for all $A,\dots,F\in K^3$:
+\begin{enumerate}
+\item[(a)] $\pi(A,\dots,F)=\beta(A,\dots,F)$, where $\beta$ is the bracket polynomial
+\begin{multline*}
+\beta=\br{ABE}\br{BCF}\br{CDA}\br{DEF}-\br{ABE}\br{BCF}\br{CDF}\br{DEA}\\
++\br{ABE}\br{BCE}\br{CDF}\br{DFA}-\br{ABD}\br{BCE}\br{CDF}\br{EFA};
+\end{multline*}
+\item[(b)] $\det V(A,\dots,F)=-\beta(A,\dots,F)$.
+\end{enumerate}
+Hence $\pi=-\det V$.
+\end{proposition}
+
+\begin{proof}
+(a) Apply the vector triple product identity $(u\times v)\times w=(u\cdot w)v-(v\cdot w)u$ to each
+of the three Pascal points. This gives, for instance,
+\[
+(A\times B)\times(D\times E)=\br{A,D,E}B-\br{B,D,E}A.
+\]
+Expanding the bracket of the three resulting vectors by multilinearity, and cancelling terms with a
+repeated argument, gives an expression in brackets. Its equality with $\beta$ is a polynomial
+identity in the $18$ coordinates. (b) This is a polynomial identity in the $18$ coordinates.
+\end{proof}
+
+Formally, (a) is proved by rewriting with Mathlib's \lean{cross\_cross\_eq\_smul\_sub\_smul} and
+then calling \lean{ring} on the coordinate expansion. (b) is proved by Laplace expansion along the
+first row, followed by \lean{ring}. Neither proof is pretty. Each takes about 80--95~seconds and
+2.5~GB of memory to check. They are, however, short, and they need no hypotheses. Brackets for the
+conic condition are classical (see e.g.~\cite{RichterGebert}). HOL~Light's formalisation also goes
+through a bracket condition (Section~\ref{sec:related}).
+
+\begin{lemma}\label{lem:poly}
+Let $K$ be an integral domain and $c\in K^6$ nonzero. If $\nu(v)\cdot c=0$ for $v=A,\dots,F$, then
+$\pi(A,\dots,F)=0$.
+\end{lemma}
+\begin{proof}
+$V(A,\dots,F)\,c=0$ with $c\ne0$, so $\det V=0$, and $\pi=-\det V=0$ by
+Proposition~\ref{prop:identity}.
+\end{proof}
+
+\begin{lemma}\label{lem:coeffs}
+For every quadratic map $Q$ on $K^3$ over a commutative ring, $Q(v)=\nu(v)\cdot c_Q$, where
+\[
+c_Q=\bigl(Q(e_1),Q(e_2),Q(e_3),\,b_Q(e_1,e_2),\,b_Q(e_2,e_3),\,b_Q(e_3,e_1)\bigr)
+\]
+and $b_Q(x,y)=Q(x+y)-Q(x)-Q(y)$ is the polar form. If $Q\ne0$, then $c_Q\ne0$.
+\end{lemma}
+
+\begin{theorem}[vector form]\label{thm:vector}
+Let $K$ be an integral domain and $Q\ne0$ a quadratic map on $K^3$. If $A,\dots,F\in K^3$ satisfy
+$Q(A)=\dots=Q(F)=0$, then $\pi(A,\dots,F)=0$.
+\end{theorem}
+
+\begin{proof}
+Lemmas~\ref{lem:coeffs} and~\ref{lem:poly}.
+\end{proof}
+
+\begin{lstlisting}
+theorem pascal_quadraticMap [IsDomain K] {Q : QuadraticMap K (Fin 3 → K) K} (hQ : Q ≠ 0)
+    {A B C D E F : Fin 3 → K}
+    (hA : Q A = 0) (hB : Q B = 0) (hC : Q C = 0) (hD : Q D = 0) (hE : Q E = 0) (hF : Q F = 0) :
+    ((A ⨯₃ B) ⨯₃ (D ⨯₃ E)) ⬝ᵥ ((B ⨯₃ C) ⨯₃ (E ⨯₃ F)) ⨯₃ ((C ⨯₃ D) ⨯₃ (F ⨯₃ A)) = 0
+\end{lstlisting}
+
+Theorem~\ref{thm:vector} has no distinctness hypotheses at all. When the configuration is
+degenerate, for example $A=B$, some Pascal point is the zero vector and the statement holds
+trivially. The content of Pascal's theorem lies in the nondegenerate case, which the projective
+form below isolates.
+
+\begin{remark}\label{rem:matrix}
+Many texts describe a conic by a symmetric matrix $M$ with $v^{\mathsf T}Mv=0$. The formal version
+\lean{pascal\_matrix} is stated over a field $K$ with $2\ne0$: if $M\ne0$ is symmetric and
+$v^{\mathsf T}Mv=0$ for $v=A,\dots,F$, then $\pi(A,\dots,F)=0$. The hypothesis $2\ne0$ is needed. In characteristic~$2$, $v^{\mathsf T}Mv$
+sees only the diagonal of~$M$, so a nonzero symmetric matrix can give the zero form. This is why
+we state the main results with quadratic forms.
+\end{remark}
+
+\begin{remark}\label{rem:standard}
+The development also contains a direct proof for the standard parametrised conic $xz=y^2$, with
+points $(s^2,st,t^2)$ (\lean{pascalDet\_standardConic}). It holds for all parameters $s,t$ over any
+commutative ring, and it is not used in the main proof.
+\end{remark}
+
+\section{The projective statement}\label{sec:proj}
+
+\begin{lstlisting}
+theorem pascal {Q : QuadraticForm K (Fin 3 → K)} (hQ : Q ≠ 0)
+    {A B C D E F : ℙ K (Fin 3 → K)}
+    (hQA : Q A.rep = 0) (hQB : Q B.rep = 0) (hQC : Q C.rep = 0) (hQD : Q D.rep = 0)
+    (hQE : Q E.rep = 0) (hQF : Q F.rep = 0)
+    (hAB : A ≠ B) (hBC : B ≠ C) (hCD : C ≠ D) (hDE : D ≠ E) (hEF : E ≠ F) (hFA : F ≠ A)
+    (h₁ : cross A B ≠ cross D E) (h₂ : cross B C ≠ cross E F) (h₃ : cross C D ≠ cross F A) :
+    IsCollinear ({cross (cross A B) (cross D E), cross (cross B C) (cross E F),
+      cross (cross C D) (cross F A)} : Set (ℙ K (Fin 3 → K)))
+\end{lstlisting}
+
+The field $K$ carries \lean{[Field K] [DecidableEq K]}. The proof unfolds \lean{cross} on
+representatives. Theorem~\ref{thm:vector} then shows that the triple product of the representatives
+of the three points vanishes, and Lemma~\ref{lem:collinear}(b) turns this into collinearity.
+
+\begin{lemma}\label{lem:collinear}
+For nonzero $u,v,w\in K^3$:
+\begin{enumerate}
+\item[(a)] if $\{[u],[v],[w]\}$ is collinear, then $\br{u,v,w}=0$;
+\item[(b)] if $\br{u,v,w}=0$, then $\{[u],[v],[w]\}$ is collinear.
+\end{enumerate}
+\end{lemma}
+
+Part (b) is \lean{isCollinear\_mk\_of\_triple\_product\_eq\_zero}. It is used in the proof of
+\lean{pascal}. Part (a) is its converse, and the two together give \lean{isCollinear\_mk\_iff}.
+Part (a) is not needed for Pascal's theorem. We include it so that ``collinear'' in the formal
+statement can be read as the familiar determinant condition.
+
+\section{Does the statement mean what it says?}\label{sec:correct}
+
+A reader of \lean{pascal} must trust two definitions: that \lean{cross A B} is the line $AB$, and
+that \lean{cross (cross A B) (cross D E)} is the point $AB\cap DE$. Mathlib proves that these
+points are incident (\lean{cross\_orthogonal\_left} and its variants). We restate this and add
+uniqueness.
+
+\begin{lemma}\label{lem:incidence}
+Let $A,B,L,M,P\in\PP^2(K)$.
+\begin{enumerate}
+\item[(a)] If $A\neq B$, then $A$ and $B$ lie on \lean{cross A B}. If $L\neq M$, then
+\lean{cross L M} lies on $L$ and on~$M$.
+\item[(b)] If $L\neq M$ and $P$ lies on both $L$ and $M$, then $P=\lean{cross L M}$. Dually, if
+$A\ne B$ and both lie on a line~$L$, then $L=\lean{cross A B}$.
+\item[(c)] If $A\neq B$, $D\ne E$ and $\lean{cross A B}\ne\lean{cross D E}$, then the point
+\[\lean{cross (cross A B) (cross D E)}\]
+is collinear with $A,B$ and with $D,E$, and it is the only
+such point.
+\end{enumerate}
+\end{lemma}
+
+Part (c) connects Mathlib's notion of collinearity with the cross-product construction. It gives a
+version of Pascal's theorem whose conclusion does not mention \lean{cross} at all.
+
+\begin{theorem}\label{thm:pascal-col}
+Under the hypotheses of Theorem~\ref{thm:pascal}, let $P,R,S$ be points such that $P$ is
+collinear with $A,B$ and with $D,E$, the point $R$ with $B,C$ and with $E,F$, and $S$ with $C,D$ and with $F,A$.
+Then $\{P,R,S\}$ is collinear.
+\end{theorem}
+
+This is the form closest to the informal statement, and to the statements in HOL~Light and Mizar
+(Section~\ref{sec:related}). The only occurrences of \lean{cross} are the hypotheses that opposite
+sides are distinct. These hypotheses cannot be dropped. If $AB=DE$, every point of that line is
+collinear with $A,B$ and with $D,E$, so $P$ is no longer determined. For example, over
+$\mathbb{Q}$ take the six affine points $A=(0,0)$, $B=(1,0)$, $C=(0,1)$, $D=(2,0)$, $E=(3,0)$,
+$F=(0,2)$ on the line pair $xy=0$. Here $AB=DE$, but $BC\ne EF$ and $CD\ne FA$. Their intersection
+points are $R=(-3,4)$ and $S=(0,1)$. With $P=A$, the points $P,R,S$ are not collinear.
+
+\begin{lemma}\label{lem:onconic}
+For nonzero $v\in K^3$, \lean{OnConic Q (mk K v hv)} holds if and only if $Q(v)=0$.
+\end{lemma}
+\begin{proof}
+Every representative has the form $\lambda v$ with $\lambda\ne0$, and $Q(\lambda v)=\lambda^2Q(v)$.
+\end{proof}
+
+So the conic hypotheses \lean{Q A.rep = 0} of \lean{pascal} do not depend on the representative.
+\lean{pascal'} restates the theorem with \lean{OnConic}.
+
+\begin{corollary}[Pappus]\label{cor:pappus}
+Let $a,b$ be lines, let $A,C,E$ lie on $a$ and $B,D,F$ lie on~$b$. If consecutive vertices are
+distinct and opposite sides are distinct lines, then $AB\cap DE$, $BC\cap EF$ and $CD\cap FA$ are
+collinear.
+\end{corollary}
+\begin{proof}
+The quadratic form $Q(x)=(a\cdot x)(b\cdot x)$ vanishes on all six points. It is nonzero, since
+over a field there is a vector $z$ with $a\cdot z\ne0$ and $b\cdot z\ne0$. Apply
+Theorem~\ref{thm:pascal}.
+\end{proof}
+
+The corollary allows $a=b$. In that case all six points lie on one line, and the hypotheses force
+every side to be that line, so the hypothesis $AB\ne DE$ fails. The corollary is vacuous there, as
+expected.
+
+\section{Brianchon's theorem}\label{sec:brianchon}
+
+In $\PP^2(K)$ with Mathlib's conventions, lines and points are the same objects. A point $P$ lies
+on a line $L$ when $P\cdot L=0$, and \lean{cross} computes both the line through two points and the
+intersection of two lines. Projective duality is therefore literal. Over a field of characteristic
+different from two, the lines tangent to a nonsingular conic form a nonsingular conic in the dual
+plane, the \emph{dual conic}. Pascal's theorem, applied in the dual plane, is Brianchon's theorem.
+
+\begin{theorem}[Brianchon]\label{thm:brianchon}
+Let $Q$ be a nonzero quadratic form on $K^3$, and let $a,b,c,d,e,f$ be lines lying on the dual
+conic $Q=0$. Suppose consecutive sides are distinct and opposite vertices are distinct points:
+$a\cap b\ne d\cap e$, $b\cap c\ne e\cap f$, $c\cap d\ne f\cap a$. Then the three diagonals joining
+opposite vertices are collinear as points of the dual plane. Geometrically this is equivalent to
+concurrency. Our explicit common-point corollary additionally assumes that the first two diagonals
+are distinct (the Layer-14 restatement drops this assumption, Section~\ref{sec:l1415}).
+\end{theorem}
+
+\begin{proof}
+The first statement is \lean{pascal'} applied to the lines $a,\dots,f$. For the second, if three
+collinear points $L\ne M, N$ of the dual plane are given, then \lean{cross L M} lies on all three
+lines by Lemma~\ref{lem:incidence}.
+\end{proof}
+
+This extra assumption is needed only for the chosen cross-product witness.
+
+The formal statement takes the dual conic as its hypothesis. It does not construct the dual conic
+of a given conic, and it does not define tangency. For a nondegenerate conic over a field of
+characteristic $\ne2$ with Gram matrix $M$, the dual conic has Gram matrix $M^{-1}$, and a line is
+tangent to the conic exactly when it lies on the dual conic. We have not formalised this
+correspondence, so Theorem~\ref{thm:brianchon} is Brianchon's theorem only under this standard
+identification. Version~2 proves Brianchon's theorem for six distinct tangent lines of a
+nondegenerate conic in characteristic $\ne2$ separately, through the polarity of the conic and
+\lean{pascal'}, in the Layer-15 file (Section~\ref{sec:l1415}). That proof does not use
+Theorem~\ref{thm:brianchon}, and the Gram-matrix description of the dual conic is still not
+formalised. For arbitrary nonzero dual-plane quadratic forms, including degenerate forms and characteristic
+two, the formal result is a dual-Pascal generalisation; no tangent interpretation is asserted.
+
+\section{Related work}\label{sec:related}
+
+\paragraph{HOL Light.} Harrison's \texttt{100/pascal.ml}~\cite{HOLLight} proves Pascal's theorem
+for a projective conic over~$\mathbb{R}$ given by six not-all-zero coefficients. Its statement
+names the three intersection points $x_7,x_8,x_9$ by collinearity conditions, as in our
+Theorem~\ref{thm:pascal-col}. It also assumes that 18 of the 20 triples of vertices are \emph{not} collinear. Affine and circle versions follow; the circle version is the one listed
+on Wiedijk's page. The proof also uses a bracket condition for six points on a conic, checked with
+\texttt{REAL\_RING}. Our approach is therefore close to Harrison's. The differences lie in the
+generality of the statement. We work over an arbitrary field instead of~$\mathbb{R}$. Our
+hypotheses only require the three intersection points to exist. The 18 non-collinearity
+conditions are stronger. For example, they require that no three consecutive vertices of the
+hexagon are collinear. In HOL~Light's labelling the hexagon is $x_1x_5x_3x_4x_2x_6$, and the two
+triples it does not exclude, $\{x_1,x_2,x_3\}$ and $\{x_4,x_5,x_6\}$, are the alternate
+vertices. So HOL~Light's statement does cover the line-pair case of Pappus's theorem, since its
+conics may be degenerate.
+
+\paragraph{Mizar.} Coghetto's article \texttt{PASCAL}~\cite{Coghetto} proves Pascal's theorem in
+the real projective plane, for a conic given by six real coefficients that are not all zero. The
+hypotheses form a ``Pascal configuration'' with 17 non-collinearity conditions, similar to
+HOL~Light's. With the same labelling as HOL~Light, it leaves unconstrained the two alternate-vertex triples and one further triple, $\{P_3,P_5,P_6\}$.
+
+\paragraph{Rocq.} Magaud and Narboux~\cite{MagaudNarboux} work in synthetic projective geometry. Their
+result \texttt{hexamy\_prop} assumes a strong form of Pappus's theorem and five inequalities
+between lines. It shows that the ``hexamy'' property is preserved when the first two vertices are
+swapped. A hexamy is a hexagon with six pairwise distinct vertices for which the Pascal conclusion
+holds. It is a statement about
+axiomatic projective planes, and does not refer to conics defined by equations.
+
+\paragraph{Lean.} We know of three public Lean~4 developments, none in Mathlib.
+\begin{itemize}
+\item One proves the theorem for six distinct points on a circle in the Euclidean
+plane~\cite{PlbyLean}, without \lean{sorry}.
+\item One gives a projective real version whose main theorem depends on a declared
+\lean{axiom}~\cite{LeanGenius}. Some special cases, such as the standard conic, are proved without it.
+\item One is an incomplete development for irreducible conics over a field, which relies on a
+configuration lemma proved with \lean{sorry}~\cite{AtlasLean}.
+\end{itemize}
+We searched GitHub and the web for others; the search is not exhaustive. Mathlib's list of 100
+theorems has no entry for \#28 at the version we use~\cite{Mathlib100}.
+
+\section{Verification}\label{sec:gate}
+
+\texttt{gate.sh} builds the library and then writes its own temporary file. That file imports the
+library and issues \lean{\#print axioms} for each of the 32 named theorems. The queries are
+therefore generated by the gate and not read from the repository. The gate flattens Lean's wrapped
+output lines. It requires exactly one report per named theorem, and accepts only the axioms
+\lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}. Before building, it rejects source
+files that contain \lean{sorry}, \lean{admit}, \lean{native\_decide}, \lean{axiom}, \lean{\#eval},
+\lean{run\_cmd}, \lean{set\_option}, \lean{macro}, \lean{elab}, \lean{syntax}, \lean{notation},
+\lean{import Lean}, or related tokens. At commit \texttt{\commit} it prints
+\texttt{PASS (32 theorems, standard axioms only)}. The script needs GNU tools. Its \texttt{mktemp
+--suffix} option is GNU-only, so with the BSD tools of stock macOS it stops with
+\texttt{FAIL: axiom report}.
+
+\texttt{tests/tamper.sh} plants six kinds of defect in scratch copies of the source and checks that
+the gate rejects each one:
+\begin{itemize}
+\item a \lean{sorry};
+\item an \lean{axiom} split across two lines;
+\item an \lean{\#eval} that prints a fake axiom report;
+\item a custom macro;
+\item an altered incidence hypothesis in \lean{pappus} that is incompatible with the unchanged
+proof;
+\item a genuine extra axiom with a long name. The report wraps over several lines, which tests
+the parser. For this test only, the check for the \lean{axiom} token is switched off in the scratch copy.
+\end{itemize}
+All six are rejected.
+
+\texttt{code/check\_pascal.py} checks the identities with exact rational arithmetic in 300 random
+trials:
+\begin{itemize}
+\item random points on random conics, which give $\pi=0$;
+\item the identity $\pi=-\det V$ on arbitrary points;
+\item the parametrised standard conic;
+\item line pairs.
+\end{itemize}
+As a control, the script prints $\pi$ for five perturbed configurations; all five values are nonzero.
+
+The gate is a heuristic, not a sandbox. It trusts the pinned toolchain and Mathlib, and it checks
+only the named theorems. The step that matters most, comparing the formal statements with
+Theorem~\ref{thm:pascal}, cannot be automated. Section~\ref{sec:correct} is meant to make that
+comparison easier. The author has checked each statement in Table~\ref{tab:thms} against its
+informal counterpart by hand.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+Version~2 adds two further statement checks. Both are files of the library in commit
+\texttt{be35ffaa75a324131a710d3287b3d703408ad4a0}, \lean{PascalHexagon/L14.lean} and \lean{PascalHexagon/L15Classical.lean}
+(namespace \lean{PascalHexagon.Classical}). The earlier files are unchanged; the root import file and
+\texttt{gate.sh} gain the new entries. The Layer-15 comparison was first checked as a scratch file
+and then moved into the library. Below, Layer-14 names are in namespace
+\lean{PascalHexagon} and Layer-15 names in \lean{PascalHexagon.Classical}.
+
+\paragraph{Layer 14: statements in Mathlib's language and non-vacuity.} The main statements of
+Table~\ref{tab:thms}, except the proof aid \lean{linePair\_ne\_zero}, are restated with Mathlib-only types and proved from the library theorem through
+bridges. The restatements unfold \lean{pascalDet}, \lean{quadEval}, \lean{ver}, \lean{coeffs} and
+\lean{OnConic} into Mathlib's \lean{crossProduct}, dot product, \lean{Matrix.det},
+\lean{QuadraticMap.polar} and \lean{Projectivization.rep}. Sixteen theorems restate 21 of the 22
+names of Table~\ref{tab:thms}. One theorem covers \lean{pascal}, \lean{pascal'} and
+\lean{pascal\_of\_isCollinear}, one covers \lean{brianchon} and \lean{brianchon\_concurrent}, and the
+four names of Lemma~\ref{lem:incidence}(a,b) are grouped into two (existence and uniqueness of the
+line through two points and of the point on two lines). The 22nd name,
+\lean{linePair\_ne\_zero}, is not restated. It is a step in the proof of Corollary~\ref{cor:pappus},
+stated in terms of the library's \lean{linePair}, and it is used in the proof of the restated Pappus
+theorem. A mechanical check of the elaborated types found no \lean{PascalHexagon} constant. Three
+restatements are slightly stronger in form:
+\begin{itemize}
+\item \lean{l14\_pascal} and \lean{l14\_pappus} do not mention \lean{cross} at all.
+The hypothesis that opposite sides are distinct is written as
+$\neg(\{A,B,D\}\text{ and }\{A,B,E\}\text{ both collinear})$, which for $A\ne B$, $D\ne E$ is
+equivalent to $\lean{cross A B}\ne\lean{cross D E}$ (bridge \lean{l14b\_cross\_ne\_iff}).
+\item \lean{l14\_brianchon} proves that the three diagonals have a common point
+\emph{without} the hypothesis that the first two diagonals are distinct
+(bridge \lean{l14b\_common\_point}). It still takes the dual conic as a hypothesis, as
+in Section~\ref{sec:brianchon}.
+\end{itemize}
+Five witness theorems prove every hypothesis on explicit configurations over $\mathbb{Q}$ and that
+the conclusion is non-degenerate:
+\begin{center}\footnotesize
+\begin{tabular}{@{}lp{0.62\textwidth}@{}}
+\toprule
+statement & witness and non-degeneracy proved\\
+\midrule
+Pascal (Thm.~\ref{thm:pascal}, \ref{thm:pascal-col}) & six points on $x^2+y^2=z^2$, 15 vertex pairs distinct; Pascal points pairwise distinct\\
+Pappus (Cor.~\ref{cor:pappus}) & $A,C,E$ on $y=0$, $B,D,F$ on $x=0$; Pappus points pairwise distinct\\
+Brianchon (Thm.~\ref{thm:brianchon}) & six tangents of the unit circle; diagonals pairwise distinct; common point $(7:-9:1)$\\
+Prop.~\ref{prop:identity}--Rem.~\ref{rem:standard} & $\pi=-51$ at an explicit point; $c\ne0$, $Q\ne0$, $M\ne0$ symmetric; vertices and Pascal points distinct\\
+Lemmas~\ref{lem:collinear}, \ref{lem:incidence}, \ref{lem:onconic} & a collinear and a non-collinear triple; distinct points and lines; a point on and a point off the conic\\
+\bottomrule
+\end{tabular}
+\end{center}
+\lean{l14\_apply\_eq\_coeffs} is an identity with no hypotheses and needs no witness. No
+Mathlib-only statement turned out false or needed an extra hypothesis. Tangency of the six Brianchon
+lines in the witness was checked numerically, not in Lean. The example in Section~\ref{sec:correct}
+showing that $AB\ne DE$ cannot be dropped is not formalised. With the Layer-14 file added, the gate
+checks 59 theorems (32 + 27) and passes, and the tampering suite rejects all six defects.
+With the Layer-15 file added as well, the gate checks 147 theorems (59 + 88) and passes, and the
+tampering suite again rejects all six defects. In that commit the GNU-only \texttt{mktemp} call in
+\texttt{gate.sh} is replaced, so the gate also passes with the BSD tools of stock macOS;
+\texttt{tests/tamper.sh} still needs GNU \texttt{sed}.
+
+\paragraph{Layer 15: comparison with the classical statements.} Another AI agent collected the
+classical statements from the literature, with citations (Pascal's \emph{Essay pour les coniques},
+Brianchon's 1806 memoir and the modern projective form in~\cite{Coxeter}, Ch.~9). These were Pascal's theorem, its
+five-point (tangent) form, Pappus's theorem, the converse (Braikenridge--Maclaurin), Brianchon's
+theorem for a nondegenerate conic in characteristic $\ne2$, its polarity duality with Pascal, and its
+pentagon form. A writer AI model was given only these statements; it saw neither the code nor this
+paper, and its transcript was audited (a transcript audit in the verification repository). It wrote them in Lean with Mathlib's \lean{Projectivization},
+with lines as $2$-dimensional subspaces of $K^3$, and with its own definitions of a nondegenerate
+conic (``not equivalent to a form in fewer variables'', with at least one point), of the tangent at
+$A$ (a line through $A$ that meets the conic in no other point) and of the polar line. This gave 20
+statements, 12 theorems and 8 well-formedness obligations, all type-checked with \lean{sorry}. A
+comparer then proved each one, copied verbatim, from the library, with no added hypothesis and no
+change to the library, and classified it. All 20 are proved;
+\lean{\#print axioms} reports only the three standard axioms for each:
+\begin{itemize}
+\item \emph{Covered} (6): Pascal's theorem (\lean{cov\_Pascal1\_a}, from \lean{pascal'})
+and Pappus's theorem (\lean{cov\_Pascal2\_b}, from \lean{pappus}; the library file inlines the
+one-line proof of \lean{pappus}, \lean{pascal'} applied to \lean{linePair}, so that the tampering
+test that replaces \lean{pappus} is still rejected by the axiom check), with their three
+obligations and the obligation that $XY$ is a line. In both cases the library statement is strictly more general. It allows any nonzero form
+(resp.\ $a=b$ and vertices at $a\cap b$) and requires only distinct consecutive vertices and distinct
+opposite sides.
+\item \emph{Narrower} (1): Brianchon's theorem for six distinct tangent lines. Missing from the
+library: the link between tangent lines and the dual conic, which Theorem~\ref{thm:brianchon} takes as
+a hypothesis. NEW PROOF \lean{cov\_Brianchon1\_a} (characteristic $\ne2$) closes
+the gap through the polarity of the conic, applied to \lean{pascal'}. It does not use
+\lean{brianchon}.
+\item \emph{Out of scope of the paper, now proved} (13), all NEW PROOFS:
+  \begin{itemize}
+  \item a nondegenerate conic contains no three collinear points, in any characteristic
+  (\lean{cov\_Setting\_noThreeCollinear});
+  \item the five-point form with the tangent at $A$, in any characteristic
+  (\lean{cov\_Pascal2\_a}, with its obligation). The proof applies Lemma~\ref{lem:poly}
+  over $K[X]$ and specialises $X=0$;
+  \item the converse: six distinct points, no three collinear, whose Pascal points are collinear, lie
+  on a nondegenerate conic, in any characteristic (\lean{cov\_Pascal3\_a}, with its
+  obligation). The proof uses Proposition~\ref{prop:identity};
+  \item the polarity (\lean{cov\_Brianchon2\_a\_}$X$ for $X$ = \lean{polarIsLine}, \lean{tangent},
+  \lean{vertex}, \lean{incidence}, \lean{diagonal}). The tangent equals the polar in any characteristic; the others are stated
+  and proved in characteristic $\ne2$;
+  \item the obligation of Brianchon's theorem (opposite vertices are distinct), and the pentagon form
+  with its obligation (\lean{cov\_Brianchon2\_b}).
+  \end{itemize}
+\item \emph{Writer statement false as written}: none.
+\end{itemize}
+The Layer-15 file reproduces the writer's definitions and statements verbatim. Relative to the
+scratch file, the library version changes the namespace, header and imports, removes two linter
+options, and inlines the proof of \lean{pappus} in \lean{cov\_Pascal2\_b}, as described above.
+
+
+\section{Limitations and further work}
+
+\begin{itemize}
+\item \emph{Tangents.} The projective statement requires consecutive vertices to be distinct.
+The limiting cases, in which a side is replaced by the tangent to the conic, are not part of the
+main development, since Mathlib has no definition of the tangent line to a conic. With the
+Layer-15 writer's definition (a line through $A$ meeting the conic only at~$A$), the five-point form
+and the pentagon form of Brianchon's theorem are proved in the Layer-15 file
+(Section~\ref{sec:l1415}), for nondegenerate conics only. Other limiting cases are not formalised.
+\item \emph{The affine and Euclidean statements.} Wiedijk's list uses an affine or circle statement.
+Deriving one from Theorem~\ref{thm:pascal-col} needs a bridge between Mathlib's affine notion
+\lean{Collinear} in $\mathbb{R}^2$ and \lean{IsCollinear} in $\PP^2(\mathbb{R})$. We have not
+formalised it.
+\item \emph{Converse.} The converse of Pascal's theorem, that a hexagon whose opposite sides meet in
+collinear points lies on a conic, follows from the same identity. It is not part of the main development. The Layer-15 file proves that six distinct points, no three collinear, whose Pascal points are
+collinear lie on a nondegenerate conic in the writer's sense
+(\lean{cov\_Pascal3\_a} in namespace \lean{PascalHexagon.Classical}, Section~\ref{sec:l1415}).
+\item \emph{Tangency and the dual conic.} Formalising the correspondence between tangent lines
+and the dual conic would make Theorem~\ref{thm:brianchon} a statement about tangent lines directly.
+The tangent-line form itself is proved in the Layer-15 file through the polarity (characteristic
+$\ne2$), but the correspondence with the dual conic is not.
+\item \emph{Mathlib.} Contributing the result to Mathlib would require a general notion of conic
+and faster proofs of Proposition~\ref{prop:identity}.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+The formal proofs, the checking scripts and a draft of this paper were prepared with the help of
+large-language-model AI assistants. A different model reviewed the formalisation. The author checked each formal statement in
+Table~\ref{tab:thms} against its informal counterpart by hand. The Layer-14 and Layer-15 files were written by AI
+agents and are not part of the author's hand check. The Layer-15 statements were written by a model that saw neither the code nor this paper. Every proof is
+checked by the Lean kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}
+\bibitem{AtlasLean} Meta Platforms, Inc., \emph{atlas-lean}, file
+\path{v1/Atlas/AlgebraicGeometryI/code/PascalTheorem.lean},
+\url{https://github.com/facebookresearch/atlas-lean}, accessed 28 September 2026.
+\bibitem{Coghetto} R.~Coghetto, Pascal's theorem in real projective plane, \emph{Formalized
+Mathematics} 25 (2017), no.~2, 107--119.
+\bibitem{Coxeter} H.~S.~M.~Coxeter, \emph{Projective Geometry}, 2nd ed., Springer, 1987.
+\bibitem{HOLLight} J.~Harrison, \texttt{100/pascal.ml}, HOL~Light repository,
+\url{https://github.com/jrh13/hol-light}, accessed 28 September 2026.
+\bibitem{LeanGenius} R.~J.~Walters, \emph{lean-genius}, file \texttt{proofs/Proofs/PascalsHexagon.lean},
+\url{https://github.com/rjwalters/lean-genius}, accessed 28 September 2026.
+\bibitem{MagaudNarboux} N.~Magaud, J.~Narboux and P.~Schreck, Formalizing projective plane geometry
+in Coq, in \emph{Automated Deduction in Geometry (ADG 2008)}, Lecture Notes in Artificial
+Intelligence 6301, Springer, 2011, 141--162.
+\bibitem{Mathlib100} The mathlib Community, \texttt{docs/100.yaml}, Mathlib repository,
+\url{https://github.com/leanprover-community/mathlib4}.
+\bibitem{PlbyLean} \emph{lean-proofs}, file \texttt{src/latest/HundredTheorems/Theorem28.lean},
+\url{https://github.com/plby/lean-proofs}, accessed 28 September 2026.
+\bibitem{RichterGebert} J.~Richter-Gebert, \emph{Perspectives on Projective Geometry},
+Springer, 2011.
+\bibitem{Wiedijk} F.~Wiedijk, Formalizing 100 theorems, \url{https://www.cs.ru.nl/~freek/100/},
+accessed 28 September 2026.
+\end{thebibliography}
+
+\end{document}

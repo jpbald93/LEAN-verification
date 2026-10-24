@@ -1,0 +1,38 @@
+LAYER 15 — CLASSICAL-SOURCE BLIND WRITER. Do all work inline with your own tools (exec for writing files, scp/ssh and compiling); do NOT spawn sub-agents. Time box ~2 hours. Always finish by writing the file and the report.
+
+You formalise CLASSICAL THEOREMS from their textbook statements. You have NOT seen any paper or code about them and must not look: do NOT read any file on this machine or on any other machine except your own output files, do NOT search the web, do NOT open any Lean repository other than compiling your own file as described below. Self-report every file you read.
+
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Setting A — the complete quadrilateral. Four lines in the Euclidean plane, in general position (no two parallel, no three through one point). They form four triangles (each obtained by omitting one line).
+ C1 (Miquel; used as background). The circumcircles of the four triangles pass through one point M, the Miquel point of the quadrilateral.
+ C2 (Steiner, 1828). The orthocentres of the four triangles lie on one line (the orthocentre line, or Steiner line, of the quadrilateral).
+ C3 (Steiner line of the Miquel point). The reflections of M in the four lines lie on one line, and that line is the orthocentre line of C2.
+ C4 (the inscribed parabola). There is a parabola tangent to all four lines. Its focus is the Miquel point M and its directrix is the orthocentre line of C2. (Classically this parabola is unique; you may state existence and uniqueness separately.) In particular M does not lie on the orthocentre line.
+ C5 (axis). The axis of that parabola is perpendicular to the directrix, and the Newton–Gauss line of the quadrilateral (the line through the midpoints of the three diagonals) is parallel to the axis.
+ C6 (Lambert). The focus of a parabola tangent to the three sides of a triangle lies on the circumcircle of that triangle. Hence the focus of the inscribed parabola of C4 lies on the circumcircles of all four triangles.
+ C7 (vertex). The vertex of a parabola lies on the axis, midway between the focus and the directrix, and is the point of the parabola nearest the directrix.
+
+Setting B — the complete quadrangle. Four points in the Euclidean plane, no three collinear. They form four triangles (each obtained by omitting one point).
+ D1 (Brianchon–Poncelet, 1820–21). The four nine-point circles of the four triangles pass through one common point, the Poncelet point of the quadrangle. It is the centre of the rectangular hyperbola through the four points.
+ D2 (orthocentric exception). If one of the four points is the orthocentre of the triangle formed by the other three (an orthocentric system), the four triangles have the same nine-point circle.
+ D3 (pedal circles). The Poncelet point lies on the pedal circle of each of the four points with respect to the triangle of the other three (the circle through the feet of the perpendiculars from that point to the three sides). (Classically one assumes the point is not on the circumcircle of that triangle, otherwise the feet are collinear — the Simson line.)
+ D4 (diagonal triangle). The Poncelet point lies on the circumcircle of the diagonal triangle (the triangle whose vertices are the three intersection points of opposite sides: AB∩CD, AC∩BD, AD∩BC).
+ D5 (symmetry). The Poncelet point depends only on the set of four points, not on their labelling.
+
+TASK: write, from the statements above ALONE, Lean 4 + Mathlib statements of C2–C7 and D1–D5 (C1 may be stated too, as background). Use Mathlib's own notions wherever they exist and define everything else yourself from first principles:
+ - points in ℂ (the Euclidean plane); lines as `AffineSubspace ℝ ℂ` given by two distinct points (`line[ℝ, p, q]`) or as you judge best; parallelism `AffineSubspace.Parallel`; collinearity `Collinear ℝ`; concyclicity `EuclideanGeometry.Cospherical`; triangles `Affine.Triangle ℝ ℂ`; orthocentre `Affine.Simplex.orthocenter`; circumcircle/circumcentre `Affine.Simplex.circumsphere`; nine-point circle `Affine.Simplex.ninePointCircle`; foot of a perpendicular `EuclideanGeometry.orthogonalProjection`; reflection `EuclideanGeometry.reflection`; midpoint `midpoint ℝ`; distance `dist`; distance to a set `Metric.infDist`.
+ - Parabola, focus, directrix, tangent line to a parabola, axis, vertex, rectangular hyperbola, pedal circle, diagonal triangle, Miquel point, Poncelet point: define them yourself (Mathlib has none of them). For "tangent", choose and justify a definition (e.g. the line meets the parabola in exactly one point and is not parallel to the axis — say what you chose and why). Express "the Miquel point" / "the Poncelet point" by their defining properties (∃ / ∃!), not by formulas.
+ - State every hypothesis the classical statement needs and nothing more. Where the classical statement is informal or ambiguous, choose a reading and mark it `-- AMBIGUOUS: <alternative>`. Where you believe the statement as written needs an extra hypothesis to be true, add it and mark it `-- EXTRA HYPOTHESIS: <why>`.
+ - Names classical_C2, classical_C3, ..., classical_D5 (split into parts _a, _b if natural). Each ends with `:= by sorry`. One `section` per setting.
+
+MATHLIB NAMES (verified at the pinned revision; use these, do not spend time searching): `Affine.Triangle ℝ ℂ`; `Affine.Simplex.mk` / `⟨![a,b,c], h⟩` with `h : AffineIndependent ℝ ![a,b,c]`; orthocentre `Affine.Triangle.orthocenter t` (namespace Affine.Triangle, NOT Affine.Simplex); circumsphere `Affine.Simplex.circumsphere t` (its `.center`, `.radius`); nine-point circle `Affine.Simplex.ninePointCircle t`; `EuclideanGeometry.orthogonalProjection (s : AffineSubspace ℝ ℂ) [Nonempty s] [s.direction.HasOrthogonalProjection]`; `EuclideanGeometry.reflection s`; `EuclideanGeometry.Cospherical`; `Collinear ℝ`; `AffineSubspace.Parallel`; `line[ℝ, p, q]`; `Metric.infDist`; `midpoint ℝ`. If instance arguments of orthogonalProjection/reflection are awkward for line[ℝ,p,q], you may define the foot/reflection on a line through p,q yourself by the standard formula, mark it `-- OWN DEFINITION`, and say so in the report.
+
+WORKING STYLE (important): this is a multi-step job of 1–2 hours. Keep working until BOTH output files exist and the file compiles; do NOT end your turn while a compile is still running and do NOT end your turn after only exploring names. For compiles use exec with a long yieldMs (e.g. 600000) or process poll with timeout, then continue. Write the full Classical.lean first, then iterate on errors.
+
+TYPE-CHECK on the x86 machine (allowed only for compiling YOUR file; read nothing else there):
+  scp <oc>/tmp/l15f/w/Classical.lean jack:reformal/PaperFClassical.lean
+  ssh jack 'cd ~/reformal && PATH=$HOME/.elan/bin:$PATH timeout 900 lake env lean PaperFClassical.lean'
+Iterate until the only messages are `declaration uses 'sorry'` warnings. Never run `lake update` or `lake exe cache get`.
+
+OUTPUT: <oc>/tmp/l15f/w/Classical.lean (local) identical to ~/reformal/PaperFClassical.lean (jack); <oc>/tmp/l15f/w/CLASSICAL_REPORT.md: statement list (name → classical item → one-line gloss), every definition you invented (with justification), every AMBIGUOUS and EXTRA HYPOTHESIS mark, compiler summary (count of sorry warnings, 0 errors), files read.

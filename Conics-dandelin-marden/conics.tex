@@ -1,0 +1,1035 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\lean}[1]{\texttt{#1}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{_1}}\DeclareUnicodeCharacter{2082}{\ensuremath{_2}}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\nm}[1]{\lVert #1\rVert}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\repoD}{https://github.com/jpbald93/dandelin}
+\newcommand{\repoM}{https://github.com/jpbald93/marden}
+% version-2 commits: dandelin=89309188e77f1564fd31cc9a2d245dbba1b34f8c marden=b4fbe75198e728699764a9b44e8f9981ba589299
+\newcommand{\commitD}{205e4807a71d05898967d870e4528fb97d78b26d}
+\newcommand{\commitM}{bd2cd3c9870905a04d38d079be4d83c824cbf9db}
+\newcommand{\srcD}[2]{\href{\repoD/blob/\commitD/Dandelin/#1\#L#2}{\texttt{#1:#2}}}
+\newcommand{\srcM}[2]{\href{\repoM/blob/\commitM/Marden/#1\#L#2}{\texttt{#1:#2}}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,example,by,fun,have,show,exact,intro,namespace,end,import,let,noncomputable},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={ℝ}{{$\mathbb{R}$}}1 {ℂ}{{$\mathbb{C}$}}1 {≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2
+           {→}{{$\to$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1
+           {∈}{{$\in$}}1 {∉}{{$\notin$}}1 {≤}{{$\le$}}1 {•}{{$\bullet$}}1
+           {⟪}{{$\langle\!\langle$}}2 {⟫}{{$\rangle\!\rangle$}}2 {‖}{{$\Vert$}}1
+           {₀}{{$_0$}}1 {₁}{{$_1$}}1 {₂}{{$_2$}}1 {₃}{{$_3$}}1 {'}{{$'$}}1}
+
+\title{Dandelin spheres and Marden's theorem,\\ formalised in Lean~4}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{30 September 2026\\ \small Version~2, 22 October 2026: adds the Layer-14 and Layer-15 checks
+(Section~\ref{sec:layers})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formalise two classical theorems about conics in Lean~4 with Mathlib. The first is Dandelin's
+theorem. A plane that misses the apex of a right circular cone meets it in an ellipse, a parabola
+or a hyperbola. The spheres inscribed in the cone and tangent to the plane touch it at the foci.
+In three-dimensional space we prove the classical picture: among the spheres centred on the axis
+and touching the cone, exactly two are tangent to the plane in the ellipse and hyperbola cases and
+exactly one in the parabola case; the section is \emph{exactly} the locus of constant focal sum
+(ellipse) or constant absolute focal difference (hyperbola, on the double cone); for non-circular
+sections the focus--directrix property holds with eccentricity $e=\cos\beta/\cos\alpha$, together
+with its converse; the section is non-empty; the three regimes are characterised geometrically;
+and the planes through the apex give a point, a line or two lines. The focal identities and
+their converses hold in an arbitrary real inner product space; non-emptiness, the regime
+characterisations and the two-line apex section are proved under explicit finite-dimension
+assumptions. The second is Marden's theorem. For a non-degenerate triangle $a,b,c\in\C$, the ellipse
+whose foci are the critical points of $(z-a)(z-b)(z-c)$ passes through the midpoints of the sides,
+touches each side only there, and has the centroid as its centre. We also prove that it is the
+only ellipse, given by foci and focal sum, with this property. Tangency is stated metrically, and
+we explain why this is the right notion. The version-1 developments have about 2170 and 760 lines, respectively; version~2 adds 2287
+Dandelin lines and 879 Marden lines in the Layer-14 and Layer-15 files. They
+contain no \lean{sorry}, and their main theorems depend only on Lean's standard axioms. We found
+no earlier complete formalisation of either theorem in the sources we searched;
+Section~\ref{sec:related} records the scope of that search and one unresolved lead.
+Version~2 restates the main theorems with Mathlib-only types, each with an explicit
+non-degenerate witness, and compares the development with textbook statements formalised
+independently; the comparison adds further proved statements and finds no false one.
+\end{abstract}
+
+\section{Introduction}
+
+We work in Lean~4~\cite{Lean4} with Mathlib~\cite{MathlibCPP}. Pascal's hexagon theorem is
+treated in a companion paper~\cite{BaldPascal}. This paper deals with
+two other classical results about conics. Both are on the ``1000+ theorems'' list that Mathlib
+maintains, and at the Mathlib version we use neither entry has a formal declaration
+attached~\cite{Mathlib1000}.
+
+\emph{Dandelin's theorem} (1822)~\cite{Dandelin} links the definition of a conic as a plane section of a cone to its
+definition by foci. Suppose a plane cuts one nappe of a right circular cone in a closed curve.
+There are two spheres that are inscribed in the cone and tangent to the plane, one on each side of it. If $F_1$, $F_2$ are the points of tangency,
+then every point $X$ of the curve satisfies $|XF_1|+|XF_2|=\text{const}$. The proof uses only the fact
+that all tangent segments from a point to a sphere have the same length. The same construction
+gives the hyperbola, with one sphere in each nappe, and the parabola, with one sphere. The circle along which a sphere touches the cone lies
+in a plane $\sigma$; for a non-circular section, $\sigma$ meets the cutting plane in the directrix. For textbook accounts
+see Hilbert and Cohn-Vossen~\cite{HilbertCV}.
+
+\emph{Marden's theorem}~\cite{Marden1945,MardenBook} is named after Marden, and it goes back to
+Siebeck~\cite{Siebeck}. Kalman gives an elementary proof~\cite{Kalman}, and Minda and Phelps
+give another~\cite{MindaPhelps}. It states
+the following. Let $a,b,c\in\C$ be non-collinear and let $p(z)=(z-a)(z-b)(z-c)$. Then the roots of
+$p'$ are the foci of an ellipse that is tangent to the three sides of the triangle at their
+midpoints. This ellipse is the \emph{Steiner inellipse}, and its centre is the centroid.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item A Lean formalisation of Dandelin's theorem for all three non-degenerate conics
+(Section~\ref{sec:dandelin}). The focal identities hold in any real inner product space. The
+hypotheses concern only the cone and the plane. The spheres, the foci and (for non-circular
+sections) the directrices are constructed, and we prove that the tangent spheres are unique
+within the family of axis spheres touching the cone (in $\R^3$, a Layer-15 lemma extends this to
+every sphere that meets each generator in exactly one point; Section~\ref{sec:layers}). Every characterisation is proved in both directions: the section
+\emph{equals} the focal locus.
+\item The regime classification: the bounded-section inequality is equivalent to the section
+lying in one nappe and being bounded, and the hyperbola inequality is equivalent to meeting both
+nappes. We also prove non-emptiness, and treat the degenerate sections by planes through the apex.
+These results assume that $E$ is finite-dimensional with the stated lower bound on its dimension,
+except where noted.
+\item A Lean formalisation of Marden's theorem with a metric notion of tangency, together with the
+uniqueness of the inellipse among all ellipses given by two foci and a focal sum
+(Section~\ref{sec:marden}).
+\item Lemmas that help a reader check that the formal statements mean what they say
+(Section~\ref{sec:correct}). They include a Lean counterexample showing that one of our
+statements cannot be strengthened in the obvious way.
+\item (Version~2.) Mathlib-only restatements of the main theorems with witnesses (Layer~14), and a
+comparison with independently formalised textbook statements (Layer~15), Section~\ref{sec:layers}.
+\end{itemize}
+
+\paragraph{Availability.}
+The code is at \url{\repoD} and \url{\repoM}. Line references are to commits
+\texttt{205e480} and \texttt{bd2cd3c} respectively.
+Version~2 adds the Layer-14 and Layer-15 files (\path{Dandelin/L14.lean},
+\path{Dandelin/L15Classical.lean}, \path{Marden/L14.lean}, \path{Marden/L15Classical.lean}) in a
+new commit of each repository (Dandelin \texttt{89309188e77f1564fd31cc9a2d245dbba1b34f8c}, Marden \texttt{b4fbe75198e728699764a9b44e8f9981ba589299}). That commit
+also adds two import lines to each root file and updates \path{gate.sh} and the README. The
+earlier Lean files and statements are unchanged, so the line references above remain valid.
+The toolchain is Lean \texttt{v4.33.1}. Both projects pin Mathlib at tag \texttt{v4.33.1}
+(revision \texttt{0df444a}) in \texttt{lake-manifest.json}.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Conics-dandelin-marden} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+\begin{longtable}{@{}p{0.42\textwidth}p{0.29\textwidth}l@{}}
+\caption{The main formal statements. Namespaces \lean{Dandelin} (upper part) and \lean{Marden}
+(lower part). ``Thm'' refers to the numbered results of this paper.}\label{tab:thms}\\
+\toprule
+Lean name & In this paper & Source \\ \midrule
+\endfirsthead
+\toprule
+Lean name & In this paper & Source \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\lean{tangent\_lengths\_eq} & equal tangents, \S\ref{sec:cone} & \srcD{Basic.lean}{29} \\
+\lean{cone\_tangent\_sq} & Lemma~\ref{lem:conetan} & \srcD{Basic.lean}{53} \\
+\lean{cone\_outside\_sphere} & Lemma~\ref{lem:inscribed} & \srcD{Basic.lean}{63} \\
+\lean{tangencyPoint\_mem\_sphere} & Lemma~\ref{lem:inscribed} & \srcD{Basic.lean}{85} \\
+\lean{tangencyPoint\_perp} & Lemma~\ref{lem:inscribed} & \srcD{Basic.lean}{95} \\
+\lean{dandelin\_of\_between\_isTangentAt} & Remark~\ref{rem:mathlibtangent} & \srcD{Basic.lean}{146} \\
+\lean{dandelin} & Theorem~\ref{thm:ellipse}(iv), $\Rightarrow$, normalised & \srcD{Basic.lean}{216} \\
+\lean{tangent\_iff} & Theorem~\ref{thm:ellipse}(i), normalised ($s<m$, $c>0$) & \srcD{Existence.lean}{64} \\
+\lean{dandelin\_converse} & Theorem~\ref{thm:ellipse}(iv), $\Leftarrow$ & \srcD{Existence.lean}{155} \\
+\lean{dandelin\_exists} & Theorem~\ref{thm:ellipse} & \srcD{Existence.lean}{230} \\
+\lean{section\_bounded} & Theorem~\ref{thm:regime} & \srcD{Existence.lean}{277} \\
+\lean{infDist\_directrix} & Lemma~\ref{lem:infdist} & \srcD{Directrix.lean}{72} \\
+\lean{focal\_dist\_eq\_ecc\_mul} & Theorem~\ref{thm:directrix} & \srcD{Directrix.lean}{148} \\
+\lean{ecc\_lt\_one\_iff} & Theorem~\ref{thm:directrix}, $e<1$ & \srcD{Directrix.lean}{160} \\
+\lean{ecc\_eq\_one} & Theorem~\ref{thm:directrix}, $e=1$ & \srcD{Directrix.lean}{168} \\
+\lean{one\_lt\_ecc\_iff} & Theorem~\ref{thm:directrix}, $e>1$ & \srcD{Directrix.lean}{174} \\
+\lean{tangent\_of\_proj} & Lemma~\ref{lem:proj} & \srcD{Directrix.lean}{192} \\
+\lean{directrix\_ellipse} & Theorem~\ref{thm:directrix} & \srcD{Directrix.lean}{206} \\
+\lean{directrix\_parabola} & Theorem~\ref{thm:parabola} & \srcD{Directrix.lean}{247} \\
+\lean{mem\_cone2\_iff} & \S\ref{sec:conv} & \srcD{Hyperbola.lean}{25} \\
+\lean{hyp\_upper} & Theorem~\ref{thm:hyperbola}(ii), upper & \srcD{Hyperbola.lean}{136} \\
+\lean{hyp\_lower} & Theorem~\ref{thm:hyperbola}(ii), lower & \srcD{Hyperbola.lean}{157} \\
+\lean{hyp\_converse} & Theorem~\ref{thm:hyperbola}(iii), $\Leftarrow$ & \srcD{Hyperbola.lean}{192} \\
+\lean{dandelin\_hyperbola} & Theorem~\ref{thm:hyperbola} & \srcD{Hyperbola.lean}{283} \\
+\lean{hyp\_both\_nappes} & Theorem~\ref{thm:regime}(c) & \srcD{Regime.lean}{222} \\
+\lean{ellipse\_nonempty} & Theorem~\ref{thm:regime}(d) & \srcD{Regime.lean}{255} \\
+\lean{section\_unbounded} & Theorem~\ref{thm:regime}(b) & \srcD{Regime.lean}{330} \\
+\lean{one\_nappe} & Theorem~\ref{thm:regime}(a) & \srcD{Regime.lean}{373} \\
+\lean{bounded\_iff} & Theorem~\ref{thm:regime}(b) & \srcD{Regime.lean}{407} \\
+\lean{ellipse\_regime\_iff} & Theorem~\ref{thm:regime}(b) & \srcD{Regime.lean}{426} \\
+\lean{hyperbola\_regime\_iff} & Theorem~\ref{thm:regime}(c) & \srcD{Regime.lean}{442} \\
+\lean{parabola\_regime} & Theorem~\ref{thm:regime}(e) & \srcD{Regime.lean}{451} \\
+\lean{regime\_R3} & Theorem~\ref{thm:regime} in $\R^3$ & \srcD{Regime.lean}{475} \\
+\lean{directrix\_converse} & Theorem~\ref{thm:dirconv} & \srcD{Degenerate.lean}{30} \\
+\lean{directrix\_iff\_ellipse} & Theorem~\ref{thm:dirconv}(a) & \srcD{Degenerate.lean}{88} \\
+\lean{directrix\_iff\_parabola} & Theorem~\ref{thm:dirconv}(a) & \srcD{Degenerate.lean}{113} \\
+\lean{directrix\_iff\_hyperbola} & Theorem~\ref{thm:dirconv}(b) & \srcD{Degenerate.lean}{133} \\
+\lean{apex\_section\_point} & Theorem~\ref{thm:apex}(a) & \srcD{Degenerate.lean}{226} \\
+\lean{apex\_section\_line} & Theorem~\ref{thm:apex}(b) & \srcD{Degenerate.lean}{252} \\
+\lean{apex\_section\_two\_lines} & Theorem~\ref{thm:apex}(c) & \srcD{Degenerate.lean}{369} \\
+\lean{apex\_two\_lines\_subset} & Theorem~\ref{thm:apex}, remark & \srcD{Degenerate.lean}{443} \\
+\lean{apex\_section\_R3} & Theorem~\ref{thm:apex} in $\R^3$ & \srcD{Degenerate.lean}{470} \\
+\midrule
+\lean{midpoint\_mul} & Lemma~\ref{lem:key} & \srcM{Basic.lean}{24} \\
+\lean{focalSum\_midpoint\_sq} & Lemma~\ref{lem:focsq} & \srcM{Basic.lean}{37} \\
+\lean{focalSum\_midpoints\_eq} & Theorem~\ref{thm:marden}(i) & \srcM{Basic.lean}{59} \\
+\lean{focal\_le\_of\_mul} & Lemma~\ref{lem:reflect} & \srcM{Tangent.lean}{73} \\
+\lean{focal\_lt\_of\_mul} & Lemma~\ref{lem:reflect}, strict & \srcM{Tangent.lean}{100} \\
+\lean{vieta} & \S\ref{sec:mardenstmt} & \srcM{Main.lean}{31} \\
+\lean{exists\_critical\_points} & Lemma~\ref{lem:mardennonvac} & \srcM{Main.lean}{44} \\
+\lean{marden} & Theorem~\ref{thm:marden} & \srcM{Main.lean}{136} \\
+\lean{reflection\_of\_min} & Lemma~\ref{lem:convtan} & \srcM{Unique.lean}{74} \\
+\lean{foci\_of\_reflection} & Lemma~\ref{lem:foci} & \srcM{Unique.lean}{194} \\
+\lean{steiner\_inellipse\_unique} & Theorem~\ref{thm:unique}, weak form & \srcM{Unique.lean}{233} \\
+\lean{nondeg\_of\_midpoints} & Lemma~\ref{lem:mardennonvac} & \srcM{Unique.lean}{322} \\
+\lean{steiner\_unique} & Theorem~\ref{thm:unique} & \srcM{Unique.lean}{354} \\
+\lean{steiner\_inellipse\_iff} & Corollary~\ref{cor:iff} & \srcM{Unique.lean}{373} \\
+\end{longtable}
+
+\section{Conventions}\label{sec:conv}
+
+\paragraph{Ambient space.} Throughout the Dandelin development, $E$ is a real inner product space
+(\lean{[NormedAddCommGroup E] [InnerProductSpace $\R$ E]}), and points are vectors of~$E$. There
+is no finite-dimensionality assumption unless one is stated. Where one is stated, it is
+\lean{[FiniteDimensional $\R$ E]} together with a bound on \lean{Module.finrank $\R$ E}, and we write
+``$E$ finite-dimensional, $\dim E\ge k$''. The intended case is
+\lean{EuclideanSpace $\R$ (Fin 3)}, and results that need a dimension bound are also specialised to
+it.
+
+\paragraph{Cone.} A cone is given by an apex $V$, a unit axis vector~$u$, and $k=\cos\alpha$,
+$s=\sin\alpha$, where $\alpha$ is the half-angle. The hypotheses are $k^2+s^2=1$, $k>0$ and
+(usually) $s>0$, so that $0<\alpha<\pi/2$. One nappe and the double cone are
+\[
+\lean{cone V u k}=\{X : \ip{X-V}{u}=k\nm{X-V}\},\qquad
+\lean{cone2 V u k}=\{X : \ip{X-V}{u}^2=k^2\nm{X-V}^2\}.
+\]
+Both contain~$V$. \lean{mem\_cone2\_iff} proves that $\lean{cone2 V u k}=\lean{cone V u k}\cup\lean{cone V (-u) k}$.
+The axis sphere with parameter $d\in\R$ has centre $C_d=V+du$ and radius $|d|s$, which is the
+distance from $C_d$ to every generator. For $d>0$ it is inscribed in the upper nappe, and for
+$d<0$ in the lower one (Lemma~\ref{lem:inscribed}). All uniqueness statements about spheres in
+the main files are about this one-parameter family $\{(C_d,|d|s)\}$; the main files do not classify arbitrary
+centres and radii satisfying an independent notion of being inscribed. The Layer-15 file adds this
+classification in $\R^3$: a sphere of positive radius that meets every generator of the double
+cone in exactly one point is an axis sphere $(C_d,|d|s)$ with $d\ne0$
+(\lean{Dandelin.Classical.l15\_tangent\_cone\_iff}, Section~\ref{sec:layers}).
+
+\paragraph{Plane.} $\lean{plane p}_0\lean{ n}=\{X:\ip{X-p_0}{n}=0\}$ with $\nm n=1$. We write
+\[
+m=\ip un,\qquad c=\ip{p_0-V}n .
+\]
+So $|m|=\sin\beta$, where $\beta$ is the angle between the plane and the axis, and $c$ is the signed
+distance from $V$ to the plane. The plane misses the apex exactly when $c\neq0$.
+
+\paragraph{Tangency.} A sphere with centre $C$ and radius $r$ is tangent to the plane when
+$|\ip{C-p_0}n|=r$, that is, when the distance from the centre to the plane equals the radius. Its tangency point is then the projection
+$F=C-\ip{C-p_0}n\,n$ of the centre onto the plane. Lemma~\ref{lem:proj} shows that this
+matches the pointwise definition used elsewhere: $F$ is on the sphere, and $X-F\perp F-C$ for
+every $X$ in the plane.
+
+\paragraph{Distances to sets.} Distances to the directrix use Mathlib's \lean{Metric.infDist}.
+Because $\lean{infDist}\,X\,\emptyset=0$, a statement of the form $|XF|=e\cdot\lean{infDist}\,X\,\ell$ could hold
+vacuously if $\ell$ were empty. Lemma~\ref{lem:infdist} rules this out, since it computes the value
+explicitly.
+
+\paragraph{Marden.} Points are complex numbers. $\lean{focalSum f}_1\lean{ f}_2\lean{ z}=|z-f_1|+|z-f_2|$, and the ellipse with foci
+$f_1,f_2$ and major axis $2A$ is $\{z:\lean{focalSum}\ f_1\,f_2\,z=2A\}$.
+
+\section{Dandelin's theorem}\label{sec:dandelin}
+
+\subsection{The cone model}\label{sec:cone}
+
+The classical proof uses one fact about spheres: two tangent segments from a point~$X$ to a
+sphere have the same length, since both have squared length $|XC|^2-r^2$ by Pythagoras
+(\lean{tangent\_lengths\_eq}). The second fact is specific to the cone.
+
+\begin{lemma}\label{lem:conetan}
+If $X\in\lean{cone V u k}$, then $\nm{X-C_d}^2-(ds)^2=(\nm{X-V}-dk)^2$.
+\end{lemma}
+
+So, for $d>0$ and a non-apex point $X$ of the upper nappe, the tangent length from $X$ to the axis sphere with parameter~$d$ is
+$|\nm{X-V}-dk|$, the distance along the generator from $X$ to the circle at distance $dk$ from the
+apex. This is the locus of contact: the intersection of the sphere with the hyperplane $\sigma_d$ of
+Section~\ref{sec:directrix}. When $E$ is finite-dimensional of dimension $N\ge2$ and $d\ne0$, it is a
+sphere of dimension $N-2$ with centre $V+dk^2u$ and radius $|d|sk$; for $N=3$ it is a circle. The
+lower nappe is symmetric. We call $\lean{tangencyPoint V X k d}=V+\frac{dk}{\nm{X-V}}(X-V)$ the point where the generator through $X$ touches the sphere.
+This point lies on the sphere, and the generator is perpendicular to the radius there
+(Lemma~\ref{lem:inscribed}). As a consequence, if a plane through~$X$ touches the sphere at~$F$, then
+$|XF|=|\nm{X-V}-dk|$ (\lean{dist\_tangent\_eq}).
+
+\subsection{The ellipse: existence, uniqueness and both directions}
+
+\begin{theorem}[Dandelin, ellipse]\label{thm:ellipse}
+Let $s<|m|$ and $mc>0$. Then there are $0<d_1<d_2$ and points $F_1,F_2$ such that:
+\begin{enumerate}
+\item[(i)] for every $d\in\R$, the sphere $(C_d,ds)$ is tangent to the plane if and only if
+$d\in\{d_1,d_2\}$;
+\item[(ii)] the two centres lie on opposite sides of the plane;
+\item[(iii)] $F_i$ lies in the plane and is the projection of $C_{d_i}$ onto it;
+\item[(iv)] for every $X$ in the plane, $X\in\lean{cone V u k}$ if and only if
+$|XF_1|+|XF_2|=(d_2-d_1)k$.
+\end{enumerate}
+\end{theorem}
+
+\begin{lstlisting}
+theorem dandelin_exists {V u n p₀ : E} {k s : ℝ} (hu : ‖u‖ = 1) (hn : ‖n‖ = 1)
+    (hks : k ^ 2 + s ^ 2 = 1) (hk : 0 < k) (hs : 0 < s) (hm : s < |⟪u, n⟫|)
+    (hc : 0 < ⟪u, n⟫ * ⟪p₀ - V, n⟫) :
+    ∃ d₁ d₂ : ℝ, ∃ F₁ F₂ : E, 0 < d₁ ∧ d₁ < d₂ ∧
+      (∀ d : ℝ, |⟪(V + d • u) - p₀, n⟫| = d * s ↔ d = d₁ ∨ d = d₂) ∧
+      ⟪(V + d₁ • u) - p₀, n⟫ * ⟪(V + d₂ • u) - p₀, n⟫ < 0 ∧
+      F₁ ∈ plane p₀ n ∧ F₂ ∈ plane p₀ n ∧
+      F₁ = (V + d₁ • u) - ⟪(V + d₁ • u) - p₀, n⟫ • n ∧
+      F₂ = (V + d₂ • u) - ⟪(V + d₂ • u) - p₀, n⟫ • n ∧
+      ∀ X ∈ plane p₀ n, (X ∈ cone V u k ↔ ‖X - F₁‖ + ‖X - F₂‖ = (d₂ - d₁) * k)
+\end{lstlisting}
+
+The two hypotheses concern only the cone and the plane. The first, $s<|m|$, says that the plane
+is less steep than a generator. The second, $mc>0$, says that the plane misses the apex and is
+on the side of the nappe \lean{cone V u k}. Theorem~\ref{thm:regime} shows that together they
+characterise the ellipse regime.
+
+\begin{proof}[Proof sketch]
+Flip $n$ if necessary so that $m>0$ and $c>0$. The tangency condition $|c-dm|=ds$ is piecewise linear
+in~$d$, and its solutions are $d_1=c/(m+s)$ and $d_2=c/(m-s)$ (\lean{tangent\_iff}). Take
+$F_i$ to be the projections of the centres. For the forward direction of~(iv), let $X$ be a point
+of the section and write $t=\nm{X-V}$. By Lemma~\ref{lem:conetan}, $|XF_1|+|XF_2|=|t-d_1k|+|t-d_2k|$.
+This equals $(d_2-d_1)k$ if and only if $d_1k\le t\le d_2k$. Classically this ``betweenness'' is read off a
+picture. Here it is proved (\lean{between\_of\_gram}). Apply the Cauchy--Schwarz inequality to the
+components of $X-V$ and of $n$ orthogonal to~$u$. Combined with the tangency equations
+$\ip{X-V}n=d_1(m+s)=d_2(m-s)$, this gives $d_1k\le t\le d_2k$.
+For the converse, let $A=|XF_1|$, $B=|XF_2|$ and $p=\ip{X-V}u$. For $X$ in the plane,
+Pythagoras gives $A^2=t^2-2d_1p+d_1^2k^2$, and similarly for $B$ with~$d_2$. Subtract the two
+equations and use $A+B=(d_2-d_1)k$. This gives $kA=p-d_1k^2$, and hence $p>0$ and
+$(p-kt)(p+kt)=0$. So $p=kt$, which is the cone equation (\lean{converse\_alg},
+\lean{dandelin\_converse}).
+\end{proof}
+
+\begin{remark}[Methods]\label{rem:cos}
+An earlier draft of the specification stated the bounded-section hypothesis as
+$|\ip nu|>\cos\alpha$. Before the existence theorem was formalised, a numerical experiment on 2000 random
+cone--plane pairs (\texttt{code/check\_phase2.py}) compared the prediction ``every generator of
+the nappe meets the plane'' with the candidate inequality. It showed that the correct condition is
+$|\ip nu|>\sin\alpha$. A generator direction $w=ku+se$ with $e\perp u$ a unit vector has
+$\ip wn$ ranging over $[km-s\sqrt{1-m^2},\,km+s\sqrt{1-m^2}]$, and this interval avoids $0$
+exactly when $m^2>s^2$. With the $\cos\alpha$ hypothesis, the existence statement is false for
+$\alpha>\pi/4$, where it admits parabolic and hyperbolic sections. A failed proof attempt would
+not have revealed this as directly.
+\end{remark}
+
+\subsection{The hyperbola}
+
+In the hyperbola regime the plane cuts both nappes, so the statement has to be about the double
+cone. Take one sphere in each nappe, that is, axis spheres with parameters of opposite signs.
+
+\begin{theorem}[Dandelin, hyperbola]\label{thm:hyperbola}
+Let $|m|<s$ and $c\neq0$. Then $e:=\sqrt{1-m^2}/k>1$, and there are $d_2<0<d_1$ and points
+$F_1,F_2$ such that:
+\begin{enumerate}
+\item[(i)] for every $d\in\R$, the sphere $(C_d,|d|s)$ is tangent to the plane if and only if $d\in\{d_1,d_2\}$, and
+$F_i$ is the projection of $C_{d_i}$ onto the plane;
+\item[(ii)] for every $X$ in the cutting plane, $|XF_2|-|XF_1|=D$ if $X$ is on the upper nappe, and
+$|XF_1|-|XF_2|=D$ if $X$ is on the lower nappe, where $D=(d_1-d_2)k$;
+\item[(iii)] for every $X$ in the plane, $X\in\lean{cone2 V u k}$ if and only if $\bigl||XF_1|-|XF_2|\bigr|=D$;
+\item[(iv)] every $X$ of the section satisfies $|XF_i|=e\cdot\mathrm{dist}(X,\ell_i)$ for
+$i=1,2$, where $\ell_i$ is the directrix of Section~\ref{sec:directrix}.
+\end{enumerate}
+\end{theorem}
+
+This is \lean{dandelin\_hyperbola}. Its orientation step flips $n$ so that $c>0$, and then
+$d_1=c/(m+s)$ and $d_2=c/(m-s)$ as before. The closed form is
+$d_1-d_2=2sc/(s^2-m^2)$ (\lean{hyp\_param\_sub}). The proof of~(ii) needs the analogue of
+betweenness: a point of the upper nappe in the plane lies beyond the upper circle of contact,
+$d_1k\le\nm{X-V}$ (\lean{hyp\_between}). The proof again uses Cauchy--Schwarz. The lower-nappe identity follows from
+the upper one under the symmetry $u\mapsto-u$, $d_i\mapsto-d_{3-i}$.
+
+For the converse (\lean{hyp\_converse}), write $\bigl||XF_1|-|XF_2|\bigr|=D$ as
+$|XF_1|-|XF_2|=\varepsilon D$ with $\varepsilon=\pm1$. The same subtraction as in the ellipse case
+gives $\varepsilon kA=d_1k^2-p$, and then $p^2=k^2t^2$, which is the equation of \lean{cone2}. The
+sign~$\varepsilon$ tells us which nappe $X$ lies on, so no positivity argument is needed. The
+converse cannot be stated for one nappe. Each branch of the hyperbola lies on its own nappe, and the
+absolute value is necessary.
+
+\subsection{Focus and directrix; the parabola}\label{sec:directrix}
+
+Let $\sigma_d=\{Y:\ip{Y-V}u=dk^2\}$ be the plane perpendicular to the axis at height~$dk^2$.
+The circle of contact of the sphere with parameter~$d$ lies in~$\sigma_d$
+(\lean{tangencyPoint\_mem\_axisPlane}). The \emph{directrix} is
+$\ell_d=\lean{directrix V u n p}_0\,(dk^2)=\lean{plane p}_0\lean{ n}\cap\sigma_d$. The eccentricity is
+\[
+e=\lean{ecc}\ m\ k=\frac{\sqrt{1-m^2}}{k}=\frac{\cos\beta}{\cos\alpha}.
+\]
+
+\begin{lemma}\label{lem:infdist}
+If $m^2<1$ and $X$ lies in the plane, then
+$\lean{infDist}\,X\,\ell_d=|\ip{X-V}u-dk^2|/\sqrt{1-m^2}$.
+\end{lemma}
+
+The proof exhibits the nearest point $X-\frac{\delta}{1-m^2}(u-mn)$ explicitly, where
+$\delta=\ip{X-V}u-dk^2$, and uses Cauchy--Schwarz against $u-mn$ for the lower bound. It holds
+in every inner product space. In particular $\ell_d$ is non-empty whenever the plane is.
+
+\begin{theorem}[focus--directrix]\label{thm:directrix}
+Suppose $m^2<1$, $X$ lies in the plane and on \lean{cone V u k}, and a sphere $(C_d,ds)$ touches a
+plane through $X$ at~$F$. Then $|XF|=e\cdot\lean{infDist}\,X\,\ell_d$. Moreover $e<1$ iff $s<|m|$,
+$e=1$ if $s=|m|$, and $e>1$ iff $|m|<s$. In the ellipse regime (the hypotheses of
+Theorem~\ref{thm:ellipse} together with $m^2<1$) both foci satisfy this relation with their own
+directrices.
+\end{theorem}
+
+The proof composes two elementary facts. The first is $|XF|=\mathrm{dist}(X,\sigma_d)/\cos\alpha$
+(\lean{focal\_dist\_eq\_infDist\_axisPlane}): the tangent length along the generator is $1/\cos\alpha$
+times its axial component. The second is
+$\mathrm{dist}(X,\sigma_d)=\cos\beta\cdot\mathrm{dist}(X,\ell_d)$ for $X$ in the plane
+(\lean{infDist\_axisPlane\_eq\_mul}). The hypothesis $m^2<1$ excludes the plane perpendicular to
+the axis. There the section is a circle and $\ell_d$ is empty.
+
+\begin{theorem}[parabola]\label{thm:parabola}
+Let $s=|m|$ and $mc>0$. Then $e=1$, and there is exactly one $d>0$ for which $(C_d,ds)$ is tangent to the plane.
+Its tangency point~$F$ satisfies $|XF|=\lean{infDist}\,X\,\ell_d$ for every $X$ in the section
+(\lean{directrix\_parabola}).
+\end{theorem}
+
+The converse of the focus--directrix property also holds, and it turns out to be a statement
+about the double cone. Let $F$ be the tangency point of $(C_d,|d|s)$ with the plane and let $X$ be
+any point of the plane. Combining Lemma~\ref{lem:infdist} with Pythagoras (\lean{focal\_sq}) gives
+\[
+(k|XF|)^2-\bigl(\ip{X-V}u-dk^2\bigr)^2=k^2\nm{X-V}^2-\ip{X-V}u^2 .
+\]
+So the relation $|XF|=e\,\mathrm{dist}(X,\ell_d)$ restricted to the plane \emph{is} the equation
+of \lean{cone2}.
+
+\begin{theorem}[converse]\label{thm:dirconv}
+If $m^2<1$, $X$ is in the plane, the plane touches $(C_d,|d|s)$ at $F$ and
+$|XF|=e\cdot\lean{infDist}\,X\,\ell_d$, then $X\in\lean{cone2 V u k}$
+(\lean{directrix\_converse}; the formal lemma needs only the pointwise conditions $|FC_d|=|d|s$ and
+$\ip{X-F}{F-C_d}=0$, not tangency of the whole plane, and does not assume $s>0$). Moreover:
+\begin{enumerate}
+\item[(a)] in the ellipse and parabola regimes, the section equals the one-nappe locus: $X\in\lean{cone V u k}$ if and
+only if the relation holds, for each focus (\lean{directrix\_iff\_ellipse},
+\lean{directrix\_iff\_parabola});
+\item[(b)] in the hyperbola regime, $X\in\lean{cone2 V u k}$ if and only if the relation holds, for each
+focus. The one-nappe version is false: there is a point $Y$ of the plane that satisfies the relation for
+\emph{both} foci but is not on \lean{cone V u k}, and there is another that is not on \lean{cone V (-u) k}
+(\lean{directrix\_iff\_hyperbola}).
+\end{enumerate}
+\end{theorem}
+
+The counterexamples in~(b) are proved in Lean, not merely observed. The witnesses are the section
+points on the other nappe constructed in Theorem~\ref{thm:regime}(c). They are not the apex,
+because $c\ne0$ and a point lying on both nappes must be the apex (\lean{eq\_of\_mem\_both\_nappes}).
+
+\subsection{Regimes and non-emptiness}\label{sec:regime}
+
+So far the conditions $s<|m|$, $s=|m|$ and $|m|<s$ have only been hypotheses. The following
+theorem shows that they have the intended geometric meaning. All of its parts assume the standing
+hypotheses on $u,n,k,s$ and $c\ne0$.
+
+\begin{theorem}[regimes]\label{thm:regime}
+\leavevmode
+\begin{enumerate}
+\item[(a)] If $s\le|m|$, the section of the double cone lies in a single nappe: in
+\lean{cone V u k} if $mc>0$ and in \lean{cone V (-u) k} if $mc<0$ (\lean{one\_nappe}; any~$E$).
+\item[(b)] If $E$ is finite-dimensional and $\dim E\ge3$, then $s<|m|$ holds iff $\lean{plane}\cap\lean{cone2}$ is bounded
+(\lean{bounded\_iff}), iff it lies in one nappe and is bounded (\lean{ellipse\_regime\_iff}).
+The forward direction holds in any~$E$ (\lean{ellipse\_regime}, via \lean{section\_bounded}).
+\item[(c)] $|m|<s$ holds iff the plane meets both nappes, \lean{cone V u k} and
+\lean{cone V (-u) k} (\lean{hyperbola\_regime\_iff}; any~$E$).
+\item[(d)] If $E$ is finite-dimensional, $\dim E\ge2$ and $s<|m|$, $mc>0$, then the section is non-empty (\lean{ellipse\_nonempty}). The witness is
+the intersection of the plane with a generator of the nappe.
+\item[(e)] If $E$ is finite-dimensional, $\dim E\ge3$ and $|m|=s$, the section lies in one nappe and is unbounded
+(\lean{parabola\_regime}), and in particular it is non-empty.
+\end{enumerate}
+\end{theorem}
+
+The proofs give explicit geometric witnesses. (This is not a claim about computational content:
+like most of Mathlib, the developments use \lean{Classical.choice}.) A generator $V+t(ku+se)$ with $e\perp u$ a unit vector meets the plane at
+$t=c/\ip{ku+se}n$, and the sign of $t$ decides the nappe (\lean{gen\_point}). For the
+hyperbola, the directions $e=\pm q/\nm q$ with $q=n-mu$ give parameters of opposite signs. For
+unboundedness, choose a unit $f\perp u,n$ (this is where finite dimension and $\dim E\ge3$ are used,
+\lean{exists\_unit\_orth}) and tilt $e$ in the $(q,f)$-plane so that $\ip{ku+se}n$ becomes an
+arbitrarily small nonzero number (\lean{section\_unbounded}).
+
+The dimension hypotheses are necessary. If $\dim E=1$, the cone is $\{V\}$, so the section is
+empty. If $\dim E=2$, a ``plane'' is a line and the double cone is a pair of lines through~$V$, so
+every section is bounded, even when $|m|\le s$. These two remarks are elementary and are not
+formalised. \lean{regime\_R3} bundles (b), (c) and~(d) for \lean{EuclideanSpace $\R$ (Fin 3)}.
+
+\subsection{Planes through the apex}
+
+\begin{theorem}\label{thm:apex}
+Let $c=0$ and put $a=u-mn$ (\lean{apexDir u n}).
+\begin{enumerate}
+\item[(a)] If $s<|m|$, then $\lean{plane}\cap\lean{cone2}=\{V\}$ (any $E$).
+\item[(b)] If $|m|=s$, then $a\ne0$ and the section is the line $\{V+ta\}$ (any $E$).
+\item[(c)] If $|m|<s$ and $\dim E=3$, then there are a unit vector $f\perp u,n$ and $\rho>0$ such that the section is
+the union of the two lines $\{V+t(a\pm\rho f)\}$, and these lines meet only at~$V$.
+\end{enumerate}
+\end{theorem}
+
+Here $\rho=\sqrt{(1-m^2)(s^2-m^2)}/k$ (\lean{apexRho}). In case~(b), equality in Cauchy--Schwarz
+forces $X-V$ to be parallel to~$a$. In case~(c), $\dim E=3$ is used to decompose every
+$w\perp n$ in the orthogonal pair $a,f$ (\lean{decomp\_of\_finrank\_le\_three}). Four nonzero
+pairwise orthogonal vectors would be linearly independent. Then the cone equation factors as
+$k^2(\beta-\alpha\rho)(\beta+\alpha\rho)=0$, where $\alpha$ and $\beta$ are the coordinates of $w$
+along $a$ and~$f$. If $E$ is finite-dimensional with $N=\dim E>3$, the section is not two lines but
+a quadric cone in the $(N-1)$-dimensional cutting hyperplane, of locus dimension $N-2$. (For
+example, in $\R^4$ with $u=e_4$, $n=e_1$ and $k=s=1/\sqrt2$, the section is
+$\{x_1=0,\ x_4^2=x_2^2+x_3^2\}$, a two-dimensional cone in a three-dimensional hyperplane.) This
+description is informal. Only the containment of the two lines in the section is formalised
+(\lean{apex\_two\_lines\_subset}, for $E$ finite-dimensional with $\dim E\ge3$).
+
+\section{Marden's theorem}\label{sec:marden}
+
+\subsection{Statement}\label{sec:mardenstmt}
+
+Let $\lean{cubic a b c}=(X-a)(X-b)(X-c)\in\C[X]$. We state the critical points through Mathlib's
+formal derivative. The hypothesis is
+\[
+\lean{derivative (cubic a b c)} = 3(X-z_1)(X-z_2),
+\]
+that is, $z_1,z_2$ are the roots of $p'$ counted with multiplicity. \lean{vieta} derives
+$z_1+z_2=\tfrac23(a+b+c)$ and $z_1z_2=\tfrac13(ab+bc+ca)$ from it. Non-collinearity is stated as
+$\operatorname{Im}\frac{c-a}{b-a}\ne0$.
+
+\begin{theorem}[Marden]\label{thm:marden}
+Let $a,b,c$ be distinct and non-collinear, and let $z_1,z_2$ be as above. Put
+$2A=\lean{focalSum}\ z_1\,z_2\,\frac{a+b}2$. Then:
+\begin{enumerate}
+\item[(i)] all three midpoints lie on the ellipse $\{z:|z-z_1|+|z-z_2|=2A\}$;
+\item[(ii)] for each side $xy$ and every real $t\ne0$,
+$2A<\lean{focalSum}\ z_1\,z_2\,\bigl(\frac{x+y}2+t(y-x)\bigr)$;
+\item[(iii)] $\frac{z_1+z_2}2=\frac{a+b+c}3$.
+\end{enumerate}
+\end{theorem}
+
+\begin{lstlisting}
+theorem marden {a b c z₁ z₂ : ℂ}
+    (hder : derivative (cubic a b c) = C 3 * (X - C z₁) * (X - C z₂))
+    (hab : a ≠ b) (hbc : b ≠ c) (hca : c ≠ a)
+    (hnc : ((c - a) / (b - a)).im ≠ 0) :
+    let A := focalSum z₁ z₂ ((a + b) / 2) / 2
+    (focalSum z₁ z₂ ((a + b) / 2) = 2 * A ∧
+      focalSum z₁ z₂ ((b + c) / 2) = 2 * A ∧
+      focalSum z₁ z₂ ((c + a) / 2) = 2 * A) ∧
+    (∀ t : ℝ, t ≠ 0 → 2 * A < focalSum z₁ z₂ ((a + b) / 2 + t * (b - a))) ∧
+    (∀ t : ℝ, t ≠ 0 → 2 * A < focalSum z₁ z₂ ((b + c) / 2 + t * (c - b))) ∧
+    (∀ t : ℝ, t ≠ 0 → 2 * A < focalSum z₁ z₂ ((c + a) / 2 + t * (a - c))) ∧
+    (z₁ + z₂) / 2 = (a + b + c) / 3
+\end{lstlisting}
+
+The distinctness hypotheses follow from \lean{hnc}. We keep them for readability.
+
+\subsection{Why metric tangency is tangency}\label{sec:metrictan}
+
+Condition~(ii) says that the side line through the midpoint $m$ meets the closed region
+$K=\{z:\lean{focalSum}\ z_1\,z_2\,z\le2A\}$ only at~$m$. The ellipse is non-degenerate:
+$2A>|z_1-z_2|$ by Lemma~\ref{lem:mardennonvac}. So $K$ is a compact, strictly convex set with
+non-empty interior, and its boundary is a smooth curve. For such a set, a line through a boundary
+point~$m$ that is not tangent at~$m$ enters the interior of~$K$ on one side of~$m$, so it contains
+points with focal sum $<2A$. The tangent line at~$m$ supports~$K$ and, by strict convexity, meets
+$K$ only at~$m$. Hence~(ii) is equivalent to ``the side line is tangent to the ellipse at the
+midpoint''. For \emph{inscribed}, argue as follows. By~(ii), $K$ lies in one of the two closed
+half-planes bounded by each side line. The midpoint of another side lies in~$K$ and strictly
+inside the triangle-facing half-plane, so that is the half-plane containing~$K$. Intersecting the
+three half-planes, $K$ lies in the closed triangle. The tangency equivalence is informal,
+standard convex geometry. We have not formalised it, because Mathlib has no notion of an
+ellipse or of its tangent lines. The containment argument was informal in version~1. The
+Layer-15 file now proves that the Marden ellipse lies in the closed triangle
+(\lean{Marden.Classical.l15\_marden\_steiner}). It also proves that if a side line meets the curve
+$\{\lean{focalSum}=2A\}$ only at the midpoint, then~(ii) holds for that side
+(\lean{Marden.Classical.l15\_strict\_of\_inter}); see Section~\ref{sec:layers}. The formal
+\emph{statement} avoids derivatives and angles entirely; the uniqueness \emph{proof}
+(Section~\ref{sec:unique}) does use a derivative. Section~\ref{sec:unique} also shows that the
+weaker ``supporting line'' condition ($\le$ instead of $<$) already determines the ellipse.
+
+\subsection{The key identity}
+
+\begin{lemma}\label{lem:key}
+Let $z_1,z_2$ be the critical points as in Section~\ref{sec:mardenstmt} (so the Vieta relations
+hold), and let $m=\frac{a+b}2$. Then $(m-z_1)(m-z_2)=\frac13p'(m)=-\frac{(b-a)^2}{12}$.
+\end{lemma}
+\begin{proof}
+In $p'(m)=(m-b)(m-c)+(m-a)(m-c)+(m-a)(m-b)$, the first two terms cancel because $m-a=-(m-b)$.
+The third term is $-(b-a)^2/4$. Formally, the lemma is a single \lean{linear\_combination} of the
+two Vieta relations.
+\end{proof}
+
+So $(m-z_1)(m-z_2)/(b-a)^2=-1/12$ is a \emph{negative real}. Geometrically, the side direction
+$d=b-a$ makes equal angles with $m-z_1$ and $z_2-m$, which is the reflection law of the ellipse at~$m$.
+The formal argument turns this into an inequality.
+
+\begin{lemma}\label{lem:reflect}
+If $d\ne0$ and $uv=-d^2/12$, then $\nm u+\nm v\le\nm{u+td}+\nm{v+td}$ for every real $t$. The
+inequality is strict for $t\ne0$ when $\operatorname{Im}(u/d)\ne0$.
+\end{lemma}
+\begin{proof}
+Write $u=wd$. The hypothesis forces $v=-\mu\bar w d$ with $\mu=1/(12|w|^2)>0$. Hence
+$\nm{u+td}+\nm{v+td}=|d|\,(|w+t|+|\mu w-t|)\ge|d|(1+\mu)|w|$ by the triangle inequality, with
+equality at $t=0$. When $\operatorname{Im}w\ne0$ and $t\ne0$, the two summands are not on the same ray,
+and Mathlib's strict triangle inequality (\lean{norm\_add\_lt\_of\_not\_sameRay}) applies.
+\end{proof}
+
+Non-collinearity implies that the focus is off the side line, $\operatorname{Im}\frac{m-z_1}{b-a}\ne0$
+(\lean{focus\_off\_side}). This gives~(ii) for the side $ab$. The other sides follow by cyclic
+relabelling.
+
+\begin{lemma}\label{lem:focsq}
+With $z_1,z_2$ the critical points as in Section~\ref{sec:mardenstmt},
+$\bigl(\lean{focalSum}\ z_1\,z_2\,\frac{a+b}2\bigr)^{2}=\frac12|z_1-z_2|^2+\frac19\bigl(|a-b|^2+|b-c|^2+|c-a|^2\bigr)$.
+\end{lemma}
+
+The proof combines the parallelogram law with $|m-z_1|\,|m-z_2|=|b-a|^2/12$. The right-hand side
+is symmetric in $a,b,c$, so all three midpoints have the same focal sum. This is~(i). It needs only the
+Vieta relations, not non-collinearity. Part~(iii) is Vieta.
+
+\subsection{Uniqueness}\label{sec:unique}
+
+\begin{theorem}[uniqueness]\label{thm:unique}
+Let $a,b,c,z_1,z_2$ be as in Theorem~\ref{thm:marden}, and let $f_1,f_2\in\C$ and $A'\in\R$ be
+arbitrary. Suppose that the three midpoints satisfy $\lean{focalSum}\ f_1\,f_2=2A'$ and that
+each side line meets $\{\lean{focalSum}\ f_1\,f_2\le2A'\}$ only at its midpoint. Then
+$\{f_1,f_2\}=\{z_1,z_2\}$ and $A'=A$ (\lean{steiner\_unique}). The same conclusion holds if the
+strict inequality is weakened to $2A'\le\lean{focalSum}$ along each side (the side is a
+supporting line) and the ellipse is assumed non-degenerate, $|f_1-f_2|<2A'$
+(\lean{steiner\_inellipse\_unique}).
+\end{theorem}
+
+The non-degeneracy premise of the weak form is redundant: it already follows from the three
+midpoint equalities and non-collinearity (\lean{nondeg\_of\_midpoints},
+Lemma~\ref{lem:mardennonvac}), and \lean{steiner\_unique} discharges it in exactly this way. It
+remains an explicit premise of \lean{steiner\_inellipse\_unique} only as a matter of how that
+statement is phrased.
+So weakening $<$ to $\le$ costs no additional geometric restriction.
+
+\begin{corollary}\label{cor:iff}
+For a non-degenerate triangle, a focal ellipse passes through the three midpoints with each side
+touching it only there if and only if its foci are the critical points of~$p$ and its major axis is
+$2A$ (\lean{steiner\_inellipse\_iff}).
+\end{corollary}
+
+The route has three steps.
+
+\begin{lemma}[converse tangency]\label{lem:convtan}
+If $d\ne0$, $\nm{u-v}<\nm u+\nm v$, and $t=0$ minimises $t\mapsto\nm{u+td}+\nm{v+td}$, then
+$uv=-\lambda d^2$ with $\lambda=\nm u\nm v/\nm d^2\ge0$.
+\end{lemma}
+
+The proof sets the derivative at the minimum to zero (\lean{IsLocalMin.hasDerivAt\_eq\_zero}).
+A factorisation then leaves two cases. One is the reflection law. The other puts $u$ and $-v$ on
+the same ray, which contradicts non-degeneracy.
+
+\begin{lemma}\label{lem:foci}
+Let $a,b,c$ be distinct and non-collinear, and let $m_i,d_i$ be their cyclic side midpoints and
+directions ($m_1=\frac{a+b}2$, $d_1=b-a$, and cyclically). Suppose the reflection law $(m_i-f_1)(m_i-f_2)=-\lambda_i d_i^2$ holds at all three midpoints, with
+$\lambda_i\ge0$, and the three focal sums are equal. Then
+$f_1+f_2=\frac23(a+b+c)$, $f_1f_2=\frac13(ab+bc+ca)$ and
+$\lambda_1=\lambda_2=\lambda_3=\frac1{12}$ (\lean{foci\_of\_reflection}).
+\end{lemma}
+
+Equal focal sums are genuinely needed: the reflection laws with $\lambda_i\ge0$ alone do not
+determine the foci. For example, let $a=0$, $b=4$, $c=1+3i$ and let $f_1,f_2$ be the roots of
+$z^2-(3+4t+2i)z+(\frac12+10t+4i)$ for real~$t$. Then all three reflection equations hold with
+$\lambda_1=\frac3{32}-\frac t8$, $\lambda_2=\frac19-\frac t3$, $\lambda_3=t$, which are
+nonnegative for $0\le t\le\frac13$. Only $t=\frac1{12}$ gives equal midpoint focal sums and the
+Marden foci (by the lemma, since then $\lambda_i=\frac1{12}$). The reflection identities and the nonnegativity interval are checked exactly in \texttt{code/check\_family.py}; uniqueness of the equal-sum member follows from the preceding lemma. Squaring through
+$\nm u\nm v=\lambda\nm d^2$ turns each equality of focal sums into a real linear condition. An
+explicit \lean{linear\_combination} certificate shows that it forces $\lambda_i=\lambda_j$
+(\lean{lam\_eq\_core}). The certificate multiplies $(\lambda_1-\lambda_2)$ by the square of a quantity
+that is nonzero exactly under non-collinearity. Once all the $\lambda_i$ equal $\lambda$, the combination
+$\sum_{\mathrm{cyc}}(m_2-m_3)\bigl[(m_1-f_1)(m_1-f_2)+\lambda d_1^2\bigr]$ is independent of
+$f_1,f_2$ and equals $(a-b)(a-c)(b-c)(12\lambda-1)/8$ (\lean{lam\_twelfth\_core}). So
+$\lambda=\frac1{12}$ is a consequence, not an assumption. The sum and product of the foci then follow
+linearly, and $(f_1-z_1)(f_1-z_2)=0$ identifies them.
+
+\paragraph{Scope of uniqueness.} The competitors are all sets
+$\{z:|z-f_1|+|z-f_2|=2A'\}$ with arbitrary $f_1,f_2,A'$. Every non-degenerate ellipse in the plane,
+including every circle, has this form, and the degenerate cases are excluded automatically
+(Lemma~\ref{lem:mardennonvac}). The classical statement that the Steiner inellipse is the unique
+non-degenerate \emph{conic} tangent to the sides at their midpoints is not formalised. Stating it would require a
+defined notion of non-degenerate conic and of tangency to it, and a bridge showing that a conic of elliptic type has a focal
+representation. Mathlib has neither.
+
+\section{Does the statement mean what it says?}\label{sec:correct}
+
+A formal theorem can be true for the wrong reason: its hypotheses may be unsatisfiable, or its
+definitions may not mean what the reader thinks. The lemmas below address the points where we
+see a risk.
+
+\begin{lemma}[inscribed spheres]\label{lem:inscribed}
+Let $X\in\lean{cone V u k}$ with $X\ne V$, and let $ds\ge0$. Then $T=\lean{tangencyPoint V X k d}$ lies on
+the sphere $(C_d,ds)$, and $X-T\perp T-C_d$. Moreover no point of the cone lies in the open ball:
+$(ds)^2\le\nm{X-C_d}^2$.
+\end{lemma}
+
+So an axis sphere with $d>0$ really is inscribed in the cone. It touches every generator and never
+crosses the surface. The condition ``tangent to the plane'' in Theorems~\ref{thm:ellipse}
+and~\ref{thm:hyperbola} is the distance condition $|\ip{C-p_0}n|=r$. The next lemma connects it
+to the pointwise notion.
+
+\begin{lemma}\label{lem:proj}
+If $F=C-\ip{C-p_0}n\,n$ and $|\ip{C-p_0}n|=r$, then $F$ lies in the plane, $\nm{F-C}=r$, and
+$X-F\perp F-C$ for every $X$ in the plane (\lean{tangent\_of\_proj}, with \lean{proj\_mem\_plane}).
+\end{lemma}
+
+\begin{remark}\label{rem:mathlibtangent}
+Mathlib has a notion of tangency, \lean{EuclideanGeometry.Sphere.IsTangentAt}, for a sphere and
+an affine subspace. \lean{dist\_eq\_of\_isTangentAt} proves the equal-tangents property in that
+language. \lean{dandelin\_of\_between\_isTangentAt} is a version of the ellipse theorem that uses
+Mathlib spheres and \lean{IsTangentAt}, with betweenness as a hypothesis. The existence theorems
+of Section~\ref{sec:dandelin} use the projection form instead. In the main files we have not
+restated them with \lean{IsTangentAt}. The Layer-14 file restates them with Mathlib spheres,
+\lean{IsTangent} and \lean{IsTangentAt} (Section~\ref{sec:layers}).
+\end{remark}
+
+\paragraph{Bridge lemmas.} The module \path{Dandelin/Bridge.lean} ties the definitions to the
+classical notions. For $k=\cos\alpha$ with $0\le\alpha\le\pi$ and $X\ne V$,
+\lean{mem\_cone\_iff\_angle} says that $X\in\lean{cone V u k}$ iff the generator $VX$ makes angle
+$\alpha$ with~$u$, and \lean{mem\_cone2\_iff\_angle} gives angle $\alpha$ or $\pi-\alpha$ for
+\lean{cone2}. \lean{generator\_mem\_cone} and \lean{exists\_generator\_of\_mem\_cone} give the
+parametric form $V+t\,w$ with $t\ge0$, $\nm w=1$, $\ip wu=k$. \lean{mem\_plane\_iff} is the normal
+equation, and \lean{plane\_eq\_mk'} identifies \lean{plane} with Mathlib's affine subspace through
+$p_0$ with direction $n^\perp$. \lean{tangencyPoint\_mem\_line} and
+\lean{isTangentAt\_tangencyPoint} show that the generator line $VX$ is tangent, in the sense of
+\lean{IsTangentAt}, to the axis sphere at \lean{tangencyPoint}. \lean{isTangentAt\_focus₁} and
+\lean{isTangentAt\_focus₂} show that the two Dandelin spheres touch the cutting plane, in the same
+sense, exactly at \lean{focus₁} and \lean{focus₂}.
+
+\paragraph{Non-vacuity.} The hypotheses of Theorems~\ref{thm:ellipse} and~\ref{thm:hyperbola}
+are satisfiable in the intended three-dimensional setting. Non-emptiness is established with the following scopes. Theorem~\ref{thm:regime}(c) proves that the
+hyperbola section has points on both nappes (in any~$E$), (d) that the ellipse section is
+non-empty when $E$ is finite-dimensional with $\dim E\ge2$, and~(e) the same for the parabola
+when $E$ is finite-dimensional with $\dim E\ge3$. For non-circular sections ($m^2<1$) the
+directrices are non-empty by Lemma~\ref{lem:infdist}. In version~2 the Layer-14 witness theorems
+also prove the hypotheses on explicit configurations in $\R^3$ and $\C$ (Section~\ref{sec:layers}). For Marden:
+
+\begin{lemma}\label{lem:mardennonvac}
+For all $a,b,c\in\C$ there are $z_1,z_2$ with $p'=3(X-z_1)(X-z_2)$; this is
+\lean{exists\_critical\_points}. If $a,b,c$ are non-collinear and the three midpoints have
+common focal sum $2A'$ with respect to some $f_1,f_2$, then $|f_1-f_2|<2A'$
+(\lean{nondeg\_of\_midpoints}).
+\end{lemma}
+
+The second part applies in particular to $f_i=z_i$, so the Marden ellipse is not degenerate. If it
+were a segment or a point, the three midpoints would lie on one line, and then so would $a,b,c$.
+
+\paragraph{Sharpness.} The counterexample of Theorem~\ref{thm:dirconv}(b) is a proved statement.
+It shows that the hyperbola converse cannot be stated for a single nappe.
+
+The author has checked each statement in Table~\ref{tab:thms} against its informal counterpart by hand.
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Mathlib.} At tag \texttt{v4.33.1}, \texttt{docs/1000.yaml} lists ``Dandelin's theorem''
+and ``Marden's theorem'' with no declaration or author, and the same holds on the master branch as
+of 30 September 2026~\cite{Mathlib1000}. A case-insensitive search of the Mathlib sources at that
+tag for \texttt{dandelin}, \texttt{marden}, \texttt{inellipse}, \texttt{ellipse} and ``conic
+section'' found nothing. Mathlib does contain the Gauss--Lucas theorem
+(\texttt{Mathlib/Analysis/Complex/Polynomial/GaussLucas.lean}), which also locates critical
+points, and the sphere tangency notion mentioned in Remark~\ref{rem:mathlibtangent}.
+
+\paragraph{Isabelle.} The Archive of Formal Proofs has an entry by Eberl on the geometry of the
+critical points of complex polynomials~\cite{EberlAFP}. It covers the Gauss--Lucas and Jensen
+theorems. Its bibliography cites Marden's book, but its theory file does not mention Marden's theorem or ellipses. We
+searched the titles and abstracts of all 1029 entries in the AFP metadata (mirror repository, commit
+\texttt{7de2cdd}, 29 September 2026) for Marden, Dandelin, inellipse, ellipse and conic section, and found no
+match. This search did not cover the full text of every theory.
+
+\paragraph{HOL Light.} A search of the HOL~Light repository~\cite{HOLLight} (commit
+\texttt{cba9198}, 16 September 2026) for \texttt{marden}, \texttt{dandelin}, \texttt{inellipse}
+and \texttt{ellipse} returned no matches. Its \texttt{100/pascal.ml} treats conics, but only
+through Pascal's theorem~\cite{BaldPascal}.
+
+\paragraph{Other sources.} The development reports record GitHub searches: code search for
+\texttt{Dandelin}, \texttt{Marden}, \texttt{inellipse} and ``Steiner ellipse'' restricted to Lean,
+repository search, and a search of Mathlib issues. The only relevant hit was Mathlib issue \#6091,
+a wish-list that mentions Marden's theorem. Web searches for formalisations in Lean, Isabelle, Rocq
+and HOL found only informal expositions. One search-engine snippet attached to a figure page
+on ResearchGate juxtaposes ``the configuration of Marden's theorem'' with the sentence ``We also
+provide a machine-checked Lean~4 formalization of the main result''.\footnote{Figure page
+\url{https://www.researchgate.net/figure/A-typical-trajectory-of-the-vector-field-in-4-and-the-level-sets-of-the-Lyapunov_fig1_323846042}.
+Its title concerns a vector field and a Lyapunov function; fetching it returned HTTP~403. We record it as an unresolved lead, not as evidence of prior work or of its absence.}
+The page was not accessible to us, and we could not determine what that formalisation concerns.
+% TODO(Josh): check the ResearchGate snippet (figure page 323846042) from a browser; identify the underlying paper.
+A search of the Lean Zulip chat for ``Dandelin'' and ``Marden'' on 30 September 2026 returned
+no relevant results. We did not search the Mizar library, and Rocq was covered only by web search.
+We therefore claim only that we found no earlier complete formalisation of either theorem in the
+sources searched.
+
+\section{Verification}\label{sec:verify}
+
+Both libraries were built on a separate machine with Lean \texttt{v4.33.1}, using prebuilt Mathlib
+artefacts. Excluding Mathlib, the full Dandelin build takes about 10~s and the Marden build about
+17~s, with no warnings. A grep over the library sources (not the scratch files) for \lean{sorry},
+\lean{admit}, \lean{native\_decide}, \lean{axiom}, \lean{\#eval}, \lean{run\_cmd},
+\lean{set\_option}, \lean{macro}, \lean{elab}, \lean{syntax}, \lean{notation} and
+\lean{import Lean} finds nothing. We repeated this grep on the source mirror used for this paper.
+
+Axioms were checked with \lean{\#print axioms} in scratch files outside the libraries, for 63
+distinct Dandelin declarations (seven files \texttt{scratch/Ax*.lean}) and 11 Marden declarations.
+Each reports only \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}. The queries cover
+every row of Table~\ref{tab:thms}. Five rows (\lean{cone\_tangent\_sq}, \lean{tangent\_of\_proj},
+\lean{focalSum\_midpoint\_sq}, \lean{focal\_lt\_of\_mul}, \lean{vieta}) are covered transitively,
+because \lean{\#print axioms} follows dependencies and queried theorems use them.
+\lean{cone\_outside\_sphere} is used by no other library theorem, so it has its own query
+(\texttt{scratch/AxConeOutside.lean}).
+The evidence is of two kinds. \emph{Stored logs}: the outputs for 27 of the Dandelin queries
+(\texttt{scratch/ax5.out}, \texttt{scratch/ax6.out}, \texttt{scratch/ax\_cone\_outside.out}) and
+for all 11 Marden queries (\texttt{ax.log}) are kept as files in the repositories.
+\emph{Report-only}: the outputs for the remaining 36 Dandelin queries (the first four phases,
+\texttt{scratch/Ax.lean}--\texttt{Ax4.lean}) were recorded only in the development reports; the
+query files are kept and can be rerun.
+Both repositories also have a \path{gate.sh} that rejects forbidden tokens, builds the library,
+generates its own \lean{\#print axioms} queries for every declaration cited in this paper and every
+query file in \texttt{scratch/} (85 declarations for Dandelin, 18 for Marden), and fails on any
+other axiom. On the published commits both print \texttt{PASS}. In the version-2 commits the
+gates also list the Layer-14 and Layer-15 declarations (158 for Dandelin, 56 for Marden). Both
+print \texttt{PASS}, and every listed declaration reports only the three standard axioms. This regenerates, on the final
+sources, the 36 Dandelin reports that were previously recorded only in the development notes.
+\path{tests/tamper.sh} plants six kinds of defect in scratch copies (a \lean{sorry}, a split
+\lean{axiom}, a fake \lean{\#eval} report, a macro, a weakened statement, a wrapped extra axiom); in
+both repositories the gate rejects all six, each with a nonzero exit status and the expected
+failure message. The same holds for the version-2 commits.
+
+Before formalising each statement, we tested it numerically. These checks produced the correction in
+Remark~\ref{rem:cos}. The scripts are in \texttt{code/}:
+\begin{itemize}
+\item \texttt{check\_dandelin.py}, \texttt{check\_phase2.py}, \texttt{check\_phase3.py}: focal sums,
+the regime prediction (2000/2000 agreement), the converse, and the focus--directrix relation on 34\,231 points
+over 3000 cone--plane pairs (maximum relative error $6.8\cdot10^{-12}$);
+\item \texttt{check\_phase4.py}: the hyperbola constant and its converse on 489\,890 points;
+\item \texttt{regime\_check.py}, \texttt{degenerate\_check.py}: the constructions of
+Theorem~\ref{thm:regime}, the key identity for the directrix converse, the one-nappe counterexample
+(69\,106 cases) and the apex sections, all with zero failures;
+\item \texttt{check\_marden.py}, \texttt{check\_unique.py}: Lemma~\ref{lem:key} symbolically,
+Lemma~\ref{lem:focsq} and the tangency on 2000 random triangles, both \lean{linear\_combination}
+certificates of Section~\ref{sec:unique} symbolically, and a sampled perturbation test (a
+necessary-condition check for uniqueness, not a verification of it);
+\item \texttt{check\_family.py}: exact SymPy check that the one-parameter family of Section~\ref{sec:unique}
+satisfies the reflection equations with nonnegative $\lambda_i$ (the focal sums are only sampled).
+\end{itemize}
+For this paper we re-ran all of the scripts except \texttt{check\_phase4.py}, which takes about nine minutes. The outputs agreed with the recorded
+ones. The numerical checks are evidence that the statements are the right ones. They play no role in the proofs.
+
+The step that matters most, comparing the formal statements with the informal ones, cannot be
+automated. Sections~\ref{sec:conv} and~\ref{sec:correct} are meant to make that comparison easier.
+
+\subsection{Layers 14 and 15}\label{sec:layers}
+\begingroup\sloppy
+
+Version~2 adds a Layer-14 and a Layer-15 library file to each repository:
+\path{Dandelin/L14.lean}, \path{Marden/L14.lean}, \path{Dandelin/L15Classical.lean} and
+\path{Marden/L15Classical.lean}. The Layer-15 namespaces are \lean{Dandelin.Classical} and
+\lean{Marden.Classical}. The gates check selected Layer-14 declarations and the Layer-15 proof
+declarations, not every declaration in these files. Every gate-listed declaration reports only the
+three standard axioms. The pre-existing proof modules are unchanged; each root module gains two
+imports.
+
+\paragraph{Layer 14: statements in Mathlib's language, with witnesses.} Nine main results are
+restated with Mathlib-only types and proved from the library theorems through new bridges:
+\begin{itemize}
+\item seven Dandelin results:
+  \begin{itemize}
+  \item Theorem~\ref{thm:ellipse}: \lean{Dandelin.l14\_dandelin\_ellipse}, in any real inner
+  product space;
+  \item Theorem~\ref{thm:hyperbola} together with the double-cone equivalence of
+  Theorem~\ref{thm:dirconv}(b): \lean{Dandelin.l14\_dandelin\_hyperbola};
+  \item Theorems~\ref{thm:directrix} and~\ref{thm:dirconv}(a) for the ellipse:
+  \lean{Dandelin.l14\_directrix\_ellipse};
+  \item Theorems~\ref{thm:parabola} and~\ref{thm:dirconv}(a) for the parabola:
+  \lean{Dandelin.l14\_parabola};
+  \item Theorem~\ref{thm:regime}(b)--(d) in $\R^3$: \lean{Dandelin.l14\_regime\_R3};
+  \item Theorem~\ref{thm:apex} in $\R^3$: \lean{Dandelin.l14\_apex\_R3};
+  \item Lemma~\ref{lem:inscribed}: \lean{Dandelin.l14\_inscribed};
+  \end{itemize}
+\item two Marden results: Theorem~\ref{thm:marden} (\lean{Marden.l14\_marden}) and
+Theorem~\ref{thm:unique} in its strict form (\lean{Marden.l14\_steiner\_unique}).
+\end{itemize}
+The Mathlib-only types are as follows.
+\begin{itemize}
+\item The cone is defined by angles with \lean{InnerProductGeometry.angle}, with the apex
+included explicitly, because Mathlib sets the angle of $0$ to $\pi/2$.
+\item The plane is \lean{AffineSubspace.mk'} $p_0\,(\R n)^\perp$.
+\item Spheres and tangency are \lean{EuclideanGeometry.Sphere}, \lean{IsTangent} and
+\lean{IsTangentAt}.
+\item The directrix is the intersection of two affine subspaces, and distances to it use
+\lean{Metric.infDist}.
+\item For Marden we use \lean{¬ Collinear}, \lean{Polynomial.derivative}, \lean{midpoint},
+\lean{line[$\R$,x,y]} and \lean{Finset.centroid}.
+\end{itemize}
+A mechanical check of the elaborated types, with notation turned off, found no constant from
+\lean{Dandelin} or \lean{Marden} in any restated statement.
+
+Witness theorems prove every hypothesis on an explicit configuration, together with a
+non-degenerate conclusion:
+\begin{itemize}
+\item \lean{Dandelin.l14w\_dandelin\_ellipse}: $\R^3$ with $\cos\alpha=4/5$; $F_1\ne F_2$, focal
+constant $>0$, a section point other than the apex, and non-empty directrices;
+\item \lean{Dandelin.l14w\_dandelin\_hyperbola}: $F_1\ne F_2$ and section points on both nappes;
+\item \lean{Dandelin.l14w\_parabola}: a section point other than the apex;
+\item \lean{Dandelin.l14w\_regime\_inscribed}: a section point other than the apex, at angle
+$\alpha$;
+\item \lean{Dandelin.l14w\_apex}: the point, line and two-line cases, with distinct non-apex
+points on each line;
+\item \lean{Marden.l14w\_marden}: the triangle $0,5,1+4i$ with foci $1+2i$ and $3+\frac23i$
+(the derivative identity is \lean{Marden.l14w\_derivative}). It proves distinct vertices,
+distinct foci, distinct midpoints and a non-degenerate ellipse.
+\end{itemize}
+Not restated:
+\begin{itemize}
+\item Corollary~\ref{cor:iff}, which is the conjunction of the two Marden restatements;
+\item the weak form of Theorem~\ref{thm:unique};
+\item Theorem~\ref{thm:regime}(a) and~(e), and the versions in general dimension;
+\item the one-nappe counterexample of Theorem~\ref{thm:dirconv}(b);
+\item the internal lemmas. Lemma~\ref{lem:proj} has a Mathlib-only form as the bridge
+\lean{Dandelin.l14\_isTangent\_plane\_iff}.
+\end{itemize}
+No restatement turned out false or needed an extra hypothesis.
+
+\paragraph{Layer 15: comparison with textbook statements.} Another AI agent collected the
+statements of the classical theorems from the literature, with citations: Dandelin, Hilbert and
+Cohn-Vossen, Kalman, Marden, Siebeck, and standard reference pages. An AI model was given only
+these textbook statements. It saw no code and no part of this paper, and its transcript was
+audited. It wrote 13 Lean statements with Mathlib notions and its own definitions: 12 theorems and
+one well-formedness obligation, namely that the directrix is a line. Its Dandelin sphere is
+\emph{any} sphere of positive radius meeting every generator in exactly one point and the plane
+in exactly one point. It marked three ambiguities and no extra hypotheses.
+
+A comparer copied these statements verbatim. For each one it either proved it from the development
+or classified it. It added no hypotheses and left the library unchanged. The outcome: 11 covered,
+1 narrower, 1 out of scope, and none false as written.
+\begin{itemize}
+\item \emph{Covered and proved} (11): \lean{cov\_Conics1\_a}, \lean{cov\_Conics1\_b},
+\lean{cov\_Conics2\_a}, \lean{cov\_Conics2\_b}, \lean{cov\_Conics3\_obligation} (the obligation is
+proved, not assumed), \lean{cov\_Conics3\_a}, \lean{cov\_Conics3\_b} and
+\lean{cov\_Conics3\_parabola\_unique} in \lean{Dandelin.Classical}; \lean{cov\_Conics4\_a},
+\lean{cov\_Conics5} and \lean{cov\_Conics5\_double\_root} in \lean{Marden.Classical}.
+\item \emph{Narrower} (1): for \lean{classical\_Conics4\_b}, only the centre clause is proved
+(\lean{Marden.Classical.cov\_Conics4\_b\_part}: the inellipse is centrally symmetric about
+$(a+b+c)/3$). The area formula $\pi/(3\sqrt3)\cdot\operatorname{area}(abc)$ and the strict maximality
+of the area among inscribed ellipses are missing. This paper does not claim them, and the libraries
+contain no measure theory.
+\item \emph{Out of scope} (1): \lean{classical\_Conics3\_c} is not proved. This is the planar
+converse: in an abstract plane, the locus $|XF|=e\cdot\mathrm{dist}(X,d)$ is an ellipse, parabola
+or hyperbola in standard form, with focus $F$ and directrix $d$. Theorem~\ref{thm:dirconv} is a
+converse on the cone, not this statement. The comparer checked by hand that the statement as
+written is true.
+\item \emph{Writer statement false as written}: none.
+\end{itemize}
+New proofs, which are not in the main files:
+\begin{itemize}
+\item \lean{Dandelin.Classical.l15\_tangent\_cone\_iff}: in $\R^3$, a sphere of positive radius
+meets every generator in exactly one point if and only if it is an axis sphere $(C_d,|d|s)$ with
+$d\ne0$. Hence the uniqueness in Conics1\_a, Conics2\_a and Conics3\_parabola\_unique holds among
+all such spheres, not only among axis spheres.
+\item \lean{Dandelin.Classical.l15\_gen\_segment}: the segment of every generator between the two
+contact circles has length $|d_1-d_2|\cos\alpha$, which equals the focal constant.
+\item \lean{Dandelin.Classical.l15\_isGreatest}: the focal constant of the ellipse is the greatest
+distance between two of its points, that is, the major axis.
+\item The transverse axis, in \lean{Dandelin.Classical.cov\_Conics2\_b}: the focal constant of the
+hyperbola is the least distance between its two branches.
+\item \lean{Dandelin.Classical.l15\_span\_circle}, \lean{Dandelin.Classical.l15\_directrix\_eq}:
+the affine span of a contact circle is the plane $\sigma_d$, and its intersection with the cutting
+plane is the directrix $\ell_d$, which is a line when $m^2<1$ (equivalently, $\beta<\pi/2$).
+\item \lean{Dandelin.Classical.l15\_planeAxisAngle}: $\cos\beta=\sqrt{1-m^2}$, so the paper's $e$ is
+$\cos\beta/\cos\alpha$.
+\item \lean{Marden.Classical.l15\_strict\_of\_inter}: if a side line meets the ellipse curve only at
+the midpoint, then the strict tangency~(ii) of Theorem~\ref{thm:marden} holds.
+\item \lean{Marden.Classical.l15\_marden\_steiner}: the Marden ellipse lies in the closed
+triangle.
+\item \lean{Marden.Classical.l15\_equilateral\_iff}: $p'$ has a double root if and only if the
+triangle is equilateral.
+\end{itemize}
+The classical definitions and statements are reproduced verbatim in the Layer-15 files. The final
+gates list 158 declarations for Dandelin (85 published, 17 added by Layer~14, 56 by Layer~15) and
+56 for Marden (18, 6 and 32). Both pass, and the tampering suites reject every planted defect.
+\par\endgroup
+
+\section{Limitations and further work}
+
+\begin{itemize}
+\item \emph{Tangency.} Neither development uses a general notion of a tangent line or plane to a
+conic. For Dandelin, tangency of spheres and planes is expressed by distance and projection
+(Lemma~\ref{lem:proj}). In the main files it is connected to Mathlib's \lean{IsTangentAt} only in the
+normalised version (Remark~\ref{rem:mathlibtangent}). The Layer-14 restatements use \lean{IsTangent}
+and \lean{IsTangentAt} throughout (Section~\ref{sec:layers}). For Marden, tangency is metric
+(Section~\ref{sec:metrictan}). The equivalence with the differential notion is argued but not
+formalised.
+\item \emph{Uniqueness among conics.} Theorem~\ref{thm:unique} is uniqueness among focal
+ellipses, not among all conics.
+\item \emph{Not formalised.} We do not formalise the area of the Steiner inellipse
+($\pi/(3\sqrt3)$ times the area of the triangle) or its maximality among inscribed ellipses.
+We also do not formalise the planar converse that the locus $|XF|=e\cdot\mathrm{dist}(X,d)$ is a
+conic in standard form (Section~\ref{sec:layers}).
+\item \emph{Cones.} Only right circular cones are treated. The regime equivalences that need
+finite dimension and $\dim E\ge3$ are proved under those hypotheses, and the two-line apex section only in
+$\dim E=3$. For planes through the apex, only the double cone is treated; the one-nappe versions,
+which give rays, are not.
+\item \emph{Reference geometry.} Mathlib has no ellipse, parabola or hyperbola, so the
+conics appear only as loci given by explicit equations. A Mathlib contribution could take the
+equation form as it stands, but would benefit from agreed definitions of these curves and bridges
+to them.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+The formal proofs, the numerical checking scripts and a draft of this paper were prepared with the
+help of large-language-model AI assistants. Every proof is checked by the Lean kernel, and the
+author takes responsibility for all content. The author compared each formal statement in
+Table~\ref{tab:thms} with its informal counterpart by hand. AI agents carried out the Layer-14 and
+Layer-15 checks of version~2 (Section~\ref{sec:layers}). This includes collecting the classical
+statements from the literature, which no human has yet checked against the sources.
+
+\begin{thebibliography}{99}
+\bibitem{BaldPascal} J.~Bald, Pascal's hexagon theorem over an arbitrary field, formalised in
+Lean~4, preprint, 2026.
+\bibitem{Dandelin} G.~P.~Dandelin, M\'emoire sur quelques propri\'et\'es remarquables de la
+focale parabolique, \emph{Nouveaux m\'emoires de l'Acad\'emie royale des sciences et
+belles-lettres de Bruxelles} 2 (1822), 170--202.
+\bibitem{EberlAFP} M.~Eberl, Two theorems about the geometry of the critical points of a complex
+polynomial, \emph{Archive of Formal Proofs}, November 2023,
+\url{https://isa-afp.org/entries/Polynomial_Crit_Geometry.html}.
+\bibitem{HilbertCV} D.~Hilbert and S.~Cohn-Vossen, \emph{Geometry and the Imagination}, translated
+by P.~Nemenyi, Chelsea, New York, 1952.
+\bibitem{HOLLight} J.~Harrison, HOL~Light repository, \url{https://github.com/jrh13/hol-light},
+accessed 30 September 2026.
+\bibitem{Kalman} D.~Kalman, An elementary proof of Marden's theorem, \emph{Amer. Math. Monthly}
+115 (2008), no.~4, 330--338.
+\bibitem{Marden1945} M.~Marden, A note on the zeros of the sections of a partial fraction,
+\emph{Bull. Amer. Math. Soc.} 51 (1945), no.~12, 935--940.
+\bibitem{MardenBook} M.~Marden, \emph{Geometry of Polynomials}, 2nd ed., Mathematical Surveys~3,
+American Mathematical Society, 1966.
+\bibitem{Mathlib1000} The mathlib Community, \texttt{docs/1000.yaml}, Mathlib repository,
+\url{https://github.com/leanprover-community/mathlib4}, accessed 30 September 2026.
+\bibitem{MathlibCPP} The mathlib Community, The Lean mathematical library, in \emph{Proc.\ 9th
+ACM SIGPLAN Int.\ Conf.\ on Certified Programs and Proofs (CPP 2020)}, 2020, 367--381.
+\bibitem{MindaPhelps} D.~Minda and S.~Phelps, Triangles, ellipses, and cubic polynomials,
+\emph{Amer. Math. Monthly} 115 (2008), no.~8, 679--689.
+\bibitem{Lean4} L.~de~Moura and S.~Ullrich, The Lean~4 theorem prover and programming language,
+in \emph{Automated Deduction -- CADE~28}, Lecture Notes in Computer Science, Springer, 2021,
+625--635.
+\bibitem{Siebeck} Siebeck, Ueber eine neue analytische Behandlungsweise der Brennpunkte,
+\emph{J. Reine Angew. Math.} 64 (1865), 175--182.
+\end{thebibliography}
+
+\end{document}

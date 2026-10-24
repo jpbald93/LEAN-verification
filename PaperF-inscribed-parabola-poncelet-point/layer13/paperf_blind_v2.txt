@@ -1,0 +1,414 @@
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+  For four lines in general position (a complete
+quadrilateral) we prove that the reflections of the Miquel point $M$ in the four lines lie on the line
+of the four orthocentres, that $M$ is not on that line, and that the parabola with focus $M$ and
+directrix the orthocentre line is tangent to each of the four lines, with an explicit point of contact
+on each. We also prove the elementary facts about this parabola that we use to describe it: its vertex
+is on it, at half the focus--directrix distance from the focus, and is the point of the parabola
+closest to the directrix; its axis is perpendicular to the directrix; and the Newton--Gauss line is
+perpendicular to the directrix, so parallel to the axis. Uniqueness of the inscribed parabola is not
+  For four points with no three collinear (a complete quadrangle) that are not an orthocentric
+system, we define the Poncelet point by an explicit formula and prove that it lies on the four
+  The formula fails exactly for orthocentric quadrangles, where
+we prove that the four nine-point circles coincide. Outside the orthocentric case we prove the point invariant
+under a generating set of permutations of the four points (hence under all), and we prove that one
+   In the sources
+ 
+\end{abstract}
+
+\section{Introduction}
+
+A \emph{complete quadrilateral} is four lines in the plane, no two parallel and no three through a
+point; a \emph{complete quadrangle} is four points, no three on a line. The two configurations are
+the line and point versions of the same combinatorial figure, and each has a family of classical
+theorems about its four triangles \cite{johnson1929,coolidge1916}. Our previous paper
+  This paper continues in two directions.
+
+\emph{(A) The quadrilateral.} The four lines touch exactly one parabola; its focus is $M$ and its
+directrix is the orthocentre line. We prove the half of this that can be stated without a general
+theory of conics: the parabola with focus $M$ and directrix the orthocentre line is tangent to each of
+the four lines. On the way we prove that the reflections of $M$ in the four lines lie on the
+orthocentre line and that $M$ does not.
+
+\emph{(B) The quadrangle.} Unless the quadrangle is orthocentric (one point the orthocentre of the
+other three), the nine-point circles of its four triangles pass through one point, the \emph{Poncelet
+point}, which is also the centre of the unique rectangular conic through the four points. In the
+orthocentric case the four nine-point circles coincide. We give it by an explicit formula and prove that it lies on the four nine-point circles,
+on the four pedal circles, and on the circumcircle of the diagonal triangle, each under exactly the
+hypotheses it needs.
+
+Table~\ref{tab:thms} lists the main theorems.
+
+ [omitted] 
+
+\subsection{Contributions}
+\begin{itemize}
+  
+\item Theorems~\ref{thm:refl}--\ref{thm:lambert} about the inscribed parabola of the complete
+quadrilateral, all from the single hypothesis $\mathrm{GenPos}$ of \cite{paperE}, including the
+case $L_1\perp L_2$ in which two of the orthocentres coincide.
+\item An explicit formula for the Poncelet point (Section~\ref{sec:quadrangle}) and
+ 
+\item Findings about the statements: the formula's denominator vanishes exactly for orthocentric
+quadrangles, where the four nine-point circles coincide and the common point is not unique
+(Theorem~\ref{thm:ortho}); the pedal-circle theorem needs the four points not to be concyclic; and
+ 
+\end{itemize}
+
+\paragraph{What is not claimed.} We do not prove that the parabola of Part~(A) is the only parabola
+tangent to the four lines, so Theorem~\ref{thm:lambert} is Lambert's theorem for this parabola, not for
+``the'' inscribed parabola. 
+  Part~(A) is proved
+for one labelling of the four lines.
+
+\subsection{Availability}\label{sec:avail}
+ 33.  Both extend the [NAME] development of \cite{paperE}: its seven library
+files ([NAME], [NAME], [NAME], [NAME], [NAME], [NAME],
+[NAME]) are included unchanged, with the same SHA-256 hashes, and each development adds new
+files and import lines only. File and line counts are of the library [NAME] files, including the
+root import file and counting every physical line.
+\begin{center}\small
+ [omitted] 
+\end{center}
+ 33.   Every [NAME] name cited
+ 
+
+\section{The model}\label{sec:model}
+
+We use the model of \cite{paperE}, file [NAME], unchanged. Points are complex numbers;
+$\operatorname{cr}(a,b)=\operatorname{Im}(\bar a b)$. A line $L=(p,d)$ has carrier
+$\{z:\operatorname{cr}(d,z-p)=0\}$; $\operatorname{meet}(L,M)$ is the explicit intersection point;
+$\operatorname{circ}(a,b,c)$ and $\operatorname{ortho}(a,b,c)=a+b+c-2\operatorname{circ}(a,b,c)$ are the
+circumcentre and orthocentre by explicit formulas; and
+$\operatorname{foot}(z,L)=p+\operatorname{Re}(\bar d(z-p))/|d|^2\cdot d$. Four lines are in
+\emph{general position} ($\mathrm{GenPos}$) if their directions are nonzero, no two are parallel, and no
+three pass through a point. 
+
+For the quadrilateral we keep the notation of \cite{paperE}: $A_{ij}=\operatorname{meet}(L_i,L_j)$;
+$T_k$ is the triangle of the three vertices not on $L_k$; $H_k$ is its orthocentre; $M$ is the Miquel
+point [NAME], given by an explicit formula; $F_k=\operatorname{foot}(M,L_k)$; and
+\[
+  W=F_2-F_1
+\]
+is the direction of the Simson line, which \cite{paperE} proves parallel to the orthocentre line.
+$W\neq0$ under $\mathrm{GenPos}$, since the four feet are pairwise distinct.
+
+For the quadrangle we add one definition. Four points $a,b,c,d\in\CC$ satisfy $\mathrm{QGen}$ if no three
+of them are collinear, stated as $\operatorname{cr}(b-a,c-a)\neq0$, $\operatorname{cr}(b-a,d-a)\neq0$,
+$\operatorname{cr}(c-a,d-a)\neq0$ and $\operatorname{cr}(c-b,d-b)\neq0$. No other condition is built
+into $\mathrm{QGen}$; each theorem states any further hypothesis it needs.
+
+\paragraph{Method.} As in \cite{paperE}, each theorem is reduced to rational-function identities in a
+normalised frame with the complex conjugates treated as independent variables, closed mainly by
+[NAME] and [NAME]; incidence and non-degeneracy lemmas connect them to the geometric
+statements. In Part~(B) the frame puts $d$ at the origin, $x=a-d$, $y=b-d$, $z=c-d$. Every
+identity was checked first in SymPy over $\mathbb{Q}$ with the conjugates as independent atoms, and
+numerically (Section~\ref{sec:verify}).
+
+\section{The complete quadrilateral: the inscribed parabola}\label{sec:parabola}
+
+ 
+
+\paragraph{Definitions.} The reflection of $z$ in $L$ is $\operatorname{refl}(z,L)=2\operatorname{foot}(z,L)-z$
+([NAME]).  For a point $f$ and an affine
+subspace $S$ of $\CC$,
+\[
+  \mathrm{OnParabola}\;f\;S\;z\quad:\Longleftrightarrow\quad \operatorname{dist}(z,f)=\operatorname{infDist}(z,S),
+\]
+  This notion of tangency is
+the right one for a parabola and a line not parallel to its axis; a line parallel to the axis also
+meets the parabola exactly once, and we prove that none of the four lines is such a line
+([NAME], below). For $S$ a line we bridge [NAME] to the
+point--direction form: for $W\neq0$,
+$\operatorname{infDist}(z,\operatorname{line}[h_0,h_0+W])=|\operatorname{cr}(W,z-h_0)|/\|W\|$
+([NAME]), so
+$\mathrm{OnParabola}\;f\;\operatorname{line}[h_0,h_0+W]\;z\iff \operatorname{dist}(z,f)=|\operatorname{cr}(W,z-h_0)|/\|W\|$
+([NAME]). Under $\mathrm{GenPos}$ the orthocentre line is
+$\operatorname{line}[H_4,H_4+W]$ ([NAME]; membership and distance in
+[NAME], [NAME]). This holds also when two
+orthocentres coincide, which happens in general position exactly when two lines are perpendicular
+(\cite{paperE}, [NAME]); the direction $W$ never degenerates.
+
+\begin{theorem}[[NAME], [NAME], [NAME]]\label{thm:refl}
+Let $R_k=\operatorname{refl}(M,L_k)$. Then each $R_k$ lies on the orthocentre line, and
+$\{R_1,R_2,R_3,R_4\}$ is collinear. Moreover, for each $k$,
+$\operatorname{cr}(H_i-H_4,\,R_k-H_4)=0$ for $i=1,2,3$.
+\end{theorem}
+The coordinate form is [NAME]: $\operatorname{cr}(W,R_k-H_4)=0$ for $k=1,\dots,4$.
+The three-orthocentre form follows from it and the relations $\operatorname{cr}(W,H_i-H_4)=0$ of
+\cite{paperE} ([NAME]) because $W\neq0$, so it says something even when
+$H_3=H_4$. The membership is also stated with the affine span written out
+([NAME]). Only $R_1$ needs a frame computation
+([NAME]); the others follow since $R_k-R_1=2(F_k-F_1)$ is a real multiple of $W$ by
+the Simson line ([NAME]). Classically the line of the $R_k$ is the Steiner line
+  
+
+\begin{theorem}[[NAME], [NAME]]\label{thm:off}
+$M$ is not on the orthocentre line: $\operatorname{cr}(W,M-H_4)\neq0$.
+\end{theorem}
+In the normal frame of \cite{paperE} (with $A_{13}-A_{12}=u$, $A_{23}-A_{12}=v$, $A_{14}-A_{12}=su$,
+$A_{24}-A_{12}=tv$, $s,t$ real), [NAME] gives
+\[
+  \overline{\widetilde W}(M-H_4)-\widetilde W(\overline{M}-\overline{H_4})
+  =-\frac{(s-1)(s-t)(t-1)\,K^3}{2E^2D^2},\qquad K=\bar v u-\bar u v,
+\]
+with $D=su-tv-u+v$, $E=\bar D$, and $\widetilde W=K/(2E)$ ([NAME]), the frame form of the direction:
+$W=-(s-t)\widetilde W$ ([NAME]). The left side is $2i\operatorname{cr}(\widetilde W,M-H_4)$. General position excludes $s=1$, $t=1$, $s=t$
+and $K=0$ and makes $D,E\neq0$, so no hypothesis beyond $\mathrm{GenPos}$ is needed. The statement is also
+given with the affine span written out ([NAME]). A consequence is
+that no $L_k$ is perpendicular to the directrix: $\operatorname{Re}(\bar W d_k)\neq0$
+([NAME]); otherwise $M-R_k$, which is perpendicular to $L_k$, would be
+parallel to the directrix and $M$ would lie on it.
+
+\begin{theorem}[[NAME]]\label{thm:tangent}
+For each $L\in\{L_1,L_2,L_3,L_4\}$, $\mathrm{Tangent}\;L\;M\;(\text{orthocentre line})$: exactly one point
+of $L$ is equidistant from $M$ and from the orthocentre line.
+\end{theorem}
+The four instances are also stated separately ([NAME], \dots,
+[NAME]). The proof uses an abstract lemma
+(\mathrm{[NAME]}): if $W\neq0$, $L$ has nonzero direction, $R$ is on the line
+$h_0+\RR W$, every point of $L$ is equidistant from $f$ and $R$, and $L$ is not perpendicular to $W$,
+then exactly one $z\in L$ has $\operatorname{dist}(z,f)=|\operatorname{cr}(W,z-h_0)|/\|W\|$. It is
+applied with $f=M$ and $R=R_k$, using that each point of $L_k$ is equidistant from $M$ and its
+reflection (\mathrm{[NAME]}), Theorem~\ref{thm:refl} and
+\mathrm{[NAME]}. The point found is the point of $L$ on the perpendicular to the
+directrix through $R$: there $\operatorname{dist}(z,M)=\operatorname{dist}(z,R)$ is the distance to the
+directrix, and at every other point of $L$ it is larger.
+
+\paragraph{Points of contact, vertex and axis.} \mathrm{[NAME]} names these objects. With
+$[NAME]=W$, the directrix as a \mathrm{Line} is $[NAME]=(H_4,W)$, and its carrier is the
+orthocentre line (\mathrm{[NAME]}). For a line $L$, a direction $W$ and a point
+$R$, $[NAME]\;L\;W\;R=p+\dfrac{\operatorname{Re}(\bar W(R-p))}{\operatorname{Re}(\bar Wd)}\,d$
+is the point of $L$ on the line through $R$ perpendicular to $W$ (\mathrm{[NAME]},
+when $\operatorname{Re}(\bar Wd)\neq0$). The point of contact of $L$ is
+$[NAME]\;L=[NAME]\;L\;W\;\operatorname{refl}(M,L)$; the axis is
+$[NAME]=(M,iW)$; and the vertex is $V=\tfrac12\big(M+\operatorname{foot}(M,[NAME])\big)$.
+
+\begin{theorem}[\mathrm{[NAME]}]\label{thm:tanpt}
+For each $L\in\{L_1,\dots,L_4\}$: $\mathrm{tanPt}\;L$ is on $L$, it is on the parabola with focus $M$ and
+directrix the orthocentre line, and every point of $L$ on that parabola equals $\mathrm{tanPt}\;L$.
+\end{theorem}
+The three parts are also separate theorems: \mathrm{[NAME]} (which holds for every line
+and needs no hypothesis), \mathrm{[NAME]} and \mathrm{[NAME]}. The
+key lemma \mathrm{[NAME]} is \mathrm{[NAME]} with the witness
+made explicit.
+
+\begin{theorem}[\mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}]\label{thm:vertex}
+The vertex $V$ is on the parabola; $\operatorname{dist}(V,M)=\tfrac12\operatorname{infDist}(M,\text{orthocentre line})$;
+and for every point $z$ on the parabola,
+$\operatorname{infDist}(V,\text{orthocentre line})\le\operatorname{infDist}(z,\text{orthocentre line})$.
+The vertex is on the axis, and the axis is perpendicular to the directrix:
+$\operatorname{Re}\big(\overline{iW}\,W\big)=0$.
+\end{theorem}
+The last two statements hold for all four lines, with no hypothesis; they are true by construction and
+are recorded to fix the definitions. The distance from the focus to the directrix is
+$\operatorname{dist}(M,\operatorname{foot}(M,[NAME]))$ (\mathrm{[NAME]}).
+
+\begin{theorem}[\mathrm{[NAME]}, \mathrm{[NAME]}]\label{thm:newton}
+Let $N_1,N_2,N_3$ be the midpoints of the diagonals $A_{12}A_{34}$, $A_{13}A_{24}$, $A_{14}A_{23}$.
+For all $x,y$ on the orthocentre line, $\langle x-y,\,N_2-N_1\rangle=0$ and
+  Also
+$\langle W,N_2-N_1\rangle=\langle W,N_3-N_1\rangle=0$.
+\end{theorem}
+Thus the Newton--Gauss line is perpendicular to the directrix, which means it has the direction of the
+axis. \cite{paperE} proved the perpendicularity of the orthocentre line and the Newton--Gauss line for
+a pair of orthocentres; Theorem~\ref{thm:newton} is the statement for the whole directrix, through $W$,
+and is proved independently in this development (frame identities \mathrm{[NAME]},
+\mathrm{[NAME]}, \mathrm{[NAME]}).
+
+\begin{theorem}[Lambert, for this parabola; \mathrm{[NAME]}]\label{thm:lambert}
+Each of $L_1,\dots,L_4$ is tangent to the parabola with focus $M$ and directrix the orthocentre line,
+and $M$ lies on the circumcircle of each of $T_1,\dots,T_4$.
+\end{theorem}
+The proof combines Theorem~\ref{thm:tangent} with the Miquel theorem of \cite{paperE}
+(\mathrm{[NAME]}). Classically, Lambert's theorem says that the focus of \emph{the} parabola
+tangent to the four lines lies on the four circumcircles. That reading needs the fact that there is
+  It is a conjunction of two earlier theorems, recorded under the classical name.
+
+\section{The complete quadrangle: the Poncelet point}\label{sec:quadrangle}
+
+  The four triangles are $(a,b,c)$, $(a,b,d)$, $(a,c,d)$ and $(b,c,d)$.
+
+\paragraph{The formula.} The conics through four points with no three collinear form a pencil. If the
+quadrangle is not orthocentric, exactly one member of the pencil is rectangular (possibly a degenerate
+pair of perpendicular lines), and its centre is the Poncelet point; if it is orthocentric, every member
+is rectangular and their centres fill the common nine-point circle \cite{brianchonponcelet}. This only
+  Writing a rectangular hyperbola as
+$\operatorname{Re}(\alpha z^2+\beta z)+\gamma=0$, its centre is $-\beta/(2\alpha)$; solving for the
+conic through four points with $d$ at the origin gives, with $x=a-d$, $y=b-d$, $z=c-d$ and $X,Y,Z$
+their conjugates,
+\[
+  P=\mathrm{poncelet}\;a\;b\;c\;d=d+\frac{p_N}{2\,p_D},
+\]
+\begin{gather*}
+  p_D=X^2Yz-X^2Zy-XY^2z+XZ^2y+Y^2Zx-YZ^2x,\\
+  p_N=X^2Yz^2-X^2Zy^2-XY^2z^2+XZ^2y^2+Y^2Zx^2-YZ^2x^2 .
+\end{gather*}
+  We write $[NAME]\;a\;b\;c\;d$ for $p_D$. The nine-point centre is
+$[NAME](x,y,z)=\tfrac12(x+y+z-\operatorname{circ}(x,y,z))$, the midpoint of circumcentre and
+orthocentre. 
+
+\begin{theorem}[\mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}]\label{thm:ortho}
+If $\mathrm{QGen}\;a\;b\;c\;d$, then $\mathrm{ponDen}\;a\;b\;c\;d=0$ if and only if $d=\operatorname{ortho}(a,b,c)$.
+In that case the four nine-point centres are equal, and the four nine-point circles
+(nine-point circle) of the triangles are equal. For example $a=0$, $b=4$,
+$c=1+2i$, $d=1+\tfrac32i$ satisfy $\mathrm{QGen}$, $d=\operatorname{ortho}(a,b,c)$ and
+$\mathrm{ponDen}\;a\;b\;c\;d=0$.
+\end{theorem}
+So in the orthocentric case every point of the common nine-point circle lies on all four, and there is
+no Poncelet point to define; the formula's failure is genuine and not an artefact. The algebraic
+certificate is $p_D=Y(Z-X)g_1+X(Z-Y)g_2$, with $g_1,g_2$ the conditions that the origin lie on two
+altitudes of $(x,y,z)$, together with a converse identity
+(\mathrm{[NAME]}). All later theorems assume
+$d\neq\operatorname{ortho}(a,b,c)$; under $[NAME]$ this is $[NAME]\neq0$
+(\mathrm{[NAME]}), and it is symmetric (Theorem~\ref{thm:s4}).
+
+\begin{theorem}[\mathrm{[NAME]}, \mathrm{[NAME]}]\label{thm:nine}
+If $\mathrm{QGen}\;a\;b\;c\;d$ and $d\neq\operatorname{ortho}(a,b,c)$, then $P$ lies on nine-point
+circle of each of the four triangles.
+\end{theorem}
+  The local form \mathrm{[NAME]} states
+$\operatorname{dist}(P,[NAME](\Delta))=\operatorname{dist}(m,[NAME](\Delta))$ for one side
+midpoint $m$ of each triangle $\Delta$; the other two midpoints are at the same distance
+(\mathrm{[NAME]}).
+
+\begin{theorem}[\mathrm{[NAME]}]\label{thm:unique}
+Under the same hypotheses, any point on the nine-point circles of $(a,b,c)$, $(a,b,d)$ and $(a,c,d)$
+equals $P$.
+\end{theorem}
+So three of the circles already meet only at $P$, and in particular $P$ is the only point common to all
+four. By Theorem~\ref{thm:ortho} the hypothesis $d\neq\operatorname{ortho}(a,b,c)$ cannot be dropped.
+
+\begin{theorem}[\mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}]\label{thm:pedal}
+If $\mathrm{QGen}\;a\;b\;c\;d$, $d\neq\operatorname{ortho}(a,b,c)$, and $\{a,b,c,d\}$ is not
+concyclic, then for each of the four points $v$, the feet of the
+perpendiculars from $v$ to the three sides of the triangle of the other three points, together with $P$,
+are cospherical. (For $v=d$ the sides are $ab$, $bc$, $ca$; for $v=c$, $ab$, $bd$, $da$; for $v=b$, $ac$,
+$cd$, $da$; for $v=a$, $bc$, $cd$, $db$; the line through $p$ and $q$ is $\mathrm{lineThrough}\;p\;q=(p,q-p)$.)
+\end{theorem}
+\emph{Finding: the non-concyclicity hypothesis is needed.} If $a,b,c,d$ are concyclic, the three feet
+from $v$ are collinear (the Simson line of $v$), so they lie on no circle, and ``the pedal circle''
+does not exist.  We did not state the geometric converse (concyclic
+$\Rightarrow$ feet collinear) as a theorem.
+Numerically, for concyclic quadrangles $P$ lies on the Simson line (Section~\ref{sec:verify}). $P$
+itself is defined for concyclic quadrangles: only the pedal statement degenerates.
+
+The cases $v=d$ and $v=c$ have their own frame proofs; $v=b$ and $v=a$ are obtained by relabelling
+$a,b,c$ with the symmetries \mathrm{[NAME]} and \mathrm{[NAME]}. The
+extension file gives a second proof of the case $v=c$ from the case $v=d$ and the symmetry $c\leftrightarrow d$
+(\mathrm{[NAME]'}, the same statement).
+
+\begin{theorem}[\mathrm{[NAME]}]\label{thm:diag}
+If $\mathrm{QGen}\;a\;b\;c\;d$, $d\neq\operatorname{ortho}(a,b,c)$, and none of the three pairs of opposite
+sides is parallel (parallel: $\operatorname{line}[a,b]\not\parallel\operatorname{line}[c,d]$,
+$\operatorname{line}[a,c]\not\parallel\operatorname{line}[b,d]$, $\operatorname{line}[a,d]\not\parallel\operatorname{line}[b,c]$),
+then the three diagonal points $ab\cap cd$, $ac\cap bd$, $ad\cap bc$ and $P$ are cospherical.
+\end{theorem}
+The diagonal points are $[NAME]\;p\;q\;r\;s=\operatorname{meet}([NAME]\;p\;q,[NAME]\;r\;s)$.
+The non-parallelism hypotheses are what makes them exist. Given them, the diagonal triangle is never
+degenerate under $[NAME]$: its collinearity determinant is a product of nonzero factors
+(\mathrm{[NAME]}).
+
+\begin{theorem}[\mathrm{[NAME]}, \mathrm{[NAME]}, \mathrm{[NAME]}]\label{thm:s4}
+If $\mathrm{QGen}\;a\;b\;c\;d$ and $d\neq\operatorname{ortho}(a,b,c)$, then
+$\mathrm{poncelet}\;a\;b\;c\;d$ equals $\mathrm{poncelet}$ applied to $(a,c,b,d)$, $(b,c,a,d)$, $(a,b,d,c)$,
+$(d,b,c,a)$, $(a,d,c,b)$ and $(b,c,d,a)$. The first three are the permutations $(b\,c)$, $(a\,b\,c)$,
+$(c\,d)$, which generate $S_4$. Moreover, under $\mathrm{QGen}\;a\;b\;c\;d$,
+$d=\operatorname{ortho}(a,b,c)\iff c=\operatorname{ortho}(a,b,d)$.
+\end{theorem}
+The theorem lists six permutations; invariance under every permutation follows because the first three
+  The permutations of $a,b,c$
+hold with no hypothesis at all (\mathrm{[NAME]}, \mathrm{[NAME]}). For
+$c\leftrightarrow d$, $[NAME]\;a\;b\;d\;c=-[NAME]\;a\;b\;c\;d$ always
+(\mathrm{[NAME]}), the identity holds whenever that denominator is nonzero
+(\mathrm{[NAME]}), and $[NAME]$ is preserved
+([NAME]). The symmetry of orthocentricity is proved through
+Theorem~\ref{thm:ortho} on both sides.
+
+\emph{Finding: the transposition $c\leftrightarrow d$ fails in the orthocentric case.} For the example
+  So
+$[NAME]\;0\;4\;(1+\tfrac32i)\;(1+2i)\neq[NAME]\;0\;4\;(1+2i)\;(1+\tfrac32i)$
+(\mathrm{[NAME]}). 
+
+\section{Two configurations}\label{sec:duality}
+The complete quadrilateral (four lines, six vertices, three diagonals) and the complete quadrangle (four
+points, six sides, three diagonal points) correspond under projective duality, and the two parts of this
+paper are often presented side by side: a conic tangent to four lines on one side and a conic through
+four points on the other; the Miquel point, common to four circumcircles, and the Poncelet point,
+common to four nine-point circles. We make no claim that the metric theorems of the two parts correspond under duality: duality does
+not preserve circles, foci or orthocentres, and the parallel is one of presentation. We prove no
+formal duality, and no theorem of this paper relates the two parts. The two developments share the
+definitions of \cite{paperE} and are otherwise independent: Part~(A) uses lines and $[NAME]$,
+Part~(B) uses points and $[NAME]$.
+
+  The new bridges are:
+\begin{itemize}
+\item \emph{distance to a line}: $\operatorname{infDist}(z,\operatorname{line}[h_0,h_0+W])=|\operatorname{cr}(W,z-h_0)|/\|W\|$
+for $W\neq0$ (\mathrm{[NAME]}), hence the point--direction form of \mathrm{OnParabola}
+(\mathrm{[NAME]}); and $\|z-\operatorname{foot}(z,L)\|\,\|d\|=|\operatorname{cr}(d,z-p)|$
+(\mathrm{[NAME]});
+ 
+\end{itemize}
+ 
+
+\section{Related work}\label{sec:related}
+\paragraph{Classical.} The inscribed parabola of a complete quadrilateral, with focus at the Miquel
+point and directrix the orthocentre line, and the Poncelet point of a complete quadrangle are classical;
+see Johnson \cite{johnson1929} and Coolidge \cite{coolidge1916}, and for the quadrilateral Steiner's
+note \cite{steiner1828}. The concurrence of the four nine-point circles is due to Brianchon and Poncelet
+\cite{brianchonponcelet}. We do not attempt finer historical attributions.
+
+\paragraph{Formal proofs.  
+One directly relevant ingredient was missed by our sweep and found by an independent reviewer:
+  Applied to each of the four triangles and their common
+Miquel point, it gives each triangle's line of three reflections through that triangle's orthocentre;
+Theorem~\ref{thm:refl} is the four-line statement (all four reflections and all four orthocentres on
+one line, including the case $H_3=H_4$), which that entry does not state.  Two controls were found as
+ 
+ 
+
+The search was not exhaustive, and the gaps matter for the claim:
+\begin{itemize}
+\item GitHub code search is rate-limited and indexes only default branches; rate-limited queries were
+re-run, but zero hits there are not exhaustive evidence.
+\item ProofAtlas was searched only through its sitemap (752 URLs, titles only); its search page and
+full text were not queried.
+\item The AFP was searched by entry names and through GitHub code search of its mirror, not by a local
+full-text grep of all entries.
+\item Outputs of synthetic and Wu-method provers (for example the collections of Chou \cite{chou1988})
+and GeoGebra/Coq exports were barely searched, and Newclid and AlphaGeometry only at the level of
+their example lists. 
+\item The sweep missed the AFP Steiner-line entry above, which shows its coverage of recent AFP entries
+was incomplete.
+\item Private Zulip streams are not covered.
+\end{itemize}
+So the claim is only this: in the sources searched, and subject to these gaps, we found no earlier
+  Two
+ingredients are not new: the Miquel theorem used in Theorem~\ref{thm:lambert} has earlier formal proofs
+(see \cite{paperE}), and the perpendicularity of the Newton--Gauss line to the orthocentre line, for a
+pair of orthocentres, is in \cite{paperE}; Theorem~\ref{thm:newton} restates it for the whole directrix.
+
+\paragraph{This series. 
+
+ \section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{One labelling.} Part~(A) is proved for the given order of the four lines; the symmetric
+versions are not stated. Part~(B) proves the permutation invariance of $P$ (Theorem~\ref{thm:s4}), and
+the pedal theorem for each of the four points.
+\item \textbf{Lambert. 
+\item \textbf{No conic theory.  The parabola is defined ad hoc by focus
+and directrix; tangency is ``exactly one common point''; the rectangular hyperbola of Part~(B) is used
+only to derive the formula and appears in no theorem.
+\item \textbf{No duality.} The two parts are not related by any formal theorem
+(Section~\ref{sec:duality}).
+\item \textbf{Local notions.} The points $M$, $P$, the feet and the diagonal points are given by local
+ 
+\item \textbf{Concyclic quadrangles.} The pedal theorem excludes them, and the corresponding Simson-line
+ 
+\item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
+\end{enumerate}
+
+ 

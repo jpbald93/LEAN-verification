@@ -1,0 +1,29 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Baranyai1 (Baranyai's theorem, divisible case; hypergraph form).
+Let n and k be positive integers such that k divides n. Then the complete
+k-uniform hypergraph K_n^(k) on n vertices (vertex set an n-element set X,
+edges all k-element subsets of X) decomposes into 1-factors (perfect matchings):
+its edge set can be partitioned into C(n-1, k-1) = C(n,k)·(k/n) classes, each of
+which is a perfect matching, i.e. a set of n/k pairwise disjoint k-subsets
+whose union is X.
+
+Baranyai2 (equivalent parallel-class / partition form).
+Let X be a finite set with |X| = n and let k be a positive integer dividing n.
+Then the family of all k-element subsets of X can be partitioned into
+C(n-1, k-1) parallel classes, where a parallel class is a partition of X into
+n/k blocks each of size k. Equivalently: there are C(n-1, k-1) partitions of X
+into k-sets such that every k-subset of X occurs as a block in exactly one of
+these partitions.
+
+Baranyai3 (general form; almost-regular partitions; van Lint–Wilson Thm 38.1).
+Let n, k be positive integers with k <= n, let X be an n-set, and let
+a_1, ..., a_t be nonnegative integers with a_1 + ... + a_t = C(n,k).
+Then the k-subsets of X can be partitioned into collections A_1, ..., A_t with
+|A_i| = a_i such that each A_i is almost regular: every point of X lies in
+either floor(k·a_i / n) or ceil(k·a_i / n) members of A_i.
+  (a) In particular, if k | n, taking t = C(n-1,k-1) and all a_i = n/k, each A_i is a
+      partition of X, recovering Baranyai1/Baranyai2.
+  (b) Special case k = 2 (classical, 19th century; Walecki / round-robin):
+      if n is even, the edges of the complete graph K_n can be partitioned
+      into n - 1 perfect matchings (a 1-factorization of K_n).

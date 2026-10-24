@@ -1,0 +1,22 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+All in the Euclidean plane.
+
+D1 (Clifford's circle theorems, Clifford 1871; the inversive form of Miquel's theorems).
+ (a) n = 4. Let four circles pass through one common point M and be otherwise in general position: any two of them meet again in a second point P_ij different from M, and for each three of the circles the three second points P_ij, P_ik, P_jk are not collinear, so they determine a circle Γ_ijk. Then the four circles Γ_123, Γ_124, Γ_134, Γ_234 pass through one common point.
+ (b) n = 5. Five circles through M, in general position in the same sense. For each four of them, part (a) gives a common point. Then these five points lie on one circle.
+ (c) n = 6. Six circles through M, in general position. For each five of them, part (b) gives a circle. Then these six circles pass through one common point.
+ (d) Clifford's chain. This alternates indefinitely: for every n ≥ 2, n circles through a common point in general position determine, in this way, a point when n is even and a circle when n is odd (with the n circles/points at one level lying on the object at the next).
+
+D2 (Miquel's five circles theorem / pentagram theorem). Take five lines in general position forming a pentagram; its five outer triangles each have a circumcircle. Consecutive circumcircles meet in a vertex of the inner pentagon and in a second point. These five second points lie on one circle.
+
+D3 (Lester's theorem, 1997). In a scalene triangle, the two Fermat points (the isogonic centres: the first is where the lines from each vertex to the apex of the equilateral triangle erected outwardly on the opposite side concur, the second the same with equilateral triangles erected inwardly), the circumcentre and the nine-point centre lie on one circle.
+
+D4 (Sawayama–Thébault theorem; Thébault's third problem, 1938). Let D be a point on side BC of triangle ABC. Consider the two circles that are tangent to the lines AD and BC and internally tangent to the circumcircle of ABC, one on each side of AD. Then their centres and the incentre of ABC are collinear.
+
+D5 (Kosnita's theorem). Let O be the circumcentre of triangle ABC and let O_a, O_b, O_c be the circumcentres of the triangles OBC, OCA, OAB. Then the lines AO_a, BO_b, CO_c are concurrent (at the Kosnita point, the isogonal conjugate of the nine-point centre).
+
+D6 (Blundon's fundamental inequality, 1965). For any triangle with circumradius R, inradius r and semiperimeter s,
+  2R² + 10Rr − r² − 2(R − 2r)√(R² − 2Rr) ≤ s² ≤ 2R² + 10Rr − r² + 2(R − 2r)√(R² − 2Rr).
+
+D7 (Steiner–Lehmus theorem). If two internal angle bisectors of a triangle, each measured from a vertex to the opposite side, are equal in length, then the triangle is isosceles.

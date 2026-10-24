@@ -1,0 +1,921 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of our developments; every \decl{...} must be in that repository's gate.sh
+% REQUIRED list (checked by the name gate).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. Filled in when the repositories are published; until then \src prints file:line only.
+% ---------------------------------------------------------------------------------------------
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\expandafter\def\csname commitof:quadparabola\endcsname{f85c7bbdbf527c37b940d2331e6d720f01d221db}
+\expandafter\def\csname commitof:quadrangle\endcsname{4153ce0b11533a95060eb4f1a25e54708fa13875}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+\title{The inscribed parabola and the Poncelet point:\\ the complete quadrilateral and the complete quadrangle in Lean~4}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
+\date{22 October 2026}
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+We give machine-checked proofs, in Lean~4 with Mathlib, of two families of classical theorems: one
+about four lines and one about four points. For four lines in general position (a complete
+quadrilateral) we prove that the reflections of the Miquel point $M$ in the four lines lie on the line
+of the four orthocentres, that $M$ is not on that line, and that the parabola with focus $M$ and
+directrix the orthocentre line is tangent to each of the four lines, with an explicit point of contact
+on each. We also prove the elementary facts about this parabola that we use to describe it: its vertex
+is on it, at half the focus--directrix distance from the focus, and is the point of the parabola
+closest to the directrix; its axis is perpendicular to the directrix; and the Newton--Gauss line is
+perpendicular to the directrix, so parallel to the axis. A further file proves that none of the four
+lines is parallel to the axis, so the tangency holds in the classical sense; that this is the only
+parabola tangent to the four lines; and Lambert's theorem for every parabola tangent to the three side
+lines of a triangle. For four points with no three collinear (a complete quadrangle) that are not an orthocentric
+system, we define the Poncelet point by an explicit formula and prove that it lies on the four
+nine-point circles (Mathlib's
+\texttt{ninePointCircle}), that three of them already meet only there, that it lies on the four
+pedal circles when the points are not concyclic, and on the circumcircle of the diagonal triangle
+when no two opposite sides are parallel. The formula fails exactly for orthocentric quadrangles, where
+we prove that the four nine-point circles coincide. Outside the orthocentric case we prove the point invariant
+under a generating set of permutations of the four points (hence under all), and we prove that one
+transposition fails in the orthocentric case under Lean's convention $x/0=0$. The further file also
+proves the pedal-circle and diagonal-circle statements in the orthocentric case, and that every point
+on the four nine-point circles is the centre of a rectangular conic through the four points. The original
+main theorems are restated with Mathlib-only types and shown non-vacuous by explicit configurations, and
+they were compared with blind restatements from our prose; all the classical statements were compared
+with a blind restatement from the classical literature.
+All proofs use only Lean's three standard axioms. In the sources
+we searched we found no earlier formal proof of the full statements; the triangle form of the
+reflection theorem (Steiner's line) has an earlier formal proof in Isabelle/HOL, and other ingredients
+come from our earlier paper.
+\end{abstract}
+
+\section{Introduction}
+
+A \emph{complete quadrilateral} is four lines in the plane, no two parallel and no three through a
+point; a \emph{complete quadrangle} is four points, no three on a line. The two configurations are
+the line and point versions of the same combinatorial figure, and each has a family of classical
+theorems about its four triangles \cite{johnson1929,coolidge1916}. Our previous paper
+\cite{paperE} formalised eight theorems about the quadrilateral: the Newton--Gauss line, the line of
+the four orthocentres, the Gauss--Bodenmiller theorem, the Miquel point $M$ (common to the four
+circumcircles), the Steiner circle, the Simson line of $M$ and its parallelism to the orthocentre
+line. This paper continues in two directions.
+
+\emph{(A) The quadrilateral.} The four lines touch exactly one parabola; its focus is $M$ and its
+directrix is the orthocentre line. We prove the half of this that can be stated without a general
+theory of conics: the parabola with focus $M$ and directrix the orthocentre line is tangent to each of
+the four lines. On the way we prove that the reflections of $M$ in the four lines lie on the
+orthocentre line and that $M$ does not. The other half, uniqueness, and Lambert's theorem for an
+arbitrary inscribed parabola are proved in a later file, against statements written from the classical
+literature (Section~\ref{sec:verify}).
+
+\emph{(B) The quadrangle.} Unless the quadrangle is orthocentric (one point the orthocentre of the
+other three), the nine-point circles of its four triangles pass through one point, the \emph{Poncelet
+point}, which is also the centre of the unique rectangular conic through the four points. In the
+orthocentric case the four nine-point circles coincide. We give it by an explicit formula and prove that it lies on the four nine-point circles,
+on the four pedal circles, and on the circumcircle of the diagonal triangle, each under exactly the
+hypotheses it needs.
+
+Table~\ref{tab:thms} lists the main theorems.
+
+\begin{table}[h]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}\begin{tabular}{lll}
+\toprule
+& theorem & Lean\\
+\midrule
+\multicolumn{3}{l}{\emph{(A) four lines in general position}}\\
+\ref{thm:refl} & reflections of $M$ on the orthocentre line, collinear & \decl{QuadMiquel.reflPt_mem_orthoLine}\\
+& & \decl{QuadMiquel.reflections_collinear}\\
+\ref{thm:off} & $M$ not on the orthocentre line & \decl{QuadMiquel.miquel_not_mem_orthoLine}\\
+\ref{thm:tangent} & the parabola is tangent to each line & \decl{QuadMiquel.parabola_tangent}\\
+\ref{thm:tanpt} & named points of contact & \decl{QuadMiquel.tanPt_all}\\
+\ref{thm:vertex} & vertex, axis & \decl{QuadMiquel.vertex_onParabola}\\
+& & \decl{QuadMiquel.dist_vertex}, \decl{QuadMiquel.vertex_closest}\\
+& & \decl{QuadMiquel.axis_perp}\\
+\ref{thm:newton} & Newton--Gauss line $\perp$ directrix & \decl{QuadMiquel.newton_perp_orthoLine}\\
+\ref{thm:lambert} & tangent parabola with focus on the circumcircles & \decl{QuadMiquel.lambert}\\
+$\ast$ & tangency in the classical sense & \decl{QuadMiquel.Classical.cov_classical_C4_a}\\
+$\ast$ & uniqueness of the inscribed parabola (focus, directrix) & \decl{QuadMiquel.Classical.cov_classical_C4_b}\\
+$\ast$ & Lambert for every parabola tangent to a triangle & \decl{QuadMiquel.Classical.cov_classical_C6_a}, \lean{\_C6\_b}\\
+\midrule
+\multicolumn{3}{l}{\emph{(B) four points, no three collinear}}\\
+\ref{thm:nine} & Poncelet point on the four nine-point circles & \decl{QuadMiquel.ninepoint_concur}\\
+\ref{thm:unique} & three nine-point circles meet only there & \decl{QuadMiquel.ninepoint_unique}\\
+\ref{thm:ortho} & orthocentric case: one nine-point circle & \decl{QuadMiquel.ponDen_eq_zero_iff}\\
+& & \decl{QuadMiquel.orthocentric_ninePointCircle_eq}\\
+\ref{thm:pedal} & on the four pedal circles (not concyclic) & \decl{QuadMiquel.poncelet_on_pedal_d} (and \lean{\_c}, \lean{\_b}, \lean{\_a})\\
+\ref{thm:diag} & on the circumcircle of the diagonal triangle & \decl{QuadMiquel.poncelet_on_diagonal_circle}\\
+\ref{thm:s4} & invariance under all permutations & \decl{QuadMiquel.poncelet_S4}\\
+$\ast$ & pedal, diagonal circles: orthocentric case & \decl{QuadMiquel.Classical.cov_classical_D3_b}, \lean{\_D4}\\
+$\ast$ & centre of a rectangular conic & \decl{QuadMiquel.Classical.cov_classical_D1_c}, \lean{\_D1\_d}\\
+\bottomrule
+\end{tabular}
+\caption{The main theorems. Part~(A) assumes only that the four lines are in general position. The unstarred rows of Part~(B)
+assume that no three of the points are collinear; all except Theorem~\ref{thm:ortho}, which states the
+orthocentric case, also assume that the quadrangle is not orthocentric, plus, for
+Theorems~\ref{thm:pedal} and~\ref{thm:diag}, the hypothesis named there. Rows marked $\ast$ are
+proved in the Layer-15 file \lean{QuadMiquel/L15Classical.lean} for statements written from the
+classical literature, under the classical hypotheses described in Section~\ref{sec:verify}; they
+include the orthocentric case. Their declarations are in namespace \lean{QuadMiquel.Classical}.}\label{tab:thms}
+\end{table}
+
+\subsection{Contributions}
+\begin{itemize}
+\item A definition of a parabola by focus and directrix in Lean, with Mathlib's
+\mdecl{Metric.infDist} as the distance to the directrix, and of tangency as ``exactly one common
+point'', bridged to an explicit cross-product form (Section~\ref{sec:parabola}). Mathlib has no
+conics, and we do not develop a theory of them; the definitions are only what the theorems need.
+\item Theorems~\ref{thm:refl}--\ref{thm:lambert} about the inscribed parabola of the complete
+quadrilateral, all from the single hypothesis $\lean{GenPos}$ of \cite{paperE}, including the
+case $L_1\perp L_2$ in which two of the orthocentres coincide.
+\item An explicit formula for the Poncelet point (Section~\ref{sec:quadrangle}) and
+Theorems~\ref{thm:nine}--\ref{thm:s4}, with Mathlib's \mdecl{Affine.Simplex.ninePointCircle} and
+\mdecl{EuclideanGeometry.Cospherical} in the conclusions.
+\item Findings about the statements: the formula's denominator vanishes exactly for orthocentric
+quadrangles, where the four nine-point circles coincide and the common point is not unique
+(Theorem~\ref{thm:ortho}); the pedal-circle theorem needs the four points not to be concyclic; and
+one symmetry of the formula that holds in the generic case is false, as a Lean statement, in the
+orthocentric case (Theorem~\ref{thm:s4}).
+\item Statement checks beyond the battery of the earlier papers (Section~\ref{sec:verify}): a blind
+restatement of every original numbered theorem from the prose, compared both ways with the Lean; a
+restatement of the original geometric results with Mathlib-only types, each with an explicit
+non-degenerate witness; and a comparison with
+Lean statements written, by a model of a different family, from classical statements taken from the
+literature. The last closed
+three gaps of the main development: uniqueness of the inscribed parabola and Lambert's theorem for any
+inscribed parabola, tangency in the classical sense, and the orthocentric case of the pedal and
+diagonal statements.
+\end{itemize}
+
+\paragraph{What is not claimed.} The main files prove Theorem~\ref{thm:lambert} for the parabola
+we construct; uniqueness of the inscribed parabola, and with it Lambert's theorem for ``the'' inscribed
+parabola, are proved only in the Layer-15 file (Section~\ref{sec:verify}). In the main files the
+rectangular hyperbola of Part~(B) is only where our formula came from; the rectangular-conic statements
+are likewise in the Layer-15 file. We do not formalise the limiting statements excluded by the
+hypotheses of Theorem~\ref{thm:diag} and of $\lean{QGen}$ (Section~\ref{sec:limits}).
+We do not formalise any duality between the two parts (Section~\ref{sec:duality}). Part~(A) is proved
+for one labelling of the four lines.
+
+\subsection{Availability}\label{sec:avail}
+The proofs are in two Lean~4 developments on Lean v4.33.1 with Mathlib pinned at revision
+\texttt{0df444a3}. Both extend the \lean{quadmiquel} development of \cite{paperE}: its seven library
+files (\lean{Basic}, \lean{Algebra}, \lean{Frame}, \lean{Miquel}, \lean{Simson}, \lean{Bridge},
+\lean{Parallel}) are included unchanged, with the same SHA-256 hashes, and each development adds new
+files and import lines only. File and line counts are of the library \lean{.lean} files, including the
+root import file and counting every physical line. The counts are of the published repositories, which also contain the Layer-14 and Layer-15
+files of Section~\ref{sec:verify}.
+Supporting material (the verification battery and build reports, fresh-clone receipts with their scripts, the prior-art sweep, the hand-check sheet, the Layer-13, Layer-14 and Layer-15 files and reports, and the reviews) is in the folder \texttt{PaperF-inscribed-parabola-poncelet-point} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+\begin{center}\small
+\begin{tabular}{lp{7.2cm}rr}
+\toprule
+repository & new files & files & lines\\
+\midrule
+A: \lean{quadparabola} & \lean{Parabola} (602), \lean{ParabolaPoints} (277), \lean{L14Parabola} (1{,}321), \lean{L15Classical} (1{,}132) & 12 & 5{,}250\\
+B: \lean{quadrangle} & \lean{Quadrangle} (1{,}132), \lean{QuadrangleSym} (123), \lean{L14Quadrangle} (637), \lean{L15Classical} (1{,}167) & 12 & 4{,}977\\
+\bottomrule
+\end{tabular}
+\end{center}
+The repositories are \url{https://github.com/jpbald93/quadparabola} at commit \texttt{f85c7bbdbf527c37b940d2331e6d720f01d221db} and \url{https://github.com/jpbald93/quadrangle} at commit \texttt{4153ce0b11533a95060eb4f1a25e54708fa13875};
+Lean v4.33.1, Mathlib revision \texttt{0df444a360eaa60ab8c11dca51a86af692955474} (pinned in
+\lean{lake-manifest.json}). As in \cite{paperE}, each repository has a gate script (\lean{gate.sh})
+that rejects forbidden tokens, builds the library and checks with \lean{\#print axioms} that every
+declaration in its \lean{REQUIRED} list depends only on \lean{propext}, \lean{Classical.choice} and
+\lean{Quot.sound}, and a tampering suite (\lean{tests/tamper.sh}). Every \lean{QuadMiquel} name cited
+in this paper is in the \lean{REQUIRED} list of the repository that contains it.
+
+\section{The model}\label{sec:model}
+
+We use the model of \cite{paperE}, file \lean{Basic.lean}, unchanged. Points are complex numbers;
+$\operatorname{cr}(a,b)=\operatorname{Im}(\bar a b)$. A line $L=(p,d)$ has carrier
+$\{z:\operatorname{cr}(d,z-p)=0\}$; $\operatorname{meet}(L,M)$ is the explicit intersection point;
+$\operatorname{circ}(a,b,c)$ and $\operatorname{ortho}(a,b,c)=a+b+c-2\operatorname{circ}(a,b,c)$ are the
+circumcentre and orthocentre by explicit formulas; and
+$\operatorname{foot}(z,L)=p+\operatorname{Re}(\bar d(z-p))/|d|^2\cdot d$. Four lines are in
+\emph{general position} ($\lean{GenPos}$) if their directions are nonzero, no two are parallel, and no
+three pass through a point. \cite{paperE} proves that each of these is the corresponding Mathlib
+notion; the bridges are repeated in both developments (Section~\ref{sec:bridges}).
+
+For the quadrilateral we keep the notation of \cite{paperE}: $A_{ij}=\operatorname{meet}(L_i,L_j)$;
+$T_k$ is the triangle of the three vertices not on $L_k$; $H_k$ is its orthocentre; $M$ is the Miquel
+point \lean{miquelPt}, given by an explicit formula; $F_k=\operatorname{foot}(M,L_k)$; and
+\[
+  W=F_2-F_1
+\]
+is the direction of the Simson line, which \cite{paperE} proves parallel to the orthocentre line.
+$W\neq0$ under $\lean{GenPos}$, since the four feet are pairwise distinct.
+
+For the quadrangle we add one definition. Four points $a,b,c,d\in\CC$ satisfy $\lean{QGen}$ if no three
+of them are collinear, stated as $\operatorname{cr}(b-a,c-a)\neq0$, $\operatorname{cr}(b-a,d-a)\neq0$,
+$\operatorname{cr}(c-a,d-a)\neq0$ and $\operatorname{cr}(c-b,d-b)\neq0$. No other condition is built
+into $\lean{QGen}$; each theorem states any further hypothesis it needs.
+
+\paragraph{Method.} As in \cite{paperE}, each theorem is reduced to rational-function identities in a
+normalised frame with the complex conjugates treated as independent variables, closed mainly by
+\lean{field\_simp} and \lean{ring}; incidence and non-degeneracy lemmas connect them to the geometric
+statements. In Part~(B) the frame puts $d$ at the origin, $x=a-d$, $y=b-d$, $z=c-d$. Every
+identity was checked first in SymPy over $\mathbb{Q}$ with the conjugates as independent atoms, and
+numerically (Section~\ref{sec:verify}).
+
+\section{The complete quadrilateral: the inscribed parabola}\label{sec:parabola}
+
+All theorems of this section are in \lean{quadparabola}, files \lean{Parabola.lean} and
+\lean{ParabolaPoints.lean}, and each assumes only $\lean{GenPos}\,L_1\,L_2\,L_3\,L_4$.
+
+\paragraph{Definitions.} The reflection of $z$ in $L$ is $\operatorname{refl}(z,L)=2\operatorname{foot}(z,L)-z$
+(\lean{reflPt}). The \emph{orthocentre line} \lean{orthoLine} is Mathlib's affine span
+$\operatorname{affineSpan}_\RR\{H_1,H_2,H_3,H_4\}$; it is our directrix. For a point $f$ and an affine
+subspace $S$ of $\CC$,
+\[
+  \lean{OnParabola}\;f\;S\;z\quad:\Longleftrightarrow\quad \operatorname{dist}(z,f)=\operatorname{infDist}(z,S),
+\]
+with Mathlib's \mdecl{Metric.infDist} (the infimum of the distances from $z$ to points of $S$); and a
+line $L$ is \emph{tangent} to the parabola, $\lean{Tangent}\;L\;f\;S$, if exactly one point $z$ of the
+carrier of $L$ satisfies $\lean{OnParabola}\;f\;S\;z$ (Lean's $\exists!$). This notion of tangency is
+the right one for a parabola and a line not parallel to its axis; a line parallel to the axis also
+meets the parabola exactly once, so this notion is weaker than the classical one. We prove that none
+of the four lines is such a line (\decl{QuadMiquel.line_not_perp}, below), so for them the classical
+tangency (exactly one common point and not parallel to the axis) holds in full; this is stated as
+\decl{QuadMiquel.Classical.l15_lines_not_parallel_axis} and \decl{QuadMiquel.Classical.cov_classical_C4_a} in the Layer-15 file
+(Section~\ref{sec:verify}). For $S$ a line we bridge \lean{OnParabola} to the
+point--direction form: for $W\neq0$,
+$\operatorname{infDist}(z,\operatorname{line}[h_0,h_0+W])=|\operatorname{cr}(W,z-h_0)|/\|W\|$
+(\decl{QuadMiquel.infDist_line}), so
+$\lean{OnParabola}\;f\;\operatorname{line}[h_0,h_0+W]\;z\iff \operatorname{dist}(z,f)=|\operatorname{cr}(W,z-h_0)|/\|W\|$
+(\decl{QuadMiquel.onParabola_line_iff}). Under $\lean{GenPos}$ the orthocentre line is
+$\operatorname{line}[H_4,H_4+W]$ (\decl{QuadMiquel.orthoLine_eq}; membership and distance in
+\decl{QuadMiquel.mem_orthoLine}, \decl{QuadMiquel.infDist_orthoLine}). This holds also when two
+orthocentres coincide, which happens in general position exactly when two lines are perpendicular
+(\cite{paperE}, \decl{QuadMiquel.ortho34_eq_iff}); the direction $W$ never degenerates.
+
+\begin{theorem}[\decl{QuadMiquel.reflPt_mem_orthoLine}, \decl{QuadMiquel.reflections_collinear}, \decl{QuadMiquel.reflections_collinear_orthos}]\label{thm:refl}
+Let $R_k=\operatorname{refl}(M,L_k)$. Then each $R_k$ lies on the orthocentre line, and
+$\{R_1,R_2,R_3,R_4\}$ is \mdecl{Collinear}. Moreover, for each $k$,
+$\operatorname{cr}(H_i-H_4,\,R_k-H_4)=0$ for $i=1,2,3$.
+\end{theorem}
+The coordinate form is \decl{QuadMiquel.reflPt_cr}: $\operatorname{cr}(W,R_k-H_4)=0$ for $k=1,\dots,4$.
+The three-orthocentre form follows from it and the relations $\operatorname{cr}(W,H_i-H_4)=0$ of
+\cite{paperE} (\decl{QuadMiquel.steiner_parallel_all}) because $W\neq0$, so it says something even when
+$H_3=H_4$. The membership is also stated with the affine span written out
+(\decl{QuadMiquel.reflections_mem_affineSpan}). Only $R_1$ needs a frame computation
+(\decl{QuadMiquel.parR1}); the others follow since $R_k-R_1=2(F_k-F_1)$ is a real multiple of $W$ by
+the Simson line (\decl{QuadMiquel.simson_cr}). Classically the line of the $R_k$ is the Steiner line
+of $M$; we do not use that name in the Lean. The triangle form of this fact has an earlier formal proof
+in Isabelle/HOL \cite{afpsteinerline} (Section~\ref{sec:related}).
+
+\begin{theorem}[\decl{QuadMiquel.miquel_not_mem_orthoLine}, \decl{QuadMiquel.miquel_cr_ne}]\label{thm:off}
+$M$ is not on the orthocentre line: $\operatorname{cr}(W,M-H_4)\neq0$.
+\end{theorem}
+In the normal frame of \cite{paperE} (with $A_{13}-A_{12}=u$, $A_{23}-A_{12}=v$, $A_{14}-A_{12}=su$,
+$A_{24}-A_{12}=tv$, $s,t$ real), \decl{QuadMiquel.parM} gives
+\[
+  \overline{\widetilde W}(M-H_4)-\widetilde W(\overline{M}-\overline{H_4})
+  =-\frac{(s-1)(s-t)(t-1)\,K^3}{2E^2D^2},\qquad K=\bar v u-\bar u v,
+\]
+with $D=su-tv-u+v$, $E=\bar D$, and $\widetilde W=K/(2E)$ (\lean{qW}), the frame form of the direction:
+$W=-(s-t)\widetilde W$ (\decl{QuadMiquel.parab_frame}). The left side is $2i\operatorname{cr}(\widetilde W,M-H_4)$. General position excludes $s=1$, $t=1$, $s=t$
+and $K=0$ and makes $D,E\neq0$, so no hypothesis beyond $\lean{GenPos}$ is needed. The statement is also
+given with the affine span written out (\decl{QuadMiquel.miquel_not_mem_affineSpan}). A consequence is
+that no $L_k$ is perpendicular to the directrix: $\operatorname{Re}(\bar W d_k)\neq0$
+(\decl{QuadMiquel.line_not_perp}); otherwise $M-R_k$, which is perpendicular to $L_k$, would be
+parallel to the directrix and $M$ would lie on it.
+
+\begin{theorem}[\decl{QuadMiquel.parabola_tangent}]\label{thm:tangent}
+For each $L\in\{L_1,L_2,L_3,L_4\}$, $\lean{Tangent}\;L\;M\;(\text{orthocentre line})$: exactly one point
+of $L$ is equidistant from $M$ and from the orthocentre line.
+\end{theorem}
+The four instances are also stated separately (\decl{QuadMiquel.parabola_tangent₁}, \dots,
+\decl{QuadMiquel.parabola_tangent₄}). The proof uses an abstract lemma
+(\decl{QuadMiquel.existsUnique_parabola}): if $W\neq0$, $L$ has nonzero direction, $R$ is on the line
+$h_0+\RR W$, every point of $L$ is equidistant from $f$ and $R$, and $L$ is not perpendicular to $W$,
+then exactly one $z\in L$ has $\operatorname{dist}(z,f)=|\operatorname{cr}(W,z-h_0)|/\|W\|$. It is
+applied with $f=M$ and $R=R_k$, using that each point of $L_k$ is equidistant from $M$ and its
+reflection (\decl{QuadMiquel.dist_reflPt}), Theorem~\ref{thm:refl} and
+\decl{QuadMiquel.line_not_perp}. The point found is the point of $L$ on the perpendicular to the
+directrix through $R$: there $\operatorname{dist}(z,M)=\operatorname{dist}(z,R)$ is the distance to the
+directrix, and at every other point of $L$ it is larger.
+
+\paragraph{Points of contact, vertex and axis.} \lean{ParabolaPoints.lean} names these objects. With
+$\lean{dirW}=W$, the directrix as a \lean{Line} is $\lean{directrix}=(H_4,W)$, and its carrier is the
+orthocentre line (\decl{QuadMiquel.directrix_carrier}). For a line $L$, a direction $W$ and a point
+$R$, $\lean{perpMeet}\;L\;W\;R=p+\dfrac{\operatorname{Re}(\bar W(R-p))}{\operatorname{Re}(\bar Wd)}\,d$
+is the point of $L$ on the line through $R$ perpendicular to $W$ (\decl{QuadMiquel.perpMeet_perp},
+when $\operatorname{Re}(\bar Wd)\neq0$). The point of contact of $L$ is
+$\lean{tanPt}\;L=\lean{perpMeet}\;L\;W\;\operatorname{refl}(M,L)$; the axis is
+$\lean{axisLine}=(M,iW)$; and the vertex is $V=\tfrac12\big(M+\operatorname{foot}(M,\lean{directrix})\big)$.
+
+\begin{theorem}[\decl{QuadMiquel.tanPt_all}]\label{thm:tanpt}
+For each $L\in\{L_1,\dots,L_4\}$: $\lean{tanPt}\;L$ is on $L$, it is on the parabola with focus $M$ and
+directrix the orthocentre line, and every point of $L$ on that parabola equals $\lean{tanPt}\;L$.
+\end{theorem}
+The three parts are also separate theorems: \decl{QuadMiquel.tanPt_mem} (which holds for every line
+and needs no hypothesis), \decl{QuadMiquel.tanPt_onParabola} and \decl{QuadMiquel.tanPt_unique}. The
+key lemma \decl{QuadMiquel.perpMeet_spec} is \decl{QuadMiquel.existsUnique_parabola} with the witness
+made explicit.
+
+\begin{theorem}[\decl{QuadMiquel.vertex_onParabola}, \decl{QuadMiquel.dist_vertex}, \decl{QuadMiquel.vertex_closest}, \decl{QuadMiquel.vertex_mem_axis}, \decl{QuadMiquel.axis_perp}]\label{thm:vertex}
+The vertex $V$ is on the parabola; $\operatorname{dist}(V,M)=\tfrac12\operatorname{infDist}(M,\text{orthocentre line})$;
+and for every point $z$ on the parabola,
+$\operatorname{infDist}(V,\text{orthocentre line})\le\operatorname{infDist}(z,\text{orthocentre line})$.
+The vertex is on the axis, and the axis is perpendicular to the directrix:
+$\operatorname{Re}\big(\overline{iW}\,W\big)=0$.
+\end{theorem}
+The last two statements hold for all four lines, with no hypothesis; they are true by construction and
+are recorded to fix the definitions. The distance from the focus to the directrix is
+$\operatorname{dist}(M,\operatorname{foot}(M,\lean{directrix}))$ (\decl{QuadMiquel.infDist_focus}).
+
+\begin{theorem}[\decl{QuadMiquel.newton_perp_orthoLine}, \decl{QuadMiquel.newton_perp_cr}]\label{thm:newton}
+Let $N_1,N_2,N_3$ be the midpoints of the diagonals $A_{12}A_{34}$, $A_{13}A_{24}$, $A_{14}A_{23}$.
+For all $x,y$ on the orthocentre line, $\langle x-y,\,N_2-N_1\rangle=0$ and
+$\langle x-y,\,N_3-N_1\rangle=0$, with Mathlib's real inner product on $\CC$. Also
+$\langle W,N_2-N_1\rangle=\langle W,N_3-N_1\rangle=0$.
+\end{theorem}
+Thus the Newton--Gauss line is perpendicular to the directrix, which means it has the direction of the
+axis. \cite{paperE} proved the perpendicularity of the orthocentre line and the Newton--Gauss line for
+a pair of orthocentres; Theorem~\ref{thm:newton} is the statement for the whole directrix, through $W$,
+and is proved independently in this development (frame identities \decl{QuadMiquel.newton2},
+\decl{QuadMiquel.newton3}, \decl{QuadMiquel.newton_frame}).
+
+\begin{theorem}[Lambert; \decl{QuadMiquel.lambert}]\label{thm:lambert}
+Each of $L_1,\dots,L_4$ is tangent to the parabola with focus $M$ and directrix the orthocentre line,
+and $M$ lies on the circumcircle of each of $T_1,\dots,T_4$.
+\end{theorem}
+The proof combines Theorem~\ref{thm:tangent} with the Miquel theorem of \cite{paperE}
+(\decl{QuadMiquel.miquel}); as stated it is about the parabola we construct, a conjunction of two
+earlier theorems recorded under the classical name. The classical statements are stronger, and are
+proved in the Layer-15 file \lean{QuadMiquel/L15Classical.lean} (Section~\ref{sec:verify}):
+the focus of \emph{any} parabola tangent, in the classical sense, to the three side lines of a triangle
+lies on its circumcircle (\decl{QuadMiquel.Classical.cov_classical_C6_a}); hence every parabola inscribed in the
+quadrilateral has focus $M$ (\decl{QuadMiquel.Classical.cov_classical_C6_b}) and directrix the orthocentre line, so the
+focus--directrix pair of the inscribed parabola is unique (\decl{QuadMiquel.Classical.cov_classical_C4_b}), and the
+Newton--Gauss line is parallel to the axis of every inscribed parabola (\decl{QuadMiquel.Classical.cov_classical_C5_b}).
+The proof of the triangle form uses that the line is not parallel to the axis: with the weaker notion of
+\lean{Tangent} above (exactly one common point only) the step from tangency to ``the reflection of the
+focus lies on the directrix'' fails, and the comparer remarks, without a Lean counterexample, that the
+triangle statement would then be false.
+
+\section{The complete quadrangle: the Poncelet point}\label{sec:quadrangle}
+
+All theorems of this section are in \lean{quadrangle}, files \lean{Quadrangle.lean} and
+\lean{QuadrangleSym.lean}. The four triangles are $(a,b,c)$, $(a,b,d)$, $(a,c,d)$ and $(b,c,d)$.
+
+\paragraph{The formula.} The conics through four points with no three collinear form a pencil. If the
+quadrangle is not orthocentric, exactly one member of the pencil is rectangular (possibly a degenerate
+pair of perpendicular lines), and its centre is the Poncelet point; if it is orthocentric, every member
+is rectangular and their centres fill the common nine-point circle \cite{brianchonponcelet}. In the
+main files this only motivates the formula; no theorem of Section~\ref{sec:quadrangle} depends on it.
+The Layer-15 file proves the classical form (Section~\ref{sec:verify}): every point on the four
+nine-point circles is the centre of a rectangular conic through the four points
+(\decl{QuadMiquel.Classical.cov_classical_D1_c}), and it is a proper rectangular hyperbola unless that point is the
+intersection of two perpendicular opposite sides (\decl{QuadMiquel.Classical.cov_classical_D1_d}). Writing a rectangular hyperbola as
+$\operatorname{Re}(\alpha z^2+\beta z)+\gamma=0$, its centre is $-\beta/(2\alpha)$; solving for the
+conic through four points with $d$ at the origin gives, with $x=a-d$, $y=b-d$, $z=c-d$ and $X,Y,Z$
+their conjugates,
+\[
+  P=\lean{poncelet}\;a\;b\;c\;d=d+\frac{p_N}{2\,p_D},
+\]
+\begin{gather*}
+  p_D=X^2Yz-X^2Zy-XY^2z+XZ^2y+Y^2Zx-YZ^2x,\\
+  p_N=X^2Yz^2-X^2Zy^2-XY^2z^2+XZ^2y^2+Y^2Zx^2-YZ^2x^2 .
+\end{gather*}
+The derivation was done in SymPy; in the main files the formula is a definition, and no rectangular
+hyperbola appears (one does in the Layer-15 file, Section~\ref{sec:verify}). We write $\lean{ponDen}\;a\;b\;c\;d$ for $p_D$. The nine-point centre is
+$\lean{npc}(x,y,z)=\tfrac12(x+y+z-\operatorname{circ}(x,y,z))$, the midpoint of circumcentre and
+orthocentre. A quadrangle is \emph{orthocentric} if each point is the orthocentre of the other three; in Lean the condition is
+$d=\operatorname{ortho}(a,b,c)$, and we prove it equivalent to $c=\operatorname{ortho}(a,b,d)$
+(Theorem~\ref{thm:s4}).
+
+\begin{theorem}[\decl{QuadMiquel.ponDen_eq_zero_iff}, \decl{QuadMiquel.orthocentric_npc_eq}, \decl{QuadMiquel.orthocentric_ninePointCircle_eq}, \decl{QuadMiquel.orthocentric_example}]\label{thm:ortho}
+If $\lean{QGen}\;a\;b\;c\;d$, then $\lean{ponDen}\;a\;b\;c\;d=0$ if and only if $d=\operatorname{ortho}(a,b,c)$.
+In that case the four nine-point centres are equal, and the four Mathlib nine-point circles
+(\mdecl{Affine.Simplex.ninePointCircle}) of the triangles are equal. For example $a=0$, $b=4$,
+$c=1+2i$, $d=1+\tfrac32i$ satisfy $\lean{QGen}$, $d=\operatorname{ortho}(a,b,c)$ and
+$\lean{ponDen}\;a\;b\;c\;d=0$.
+\end{theorem}
+So in the orthocentric case every point of the common nine-point circle lies on all four, and there is
+no Poncelet point to define; the formula's failure is genuine and not an artefact. The algebraic
+certificate is $p_D=Y(Z-X)g_1+X(Z-Y)g_2$, with $g_1,g_2$ the conditions that the origin lie on two
+altitudes of $(x,y,z)$, together with a converse identity
+(\decl{QuadMiquel.pD_zero_iff}). The remaining numbered theorems of this section assume
+$d\neq\operatorname{ortho}(a,b,c)$; under $\lean{QGen}$ this is $\lean{ponDen}\neq0$
+(\decl{QuadMiquel.ponDen_ne}), and it is symmetric (Theorem~\ref{thm:s4}). The hypothesis is needed
+for the formula, not for the geometry of the pedal and diagonal circles: in the orthocentric case the
+four pedal circles and the circumcircle of the diagonal triangle are the common nine-point circle, so
+every point of it lies on them. Theorems~\ref{thm:pedal} and~\ref{thm:diag} do not state this; the
+Layer-15 file proves these branches (\decl{QuadMiquel.Classical.cov_classical_D3_a}, \decl{QuadMiquel.Classical.cov_classical_D3_b},
+\decl{QuadMiquel.Classical.cov_classical_D4}; Section~\ref{sec:verify}).
+
+\begin{theorem}[\decl{QuadMiquel.ninepoint_concur}, \decl{QuadMiquel.poncelet_on_ninepoint}]\label{thm:nine}
+If $\lean{QGen}\;a\;b\;c\;d$ and $d\neq\operatorname{ortho}(a,b,c)$, then $P$ lies on the Mathlib nine-point
+circle of each of the four triangles.
+\end{theorem}
+The triangles are Mathlib's \mdecl{Affine.Triangle} on the three points, built from their
+non-collinearity (\lean{tri}). The local form \decl{QuadMiquel.poncelet_on_ninepoint} states
+$\operatorname{dist}(P,\lean{npc}(\Delta))=\operatorname{dist}(m,\lean{npc}(\Delta))$ for one side
+midpoint $m$ of each triangle $\Delta$; the other two midpoints are at the same distance
+(\decl{QuadMiquel.npc_mid}).
+
+\begin{theorem}[\decl{QuadMiquel.ninepoint_unique}]\label{thm:unique}
+Under the same hypotheses, any point on the nine-point circles of $(a,b,c)$, $(a,b,d)$ and $(a,c,d)$
+equals $P$.
+\end{theorem}
+So three of the circles already meet only at $P$, and in particular $P$ is the only point common to all
+four. By Theorem~\ref{thm:ortho} the hypothesis $d\neq\operatorname{ortho}(a,b,c)$ cannot be dropped.
+
+\begin{theorem}[\decl{QuadMiquel.poncelet_on_pedal_d}, \decl{QuadMiquel.poncelet_on_pedal_c}, \decl{QuadMiquel.poncelet_on_pedal_b}, \decl{QuadMiquel.poncelet_on_pedal_a}]\label{thm:pedal}
+If $\lean{QGen}\;a\;b\;c\;d$, $d\neq\operatorname{ortho}(a,b,c)$, and $\{a,b,c,d\}$ is not
+\mdecl{EuclideanGeometry.Cospherical}, then for each of the four points $v$, the feet of the
+perpendiculars from $v$ to the three sides of the triangle of the other three points, together with $P$,
+are cospherical. (For $v=d$ the sides are $ab$, $bc$, $ca$; for $v=c$, $ab$, $bd$, $da$; for $v=b$, $ac$,
+$cd$, $da$; for $v=a$, $bc$, $cd$, $db$; the line through $p$ and $q$ is $\lean{lineThrough}\;p\;q=(p,q-p)$.)
+\end{theorem}
+\emph{Finding: the non-concyclicity hypothesis is needed.} If $a,b,c,d$ are concyclic, the three feet
+from $v$ are collinear (the Simson line of $v$), so they lie on no circle, and ``the pedal circle''
+does not exist. In Lean, the frame identity \decl{QuadMiquel.pedK} (with \decl{QuadMiquel.pedK'} for the
+vertex $c$) expresses the collinearity determinant of the three feet, times a factor that is nonzero
+under $\lean{QGen}$, as a nonzero multiple of the concyclicity polynomial \lean{crossC} of the four
+points; the proof of Theorem~\ref{thm:pedal} uses the non-concyclicity hypothesis to make \lean{crossC}
+nonzero, so that the feet are not collinear. We did not state the geometric converse (concyclic
+$\Rightarrow$ feet collinear) as a theorem.
+Numerically, for concyclic quadrangles $P$ lies on the Simson line (Section~\ref{sec:verify}). $P$
+itself is defined for concyclic quadrangles: only the pedal statement degenerates.
+
+The cases $v=d$ and $v=c$ have their own frame proofs; $v=b$ and $v=a$ are obtained by relabelling
+$a,b,c$ with the symmetries \decl{QuadMiquel.poncelet_swap} and \decl{QuadMiquel.poncelet_cyc}. The
+extension file gives a second proof of the case $v=c$ from the case $v=d$ and the symmetry $c\leftrightarrow d$
+(\decl{QuadMiquel.poncelet_on_pedal_c'}, the same statement).
+
+\begin{theorem}[\decl{QuadMiquel.poncelet_on_diagonal_circle}]\label{thm:diag}
+If $\lean{QGen}\;a\;b\;c\;d$, $d\neq\operatorname{ortho}(a,b,c)$, and none of the three pairs of opposite
+sides is parallel (\mdecl{AffineSubspace.Parallel}: $\operatorname{line}[a,b]\not\parallel\operatorname{line}[c,d]$,
+$\operatorname{line}[a,c]\not\parallel\operatorname{line}[b,d]$, $\operatorname{line}[a,d]\not\parallel\operatorname{line}[b,c]$),
+then the three diagonal points $ab\cap cd$, $ac\cap bd$, $ad\cap bc$ and $P$ are cospherical.
+\end{theorem}
+The diagonal points are $\lean{diagPt}\;p\;q\;r\;s=\operatorname{meet}(\lean{lineThrough}\;p\;q,\lean{lineThrough}\;r\;s)$.
+The non-parallelism hypotheses are what makes them exist; they also exclude a limiting statement. If
+exactly one pair of opposite sides is parallel, the circle becomes the line through the two finite
+diagonal points, and numerically $P$ lies on that line (residuals at most $6.0\times10^{-62}$ relative to
+the distance of the two points, three configurations, 60 digits); this is not formalised. Given them, the diagonal triangle is never
+degenerate under $\lean{QGen}$: its collinearity determinant is a product of nonzero factors
+(\decl{QuadMiquel.diagK}).
+
+\begin{theorem}[\decl{QuadMiquel.poncelet_S4}, \decl{QuadMiquel.poncelet_swap_cd}, \decl{QuadMiquel.ortho_swap_iff}]\label{thm:s4}
+If $\lean{QGen}\;a\;b\;c\;d$ and $d\neq\operatorname{ortho}(a,b,c)$, then
+$\lean{poncelet}\;a\;b\;c\;d$ equals $\lean{poncelet}$ applied to $(a,c,b,d)$, $(b,c,a,d)$, $(a,b,d,c)$,
+$(d,b,c,a)$, $(a,d,c,b)$ and $(b,c,d,a)$. The first three are the permutations $(b\,c)$, $(a\,b\,c)$,
+$(c\,d)$, which generate $S_4$. Moreover, under $\lean{QGen}\;a\;b\;c\;d$,
+$d=\operatorname{ortho}(a,b,c)\iff c=\operatorname{ortho}(a,b,d)$.
+\end{theorem}
+The theorem lists six permutations; invariance under every permutation follows because the first three
+generate $S_4$, but we did not state the general form as one Lean theorem. The permutations of $a,b,c$
+hold with no hypothesis at all (\decl{QuadMiquel.poncelet_swap}, \decl{QuadMiquel.poncelet_cyc}). For
+$c\leftrightarrow d$, $\lean{ponDen}\;a\;b\;d\;c=-\lean{ponDen}\;a\;b\;c\;d$ always
+(\decl{QuadMiquel.ponDen_swap_cd}), the identity holds whenever that denominator is nonzero
+(\decl{QuadMiquel.poncelet_swap_cd_of_ne}), and $\lean{QGen}$ is preserved
+(\decl{QuadMiquel.QGen.swap_cd}). The symmetry of orthocentricity is proved through
+Theorem~\ref{thm:ortho} on both sides.
+
+\emph{Finding: the transposition $c\leftrightarrow d$ fails in the orthocentric case.} For the example
+of Theorem~\ref{thm:ortho} both denominators vanish, and Lean's convention $x/0=0$ makes
+$\lean{poncelet}\;a\;b\;c\;d=d$ and $\lean{poncelet}\;a\;b\;d\;c=c$. So
+$\lean{poncelet}\;0\;4\;(1+\tfrac32i)\;(1+2i)\neq\lean{poncelet}\;0\;4\;(1+2i)\;(1+\tfrac32i)$
+(\decl{QuadMiquel.poncelet_swap_cd_orthocentric}). This is a fact about the Lean definition outside its
+intended domain, not about geometry; it shows that the non-orthocentric hypothesis of
+Theorem~\ref{thm:s4} cannot be dropped as stated.
+
+\section{Two configurations}\label{sec:duality}
+The complete quadrilateral (four lines, six vertices, three diagonals) and the complete quadrangle (four
+points, six sides, three diagonal points) correspond under projective duality, and the two parts of this
+paper are often presented side by side: a conic tangent to four lines on one side and a conic through
+four points on the other; the Miquel point, common to four circumcircles, and the Poncelet point,
+common to four nine-point circles. We make no claim that the metric theorems of the two parts correspond under duality: duality does
+not preserve circles, foci or orthocentres, and the parallel is one of presentation. We prove no
+formal duality, and no theorem of this paper relates the two parts. The two developments share the
+definitions of \cite{paperE} and are otherwise independent: Part~(A) uses lines and $\lean{GenPos}$,
+Part~(B) uses points and $\lean{QGen}$.
+
+\section{Bridges to Mathlib}\label{sec:bridges}
+Both developments contain the bridges of \cite{paperE} (file \lean{Bridge.lean}, unchanged): a line
+with nonzero direction is Mathlib's line through $p$ and $p+d$ (\decl{QuadMiquel.carrier_eq_line});
+$\operatorname{meet}$ is the unique common point of two non-parallel lines (\decl{QuadMiquel.meet_eq_iff});
+$\operatorname{circ}$ and $\operatorname{ortho}$ are \mdecl{Affine.Simplex.circumcenter} and
+\mdecl{Affine.Triangle.orthocenter} for non-collinear points (\decl{QuadMiquel.circ_eq_circumcenter},
+\decl{QuadMiquel.ortho_eq_orthocenter}); $\operatorname{foot}$ is Mathlib's orthogonal projection
+(\decl{QuadMiquel.foot_eq_orthogonalProjection}); general position makes the four triangles
+non-degenerate and the vertices distinct (\decl{QuadMiquel.genPos_triangles},
+\decl{QuadMiquel.genPos_vertices_ne}); and $\lean{GenPos}$ is equivalent to its statement with Mathlib's
+notions (\decl{QuadMiquel.genPos_iff}). The new bridges are:
+\begin{itemize}
+\item \emph{distance to a line}: $\operatorname{infDist}(z,\operatorname{line}[h_0,h_0+W])=|\operatorname{cr}(W,z-h_0)|/\|W\|$
+for $W\neq0$ (\decl{QuadMiquel.infDist_line}), hence the point--direction form of \lean{OnParabola}
+(\decl{QuadMiquel.onParabola_line_iff}); and $\|z-\operatorname{foot}(z,L)\|\,\|d\|=|\operatorname{cr}(d,z-p)|$
+(\decl{QuadMiquel.norm_sub_foot});
+\item \emph{the directrix}: the orthocentre line, defined as Mathlib's \mdecl{affineSpan} of the four
+orthocentres, is $\operatorname{line}[H_4,H_4+W]$ (\decl{QuadMiquel.orthoLine_eq}) and the carrier of the
+local \lean{Line} $(H_4,W)$ (\decl{QuadMiquel.directrix_carrier}); the distance from the focus to it
+is attained at the foot (\decl{QuadMiquel.infDist_focus}, \decl{QuadMiquel.foot_directrix_mem});
+\item \emph{the nine-point circle}: for non-collinear $a,b,c$, $\lean{npc}(a,b,c)$ is the centre of
+Mathlib's \mdecl{Affine.Simplex.ninePointCircle} of the triangle
+(\decl{QuadMiquel.npc_eq_ninePointCircle_center}), its radius is $\operatorname{dist}(\tfrac{a+b}2,\lean{npc}(a,b,c))$
+(\decl{QuadMiquel.ninePointCircle_radius_eq}), and membership is the corresponding distance equation
+(\decl{QuadMiquel.mem_ninePointCircle_iff});
+\item \emph{concyclicity}: for non-collinear $p,q,r$, the vanishing of the concyclicity polynomial
+\lean{crossC} implies \mdecl{EuclideanGeometry.Cospherical}$\{p,q,r,w\}$
+(\decl{QuadMiquel.cospherical_of_crossC});
+\item \emph{parallelism}: the hypotheses of Theorem~\ref{thm:diag} are stated with
+\mdecl{AffineSubspace.Parallel} for the Mathlib lines $\operatorname{line}[p,q]$, and are converted
+internally to the non-vanishing of cross products.
+\end{itemize}
+The conclusions of Theorems~\ref{thm:refl} and~\ref{thm:off} are stated with Mathlib's
+\mdecl{affineSpan} and \mdecl{Collinear}, those of Theorems~\ref{thm:nine}, \ref{thm:unique}
+and~\ref{thm:ortho} with Mathlib's nine-point circle, and those of Theorems~\ref{thm:pedal}
+and~\ref{thm:diag} with \mdecl{EuclideanGeometry.Cospherical}; the points in them ($M$, $P$, the feet,
+the diagonal points) are given by the local formulas.
+
+\section{Related work}\label{sec:related}
+\paragraph{Classical.} The inscribed parabola of a complete quadrilateral, with focus at the Miquel
+point and directrix the orthocentre line, and the Poncelet point of a complete quadrangle are classical;
+see Johnson \cite{johnson1929} and Coolidge \cite{coolidge1916}, and for the quadrilateral Steiner's
+note \cite{steiner1828}. The concurrence of the four nine-point circles is due to Brianchon and Poncelet
+\cite{brianchonponcelet}. We do not attempt finer historical attributions.
+
+\paragraph{Formal proofs.} On 19 October 2026 we searched for the theorems of both parts in Mathlib
+(local grep at the pinned revision; the current master tree, code search and pull requests), the
+web-public streams of the Lean Zulip, the Archive of Formal Proofs, all 1500 articles of the Mizar
+library, HOL4, HOL~Light, Metamath's \texttt{set.mm}, GeoCoq, ProofAtlas, GitHub code search,
+lean-genius, compfiles, \texttt{formal-conjectures}, FormalBook, and the example lists of the
+AlphaGeometry and Newclid systems. We found no formal proof of the full statements of this paper in any of these sources.
+One directly relevant ingredient was missed by our sweep and found by an independent reviewer:
+\emph{Steiner's line theorem} for a triangle, formalised in Isabelle/HOL \cite{afpsteinerline}: for a
+point on the circumcircle of a nondegenerate triangle, its reflections in the three sidelines are
+collinear on a line through the orthocentre. Applied to each of the four triangles and their common
+Miquel point, it gives each triangle's line of three reflections through that triangle's orthocentre;
+Theorem~\ref{thm:refl} is the four-line statement (all four reflections and all four orthocentres on
+one line, including the case $H_3=H_4$), which that entry does not state. In particular Mathlib has no parabola or other conic
+section; it has the nine-point circle of a simplex and the predicate
+\mdecl{Affine.OrthocentricSystem} (with the lemma that the four triangles of an orthocentric system have
+equal circumradii), but not the coincidence of the four nine-point circles. Two controls were found as
+expected: the nine-point circle (Mathlib, HOL~Light, AFP) and the triangle Simson line (AFP; lean-genius).
+Feuerbach's theorem, a near-miss, is formalised in HOL~Light and the AFP, and an open Mathlib pull
+request proposes it.
+
+The search was not exhaustive, and the gaps matter for the claim:
+\begin{itemize}
+\item GitHub code search is rate-limited and indexes only default branches; rate-limited queries were
+re-run, but zero hits there are not exhaustive evidence.
+\item ProofAtlas was searched only through its sitemap (752 URLs, titles only); its search page and
+full text were not queried.
+\item The AFP was searched by entry names and through GitHub code search of its mirror, not by a local
+full-text grep of all entries.
+\item Outputs of synthetic and Wu-method provers (for example the collections of Chou \cite{chou1988})
+and GeoGebra/Coq exports were barely searched, and Newclid and AlphaGeometry only at the level of
+their example lists. Some algebraic methods have kernel-checked implementations (for example the
+Gr\"obner-basis examples of HOL~Light), so this gap is not harmless.
+\item The sweep missed the AFP Steiner-line entry above, which shows its coverage of recent AFP entries
+was incomplete.
+\item Private Zulip streams are not covered.
+\end{itemize}
+So the claim is only this: in the sources searched, and subject to these gaps, we found no earlier
+formal proof of the full statements of this paper. Two
+ingredients are not new: the Miquel theorem used in Theorem~\ref{thm:lambert} has earlier formal proofs
+(see \cite{paperE}), and the perpendicularity of the Newton--Gauss line to the orthocentre line, for a
+pair of orthocentres, is in \cite{paperE}; Theorem~\ref{thm:newton} restates it for the whole directrix.
+
+\paragraph{This series.} This is the sixth paper in a series of Lean formalisations of classical plane
+geometry by coordinate certificates \cite{paperA,paperB,paperC,paperD,paperE}; it reuses the model and
+the quadrilateral theorems of \cite{paperE}.
+
+\section{Verification}\label{sec:verify}
+\paragraph{Gates and tampering.} Each development was gated before and after its extension file was
+added: \lean{quadparabola} passed with 92 declarations (\lean{Parabola.lean}) and then 110
+(with \lean{ParabolaPoints.lean}); \lean{quadrangle} with 94 (\lean{Quadrangle.lean}) and then 106
+(with \lean{QuadrangleSym.lean}); in every case all listed declarations depend only on the three
+standard axioms. The final repositories, with the Layer-14 and Layer-15 files, pass with 240
+(\lean{quadparabola}) and 220 (\lean{quadrangle}) declarations, built from a clean checkout on both
+machines. The tampering suite of \cite{paperE} (a hidden \lean{sorry}, an axiom split across
+two lines, a fake \lean{\#print axioms} report, a command-redefining macro, a wrapper axiom, and the
+removal of one needed hypothesis) rejected every planted defect at each stage. The builders checked
+by SHA-256 that the seven files inherited from \cite{paperE} were unchanged, and that the root
+import file and \lean{gate.sh} differ only by the appended import lines and the \lean{REQUIRED} list.
+\paragraph{Fresh-clone receipts.} Both published repositories were cloned afresh at the cited commits on an x86-64 Linux machine and an arm64 macOS machine and built with the pinned Lean and Mathlib. On both machines \lean{quadparabola} builds and its gate prints \lean{PASS (240 declarations, standard axioms only)}, and \lean{quadrangle} builds and prints \lean{PASS (220 declarations, standard axioms only)}; the tampering suite rejects every planted defect in both repositories on both machines. The SHA-256 digest of the sorted list of hashes of the \lean{.lean} files is the same on both machines (\texttt{3d75eb40774ca682}\dots{} and \texttt{56cae1e22c43e295}\dots{}).
+
+\paragraph{Numerical and symbolic checks.} Every identity was first checked symbolically in SymPy, over
+$\mathbb{Q}$ with the conjugates as independent variables; in particular the factorisation of
+Theorem~\ref{thm:off}, the identities behind Theorems~\ref{thm:refl} and~\ref{thm:newton}, the
+nine-point, pedal and diagonal identities, the orthocentric certificates and the $c\leftrightarrow d$
+identity are exact zeros. The builders also checked every statement numerically (mpmath, 50 digits, 200--300 random
+configurations per file plus forced near-degenerate ones, using the library's own definitions); the
+worst residuals were between $10^{-36}$ and $10^{-48}$, and the figures are in
+Appendix~\ref{app:numerics}. These checks were run by the agents that wrote the proofs, on their own scripts. An independent
+reviewer (a different AI model) re-checked the main statements in exact rational arithmetic (SymPy, over
+the rational real and imaginary parts), with circumcentres and Miquel points computed from first
+principles rather than from the library's formulas, and without running the builders' scripts. For the
+quadrangle $(0,4,1+2i,3+4i)$: $p_D=-256+80i$, $P=(397+528i)/281$; the four nine-point, four pedal and
+the diagonal-circle residuals are exactly $0$, and all 24 permutations give the same $P$. For the
+orthocentric example of Theorem~\ref{thm:ortho} numerator and denominator are exactly $0$, the four
+nine-point circles have centre $\tfrac32+\tfrac78i$ and squared radius $65/64$, and the totalised
+formula gives $P(a,b,c,d)=1+\tfrac32i$ and $P(a,b,d,c)=1+2i$. For four lines drawn with seed
+\texttt{20261020} (integer base points in $[-4,4]^2$, directions $1+ki$, $k\in[-5,5]$): all
+circumcircle and reflection residuals are $0$, $\operatorname{cr}(W,M-H_4)=-836223829056/2326991022005\neq0$,
+on each line the squared focus distance minus squared directrix distance is a positive multiple of the
+square of a linear polynomial in the line parameter, so exactly one real root (an exact check of
+uniqueness, not a sample), and the squared vertex--focus distance is exactly a quarter of the squared
+focus--directrix distance. A configuration with $L_1\perp L_2$ ($H_3=H_4=0$) gives the same results
+exactly. Numerical checks are evidence, not proofs.
+
+\paragraph{Statement-level battery.} The battery of the earlier papers was run on the extended
+developments (110 and 106 gated declarations), on both machines. The figures are per development,
+counting the inherited files.
+\begin{itemize}
+\item \emph{Part (A)}: conclusion mutations 393/394 rejected on both machines (two of them by the
+heartbeat limit); contradiction probe: no contradiction in 157 probed declarations (37 further
+declarations have no hypotheses and were not probed); satisfiability certified for 98 (one machine) or
+101 (the other) of 194 declarations, 96 or 93 unresolved; hypothesis ablation: removing 251 binders broke
+the existing proof, removing 17 did not; linter: no warnings in the 8 library files checked.
+\item \emph{Part (B)}: conclusion mutations 552/553 rejected on both machines (29 by the heartbeat
+limit); no contradiction in 201 probed declarations (65 without hypotheses, not probed); satisfiability
+certified for 146 (one machine) or 161 (the other) of 266, 120 or 105 unresolved; ablation: 378 binders
+broke the proof when removed, 17 did not; linter: no warnings.
+\end{itemize}
+Apart from satisfiability, where the certifier's results differ between runs, the two machines agree in
+every category. Earlier runs on the 92- and 94-declaration versions, before \lean{ParabolaPoints.lean}
+and \lean{QuadrangleSym.lean} were added, gave the same picture (374/375 and 526/527 mutations rejected,
+no contradiction, the same single survivor and 17 unused binders); they are superseded by the figures above.
+These figures have limits that matter. The mutation generator alters only conclusions of certain forms,
+so many headline declarations produced \emph{no} mutants and are not mutation-tested at all; among them
+\decl{QuadMiquel.parabola_tangent} and its four specialisations, \decl{QuadMiquel.reflPt_mem_orthoLine},
+\decl{QuadMiquel.reflections_collinear}, \decl{QuadMiquel.miquel_not_mem_orthoLine},
+\decl{QuadMiquel.lambert}, \decl{QuadMiquel.vertex_onParabola}, \decl{QuadMiquel.tanPt_onParabola},
+\decl{QuadMiquel.ninepoint_concur}, the four \lean{poncelet\_on\_pedal} theorems and
+\decl{QuadMiquel.poncelet_on_diagonal_circle}. Every main theorem of the main files (the unstarred rows of Table~\ref{tab:thms}) is among the
+unresolved satisfiability cases on both machines; for them, satisfiability is supplied by the explicit
+witnesses of Layer~14 (below). Ablation shows which binders the existing proof uses, not which are logically
+necessary. In both developments the single mutation survivor and all 17 unused binders are in the files
+inherited from \cite{paperE}, and are the ones discussed there: the survivor flips a conjunct of
+\decl{QuadMiquel.orthocentres_not_all_eq'} that its proof does not use, and the unused binders are
+non-vanishing conditions of auxiliary algebraic lemmas. Among the declarations of the four earlier added files (\lean{Parabola.lean},
+\lean{ParabolaPoints.lean}, \lean{Quadrangle.lean}, \lean{QuadrangleSym.lean}) that did produce mutants,
+none survived, and none of their binders was unused. These battery runs cover the developments through
+\lean{ParabolaPoints.lean} and \lean{QuadrangleSym.lean} only. On the final repositories (240 and 220
+declarations), which include the Layer-14 and Layer-15 files, one further battery run per repository was
+completed before publication. \lean{quadparabola} (324 theorems; x86-64 Linux): 710 mutants, 709 rejected (2 of them by timeout), the single survivor being the inherited one; contradiction probe 0 of 220; 127 statements certified satisfiable, 197 unresolved; ablation 412 jobs, 395 binders needed, 17 unused (the inherited ones). \lean{quadrangle} (380 theorems; arm64 macOS): 798 mutants, 797 rejected (38 by timeout), the same single survivor; contradiction probe 0 of 278; 186 certified satisfiable, 194 unresolved; ablation 538 jobs, 521 needed, 17 unused (the inherited ones). No mutant was unattributed in either run, and the 17 unused binders are exactly those listed above.
+The cross-runs on the other machine will be reported in the repositories.
+
+\paragraph{Does the statement mean what it says?} As in \cite{paperE}, a writer agent that saw only a
+version of this paper's text with Lean names and Lean code removed wrote Lean statements of every
+original numbered theorem (23 statements, \lean{blind\_1}--\lean{blind\_23}, type-checked with \lean{sorry}), and a
+comparer proved, for each pair, the blind statement from the library statement and conversely, with the
+blind definitions copied verbatim and only bridge lemmas of the library allowed. Its transcript was
+audited: it read only the blind text. Part~(A): all 11 pairs are equivalent in both directions except
+one, where the Lean is more general: \lean{blind\_8} (vertex on the axis, axis $\perp$ directrix)
+assumes $\lean{GenPos}$, while \decl{QuadMiquel.vertex_mem_axis} and \decl{QuadMiquel.axis_perp} have no
+hypothesis; the converse holds under $\lean{GenPos}$. The writer defined $M$ as the reflection of
+$A_{12}$ in the line of the circumcentres of $T_3$ and $T_4$, not by our formula; identifying the two
+needs a genuine geometric fact, the bridge lemma \decl{QuadMiquel.miquelPt_spec} of \cite{paperE}, so
+every Part~(A) pair is conditional on that lemma. Part~(B): all 12 pairs are equivalent in both
+directions, with no difference. The only non-definitional agreement there is between two closed formulas
+for the circumcentre, an unconditional identity. All comparison proofs depend only on the three
+standard axioms, and the library hashes were unchanged.
+Two disclosures. (i) The first blind text was void: the tool that removed Lean names also deleted the
+body of Theorem~\ref{thm:nine}. The text was rebuilt and the writer re-run; the first attempt is
+not used and is not included in the verification repository. (ii) In the text used, a sentence filter removed the second conjunct of
+Theorem~\ref{thm:newton}, $\langle x-y,N_3-N_1\rangle=0$. The writer marked it ambiguous and guessed it,
+and the guess coincides with the Lean; that pair is therefore weaker evidence than the others.
+
+\paragraph{Statements in Mathlib's language and non-vacuity.} For each of the original geometric
+results listed in the table below (not the later starred results of Table~\ref{tab:thms}), a Layer-14 file in
+each repository (\lean{L14Parabola.lean}, \lean{L14Quadrangle.lean}) states it with Mathlib-only types
+and proves it from the library theorem through bridges: lines are \lean{line[$\RR$,p,q]}, general
+position is stated with \mdecl{AffineSubspace.Parallel}, the triangles are arbitrary
+\mdecl{Affine.Triangle}s with the given vertices, the Miquel point is \emph{any} point on the four
+circumspheres and the Poncelet point \emph{any} point on the four Mathlib nine-point circles (each with
+an $\exists!$ theorem), the directrix is the \mdecl{affineSpan} of the four Mathlib orthocentres, and
+feet and reflections are Mathlib's \mdecl{EuclideanGeometry.orthogonalProjection} and
+\mdecl{EuclideanGeometry.reflection}. A mechanical check walked the elaborated type of each of these
+results and of each witness theorem and found no \lean{QuadMiquel} constant (27 results in Part~(A), 19
+in Part~(B)). For each of these results a witness theorem proves every hypothesis on an explicit
+configuration and that the conclusion is non-degenerate:
+\begin{center}\footnotesize
+\begin{tabular}{ll}
+\toprule
+statement & witness and distinctness proved\\
+\midrule
+reflections, $M$ off the directrix & reflections pairwise distinct, $\operatorname{infDist}(M,S)>0$; also $L_1\perp L_2$\\
+tangency, points of contact & four explicit contact points, pairwise distinct\\
+vertex & $V\neq M$, $V\neq$ foot of $M$; nearest point unique (new)\\
+Newton--Gauss, Lambert & $N_2\neq N_1$, $N_3\neq N_1$; $M$ differs from the six vertices\\
+nine-point circles, uniqueness, $S_4$ & four distinct nine-point circles, $P=1-i$\\
+orthocentric case & the paper's example; two distinct common points\\
+pedal, diagonal circles & feet (resp.\ diagonal points) and $P$ pairwise distinct\\
+\bottomrule
+\end{tabular}
+\end{center}
+No Mathlib-only statement turned out false or needed an extra hypothesis. Two were restated by meaning
+rather than literally: \decl{QuadMiquel.ponDen_eq_zero_iff}, about a local polynomial, became ``the
+four nine-point circles have a unique common point if and only if $d$ is not the orthocentre of
+$abc$''; and \decl{QuadMiquel.poncelet_S4} became a statement about every Mathlib triangle with vertices
+in $\{a,b,c,d\}$, in any order, which needed a new bridge (equal vertex sets give equal Mathlib
+nine-point circles, \lean{l14b\_ninePointCircle\_eq\_of\_range\_eq}). The gates passed with 168 and 148
+declarations, the tampering suites rejected every planted defect, and the earlier files were unchanged.
+
+\paragraph{Comparison with the classical statements.} The orchestrator wrote the classical statements
+of both settings from the literature (C1--C7 for the quadrilateral: Miquel, Steiner's orthocentre line,
+the reflections of $M$, the inscribed parabola with its uniqueness, the axis and the Newton--Gauss
+line, Lambert, the vertex; D1--D5 for the quadrangle: Brianchon--Poncelet with the rectangular
+hyperbola, the orthocentric exception, the pedal circles, the diagonal triangle, the symmetry). A writer
+of a different model family (GPT-based), given only those statements, wrote them in Lean with Mathlib
+notions and no formulas from our libraries; its first attempt was aborted without output, the second
+compiled (22 statements and two construction lemmas, all with \lean{sorry}). Its transcript was
+audited. It marked 7 ambiguities and 6 theorem-specific extra hypotheses, among them non-orthocentricity
+for uniqueness of the common point and non-parallel opposite sides for the diagonal triangle, and it
+defined tangency as one common point \emph{and} not parallel to the axis. Comparers then proved every
+statement, copied verbatim, from the libraries, with no added hypothesis and no change to the library:
+\begin{itemize}
+\item \emph{Setting A}: all 12 proved; 8 are equivalent to or covered by the library theorems (C1--C3,
+C4 existence, uniqueness and non-incidence, C5 Newton--Gauss, C6 for the quadrilateral), and 4 are
+general facts about any parabola (axis $\perp$ directrix, the vertex, its minimality, and Lambert for a
+triangle), outside the paper's scope but proved. The tangency finding: the paper's notion is weaker than
+the classical one, but the four lines are not parallel to the axis (\decl{QuadMiquel.Classical.l15_lines_not_parallel_axis}),
+so the classical tangency holds (\decl{QuadMiquel.Classical.cov_classical_C4_a}). Uniqueness of the inscribed parabola
+(\decl{QuadMiquel.Classical.cov_classical_C4_b}), Lambert for every parabola tangent to the sides of a triangle and for
+every inscribed parabola (\decl{QuadMiquel.Classical.cov_classical_C6_a}, \decl{QuadMiquel.Classical.cov_classical_C6_b}) and the
+Newton--Gauss statement for every inscribed parabola (\decl{QuadMiquel.Classical.cov_classical_C5_b}) are new proofs, not
+in the main files.
+\item \emph{Setting B}: all 10 proved, none different from the library where both apply. The library is
+narrower in excluding the orthocentric case from the pedal and diagonal statements; the new proofs
+cover it (\decl{QuadMiquel.Classical.cov_classical_D3_a}, \decl{QuadMiquel.Classical.cov_classical_D3_b}, \decl{QuadMiquel.Classical.cov_classical_D4}), and
+show in addition that the three pedal feet are distinct, so the pedal circle exists and is unique. The
+rectangular-conic statements are new as well: every common point is the centre of a rectangular conic
+through the four points (\decl{QuadMiquel.Classical.cov_classical_D1_c}), a proper hyperbola unless it is the meeting
+point of two perpendicular opposite sides (\decl{QuadMiquel.Classical.cov_classical_D1_d}).
+\end{itemize}
+Both construction lemmas (non-collinearity of the triangles' vertices and of the diagonal points) were
+proved. All these proofs depend only on the three standard axioms. They are collected in the library
+file \lean{QuadMiquel/L15Classical.lean} of each repository (namespace \lean{QuadMiquel.Classical}),
+whose gates list every one of them; the classical definitions and statements are reproduced there verbatim.
+A separate scope check (numerical, 60 digits, with $M$, $P$ and the directrix computed independently of
+our formulas, and exact ranks of the dual conic) asked whether our hypotheses exclude cases in which the
+classical statement still holds. Part~(A): none; in the tested parallel and concurrent degenerations the dual
+conic through the four lines and the line at infinity has rank 2, and $M$ falls on the directrix. Part~(B):
+four findings. The orthocentric pedal and diagonal statements (X1, X2) are now proved, as above. Two
+remain: a limiting statement for parallel opposite sides (X3) and a weak remainder for a collinear
+triple (X4); see Section~\ref{sec:limits}.
+
+\paragraph{Statements checked by hand.} The author read each of the thirteen numbered theorems and the starred rows of Table~\ref{tab:thms}, as given in this paper, against their 41 Lean statements at the published commits (a sheet pairing the two, with links to the source lines, is in the verification repository) and found them to agree. This is a reading check, not a proof.
+
+\section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{One labelling.} Part~(A) is proved for the given order of the four lines; the symmetric
+versions are not stated. Part~(B) proves the permutation invariance of $P$ (Theorem~\ref{thm:s4}), and
+the pedal theorem for each of the four points.
+\item \textbf{Interpretation choices.} Mathlib has no conic sections, and we develop no theory of
+them. In the main files the parabola is defined ad hoc by focus and directrix and tangency is ``exactly
+one common point'', weaker than the classical notion; uniqueness of the inscribed parabola, Lambert
+in general, the classical tangency and the rectangular conic of Part~(B) are proved only in
+\lean{L15Classical.lean}, against statements in which a writer chose the readings listed in
+Section~\ref{sec:verify} (tangency without differentiability, full side lines in Lambert, a rectangular
+conic as a centre, a unit vector and a constant).
+\item \textbf{Excluded limiting cases (Part~(B)).} If exactly one pair of opposite sides is parallel,
+$P$ lies on the line through the two finite diagonal points (numerically, three configurations); Theorem~\ref{thm:diag} excludes this
+case, and the statement is not formalised. If three distinct points are collinear and the fourth is off their line,
+$P$ given by the formula is the foot of the fourth point and lies on the three remaining nine-point circles (numerically); this
+degenerate remainder is not formalised either.
+\item \textbf{No duality.} The two parts are not related by any formal theorem
+(Section~\ref{sec:duality}).
+\item \textbf{Local notions.} The points $M$, $P$, the feet and the diagonal points are given by local
+formulas in the main files; the bridges of Section~\ref{sec:bridges} tie the notions to Mathlib's,
+and the Layer-14 files restate the original geometric results with Mathlib-only types
+(Section~\ref{sec:verify}); the axis facts of Theorem~\ref{thm:vertex} are covered instead by the
+Layer-15 statements \decl{QuadMiquel.Classical.cov_classical_C5_a} and
+\decl{QuadMiquel.Classical.cov_classical_C7_a}.
+\item \textbf{Concyclic quadrangles.} The pedal theorem excludes them, and the corresponding Simson-line
+statement is not formalised as a theorem.
+\item \textbf{All-AI checking.} The proofs, the battery, the blind restatements, the comparisons, the
+scope check and the independent numerical check were all done by AI agents; the Layer-15 writer was
+of a different model family from the others, but no human has yet checked the statements against the
+literature.
+\item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
+\end{enumerate}
+
+
+\appendix
+\section{Builders' numerical checks}\label{app:numerics}
+The builders' numerical checks used mpmath and the library's own definitions.
+\begin{itemize}
+\item \emph{Part (A), Parabola.lean}: 50 digits, 200 random configurations: worst residual
+$1.3\times10^{-42}$ over the statements of Theorems~\ref{thm:refl} and~\ref{thm:off} and the
+non-perpendicularity, tangency residual $1.4\times10^{-46}$, distance minus directrix distance positive
+at sampled points of each line other than the point of contact, and smallest distance from $M$ to the
+directrix $6.6\times10^{-5}$. A further 90 forced near-degenerate configurations ($L_1\perp L_2$, so
+$H_3=H_4$; nearly parallel $L_3,L_4$; nearly concurrent triples): worst residual $1.5\times10^{-38}$.
+\item \emph{Part (A), ParabolaPoints.lean}: 50 digits, 300 configurations, every 50th near-degenerate
+($L_2$ nearly parallel to $L_1$, relative perturbation $10^{-6}$): point of contact on $L$,
+$2.1\times10^{-44}$; on the parabola (relative), $3.9\times10^{-37}$; vertex on the parabola,
+$6.7\times10^{-45}$; $\operatorname{dist}(V,M)$ against half the focus--directrix distance,
+$3.2\times10^{-45}$; axis $\perp$ directrix and $H_1$ on the directrix, $3.8\times10^{-36}$.
+\item \emph{Part (B), Quadrangle.lean}: 50 digits, 300 random quadrangles: nine-point circles
+$\le5.5\times10^{-48}$, pedal circles $\le1.9\times10^{-48}$, diagonal circle $\le7.7\times10^{-47}$,
+symmetry under permutations $\le1.7\times10^{-48}$. Orthocentric quadrangles: denominator
+$\le10^{-44}$ and spread of the nine-point centres $\le5\times10^{-48}$. For 200 concyclic quadrangles
+the normalised denominator stayed at least $1.0$, and in 50 concyclic cases $P$ lay on the Simson line
+(sine of the angle $\le3\times10^{-39}$). A root search on the zero set of $p_D$ found no root other
+than the degenerate ones and the orthocentre.
+\item \emph{Part (B), QuadrangleSym.lean}: 50 digits, 300 random quadrangles under all 24 permutations:
+$\max|P(\sigma)-P|=1.3\times10^{-48}$; $|\lean{ponDen}(a,b,d,c)+\lean{ponDen}(a,b,c,d)|\le2.8\times10^{-48}$;
+for 100 random triangles, $d=H(a,b,c)$ gives $|c-H(a,b,d)|\le2.5\times10^{-48}$. Near the orthocentric
+case, $d=H+\varepsilon(1+i)$, the $c\leftrightarrow d$ discrepancy was $6\times10^{-42}$ at
+$\varepsilon=10^{-10}$ and $3\times10^{-32}$ at $\varepsilon=10^{-20}$, the loss being floating-point
+cancellation.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs, to run the prior-art searches,
+the numerical checks and the verification battery, and to draft this paper. The author directed the
+work and reviewed the paper. Every proof is checked by the Lean kernel, and the author takes
+responsibility for all content.
+
+\begin{thebibliography}{99}
+\bibitem{steiner1828}
+J.~Steiner,
+\emph{Questions propos\'ees. Th\'eor\`eme sur le quadrilat\`ere complet},
+Annales de Math\'ematiques Pures et Appliqu\'ees \textbf{18} (1827--1828), 302--304.
+
+\bibitem{brianchonponcelet}
+C.-J.~Brianchon and J.-V.~Poncelet,
+\emph{Recherches sur la d\'etermination d'une hyperbole \'equilat\`ere, au moyen de quatre conditions donn\'ees},
+Annales de Math\'ematiques Pures et Appliqu\'ees \textbf{11} (1820--1821), 205--220.
+\url{https://www.numdam.org/item/AMPA_1820-1821__11__205_0/}
+
+\bibitem{afpsteinerline}
+A.~Freitas Ramos, D.~Barros Hulak and R.~J.~G.~B.~de Queiroz,
+\emph{Steiner's Line Theorem in Isabelle/HOL},
+Archive of Formal Proofs, 6 October 2026.
+\url{https://isa-afp.org/entries/Steiner_Line_Theorem.html}
+
+\bibitem{coolidge1916}
+J.~L.~Coolidge,
+\emph{A Treatise on the Circle and the Sphere},
+Clarendon Press, Oxford, 1916.
+
+\bibitem{johnson1929}
+R.~A.~Johnson,
+\emph{Modern Geometry},
+Houghton Mifflin, Boston, 1929.
+
+\bibitem{chou1988}
+S.-C.~Chou,
+\emph{Mechanical Geometry Theorem Proving},
+D.~Reidel, Dordrecht, 1988.
+
+\bibitem{paperA}
+J.~Bald,
+\emph{Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23239930}
+
+\bibitem{paperB}
+J.~Bald,
+\emph{The Malfatti circles in Lean~4, with independent certificate proofs of Feuerbach, Miquel and Brahmagupta},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23240500}
+
+\bibitem{paperC}
+J.~Bald,
+\emph{Barbier's theorem for the Reuleaux triangle and the convex four-vertex theorem in Lean~4, through support functions},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23323062}
+
+\bibitem{paperD}
+J.~Bald,
+\emph{Circle configurations in classical plane geometry, formalized in Lean~4: Clifford's chain, Miquel's five circles, Lester, Sawayama--Th\'ebault and Kosnita},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23378578}
+
+\bibitem{paperE}
+J.~Bald,
+\emph{The complete quadrilateral in Lean~4: Newton--Gauss, Bodenmiller, the Miquel point, the Steiner circle and the Simson line},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23407551}
+\end{thebibliography}
+\end{document}

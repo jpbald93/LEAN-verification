@@ -1,0 +1,819 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Code-like text (not checked by the name gate).
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of this development. Every \decl{...} is checked by namegate.sh
+% (a declaration of that name, in the stated namespace, in Baranyai/*.lean).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration. Every \mdecl{...} is checked by namegate.sh against
+% checks/mathlib_names.txt (names #check-ed against the pinned Mathlib).
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% version-2 commits: baranyai=1ab21623da9572cb10a8630a086c010b9e554269
+\newcommand{\repo}{https://github.com/jpbald93/baranyai}
+\newcommand{\commit}{051ae8c4063be0bb70f1726e9f60d0319dd37d91}
+\newcommand{\shortcommit}{051ae8c}
+% \src{File}{n}: link to line n of Baranyai/File.lean at \commit.
+\newcommand{\src}[2]{\href{\repo/blob/\commit/Baranyai/#1.lean\#L#2}{\texttt{#1:#2}}}
+% \file{path}: link to a file of the repository at \commit.
+\newcommand{\file}[1]{\href{\repo/blob/\commit/#1}{\path{#1}}}
+\newcommand{\NN}{\mathbb{N}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,structure,where,by,fun,namespace,end,import,open},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={ℕ}{{$\mathbb{N}$}}1 {≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2
+    {→}{{$\to$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1 {∈}{{$\in$}}1
+    {≤}{{$\le$}}1 {∣}{{$\mid$}}1 {≃}{{$\simeq$}}1 {×}{{$\times$}}1 {α}{{$\alpha$}}1
+    {β}{{$\beta$}}1 {γ}{{$\gamma$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1}
+
+\title{Baranyai's theorem on factorisations of complete uniform hypergraphs,\\ formalised in
+Lean~4 with Mathlib}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{2 October 2026; version 2, 22 October 2026 (adds the Layer-14 and Layer-15 checks of
+Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For positive integers $n,k$, Baranyai's theorem (1975) says that if $k$ divides $n$, the $\binom nk$ $k$-element subsets of an
+$n$-element set can be split into $\binom{n-1}{k-1}$ classes, each of which is a partition of the
+$n$-set into $n/k$ blocks. For $k=2$ this is the classical 1-factorisation of the complete graph
+$K_n$, $n$ even. We describe a Lean~4 formalisation, built on Mathlib, of the theorem for vertex
+set $\{0,\dots,n-1\}$ (the formal colouring statement also admits $n=0$, where it holds only
+vacuously), together with its transport to an arbitrary finite type (and to the
+elements of a \lean{Finset}) and, for $n>0$, a partition form that spells out the disjointness,
+covering and class-size properties of the colour classes: each class has $n/k$ blocks (a division
+lemma that needs $k>0$), and the number of classes satisfies $\binom{n-1}{k-1}=\binom nk/(n/k)$ (an
+identity that needs $n>0$, $k>0$ and $k\mid n$, and fails for $n=0$, $k=1$). The proof is Baranyai's vertex-by-vertex induction in the form
+given by Brouwer and Schrijver; the integral rounding step is obtained from Mathlib's Hall marriage
+theorem, with Hall's condition derived by a weighted double count, so no integral-flow theorem is
+needed. A converse shows that $k\mid n$ is necessary as soon as one colour class is a perfect
+matching. The library has 617 lines in three files, contains no \lean{sorry}, and its 32 checked
+declarations use only Lean's three standard axioms; with the two verification files added in
+version~2 (restatements in Mathlib's own vocabulary and a comparison with independently written
+textbook statements) the gate checks 76 declarations, again with standard axioms only. As far as we could determine, within the search
+scope described in Section~\ref{sec:related}, no earlier formal proof of the theorem was public.
+\end{abstract}
+
+\section{Introduction}
+
+Let $n$ and $k$ be positive integers. The \emph{complete $k$-uniform hypergraph} $K_n^{(k)}$ has $n$
+vertices, and every $k$-element set of vertices is an edge. A \emph{1-factor} (perfect matching,
+or \emph{parallel class}) of $K_n^{(k)}$ is a set of pairwise disjoint edges that covers every
+vertex; it has exactly $n/k$ edges, so it can exist only when $k\mid n$. A \emph{1-factorisation}
+is a partition of all $\binom nk$ edges into 1-factors. Counting edges, it has
+$\binom nk/(n/k)=\binom{n-1}{k-1}$ classes.
+
+\begin{theorem}[Baranyai~\cite{Baranyai1975}]\label{thm:baranyai}
+If $k\mid n$, then $K_n^{(k)}$ has a 1-factorisation: the $k$-subsets of an $n$-set can be
+partitioned into $\binom{n-1}{k-1}$ parallel classes.
+\end{theorem}
+
+For $k=2$ the theorem says that $K_n$ has a 1-factorisation when $n$ is even, which has been known
+since the nineteenth century and is the basis of round-robin tournament schedules: with $n$ teams,
+the $n-1$ classes are the rounds, and in each round every team plays exactly one
+match~\cite{MendelsohnRosa}. The case $k=3$ (``tournaments of games for three players'') was
+settled by Peltesohn in 1936~\cite{Peltesohn}. The general case was open until Baranyai proved it
+in 1973; the proof appeared in the Keszthely colloquium volume of 1975~\cite{Baranyai1975}, and
+Baranyai developed the method further in~\cite{Baranyai1979}. The textbook proof, due to Brouwer and
+Schrijver~\cite{BrouwerSchrijver}, is reproduced by van Lint and Wilson~\cite[Ch.~38]{vLW}. It is
+an induction on the vertices in which each step is an integral rounding of a fractional
+assignment, obtained there from the integrality theorem for network flows. In design-theoretic
+language, the theorem says that the complete design of all $k$-subsets of an $n$-set is
+resolvable whenever $k\mid n$.
+
+The theorem is a textbook example of fractional relaxation followed by integral
+rounding~\cite[Ch.~38]{vLW}.
+Mathlib's list of ``1000+ theorems'' contains it: the file \path{docs/1000.yaml} at the
+revision used here (\texttt{0df444a3}) has the entry \texttt{Q790236} with the single field
+\texttt{title: Baranyai's theorem} and no declaration or author recorded~\cite{Mathlib1000}, and the
+corresponding page of the 1000+ theorems project lists no formalisation~\cite{Plus1000}. It is not
+in Mathlib's list of 100 theorems (\path{docs/100.yaml}).
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item A Lean~4 proof of Baranyai's theorem for the vertex type \lean{Fin n}
+(Theorem~\ref{thm:formal}), with the number of colours written as $\binom{n-1}{k-1}$ and, in a
+variant, as $\binom nk k/n$; and its specialisation to 1-factorisations of $K_n$.
+\item Transport of the theorem to an arbitrary finite type of cardinality $n$ and to the elements
+of a \lean{Finset} (Section~\ref{sec:transport}).
+\item A partition form (Theorem~\ref{thm:partition}) that states the conclusion in terms of colour
+classes: distinct classes are disjoint, the classes cover all $k$-subsets, blocks of one class are
+pairwise disjoint, every class has $n/k$ blocks, and the number of classes is $\binom nk/(n/k)$
+(for $n>0$, $k>0$, $k\mid n$); and the converse that $k\mid n$ is necessary.
+\item A verification package: an axiom gate, six tampering tests, kernel-checked concrete
+factorisations, and a statement-level audit (Section~\ref{sec:verify}); and, in version~2, the main
+theorems restated with Mathlib-only types (finite partitions, perfect matchings of the complete
+\lean{SimpleGraph}) with explicit witnesses, and a comparison with textbook statements formalised by a
+writer that saw neither code nor paper (Section~\ref{sec:l1415}).
+\end{itemize}
+
+\paragraph{Availability.}
+The code is at \url{\repo}. Line references in this paper are to commit \texttt{\shortcommit}
+(\texttt{\commit}). The toolchain is Lean \texttt{v4.33.1}~\cite{Lean4} with Mathlib~\cite{Mathlib}
+revision \texttt{0df444a3} (tag \texttt{v4.33.1}), pinned in \path{lake-manifest.json}. The library
+\lean{Baranyai} consists of \path{Baranyai/Basic.lean} (431 lines), \path{Baranyai/Transport.lean}
+(56 lines) and \path{Baranyai/Partition.lean} (130 lines), with a three-line root file. The four
+main theorems of \path{Basic.lean} are declared at the top level; all other declarations of these
+three files are in the namespace \lean{Baranyai}. Version~2 of this paper adds two verification
+files, \path{Baranyai/L14.lean} (409 lines, top-level declarations) and
+\path{Baranyai/L15Classical.lean} (358 lines, namespace \lean{Baranyai.Classical}), imported by two
+new lines at the end of the root file, in a new commit \texttt{1ab21623da9572cb10a8630a086c010b9e554269}
+(Section~\ref{sec:l1415}). The three library files and every statement of commit
+\texttt{\shortcommit} are unchanged in that commit, so all line references below remain valid. Table~\ref{tab:thms} lists the original development's informal statements with
+their formal counterparts; Section~\ref{sec:l1415} identifies the additional verification statements.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Baranyai} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+{\small
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.42\textwidth}
+  >{\raggedright\arraybackslash}p{0.38\textwidth}l@{}}
+\caption{Informal statements and their formal counterparts. Line numbers refer to the first line
+of the declaration at commit \texttt{\shortcommit}.}\label{tab:thms}\\
+\toprule
+Informal statement & Lean name & Source \\ \midrule
+\endfirsthead
+\toprule
+Informal statement & Lean name & Source \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\emph{Main theorem (Section~\ref{sec:statement})}}\\
+Baranyai's theorem on $\{0,\dots,n-1\}$ (Thm.~\ref{thm:formal}) & \decl{baranyai} & \src{Basic}{396} \\
+The same with $\binom nk k/n$ colours, $n>0$ & \decl{baranyai'} & \src{Basic}{404} \\
+1-factorisation of $K_n$, $n$ even & \decl{complete_graph_one_factorisation} & \src{Basic}{419} \\
+$K_4$ splits into 3 perfect matchings & \decl{baranyai_four_two} & \src{Basic}{428} \\
+\multicolumn{3}{@{}l}{\emph{Proof (Section~\ref{sec:proof})}}\\
+Stage-$j$ invariant (Def.~\ref{def:inv}) & \decl{Baranyai.Inv} & \src{Basic}{25} \\
+Demand $d_j(S)=\binom{n-j-1}{k-|S|-1}$ for $|S|<k$, else $0$ & \decl{Baranyai.dem} & \src{Basic}{33} \\
+$(t+1)\binom{N+1}{t+1}=(N+1)\binom Nt$ & \decl{Baranyai.choose_key} & \src{Basic}{36} \\
+$(k-|S|)\binom{n-j}{k-|S|}=(n-j)\,d_j(S)$ (Lemma~\ref{lem:arith}) & \decl{Baranyai.weight_eq} & \src{Basic}{40} \\
+$\binom{n-j}{k-|S|}=d_j(S)+\binom{n-j-1}{k-|S|}$ (Lemma~\ref{lem:arith}) & \decl{Baranyai.pascal_dem} & \src{Basic}{52} \\
+$n\binom{n-1}{k-1}=\binom nk k$ & \decl{Baranyai.choose_mul} & \src{Basic}{64} \\
+The slots of a class have total size $j$ & \decl{Baranyai.row_card_sum} & \src{Basic}{71} \\
+$\sum_p (k-|A_{ip}|)=n-j$ & \decl{Baranyai.row_weight_sum} & \src{Basic}{78} \\
+Weighted double count (Lemma~\ref{lem:wc}) & \decl{Baranyai.weighted_count} & \src{Basic}{84} \\
+Induction step, via Hall (Lemma~\ref{lem:step}) & \decl{Baranyai.step} & \src{Basic}{106} \\
+Stage $0$: all slots empty & \decl{Baranyai.init} & \src{Basic}{304} \\
+Stage $n$ yields the factorisation (Lemma~\ref{lem:final}) & \decl{Baranyai.exists_partition_of_inv} & \src{Basic}{325} \\
+An invariant exists at stage $n$ & \decl{Baranyai.exists_final} & \src{Basic}{374} \\
+\multicolumn{3}{@{}l}{\emph{Transport (Section~\ref{sec:transport})}}\\
+Factorisations transport along $\alpha\simeq\beta$ & \decl{Baranyai.factorisation_congr} & \src{Transport}{17} \\
+Baranyai for any finite type with $|\alpha|=n$ & \decl{Baranyai.baranyai_of_card} & \src{Transport}{43} \\
+Baranyai for the elements of a \lean{Finset} & \decl{Baranyai.baranyai_finset} & \src{Transport}{50} \\
+\multicolumn{3}{@{}l}{\emph{Partition form (Section~\ref{sec:partition})}}\\
+Distinct colour classes are disjoint & \decl{Baranyai.class_disjoint} & \src{Partition}{23} \\
+The colour classes cover all $k$-subsets & \decl{Baranyai.classes_cover} & \src{Partition}{31} \\
+Two blocks of one colour are disjoint & \decl{Baranyai.block_disjoint} & \src{Partition}{38} \\
+$(\text{blocks of a class})\cdot k=|\alpha|$ & \decl{Baranyai.class_card_mul} & \src{Partition}{48} \\
+A class has $|\alpha|/k$ blocks, for $k>0$ & \decl{Baranyai.class_card} & \src{Partition}{71} \\
+$\binom{n-1}{k-1}=\binom nk/(n/k)$, for $n>0$, $k>0$, $k\mid n$ & \decl{Baranyai.num_classes} & \src{Partition}{78} \\
+Partition form of Baranyai (Thm.~\ref{thm:partition}) & \decl{Baranyai.baranyai_partition} & \src{Partition}{89} \\
+Converse: one perfect-matching class forces $k\mid|\alpha|$ & \decl{Baranyai.dvd_card_of_factorisation} & \src{Partition}{106} \\
+\end{longtable}
+}
+
+\section{The theorem and its formal statement}\label{sec:statement}
+
+Vertices are the elements of \lean{Fin n}, that is $\{0,\dots,n-1\}$. A $k$-subset is an element of
+the subtype \lean{\{S : Finset (Fin n) // S.card = k\}}, and a candidate factorisation is a
+colouring \lean{c} of the $k$-subsets with colours in \lean{Fin M}. The factorisation property is
+stated directly: for every colour $i$ and every vertex $v$ there is exactly one $k$-subset of colour
+$i$ that contains $v$. The main theorem is
+\src{Basic}{396}:
+\begin{lstlisting}
+theorem baranyai (n k : ℕ) (hk : 0 < k) (hkn : k ∣ n) :
+    ∃ c : {S : Finset (Fin n) // S.card = k} → Fin ((n - 1).choose (k - 1)),
+      ∀ i (v : Fin n), ∃! S : {S : Finset (Fin n) // S.card = k}, c S = i ∧ v ∈ S.1
+\end{lstlisting}
+
+\begin{theorem}[\decl{baranyai}]\label{thm:formal}
+Let $0<k$ and $k\mid n$. There is a map $c$ from the $k$-subsets of $\{0,\dots,n-1\}$ to
+$\{0,\dots,\binom{n-1}{k-1}-1\}$ such that for every colour $i$ and every vertex $v$ exactly one
+$k$-subset $S$ has $c(S)=i$ and $v\in S$.
+\end{theorem}
+
+\paragraph{Reading the statement.} Let $n>0$. The map $c$ assigns each $k$-subset exactly one
+colour, and every colour class $c^{-1}(i)$ is non-empty, since it contains a block through the
+vertex $0$; so the classes form a partition of the set of all $k$-subsets into
+$\binom{n-1}{k-1}$ (non-empty) parts. The condition ``exactly one block of colour $i$ through each
+vertex'' says precisely that the class $c^{-1}(i)$ is a set of pairwise disjoint $k$-subsets
+covering every vertex, i.e.\ a 1-factor. Hence, for $n>0$, the conclusion is that $K_n^{(k)}$ has a
+1-factorisation with $\binom{n-1}{k-1}$ classes, as in Theorem~\ref{thm:baranyai}. The extreme
+cases agree with the code: for $k=1$ there is $\binom{n-1}0=1$ colour, whose class is the set of
+all $n$ singletons, and for $k=n$ there is $\binom{n-1}{n-1}=1$ colour, whose class is the single
+block $\{0,\dots,n-1\}$. Section~\ref{sec:partition} proves the parts of this reading that are not
+literally in the statement (disjointness of blocks, the size of each class). Natural-number
+subtraction is truncated in Lean; for $n,k\ge1$, $n-1$ and $k-1$ have their usual meaning.
+
+The case $n=0$ must be read separately. There are no vertices and no $k$-subsets, and
+\lean{(0 - 1).choose (k - 1)} is $1$ for $k=1$ and $0$ for $k\ge2$. For $k=1$ the code therefore
+supplies one colour whose fibre is empty; since the parts of an ordinary partition are non-empty,
+this family of fibres is not a partition with the advertised number of parts. What
+\decl{baranyai} proves for $n=0$ is only the valid but vacuous colouring statement: the (empty)
+map $c$ exists and the condition ``for every colour $i$ and every vertex $v$\,\dots'' holds because
+there is no vertex. \decl{baranyai'}, which writes the number of colours as
+\lean{n.choose k * k / n}, and the partition form (Theorem~\ref{thm:partition}) assume $0<n$.
+
+The hypothesis $0<k$ is not logically required: for $k=0$ the hypothesis $k\mid n$ forces $n=0$,
+and the statement holds vacuously (there is no vertex). It is used by the proof, and with $k=0$
+the theorem would say nothing. The hypothesis $k\mid n$ is necessary, since a single 1-factor
+partitions the $n$ vertices into $k$-sets. This is a theorem of the library,
+\decl{Baranyai.dvd_card_of_factorisation} \src{Partition}{106}: if some colour class of a colouring
+of the $k$-subsets of a finite type $\alpha$ covers every vertex exactly once, then $k\mid|\alpha|$.
+The tampering test \lean{falsehyp} (Section~\ref{sec:verify}) deletes \lean{hkn} from the statement
+and checks that the proof no longer compiles; this shows only that the proof uses \lean{hkn}. That
+the weakened statement is false is a separate fact: for $n=3$, $k=2$ three vertices cannot be
+covered by disjoint pairs, and \path{scratch/Referee.lean} checks with \lean{decide} that no
+colouring of the 2-subsets of \lean{Fin 3} with two colours has the factorisation property.
+
+For $k=2$ the theorem specialises to \decl{complete_graph_one_factorisation} \src{Basic}{419}:
+if $n$ is even there is a colouring of the 2-subsets of \lean{Fin n} with $n-1$ colours in which
+every colour class is a perfect matching. \decl{baranyai_four_two} is the instance $n=4$.
+
+\paragraph{Transport and partition statements.} \path{Transport.lean} replaces \lean{Fin n} by an
+arbitrary finite type \src{Transport}{43}:
+\begin{lstlisting}
+theorem baranyai_of_card [Fintype α] (n k : ℕ) (hk : 0 < k) (hkn : k ∣ n)
+    (hα : Fintype.card α = n) :
+    ∃ c : {S : Finset α // S.card = k} → Fin ((n - 1).choose (k - 1)),
+      ∀ i (v : α), ∃! S : {S : Finset α // S.card = k}, c S = i ∧ v ∈ S.1
+\end{lstlisting}
+and \path{Partition.lean} states the conclusion as a partition \src{Partition}{89}:
+\begin{lstlisting}
+theorem baranyai_partition [Fintype α] [DecidableEq α] (n k : ℕ) (hk : 0 < k) (hn : 0 < n)
+    (hkn : k ∣ n) (hα : Fintype.card α = n) :
+    ∃ c : {S : Finset α // S.card = k} → Fin ((n - 1).choose (k - 1)),
+      (∀ i (v : α), ∃! S : {S : Finset α // S.card = k}, c S = i ∧ v ∈ S.1) ∧
+      (∀ S T, S ≠ T → c S = c T → Disjoint S.1 T.1) ∧
+      (∀ i j, i ≠ j →
+        Disjoint (univ.filter fun S => c S = i) (univ.filter fun S => c S = j)) ∧
+      univ.biUnion (fun i => univ.filter fun S => c S = i) = univ ∧
+      (∀ i, (univ.filter fun S => c S = i).card = n / k) ∧
+      (n - 1).choose (k - 1) = n.choose k / (n / k)
+\end{lstlisting}
+
+\section{Proof outline}\label{sec:proof}
+
+We follow the proof of Brouwer and Schrijver~\cite{BrouwerSchrijver} as given in~\cite[Ch.~38]{vLW},
+with one change in the rounding step. Write $n=mk$ and $M=\binom{n-1}{k-1}$, and let
+$[j]=\{0,\dots,j-1\}$. The formal \decl{Baranyai.Inv}, \decl{Baranyai.step} and
+\decl{Baranyai.exists_partition_of_inv} are stated for arbitrary $M$ and $m$ under their own
+hypotheses (for \decl{Baranyai.step} only the stage-$j$ invariant \lean{hI : Inv n k m M j A}, $j<n$
+and $n=mk$; for
+\decl{Baranyai.exists_partition_of_inv} only the stage-$n$ invariant), and
+\decl{Baranyai.block_disjoint} needs no finite-type assumption on the vertices, so the argument
+below and in Section~\ref{sec:partition} specialises these more general results. Binomial coefficients with a negative lower index do not occur: all lower
+indices below are natural numbers, and $\binom ab=0$ for $b>a$.
+
+\begin{definition}[\decl{Baranyai.Inv}, \src{Basic}{25}]\label{def:inv}
+A family $A=(A_{ip})$, $i<M$, $p<m$, of subsets of $\{0,\dots,n-1\}$ satisfies the
+\emph{stage-$j$ invariant} if
+\begin{enumerate}
+\item for each class $i$ the slots $A_{i0},\dots,A_{i,m-1}$ are pairwise disjoint (\lean{disj});
+\item for each class $i$ their union is $[j]$ (\lean{cover});
+\item every slot has at most $k$ elements (\lean{size});
+\item every $S\subseteq[j]$ with $|S|\le k$ occurs as a slot exactly $\binom{n-j}{k-|S|}$ times,
+i.e.\ $\#\{(i,p):A_{ip}=S\}=\binom{n-j}{k-|S|}$ (\lean{cnt}).
+\end{enumerate}
+\end{definition}
+Slots may be empty, and an empty slot is counted once per index $(i,p)$; this is how the formal
+version realises the multisets of~\cite{vLW}. At stage $0$ all slots are empty, and the
+count condition for $S=\varnothing$ reads $Mm=\binom nk$, which follows from
+$n\binom{n-1}{k-1}=\binom nk k$ (\decl{Baranyai.choose_mul}); this is \decl{Baranyai.init}. At stage
+$n$ the theorem can be read off:
+
+\begin{lemma}[\decl{Baranyai.exists_partition_of_inv}]\label{lem:final}
+If $A$ satisfies the stage-$n$ invariant, then a factorisation with $M$ colours exists: colour each
+$k$-subset $S$ by the class $i$ of its slot. (The formal statement asserts only existence.)
+\end{lemma}
+\begin{proof}[Sketch]
+At $j=n$ condition~4 says that $S$ occurs $\binom{0}{k-|S|}$ times: once if $|S|=k$ and never if
+$|S|<k$. Every slot occurs at least once, so every slot has exactly $k$ elements, and every
+$k$-subset is exactly one slot $(i,p)$. Colour $S$ by $i$. Given a colour $i$ and a vertex $v$,
+condition~2 gives a slot of class $i$ containing $v$, and condition~1 makes it unique.
+\end{proof}
+
+\paragraph{The induction step.} Let $j<n$. Each class must choose one of its slots to receive the
+new vertex $j$. Define the \emph{demand} $d_j(S)=\binom{n-j-1}{k-|S|-1}$ if $|S|<k$ and
+$d_j(S)=0$ otherwise (\decl{Baranyai.dem}). The step works if each set $S$ is chosen exactly
+$d_j(S)$ times: then, for $j\in S$, the new count of $S$ is the number of times $S\setminus\{j\}$
+was chosen, $d_j(S\setminus\{j\})=\binom{n-j-1}{k-|S|}$, and for $j\notin S$ it is the old count
+minus the number of times $S$ was chosen, which is again $\binom{n-j-1}{k-|S|}$ by the next lemma.
+
+\begin{lemma}[\decl{Baranyai.weight_eq}, \decl{Baranyai.pascal_dem}]\label{lem:arith}
+For $j<n$ and every set $S$ with $|S|\le k$,
+\[(k-|S|)\binom{n-j}{k-|S|}=(n-j)\,d_j(S),\qquad
+\binom{n-j}{k-|S|}=d_j(S)+\binom{n-j-1}{k-|S|}.\]
+\end{lemma}
+The first identity is the absorption identity $(t+1)\binom{N+1}{t+1}=(N+1)\binom Nt$
+(\decl{Baranyai.choose_key}, from Mathlib's \mdecl{Nat.add_one_mul_choose_eq}); the second is
+Pascal's rule (\mdecl{Nat.choose_succ_succ'}). In both cases $|S|=k$ is handled separately. The
+formal \decl{Baranyai.weight_eq} has no size hypothesis at all, and the hypothesis $|S|\le k$ of
+\decl{Baranyai.pascal_dem} turns out not to be used by its proof (Section~\ref{sec:notes}).
+
+\paragraph{Weighted double counting.} In~\cite{vLW} the choice is made by exhibiting a fractional
+flow, in which class $i$ sends weight $(k-|S|)/(n-j)$ to each of its slots $S$, and then appealing
+to the integrality of maximum flows (their Theorem~7.2, or alternatively their rounding theorem
+for circulations, Theorem~7.4). The formal proof uses the same
+weights, cleared of denominators. Since the slots of class $i$ partition $[j]$ and there are $m$
+of them, $\sum_p(k-|A_{ip}|)=mk-j=n-j$ (\decl{Baranyai.row_weight_sum}, via
+\decl{Baranyai.row_card_sum}).
+
+\begin{lemma}[\decl{Baranyai.weighted_count}]\label{lem:wc}
+Assume the stage-$j$ invariant, $j<n$, and let $\mathcal Y$ be a family of subsets of $[j]$ of size
+at most $k$. Then
+\[\sum_{(i,p):\,A_{ip}\in\mathcal Y}(k-|A_{ip}|)=(n-j)\sum_{S\in\mathcal Y}d_j(S).\]
+\end{lemma}
+\begin{proof}
+Group the left-hand side by the value $S=A_{ip}$ (\mdecl{Finset.sum_fiberwise_of_maps_to}). The
+fibre of $S$ has $\binom{n-j}{k-|S|}$ elements by condition~4, each contributing $k-|S|$; apply the
+first identity of Lemma~\ref{lem:arith}.
+\end{proof}
+
+\paragraph{Selection by Hall's theorem.} For each class $i$ let $t(i)$ be the finite set of
+\emph{tokens} $(S,r)$ with $S$ a slot of class $i$ and $r<d_j(S)$; in Lean this is
+\lean{(univ.image (A i)).sigma (fun S => range (dem n k j S))}. A system of distinct
+representatives for $t$ is exactly a choice of one slot per class in which each $S$ is chosen at
+most $d_j(S)$ times. Mathlib's Hall theorem, in the form
+\mdecl{Finset.all_card_le_biUnion_card_iff_exists_injective}~\cite{Hall,HallLean}, says that such a
+system exists iff $|X|\le|\bigcup_{i\in X}t(i)|$ for every set $X$ of classes.
+
+\begin{lemma}[\decl{Baranyai.step}]\label{lem:step}
+If $A$ satisfies the stage-$j$ invariant, $j<n$ and $n=mk$, then some $A'$ satisfies the
+stage-$(j+1)$ invariant.
+\end{lemma}
+\begin{proof}[Sketch]
+\emph{Hall's condition.} Let $X$ be a set of classes and $\mathcal Y$ the family of sets occurring
+as slots of classes in $X$. Then $\bigcup_{i\in X}t(i)$ is the set of tokens $(S,r)$ with
+$S\in\mathcal Y$, $r<d_j(S)$, of size $\sum_{S\in\mathcal Y}d_j(S)$. By \decl{Baranyai.row_weight_sum}
+and Lemma~\ref{lem:wc},
+\[(n-j)|X|=\sum_{i\in X}\sum_p(k-|A_{ip}|)\le\sum_{(i,p):\,A_{ip}\in\mathcal Y}(k-|A_{ip}|)
+=(n-j)\sum_{S\in\mathcal Y}d_j(S),\]
+and $n-j>0$. \emph{Exactness.} Hall gives an injective choice $i\mapsto(S_i,r_i)\in t(i)$; let
+$p(i)$ be a slot of class $i$ with $A_{i,p(i)}=S_i$. Injectivity in $r$ bounds the number of
+classes choosing $S$ by $d_j(S)$ (\mdecl{Finset.card_le_card_of_injOn}). Summed over the family
+$\mathcal U$ of all subsets of $[j]$ of size at most $k$, the numbers of choices add up to $M$
+(\mdecl{Finset.card_eq_sum_card_fiberwise}). Lemma~\ref{lem:wc} with $\mathcal Y=\mathcal U$, whose
+left side is $M(n-j)$, gives $\sum_{S\in\mathcal U}d_j(S)=M$. A sum of termwise inequalities with
+equal totals is a sum of equalities (\mdecl{Finset.sum_eq_sum_iff_of_le}), so every $S$ is chosen
+exactly $d_j(S)$ times. A chosen slot has $d_j(S)>0$ and hence $|S|<k$. \emph{Update.} Put
+$A'_{i,p(i)}=A_{i,p(i)}\cup\{j\}$ and leave the other slots unchanged. Conditions~1--3 are
+immediate; condition~4 is the computation before Lemma~\ref{lem:arith}, split according to whether
+$j\in S$.
+\end{proof}
+\decl{Baranyai.exists_final} iterates Lemma~\ref{lem:step} from \decl{Baranyai.init} up to $j=n$, and
+\decl{baranyai} combines it with Lemma~\ref{lem:final}.
+
+\paragraph{Hall instead of flows.} Because every class has capacity one and the demand of each set
+can be split into $d_j(S)$ unit tokens, the integral rounding needed here is a bipartite matching
+problem, and Hall's theorem suffices. Hall's theorem is itself a consequence of flow integrality,
+and replacing a capacitated assignment by a matching through token copies is a standard device; we
+do not claim either as new. Its use here means that no theory of network flows had to be
+formalised: the integrality of the solution comes from Hall's theorem, and the fractional flow
+survives only in the double count of Lemma~\ref{lem:wc}.
+
+\paragraph{What was reused and what was built.} From Mathlib we use, among others, Hall's marriage theorem
+(\mdecl{Finset.all_card_le_biUnion_card_iff_exists_injective}, formalised by Gusakov, Mehta and
+Miller~\cite{HallLean}), the binomial identities \mdecl{Nat.add_one_mul_choose_eq} and
+\mdecl{Nat.choose_succ_succ'}, the \lean{Finset} big-operator lemmas named above together with
+\mdecl{Finset.card_biUnion} and \mdecl{Finset.sum_tsub_distrib}, and, for the transport, the
+equivalences \mdecl{Equiv.finsetCongr} and \mdecl{Fintype.equivFinOfCardEq} and the lemma
+\mdecl{Fintype.card_coe}; the proofs also use standard \lean{Finset} and \lean{Nat} lemmas such as
+\lean{card\_image\_of\_injective}, \lean{card\_union\_of\_disjoint}, \lean{sum\_le\_sum\_of\_subset},
+\lean{sum\_product}, \lean{Fintype.sum\_prod\_type}, \lean{Fin.card\_filter\_val\_lt},
+\lean{card\_erase\_add\_one} and \lean{Nat.choose\_eq\_zero\_of\_lt}. Everything else was written for this development: the invariant and the
+demand function, the arithmetic and double-counting lemmas, the induction step and its
+initialisation, the extraction of the factorisation, the transport and the partition corollaries.
+
+\section{Transport and partition form}\label{sec:new}
+
+\subsection{Transport}\label{sec:transport}
+\decl{Baranyai.factorisation_congr} \src{Transport}{17} says that if the $k$-subsets of $\alpha$ have
+a factorisation with $M$ colours, so do the $k$-subsets of $\beta$, for any bijection
+$e:\alpha\simeq\beta$. The colour of $T\subseteq\beta$ is the colour of its preimage, computed with
+\mdecl{Equiv.finsetCongr}, which preserves cardinality and transports membership.
+\decl{Baranyai.baranyai_of_card} \src{Transport}{43} applies this to
+\mdecl{Fintype.equivFinOfCardEq} and gives Theorem~\ref{thm:formal} for any finite type of
+cardinality $n$. \decl{Baranyai.baranyai_finset} \src{Transport}{50} is the case of the subtype
+$\uparrow s$ of a \lean{Finset} $s$, with $|s|$ in place of $n$; the $k$-subsets are then
+\lean{Finset}s of elements of $s$.
+
+These statements add no mathematics: Theorem~\ref{thm:baranyai} is about an abstract $n$-set, and
+the transport removes the artefact of the vertex type \lean{Fin n}. They make the theorem usable
+for vertex sets that are not literally $\{0,\dots,n-1\}$; the satisfiability file instantiates them
+for \lean{\{1, 5, 7, 9\} : Finset}~$\NN$ and for the type \lean{Fin 2 × Fin 3}.
+
+\subsection{Partition form}\label{sec:partition}
+The lemmas of \path{Partition.lean} hold for an arbitrary finite type $\alpha$ (for
+\decl{Baranyai.block_disjoint}, an arbitrary type) and any colouring $c$ of its $k$-subsets with
+colours in \lean{Fin M}.
+\begin{itemize}
+\item \decl{Baranyai.class_disjoint}: distinct colour classes $c^{-1}(i)$, $c^{-1}(j)$ are disjoint.
+\item \decl{Baranyai.classes_cover}: the union of all colour classes is the set of all $k$-subsets.
+\end{itemize}
+These two hold for any function $c$: the fibres are pairwise disjoint and cover the set of
+$k$-subsets, and the non-empty fibres form a partition of it (a colour that is not used has an
+empty fibre, which can happen for an arbitrary $c$ even when $n>0$). The next three use the factorisation property \lean{hc}.
+\begin{itemize}
+\item \decl{Baranyai.block_disjoint}: two different $k$-subsets of the same colour are disjoint.
+\item \decl{Baranyai.class_card_mul}: every class has $b$ blocks with $b\cdot k=|\alpha|$, by double
+counting incidences between the blocks of the class and the vertices, each vertex lying in
+exactly one block. \decl{Baranyai.class_card} divides by $k$ and therefore assumes $k>0$.
+\end{itemize}
+Finally \decl{Baranyai.num_classes} proves $\binom{n-1}{k-1}=\binom nk/(n/k)$ under the
+hypotheses $n>0$, $k>0$ and $k\mid n$, the edge count of the introduction. The hypothesis $n>0$ is
+needed: for $n=0$, $k=1$ the left side is $\binom{0}{0}=1$ and the right side is
+$\binom01/(0/1)=0$. \decl{Baranyai.baranyai_partition} (Theorem~\ref{thm:partition}) collects all of this into one statement.
+The same double count gives the converse \decl{Baranyai.dvd_card_of_factorisation}: if one colour
+class covers every vertex exactly once, then $k$ divides $|\alpha|$.
+
+\begin{theorem}[\decl{Baranyai.baranyai_partition}]\label{thm:partition}
+Let $\alpha$ be a finite type with $n$ elements, $0<k$, $0<n$ and $k\mid n$. There is a colouring
+$c$ of the $k$-subsets of $\alpha$ with $\binom{n-1}{k-1}$ colours such that every vertex lies in
+exactly one block of each colour; two different blocks of the same colour are disjoint; distinct
+colour classes are disjoint and together contain all $k$-subsets; every colour class has $n/k$
+blocks; and $\binom{n-1}{k-1}=\binom nk/(n/k)$.
+\end{theorem}
+
+The first conjunct is the conclusion of Theorem~\ref{thm:formal}; the others follow from it, so
+Theorem~\ref{thm:partition} is not a stronger theorem. Its purpose is to make the informal reading
+of Section~\ref{sec:statement} checkable: a reader who prefers to see ``each class is a set of
+$n/k$ pairwise disjoint blocks, and the classes partition the edge set'' finds exactly that in
+the statement. As the header of \path{Partition.lean} says, the hard direction is not reproved.
+
+\section{Formalisation notes}\label{sec:notes}
+
+\paragraph{Representation.} Vertices are \lean{Fin n} in the core development. Edges are
+\lean{Finset}s with a cardinality constraint, packaged as a subtype, rather than \lean{Set}s; this
+makes the families of edges finite types and lets \lean{decide} check small instances. A
+factorisation is a function from edges to colours, so the property ``each edge lies in exactly
+one class'' holds by construction and only the 1-factor property has to be stated. In the proof,
+classes and slots are indexed by \lean{Fin M} and \lean{Fin m}, and the invariant is a structure
+with four \lean{Prop} fields (\decl{Baranyai.Inv}). Counting slots by index rather than using
+multisets removes the need to count the empty set with multiplicity. Hall's theorem is applied to
+the token sets $t(i)$ of type \lean{Finset ((\_ : Finset (Fin n)) }$\times$\lean{ }$\mathbb{N}$\lean{)}, a dependent pair of a set
+and a token number, so that the injective function produced by Hall encodes both the chosen slot
+and the multiplicity bound.
+
+\paragraph{Bridges to Mathlib's graph and hypergraph notions.} The factorisation property is a
+direct $\exists!$ statement about \lean{Finset}s, and the three library files do not connect it to
+Mathlib's \mdecl{SimpleGraph.Subgraph.IsPerfectMatching}, to the structure \mdecl{Hypergraph} (which
+exists at the pinned revision, with \lean{Set}-valued edges), or to \mdecl{Finpartition}. In
+particular \decl{complete_graph_one_factorisation} is stated in the same $\exists!$ form. The
+verification files of version~2 supply the bridges to \mdecl{Finpartition} and to perfect matchings:
+\path{L14.lean} restates the main theorems as families of \mdecl{Finpartition}s and the case $k=2$ as
+a decomposition of the complete \lean{SimpleGraph} into subgraphs satisfying
+\mdecl{SimpleGraph.Subgraph.IsPerfectMatching}, and \path{L15Classical.lean} proves the textbook forms
+stated with these notions (Section~\ref{sec:l1415}). No bridge to \mdecl{Hypergraph} has been
+formalised. The proof devices \decl{Baranyai.Inv} and
+\decl{Baranyai.dem} are local and are not bridged to anything; they do not occur in the statements
+of the main theorems.
+
+\paragraph{An unused hypothesis.} The statement-level audit (Section~\ref{sec:verify}) found that the
+hypothesis \lean{hS : S.card }$\le$\lean{ k} of \decl{Baranyai.pascal_dem} is not used by its proof: the lemma
+holds without it (when $|S|\ge k$ both sides reduce to $\binom{n-j}0=1=0+1$ under truncated
+subtraction).
+
+\paragraph{Size.} \path{Basic.lean} has 431 lines, of which the induction step takes about 200. The
+two corollary files have 186 lines together. In these three files the definitions are
+\decl{Baranyai.Inv} and \decl{Baranyai.dem}; all other declarations are theorems. (The Layer-15 file
+of version~2 adds the writer's four definitions, two bridge definitions, and a proposition-valued
+definition recording the unproved general almost-regular statement.)
+
+\section{Verification}\label{sec:verify}
+
+Except for the version-2 checks explicitly identified below, the checks in this section were run on
+commit \texttt{\shortcommit}. The library sources, \path{gate.sh},
+\path{tests/tamper.sh}, \path{scratch/Satisfiable.lean} and \path{scratch/Referee.lean} on the build machine were confirmed
+byte-identical (SHA-256) to those of the commit before the runs.
+
+\paragraph{Axiom gate.} \file{gate.sh} rejects the tokens \lean{sorry}, \lean{admit},
+\lean{native\_decide}, \lean{axiom}, \lean{\#eval}, \lean{run\_cmd}, \lean{set\_option}, \lean{macro},
+\lean{elab}, \lean{syntax}, \lean{notation} and \lean{import Lean} in the library sources, builds the
+library (8\,710 jobs, no errors), generates its own \lean{\#print axioms} query for each of 32 fully
+qualified declarations (every theorem, definition and structure field of the library), and fails on
+any axiom other than \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}. It prints
+\texttt{PASS (32 declarations, standard axioms only)}. With the two files of version~2 it prints
+\texttt{PASS (76 declarations, standard axioms only)}, and the tampering tests below are again all
+rejected (Section~\ref{sec:l1415}).
+
+\paragraph{Tampering tests.} \file{tests/tamper.sh} plants six defects in scratch copies of the
+repository and requires the gate to fail on each with a nonzero exit status and the expected message:
+a \lean{sorry}; an \lean{axiom} split over two lines; an \lean{\#eval} printing a fake axiom report;
+a macro rewriting \lean{\#print axioms}; the statement of \decl{baranyai} with the hypothesis
+\lean{k }$\mid$\lean{ n} deleted, which must fail to build (this shows that the proof uses the
+hypothesis; that the weakened statement is false is checked separately in \path{scratch/Referee.lean}); and a genuine extra
+axiom with a long name, so that Lean wraps the report over several lines. All six are rejected
+(6/6).
+
+\paragraph{Non-triviality and instances.} The hypotheses $0<k$, $k\mid n$ of
+Theorem~\ref{thm:formal} are visibly satisfiable, so the real risk is a conclusion that is too weak
+to fail. Two kernel-checked facts address it. First, \file{scratch/Referee.lean} (outside the
+library, exit status~$0$) proves by \lean{decide} that the conclusion fails at $n=3$, $k=2$: no map
+from the 2-subsets of \lean{Fin 3} to \lean{Fin 2} has the factorisation property. Two colours
+are the count prescribed by Theorem~\ref{thm:formal}, $\binom{2}{1}=2$. Second, the
+library corollary \decl{Baranyai.dvd_card_of_factorisation} shows that the conclusion with at least
+one colour forces $k\mid n$; \path{scratch/Referee.lean} applies it to rule out every positive colour
+count at $n=3$, $k=2$. The same file gives a term of the hypothesis of \decl{Baranyai.step}, which
+carries $j<n$: the stage-$0$ invariant \decl{Baranyai.init} at $n=4$, $k=2$, $m=2$, with $0<4$, fed to
+\decl{Baranyai.step}. It also checks that three hypotheses used by the proof are logically
+removable (see the audit below). The file \file{scratch/Satisfiable.lean}, also outside the library,
+compiles with exit status~$0$. It shows that the conclusion is met in concrete cases, which is a
+weaker point than non-triviality. It contains explicit factorisations for $(n,k)=(4,2)$
+(the matchings $\{01,23\}$, $\{02,13\}$, $\{03,12\}$) and $(6,3)$ (ten classes, each a triple through
+$0$ together with its complement), each checked by \lean{decide} and not derived from the theorem;
+the hypotheses $0<3$ and $3\mid6$ of \decl{baranyai}, checked by \lean{decide}; an explicit
+stage-$4$ witness of \decl{Baranyai.Inv} for $n=4$, $k=2$, $m=2$, $M=3$, meeting the hypothesis of
+\decl{Baranyai.exists_partition_of_inv}; and instances of \decl{Baranyai.baranyai_finset},
+\decl{Baranyai.baranyai_of_card} and \decl{Baranyai.baranyai_partition}. The Python script
+\file{code/check_baranyai.py} runs the same induction numerically, with a capacitated bipartite
+matching in the rounding step, and verifies the resulting factorisations for
+$(n,k)\in\{(9,3),(8,2),(10,5),(12,4),(12,3)\}$.
+
+\paragraph{Statement-level audit.} A separate audit tool was run on \path{Baranyai/Basic.lean} (the
+same file, identified by its SHA-256). The audit has since been re-run over the complete shipped tree --- all three library files, 26
+theorems --- with the same tool: 93 conclusion mutations, all rejected; no contradictory
+hypothesis set (24 probed, 2 declarations without hypotheses); every recognised hypothesis
+classified as needed by its proof except the unused one identified below and the two hypotheses
+of \decl{baranyai'}, whose control copy does not compile in either run; and no unused-variable
+warning under the linter, in the three library files or in the three files under \path{scratch/}.
+The figures in the three parts below are those of the first run on \path{Basic.lean}, whose
+individual mutation diagnostics were adjudicated case by case.
+\begin{itemize}
+\item \emph{Conclusion mutations.} For each of the 15 theorems of the file, small changes are made
+to the conclusion (flip a relation, negate an equality, change a numeral, and similar) while the
+proof is kept, and Lean must reject the result. All 55 generated edits failed to compile; none
+survived. The rejections are of two kinds. In 29 of them the mutated statement is itself ill-typed
+and the first diagnostic identifies an error in the edited statement: for example, twelve of them
+render as a malformed application such as \lean{n 1}, one of them as \lean{j 1}, and all seven
+mutants of \decl{Baranyai.exists_final} are ill-typed (four malformed applications and three
+dependent-domain mismatches). These 29 say nothing about the proofs. Only the
+remaining 26 mutants are well-typed statements whose proofs Lean rejects, and only these show
+that a proof depends on the exact conclusion.
+\item \emph{Contradiction probe.} For each theorem with hypotheses, automation (\lean{omega},
+\lean{decide}, \lean{simp\_all}, \lean{linarith} and others) tries to derive \lean{False} from the
+hypotheses alone, alongside a control that must compile. No hypothesis set was found
+contradictory (13 probed, 2 theorems without hypotheses). This probe is weak: the probed sets
+are either simple arithmetic facts or contain \lean{hI : Inv \dots}, which the automation cannot
+unfold. The real consistency evidence is the stage-$0$ witness from \decl{Baranyai.init}, fed to
+\decl{Baranyai.step} in \path{scratch/Referee.lean}, and the stage-$n$ witness \lean{A42\_inv} in
+\path{scratch/Satisfiable.lean}.
+\item \emph{Hypothesis ablation.} Selected, syntactically recognised hypotheses are replaced in
+turn by \lean{True} in a renamed copy of the declaration, which must then fail to compile. The
+selector does not cover every hypothesis: it omits, among others, divisibility hypotheses such as
+\lean{hkn : k }$\mid$\lean{ n}, invariant hypotheses such as \lean{hI : Inv \dots}, and parity
+hypotheses such as \lean{hn : Even n}. For this file it produced 19 jobs, of which 17 were
+executed and 2 skipped: 16 hypotheses were found needed \emph{by this proof} and 1 unused. For
+\decl{baranyai} the hypothesis \lean{0 < k} is needed by this proof; for \decl{Baranyai.pascal_dem}
+the hypothesis \lean{S.card }$\le$\lean{ k} is not (Section~\ref{sec:notes}). Ablation does not test
+whether a statement stays true without the hypothesis. \path{scratch/Referee.lean} kernel-checks
+that \decl{baranyai} without \lean{0 < k}, \decl{Baranyai.choose_mul} without \lean{0 < n} and
+\decl{Baranyai.weight_eq} without \lean{j < n} are still true; these three hypotheses are used by
+the proofs but are logically removable. \decl{Baranyai.pascal_dem} is merely the one case where the
+proof does not use its hypothesis. The skipped jobs include the
+ablation of \decl{baranyai'}, which was skipped because its control copy did not compile. That
+the proof uses the hypothesis \lean{hkn} of \decl{baranyai} is shown instead by the tampering test
+above; that it is logically necessary is \decl{Baranyai.dvd_card_of_factorisation}.
+\end{itemize}
+The audit also attempts satisfiability certificates for the hypotheses of each theorem. That pass
+was model-assisted: a local language model, treated as untrusted, proposes concrete values and only
+Lean decides. In the first run on \path{Basic.lean} it certified 6 theorems and left 7 unresolved,
+including \decl{baranyai} and \decl{baranyai'}; in the re-run over the three files it produced no
+further certificate (18 unresolved, 6 of them failed to produce a candidate). The hand-written
+\path{scratch/Satisfiable.lean} covers the main theorem.
+
+\paragraph{Limits of these checks.} None of the checks above shows that the formal statement says what
+the prose says (Section~\ref{sec:l1415} adds an independent comparison with textbook statements). The 26 rejected well-typed conclusion mutants show that those proofs depend on
+the exact conclusions; the other 29 rejections only show that the edits did not typecheck. A failed contradiction probe
+only shows that automation found no contradiction. Neither check is a proof of satisfiability or of faithfulness. The gate trusts the pinned toolchain, Mathlib and lake
+configuration. The comparison of formal and informal statements was done by hand: the author
+checked each statement in Table~\ref{tab:thms} against its informal counterpart.
+Section~\ref{sec:statement} and Theorem~\ref{thm:partition} are meant to make that comparison easy
+for the reader.
+
+\paragraph{Name check.} The author's script \path{namegate.sh} (not included in the verification repository) checks that every
+declaration typeset with \lean{\textbackslash decl} exists in the local source tree at the commit, in
+the stated namespace; that every Mathlib name typeset with \lean{\textbackslash mdecl} is in a list of
+names checked with \lean{\#check} against the pinned Mathlib; and that every source link lands on the
+declaration line of the declaration it accompanies. It passes on commit \texttt{\shortcommit} for
+every name outside Section~\ref{sec:l1415}; the 15 newly introduced declaration names cited in that section are declared only in the new
+commit. Run against that commit, the script finds the six top-level ones; the nine in the
+sub-namespace \lean{Baranyai.Classical}, which its namespace parser does not handle, were confirmed by
+a direct search of \path{L15Classical.lean}.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+The two files of this subsection were added in version~2, in commit \texttt{1ab21623da9572cb10a8630a086c010b9e554269}; the three
+original library source files and their statements, together with the tampering script, are unchanged (the hashes of \path{Basic.lean}, \path{Transport.lean},
+\path{Partition.lean} and \path{tests/tamper.sh} are those of \texttt{\shortcommit}). On the new commit
+the library builds, the gate prints \texttt{PASS (76 declarations, standard axioms only)} (32
+original, 17 from \path{L14.lean}, 27 from \path{L15Classical.lean}), the tampering tests are all
+rejected, and a scan of both files for \lean{sorry}, \lean{admit}, \lean{native\_decide},
+\lean{axiom}, \lean{set\_option}, \lean{macro} and \lean{notation} finds no occurrence outside
+comments (the gate's own token check also passes).
+
+\paragraph{Layer 14: statements in Mathlib's language and non-vacuity.} \path{Baranyai/L14.lean}
+restates 8 theorems with Mathlib-only types and proves each from the library through bridges:
+\decl{baranyai}, \decl{baranyai'}, \decl{complete_graph_one_factorisation}, \decl{baranyai_four_two},
+\decl{Baranyai.baranyai_of_card}, \decl{Baranyai.baranyai_finset}, \decl{Baranyai.baranyai_partition}
+and the converse \decl{Baranyai.dvd_card_of_factorisation}. The colouring is replaced by an injective
+family $P$ of $\binom{n-1}{k-1}$ \mdecl{Finpartition}s of the vertex set into $k$-blocks, each with
+$n/k$ blocks, such that every $k$-subset is a block of exactly one $P_i$ (\decl{l14_baranyai});
+Theorem~\ref{thm:partition} becomes one \mdecl{Finpartition} of the set of $k$-subsets with
+$\binom{n-1}{k-1}$ parts, each a partition of the vertices into $n/k$ blocks
+(\decl{l14_baranyai_partition}); the case $k=2$ becomes $n-1$ distinct subgraphs of the complete
+\lean{SimpleGraph} satisfying \mdecl{SimpleGraph.Subgraph.IsPerfectMatching}, each edge in exactly
+one (\decl{l14_complete_graph_one_factorisation}); the converse says that a \mdecl{Finpartition} of
+the vertices into $k$-blocks forces $k\mid|\alpha|$ (\decl{l14_dvd_card_of_factorisation}). A
+mechanical check of the elaborated types found no constant of the library in any of them. Each
+theorem has a witness theorem that proves the hypotheses for explicit values and proves the
+conclusion non-degenerate: for $(n,k)=(6,3)$, ten pairwise distinct partitions with two triples each
+(\decl{l14w_baranyai}, and the same for \lean{Fin 2 × Fin 3}); for $(6,2)$, five distinct partitions
+with three pairs each; for $K_6$, five distinct spanning perfect matchings; for $K_4$, three distinct
+perfect matchings, and a hand-written factorisation of $K_4$ checked by \lean{decide}
+(\decl{l14w_baranyai_explicit}); for $\{0,2,4,6\}\subseteq\NN$, three distinct partitions into
+pairs; for the partition form at $(6,3)$, ten classes, each with two distinct disjoint triples; and
+for the converse, a partition of \lean{Fin 6} into two triples, and the consequence that \lean{Fin 5}
+has no partition into pairs. The other declarations of Table~\ref{tab:thms} (the invariant, the
+demand, the arithmetic and counting lemmas, the induction step, \decl{Baranyai.factorisation_congr}
+and the partition lemmas) are proof internals or are subsumed by the restated theorems, and were not
+restated. No Mathlib-only statement turned out false, and none needed an extra hypothesis; the only
+additions are \lean{DecidableEq} instances required by \mdecl{Finpartition}. The restatement
+confirms the discussion of $n=0$ in Section~\ref{sec:statement}: the one-\mdecl{Finpartition} form
+genuinely needs $0<n$ (for $n=0$, $k=1$ it would have $0$ parts but asserts $\binom{0}{0}=1$), while
+the family form \decl{l14_baranyai} holds at $n=0$ without it.
+
+\paragraph{Layer 15: comparison with textbook statements.} Another agent collected three statements
+from the literature, with citations (Baranyai~\cite{Baranyai1975}, van Lint and
+Wilson~\cite[Thm.~38.1]{vLW}, and the Wikipedia article): Baranyai1, the hypergraph form; Baranyai2,
+the parallel-class form and its ``equivalently'' version; and Baranyai3, the general almost-regular
+form with its parts (a) $k\mid n$ and (b) $k=2$. An AI model, given only these statements (it saw no
+code and not this paper; its transcript was audited), wrote them in Lean with Mathlib notions and
+four definitions of its own (\lean{IsPerfectMatchingK}, \lean{IsPartitionOfKSubsets},
+\lean{pointDegree}, \lean{IsAlmostRegular}): 8 statements, all with \lean{sorry}, with three
+ambiguities marked and no extra hypothesis. A comparer then proved each statement, copied verbatim,
+from the development, or classified it. \path{Baranyai/L15Classical.lean} (namespace
+\lean{Baranyai.Classical}) contains the result. Of the 8 statements, 6 are covered (equivalent to or
+implied by the library), 1 is a new proof of a statement outside the paper, and 1 is out of scope;
+0 are narrower in the library than in the text, and 0 writer statements are false as written.
+\begin{itemize}
+\item \emph{Covered (6):} \decl{Baranyai.Classical.cov_Baranyai1_a} (hypergraph form; the writer's
+$0<n$ is not needed), \decl{Baranyai.Classical.cov_Baranyai1_b} ($\binom{n-1}{k-1}n=\binom nk k$, from
+\decl{Baranyai.choose_mul}), \decl{Baranyai.Classical.cov_Baranyai2_a} and
+\decl{Baranyai.Classical.cov_Baranyai2_b} (parallel classes as \mdecl{Finpartition}s; both readings
+of the writer's ambiguity at $n=0$ are covered), \decl{Baranyai.Classical.cov_Baranyai3_a}
+(the case $k\mid n$ of the almost-regular form), and \decl{Baranyai.Classical.cov_Baranyai3_b}
+($K_n$, $n$ even, as $n-1$ perfect matchings of the complete \lean{SimpleGraph} on any finite type,
+including $n=0$).
+\item \emph{New proof (1):} \decl{Baranyai.Classical.cov_Baranyai3_a_implication}: for $k\mid n$, an
+almost-regular partition into classes of size $n/k$ consists of perfect matchings (every point
+degree is $1$). The library has no such statement.
+\item \emph{Out of scope (1):} the general almost-regular form (van Lint--Wilson Theorem~38.1:
+arbitrary sizes $a_1+\dots+a_t=\binom nk$, $k$ not necessarily dividing $n$). This is the
+generalisation that Section~\ref{sec:limits} lists as not formalised. It is kept as the unproved
+proposition \decl{Baranyai.Classical.classical_Baranyai3_main}, used and assumed nowhere; only its
+instance $k\mid n$, $t=\binom{n-1}{k-1}$, $a_i=n/k$ is proved
+(\decl{Baranyai.Classical.cov_Baranyai3_main_part}).
+\end{itemize}
+The bridges written for the comparison (from colourings to their classes, to \mdecl{Finpartition}s
+and to Mathlib perfect matchings, and the point-degree computation) are also new proofs. Each proved
+\lean{classical\_\dots} theorem is the writer's text with only \lean{sorry} replaced, checked
+byte-for-byte against the writer's file. In two places the library is stronger than the textbook text
+($n=0$ is covered; no $0<n$ is needed in Baranyai1), and \decl{baranyai'} and
+\decl{Baranyai.dvd_card_of_factorisation} have no textbook counterpart among the statements. The
+statement collection, the Lean statements and the comparison were all done by AI agents; no human
+has checked the textbook statements against the printed sources (the collector notes that its
+wording of van Lint--Wilson Theorem~38.1 is from memory).
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Mathematics.} Baranyai's original proof is in~\cite{Baranyai1975}; \cite{Baranyai1979}
+treats edge-colourings of complete hypergraphs more generally. The proof formalised here is Brouwer
+and Schrijver's~\cite{BrouwerSchrijver}, as presented in van Lint and Wilson~\cite[Ch.~38]{vLW},
+where it is noted (p.~537) that all known proofs use a form or consequence of their Theorem~7.2 or~7.4,
+the integrality theorems for flows and circulations. Our rounding step uses one such consequence, Hall's theorem~\cite{Hall}, through the token
+construction of Section~\ref{sec:proof}. Mendelsohn and Rosa survey 1-factorisations of complete
+graphs~\cite{MendelsohnRosa}, and Peltesohn treated the case $k=3$~\cite{Peltesohn}.
+
+\paragraph{Formalisations.} Our searches were made on 2 October 2026. Within Mathlib (source at
+revision \texttt{0df444a3}) the only occurrence of ``Baranyai'' is the \path{docs/1000.yaml} entry
+quoted in the introduction, with no declaration recorded~\cite{Mathlib1000}; the theorem is not in
+\path{docs/100.yaml}, and Mathlib's \lean{Hypergraph} file defines no matchings or factorisations.
+The 1000+ theorems project page for \texttt{Q790236} lists no formalisation~\cite{Plus1000}. On GitHub
+we ran the following searches. Code search for \texttt{baranyai} restricted to the Lean language
+returned no results. Unrestricted code search for \texttt{baranyai} returned results of which we
+screened the first 50 file paths only for the extensions \texttt{.lean}, \texttt{.v}, \texttt{.thy},
+\texttt{.ml} and \texttt{.miz}, and none had them. Code search for the phrase ``Baranyai's
+theorem'' was screened on its first 20 results (repository and file path): apart from the two entries cited above~\cite{Mathlib1000,
+Plus1000}, they were prose, data sets, glossaries and lecture notes, and none was a formal proof.
+Code search for ``theorem baranyai'', and for ``hypergraph factorization'' restricted to Lean,
+returned nothing, and code search for \texttt{baranyai}
+restricted to the file extensions \texttt{.v} (Rocq) and \texttt{.thy} (Isabelle) also returned
+nothing. Searches of pull requests and issues of the Mathlib repository for ``Baranyai'' returned
+none, and repository search for \texttt{baranyai} returned only unrelated repositories named after
+people. Code search within the GitHub mirror of
+the Isabelle Archive of Formal Proofs~\cite{AFP}, the HOL~Light repository~\cite{HOLLight}, and the
+Rocq repositories \texttt{coq-100-theorems}, \texttt{math-comp} and \texttt{graph-theory} returned
+nothing, and the list of famous theorems proven in Rocq~\cite{Rocq100} does not mention the theorem.
+For Mizar and for the Lean Zulip chat we relied on web search only, including the query
+\texttt{"Baranyai" site:leanprover.zulipchat.com}, which returned no results; the other web
+searches returned nothing relevant; we did not search the Mizar Mathematical Library
+or the Zulip chat directly. These searches are not exhaustive. As far as we could determine, no
+earlier formal proof of Baranyai's theorem was public.
+
+\section{Limitations and further work}\label{sec:limits}
+
+\begin{itemize}
+\item \emph{Bridges.} The library statements use a direct $\exists!$ formulation. The version-2
+files restate them with \lean{Finpartition} and \lean{SimpleGraph} perfect matchings
+(Section~\ref{sec:l1415}); a bridge to Mathlib's \lean{Hypergraph} is still missing, and the bridges
+live in verification files, not in the library's own API.
+\item \emph{Generalisations.} Baranyai's method gives more: almost-regular colourings when
+$k\nmid n$, and factorisations of complete multipartite and non-uniform hypergraphs. None is
+formalised. The invariant would have to be generalised. The Layer-15 comparison states the general
+almost-regular form (van Lint--Wilson Theorem~38.1) as an unproved proposition and proves only its
+divisible instance (Section~\ref{sec:l1415}).
+\item \emph{Audit coverage.} The statement-level re-run covers all three library files: mutation,
+the contradiction probe, ablation and the linter were applied to \path{Partition.lean} and
+\path{Transport.lean} as well, with 93 of 93 mutations rejected. Two theorems yielded no mutants
+(the mutator produced no conclusion edit for them), and the two hypotheses of \decl{baranyai'}
+remain unclassified because their control copy does not compile; the per-mutation diagnostics were
+adjudicated individually only for the first run on \path{Basic.lean}.
+\item \emph{Cleanup.} The unused hypothesis of \decl{Baranyai.pascal_dem} could be removed; we left
+the frozen commit unchanged so that the line references of this paper remain valid.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs and the Python check, to run
+the prior-art searches and the audits, and to draft this paper. In version~2, AI agents also wrote
+the Layer-14 restatements, collected the textbook statements, wrote their Lean versions without access
+to the code or the paper, and carried out the comparison (Section~\ref{sec:l1415}). The author directed the work and
+reviewed the paper, and checked each formal statement in Table~\ref{tab:thms} against its informal
+counterpart by hand. Every proof is checked by the Lean kernel, and the author takes responsibility
+for all content.
+
+\begin{thebibliography}{99}\sloppy
+\bibitem{AFP} \emph{Archive of Formal Proofs}, \url{https://www.isa-afp.org/}; GitHub mirror
+\url{https://github.com/isabelle-prover/mirror-afp-devel}, accessed 2 October 2026.
+\bibitem{Baranyai1975} Zs.~Baranyai, On the factorization of the complete uniform hypergraph, in
+A.~Hajnal, R.~Rado and V.~T.~S\'os (eds.), \emph{Infinite and Finite Sets} (Colloq.\ Keszthely,
+1973), Vol.~I, Colloquia Mathematica Societatis J\'anos Bolyai~10, North-Holland, Amsterdam, 1975,
+91--108.
+\bibitem{Baranyai1979} Zs.~Baranyai, The edge-coloring of complete hypergraphs~I, \emph{Journal of
+Combinatorial Theory, Series~B} 26 (1979), 276--294.
+\bibitem{BrouwerSchrijver} A.~E.~Brouwer and A.~Schrijver, Uniform hypergraphs, in A.~Schrijver
+(ed.), \emph{Packing and Covering in Combinatorics}, Mathematical Centre Tracts~106, Mathematisch
+Centrum, Amsterdam, 1979, 39--73.
+\bibitem{HallLean} A.~Gusakov, B.~Mehta and K.~A.~Miller, Formalizing Hall's marriage theorem in
+Lean, arXiv:2101.00127, 2021.
+\bibitem{Hall} P.~Hall, On representatives of subsets, \emph{Journal of the London Mathematical
+Society} 10 (1935), 26--30.
+\bibitem{HOLLight} J.~Harrison, HOL~Light repository, \url{https://github.com/jrh13/hol-light},
+accessed 2 October 2026.
+\bibitem{Lean4} L.~de Moura and S.~Ullrich, The Lean~4 theorem prover and programming language, in
+\emph{Automated Deduction -- CADE~28}, Lecture Notes in Computer Science 12699, Springer, 2021,
+625--635.
+\bibitem{Mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proceedings of the
+9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020)}, ACM, 2020,
+367--381.
+\bibitem{Mathlib1000} The mathlib Community, \path{docs/1000.yaml}, entry \texttt{Q790236}, Mathlib
+repository, \url{https://github.com/leanprover-community/mathlib4}, revision \texttt{0df444a3},
+accessed 2 October 2026.
+\bibitem{MendelsohnRosa} E.~Mendelsohn and A.~Rosa, One-factorizations of the complete graph---a
+survey, \emph{Journal of Graph Theory} 9 (1985), 43--65.
+\bibitem{Peltesohn} R.~Peltesohn, \emph{Das Turnierproblem f\"ur Spiele zu je dreien}, Dissertation,
+Berlin; August Pries, Leipzig, 1936.
+\bibitem{Plus1000} \emph{1000+ theorems} project, page \path{_thm/Q790236.md},
+\url{https://github.com/1000-plus/1000-plus.github.io}, accessed 2 October 2026.
+\bibitem{Rocq100} \emph{Famous theorems proven in Rocq}, \url{https://madiot.fr/rocq100/}, accessed
+2 October 2026.
+\bibitem{vLW} J.~H.~van Lint and R.~M.~Wilson, \emph{A Course in Combinatorics}, 2nd edition,
+Cambridge University Press, 2001.
+\end{thebibliography}
+
+\end{document}

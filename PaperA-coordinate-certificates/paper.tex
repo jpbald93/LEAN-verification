@@ -1,0 +1,1312 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Code-like text (not checked by a name gate).
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of the five developments. Every \decl{...} is meant to be checked by a
+% name gate (grep for a declaration of that name in the five source trees).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\DeclareUnicodeCharacter{2081}{\ensuremath{_1}}
+\DeclareUnicodeCharacter{2082}{\ensuremath{_2}}
+\DeclareUnicodeCharacter{2083}{\ensuremath{_3}}
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{03C9}{\ensuremath{\omega}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\PP}{\mathbb{P}}
+% Outputs that a separate job is producing. Must all be filled in before submission.
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% version-2 commits: desargues=086ca718192df1cb919b72a7e79d9fb26e43e723 monge=82dd27d7b81e60e2aa57873e98cc6fa0dce0728f simson=e3d2c46abd6a6da2a4571a28cebc47c8447a0618 napoleon=0829a1483687956644b6b5eb3eb26205c6d7e9b7 lami=e692d1a9bc0004444e33b76132275461a2e26cf2
+% Commit hashes of the published repositories (content commits; checked against the build machine by SHA-256).
+\newcommand{\commitdesargues}{\href{\repo{desargues}/tree/b6409255c844abb6e1cad80b23f8182fc3934116}{\texttt{b640925}}}
+\newcommand{\commitmonge}{\href{\repo{monge}/tree/a01f7504d12fd492dd30c66f880905b21cca3895}{\texttt{a01f750}}}
+\newcommand{\commitsimson}{\href{\repo{simson}/tree/7c239b31600575db241b45dda4930cf9486e7d17}{\texttt{7c239b3}}}
+\newcommand{\commitnapoleon}{\href{\repo{napoleon}/tree/e16592ae04be8e5516a2caef52418c6c60df5165}{\texttt{e16592a}}}
+\newcommand{\commitlami}{\href{\repo{lami}/tree/ea6b038b1a3eebd9b02465650901f4b5d4ddaf19}{\texttt{ea6b038}}}
+% Plain-text forms of the same, used inside URLs (replace together with the above).
+\newcommand{\urlcommitdesargues}{b6409255c844abb6e1cad80b23f8182fc3934116}
+\newcommand{\urlcommitmonge}{a01f7504d12fd492dd30c66f880905b21cca3895}
+\newcommand{\urlcommitsimson}{7c239b31600575db241b45dda4930cf9486e7d17}
+\newcommand{\urlcommitnapoleon}{e16592ae04be8e5516a2caef52418c6c60df5165}
+\newcommand{\urlcommitlami}{ea6b038b1a3eebd9b02465650901f4b5d4ddaf19}
+\expandafter\def\csname commitof:desargues\endcsname{\urlcommitdesargues}
+\expandafter\def\csname commitof:monge\endcsname{\urlcommitmonge}
+\expandafter\def\csname commitof:simson\endcsname{\urlcommitsimson}
+\expandafter\def\csname commitof:napoleon\endcsname{\urlcommitnapoleon}
+\expandafter\def\csname commitof:lami\endcsname{\urlcommitlami}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+% The repositories are published (5 Oct 2026); \src links to the cited commits. With
+% \publishedfalse, \src prints plain text instead.
+\newif\ifpublished
+\publishedtrue
+% \src{repo}{Dir}{File}{n}: line n of Dir/File.lean in the given repository.
+\ifpublished
+\newcommand{\src}[4]{\href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}}
+\else
+\newcommand{\src}[4]{\texttt{#3}:#4}
+\fi
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,class,example,by,fun,have,show,exact,intro,namespace,end,import,private,variable,noncomputable},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2 {→}{{$\to$}}1 {↑}{{$\uparrow$}}1
+           {⨯₃}{{$\times_3$}}2 {⬝ᵥ}{{$\cdot_v$}}2 {₁}{{$_1$}}1 {₂}{{$_2$}}1 {₃}{{$_3$}}1
+           {₄}{{$_4$}}1 {ℓ}{{$\ell$}}1 {≤}{{$\le$}}1 {ℙ}{{$\mathbb{P}$}}1 {ℂ}{{$\mathbb{C}$}}1
+           {ℝ}{{$\mathbb{R}$}}1 {ℚ}{{$\mathbb{Q}$}}1 {ω}{{$\omega$}}1 {‖}{{$\|$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1
+           {¬}{{$\neg$}}1 {∈}{{$\in$}}1 {∡}{{$\measuredangle$}}1 {∠}{{$\angle$}}1
+           {π}{{$\pi$}}1 {γ}{{$\gamma$}}1 {'}{{$^{\prime}$}}1 {×}{{$\times$}}1}
+
+\title{Classical plane geometry by coordinate certificates:\\
+Desargues, Monge, Simson, Napoleon and Lami in Lean~4}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean and Python code is licensed under the Apache License 2.0.}}
+\date{7 October 2026; version~2, 22 October 2026}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formalise five classical theorems of plane geometry in Lean~4 with Mathlib: Desargues's
+theorem in the projective plane, together with its converse; Monge's theorem that the three
+external centres of similitude of three circles are collinear; the Wallace--Simson theorem on the
+pedal triangle of a point of the circumcircle; Napoleon's theorem for the outer and the inner
+Napoleon triangles; and Lami's theorem for three forces in equilibrium. Every proof has the same
+core. The theorem is reduced to an explicit polynomial or rational identity in coordinates, which
+we call a \emph{certificate}, and the identity is closed by \lean{ring}, \lean{field\_simp} or
+\lean{linear\_combination} with a stated multiplier. Around this core, each development makes
+precise which non-degeneracy conditions are needed, which are not, and why. Desargues's theorem and
+Monge's theorem are proved over an arbitrary field, and the Desargues identity over an arbitrary
+commutative ring. The Simson line and Napoleon's theorem are proved in the Euclidean plane,
+modelled as~$\CC$. Lami's theorem is proved through the oriented area form of a two-dimensional
+oriented real inner product space, and in unoriented form in every real inner product space. The
+five libraries, without the version-2 files described next, have about 1{,}430 lines of Lean, use no \lean{sorry}, and depend only on Lean's
+three standard axioms. Version~2 adds to each library a file giving Mathlib-only formulations of the main theorems
+(for Napoleon's theorem, of its non-degenerate configurations), each with a non-degenerate witness, and a file proving from the libraries
+textbook statements written in Lean by an AI model that saw neither our code nor this paper; these
+include the geometric converse of the Wallace--Simson theorem, which the first version did not prove. The mathematics is classical and the method is old, and several of the
+results are not new to formal mathematics (Section~\ref{sec:related}). Monge's three-circle
+theorem has two earlier, independent and complete Lean proofs, one of which predates ours by four
+months; Napoleon's theorem has
+earlier formalisations in Lean, Isabelle and Rocq, and a later independent one in Lean; the Wallace--Simson theorem and its converse
+are formalised in Isabelle and in Rocq; Desargues's theorem is formalised in at least five other
+systems, including a coordinate (bracket) proof in HOL~Light; and an open, unmerged Mathlib pull
+request proves the affine (parallel) form of Desargues's theorem. We found no earlier Lean proof
+of the projective-plane form of Desargues's theorem, of the Wallace--Simson theorem, or of Lami's
+theorem; these searches are not exhaustive.
+\end{abstract}
+
+\section{Introduction}
+
+Elementary plane geometry is a natural testing ground for proof assistants: the statements are
+short and familiar, but a faithful formal statement has to say exactly which configurations are
+allowed. Textbooks rarely do. ``Two triangles in perspective from a point'' may or may not
+allow coincident vertices; ``three circles'' may or may not allow equal radii; ``the ratio
+$|F_1|/\sin\alpha$'' is not defined when $\sin\alpha=0$. A formal statement must decide each of
+these questions, and the decision is part of the result.
+
+The proofs in this paper are coordinate proofs in the tradition of mechanical geometry theorem
+proving~\cite{Chou}. Each theorem is reduced to an identity of the form
+\[
+  (\text{conclusion})\cdot(\text{non-degenerate factor}) \;=\; \sum_i c_i\cdot(\text{hypothesis}_i),
+\]
+with the multipliers $c_i$ written out (or with no hypotheses at all on the right), and the
+identity is checked by a decision procedure for commutative rings. We call such an identity a
+\emph{certificate}. The certificate is only the algebraic core. Each development also has a
+translation layer connecting the coordinate statement with a standard notion of Mathlib, such as
+\mdecl{Projectivization.IsCollinear}, \mdecl{Collinear}, \mdecl{dist} or
+\mdecl{Orientation.oangle}. That layer is where most of the non-degeneracy hypotheses enter. The
+point of the paper is the analysis of those hypotheses as much as the identities.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item Desargues's theorem in Mathlib's projective plane $\PP(K^3)$ over an arbitrary field $K$,
+in a determinant form that needs only a nonzero centre of perspective, and in a projective form
+whose distinctness hypotheses are exactly those that make Mathlib's \mdecl{cross} compute sides
+and intersection points (Section~\ref{sec:desargues}). The converse is proved in both forms. The
+underlying factorisation $[PQR]=[abc]\,[a'b'c']\,[AA'\,BB'\,CC']$ is proved over every
+commutative ring.
+\item Monge's theorem in coordinates over an arbitrary field, with pairwise distinct radii as the
+only hypothesis, and no hypothesis on the centres (Section~\ref{sec:monge}). This theorem is
+already proved in Lean, twice and independently; our version differs only in being stated over an
+arbitrary field and in its explicit analysis of the hypotheses.
+\item The forward direction of the Wallace--Simson theorem in $\CC$, with conclusion Mathlib's
+\mdecl{Collinear} and hypotheses ``the vertices are pairwise distinct'' and Mathlib's
+\mdecl{EuclideanGeometry.Cospherical}, together with a determinant-level equivalence for a
+non-degenerate triangle. The first version did not prove the geometric converse; version~2 proves
+it, in \lean{EuclideanSpace ℝ (Fin 2)}, in a Layer-15 file (\decl{Simson.Classical.cov_A3_b};
+Sections~\ref{sec:simson} and~\ref{sec:l1415}). This
+theorem, with its converse, is already formalised in Isabelle and in Rocq.
+\item Napoleon's theorem in $\CC$ as an equality of distances, for both Napoleon triangles and
+with no non-degeneracy hypothesis, together with a signed-area lemma identifying which triangles
+are erected outward (Section~\ref{sec:napoleon}).
+\item Lami's theorem in oriented and unoriented forms, product and ratio forms, an explicit
+treatment of the degenerate (parallel) case, and the oriented converse
+(Section~\ref{sec:lami}).
+\item A table of the non-degeneracy conditions of all five theorems
+(Table~\ref{tab:nondeg}), recording for each whether the certificate needs it, the translation
+needs it, or it is only needed for the statement to mean what it says.
+\item (Version~2.) Mathlib-only formulations of the six numbered theorems (for Napoleon, of the
+non-degenerate configurations), each with a non-degenerate witness, and proofs from the libraries of textbook statements of all five theorems
+written in Lean by a model that saw neither code nor paper (Section~\ref{sec:l1415}).
+\end{itemize}
+
+\paragraph{Availability.}
+The five developments are publicly available at the following addresses:
+\path{github.com/jpbald93/desargues},
+\path{github.com/jpbald93/monge},
+\path{github.com/jpbald93/simson},
+\path{github.com/jpbald93/napoleon} and
+\path{github.com/jpbald93/lami}.
+Line references (Table~\ref{tab:thms}) are to commits \commitdesargues, \commitmonge,
+\commitsimson, \commitnapoleon\ and \commitlami\ respectively, and link to those commits. In the
+first four repositories that commit adds a module \path{Bridge.lean} of definition bridges
+(Section~\ref{sec:correct}) on top of the original content commit and a citation-only commit;
+apart from one added \lean{import} line at the end of each root file, the earlier files are
+unchanged. The Lami commit changes only the citation in \path{README.md}, so its Lean sources are
+those of its content commit \texttt{a7a039b}. Each repository has since received three further
+commits: one correcting the citation in \path{README.md}, one making the verification scripts
+\path{gate.sh} and \path{tests/tamper.sh} portable to BSD-derived systems, which had required GNU
+\path{mktemp}, \path{sed} and \path{python3}, and one adding licence and citation metadata
+(\path{LICENSE}, \path{CITATION.cff}, \path{README.md}); none changes any Lean source, so the commits
+cited above remain the sources of the formalisations. Version~2 of this paper adds the Layer-14 and
+Layer-15 files (Section~\ref{sec:l1415}) in one new commit of each repository (desargues
+\texttt{086ca718192df1cb919b72a7e79d9fb26e43e723}, monge \texttt{82dd27d7b81e60e2aa57873e98cc6fa0dce0728f}, simson \texttt{e3d2c46abd6a6da2a4571a28cebc47c8447a0618}, napoleon \texttt{0829a1483687956644b6b5eb3eb26205c6d7e9b7},
+lami \texttt{e692d1a9bc0004444e33b76132275461a2e26cf2}), published on GitHub. That commit adds \path{L14.lean} and \path{L15Classical.lean} to the
+library directory (for example \path{Simson/L15Classical.lean}), appends their imports to the root
+file, adds the new declarations to the list checked by \path{gate.sh}, updates \path{README.md}, and
+removes the \path{scratch/} directory, which is not part of the library. The other library files are
+unchanged, so the statements, files and line references of the commits cited above are unchanged. The code in all five repositories (Lean
+sources, gate and tamper scripts, and the Python certificate scripts) is released under the Apache
+License 2.0, the licence used by Mathlib; this paper is released under CC BY 4.0. The
+toolchain is Lean \texttt{v4.33.1}~\cite{Lean4}
+with Mathlib~\cite{Mathlib} revision \texttt{0df444a3} (tag \texttt{v4.33.1}), pinned in each
+\path{lake-manifest.json}. The libraries and their sizes are \lean{Desargues} (five files,
+452 lines), \lean{Monge} (two files, 173 lines), \lean{Simson} (four files, 320 lines),
+\lean{Napoleon} (two files, 205 lines) and \lean{Lami} (one file, 284 lines), each with a root file
+that only imports. Version~2 adds 218 and 258 lines (Desargues), 91 and 261 (Monge), 121 and 168
+(Simson), 334 and 503 (Napoleon), and 73 and 98 (Lami) in \path{L14.lean} and
+\path{L15Classical.lean}. All declarations are in the namespace of the library name (the Layer-15
+ones in its sub-namespace, e.g.\ \lean{Simson.Classical}). Table~\ref{tab:thms}
+lists the main formal statements.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{PaperA-coordinate-certificates} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+{\small
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.28\textwidth}
+  >{\raggedright\arraybackslash}p{0.31\textwidth}
+  >{\raggedright\arraybackslash}p{0.13\textwidth}
+  >{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
+\caption{Informal statements and their formal counterparts. Line numbers refer to the first line
+of the declaration. ``Field'' means an arbitrary field~$K$.}\label{tab:thms}\\
+\toprule
+Informal statement & Lean name & Source & Setting / hypotheses \\ \midrule
+\endfirsthead
+\toprule
+Informal statement & Lean name & Source & Setting / hypotheses \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\emph{Desargues (Section~\ref{sec:desargues})}}\\
+Bracket $[uvw]=u\cdot(v\times w)$ & \decl{Desargues.br} & \src{desargues}{Desargues}{Basic}{26} & comm.\ ring; definition \\
+$[uvw]=\det(u,v,w)$ & \decl{Desargues.br_eq_det} & \src{desargues}{Desargues}{Basic}{28} & comm.\ ring; none \\
+Certificate $[PQR]=[abc][a'b'c'][AA'BB'CC']$ & \decl{Desargues.desargues_det_identity} & \src{desargues}{Desargues}{Basic}{34} & comm.\ ring; none \\
+Bracket $0$ $\Rightarrow$ collinear in $\PP^2$ & \decl{Desargues.isCollinear_mk_of_br_eq_zero} & \src{desargues}{Desargues}{Plane}{27} & field; $u,v,w\ne0$, $[uvw]=0$ \\
+Collinear in $\PP^2$ $\Rightarrow$ bracket $0$ & \decl{Desargues.br_eq_zero_of_isCollinear_mk} & \src{desargues}{Desargues}{Plane}{59} & field; $u,v,w\ne0$, \mdecl{IsCollinear} \\
+Common orthogonal $o\ne0$ $\Rightarrow$ bracket $0$ & \decl{Desargues.br_eq_zero_of_dotProduct_eq_zero} & \src{desargues}{Desargues}{Plane}{88} & field; $o\ne0$, $o\cdot x=o\cdot y=o\cdot z=0$ \\
+Bracket $0$ $\Rightarrow$ common orthogonal $o\ne 0$ & \decl{Desargues.exists_dotProduct_eq_zero_of_br_eq_zero} & \src{desargues}{Desargues}{Plane}{100} & field; $[xyz]=0$ \\
+Desargues, determinant form (Thm.~\ref{thm:desdet}) & \decl{Desargues.desargues_det} & \src{desargues}{Desargues}{Main}{33} & field; $o\ne0$, $[oaa']=[obb']=[occ']=0$ \\
+Desargues in $\PP^2$ (Thm.~\ref{thm:desmk}) & \decl{Desargues.desargues_mk} & \src{desargues}{Desargues}{Main}{59} & field, decidable eq.; $a,b,c,a',b',c',o\ne0$; six vertex inequalities $A\ne B$, $B\ne C$, $C\ne A$, $A'\ne B'$, $B'\ne C'$, $C'\ne A'$; $[oaa']=[obb']=[occ']=0$; $AB\ne A'B'$, $BC\ne B'C'$, $CA\ne C'A'$ \\
+Converse, determinant form & \decl{Desargues.desargues_converse_det} & \src{desargues}{Desargues}{Main}{88} & field; $[abc]\ne0$, $[a'b'c']\ne0$, $[PQR]=0$ \\
+Converse in $\PP^2$ (dual form) & \decl{Desargues.desargues_converse_mk} & \src{desargues}{Desargues}{Main}{106} & field, decidable eq.; $a\times a',b\times b',c\times c'\ne0$; $[abc],[a'b'c']\ne0$; $P,Q,R\ne0$; $\{P,Q,R\}$ \mdecl{IsCollinear} \\
+Non-degeneracy of the example & \decl{Desargues.ex_nonvacuous} & \src{desargues}{Desargues}{Examples}{41} & $K=\QQ$; none \\
+Desargues applied to the example & \decl{Desargues.ex_desargues} & \src{desargues}{Desargues}{Examples}{74} & $K=\QQ$; none \\
+\multicolumn{4}{@{}l}{\emph{Monge (Section~\ref{sec:monge})}}\\
+External centre of similitude & \decl{Monge.ext} & \src{monge}{Monge}{Basic}{31} & field; definition \\
+Signed double area & \decl{Monge.det3} & \src{monge}{Monge}{Basic}{36} & field; definition \\
+Monge's theorem (Thm.~\ref{thm:monge}) & \decl{Monge.monge} & \src{monge}{Monge}{Basic}{42} & field; $r_1\ne r_2$, $r_2\ne r_3$, $r_3\ne r_1$ \\
+Non-vacuity example over $\QQ$ & \decl{Monge.monge_example} & \src{monge}{Monge}{Basic}{54} & $K=\QQ$; none \\
+Values of the example's centres & \decl{Monge.monge_example_values} & \src{monge}{Monge}{Basic}{61} & $K=\QQ$; none \\
+\multicolumn{4}{@{}l}{\emph{Simson (Section~\ref{sec:simson})}}\\
+Foot of perpendicular & \decl{Simson.perpFoot} & \src{simson}{Simson}{Basic}{28} & $\CC$; definition \\
+Foot lies on the line & \decl{Simson.perpFoot_mem_line} & \src{simson}{Simson}{Basic}{50} & $\CC$; none \\
+Foot is orthogonal & \decl{Simson.inner_perpFoot} & \src{simson}{Simson}{Basic}{54} & $\CC$; $u\ne v$ \\
+Concyclicity determinant & \decl{Simson.concyc} & \src{simson}{Simson}{Identity}{16} & $\CC$; definition \\
+Concyclic $\Rightarrow$ determinant $0$ & \decl{Simson.concyc_eq_zero_of_dist} & \src{simson}{Simson}{Identity}{27} & $\CC$; $|a-o|=|b-o|=|c-o|=|p-o|=r$ \\
+Certificate (pedal area identity) & \decl{Simson.area2_perpFoot_mul} & \src{simson}{Simson}{Identity}{43} & $\CC$; $a\ne b$, $b\ne c$, $c\ne a$ \\
+Simson, area form & \decl{Simson.simson_area} & \src{simson}{Simson}{Main}{51} & $\CC$; $a,b,c$ pairwise distinct; $|a-o|=|b-o|=|c-o|=|p-o|=r$ \\
+Simson line, forward direction (Thm.~\ref{thm:simson}) & \decl{Simson.simson} & \src{simson}{Simson}{Main}{64} & $\CC$; $a,b,c$ pairwise distinct; $\{a,b,c,p\}$ \mdecl{Cospherical} \\
+Determinant-level equivalence (not the geometric converse) & \decl{Simson.area2_perpFoot_eq_zero_iff} & \src{simson}{Simson}{Main}{74} & $\CC$; $\mathrm{area2}(a,b,c)\ne0$ \\
+\multicolumn{4}{@{}l}{\emph{Napoleon (Section~\ref{sec:napoleon})}}\\
+Apex of erected triangle & \decl{Napoleon.apex} & \src{napoleon}{Napoleon}{Basic}{28} & $\CC$; definition \\
+Erected triangle is equilateral & \decl{Napoleon.apex_equilateral} & \src{napoleon}{Napoleon}{Basic}{64} & $|\omega|=1$, $|1-\omega|=1$ \\
+Certificate $G_b-G_a=\omega(G_c-G_a)$ & \decl{Napoleon.key} & \src{napoleon}{Napoleon}{Basic}{74} & $\omega^2-\omega+1=0$ \\
+Napoleon, general $\omega$ & \decl{Napoleon.napoleon_general} & \src{napoleon}{Napoleon}{Basic}{81} & $\omega^2-\omega+1=0$, $|\omega|=1$, $|1-\omega|=1$ (redundant, see text); no non-degeneracy \\
+Outer Napoleon triangle (Thm.~\ref{thm:napoleon}) & \decl{Napoleon.napoleon_outer} & \src{napoleon}{Napoleon}{Basic}{98} & none \\
+Inner Napoleon triangle & \decl{Napoleon.napoleon_inner} & \src{napoleon}{Napoleon}{Basic}{104} & none \\
+Signed area of erected triangle is $-\tfrac{\sqrt3}{4}|Q-P|^2$ & \decl{Napoleon.apex_outward} & \src{napoleon}{Napoleon}{Basic}{112} & none (clockwise only if $P\ne Q$) \\
+\multicolumn{4}{@{}l}{\emph{Lami (Section~\ref{sec:lami}); $V$ real inner product space, $\dim V=2$ and oriented where stated}}\\
+Equilibrium $\Rightarrow$ equal cyclic area forms & \decl{Lami.areaForm_cyclic} & \src{lami}{Lami}{Basic}{27} & $\dim 2$, oriented; $F_1+F_2+F_3=0$ \\
+$\omega(x,y)=\|x\|\|y\|\sin\measuredangle(x,y)$ & \decl{Lami.areaForm_eq_norm_mul_norm_mul_sin_oangle} & \src{lami}{Lami}{Basic}{36} & $\dim 2$, oriented; none (all $x,y$) \\
+Lami, oriented product form & \decl{Lami.lami_oriented_mul} & \src{lami}{Lami}{Basic}{49} & $\dim 2$, oriented; $F_1+F_2+F_3=0$ \\
+Lami, oriented ratio form & \decl{Lami.lami_oriented} & \src{lami}{Lami}{Basic}{100} & $\dim 2$, oriented; $F_1+F_2+F_3=0$; $F_1,F_2,F_3\ne0$ \\
+Lami for forces in $\CC$ & \decl{Lami.lami_complex} & \src{lami}{Lami}{Basic}{111} & $V=\CC$; $F_1+F_2+F_3=0$; $F_1,F_2,F_3\ne0$ \\
+Lami, unoriented product form & \decl{Lami.lami_mul} & \src{lami}{Lami}{Basic}{134} & any dimension; $F_1+F_2+F_3=0$ \\
+Lami, unoriented ratio form & \decl{Lami.lami} & \src{lami}{Lami}{Basic}{148} & any dimension; $F_1+F_2+F_3=0$; $F_1,F_2,F_3\ne0$ \\
+Lami with nonzero sines (Thm.~\ref{thm:lami}) & \decl{Lami.lami_nondegenerate} & \src{lami}{Lami}{Basic}{180} & any dimension; $F_1+F_2+F_3=0$; $F_1,F_2,F_3\ne0$; $\angle(F_1,F_2)\ne0,\pi$ \\
+Parallel case: all sines $0$ & \decl{Lami.lami_degenerate} & \src{lami}{Lami}{Basic}{189} & any dimension; $F_1+F_2+F_3=0$; $F_1,F_2,F_3\ne0$; $\angle(F_1,F_2)\in\{0,\pi\}$ \\
+Division-free form & \decl{Lami.lami_cross} & \src{lami}{Lami}{Basic}{211} & any dimension; $F_1+F_2+F_3=0$; $F_3\ne0$ \\
+Converse, area-form version & \decl{Lami.equilibrium_of_areaForm} & \src{lami}{Lami}{Basic}{247} & $\dim 2$, oriented; $\omega(F_1,F_2)=\omega(F_2,F_3)=\omega(F_3,F_1)$; $\omega(F_1,F_2)\ne0$ \\
+Converse, oriented ratio form & \decl{Lami.lami_oriented_converse} & \src{lami}{Lami}{Basic}{262} & $\dim 2$, oriented; $F_1,F_2,F_3\ne0$; three oriented sines $\ne0$; the two ratio equalities \\
+\end{longtable}
+}
+
+\section{The method}\label{sec:method}
+
+All five proofs follow the same three steps.
+\begin{enumerate}
+\item \emph{Coordinates.} Points are vectors of $K^3$ (homogeneous coordinates, Desargues),
+pairs in $K\times K$ (Monge), complex numbers (Simson, Napoleon), or vectors of a real inner
+product space (Lami). Lines, feet, apexes and centres of similitude are given by explicit
+formulas in these coordinates.
+\item \emph{Certificate.} The conclusion, after clearing denominators that the hypotheses make
+nonzero, is an identity in the coordinates. Either it holds identically (Monge), or it is an
+explicit multiple of a hypothesis polynomial (Napoleon, the concyclicity step of Simson), or it
+factors so that one factor is forced to vanish by a hypothesis (Desargues, Simson). The identity
+is closed by \lean{ring} (after \lean{field\_simp} where there are denominators) or by
+\lean{linear\_combination} with the multiplier written in the source.
+\item \emph{Translation.} The coordinate conclusion is turned into a standard Mathlib notion:
+\mdecl{Projectivization.IsCollinear} for Desargues, \mdecl{Collinear} for Simson, \mdecl{dist}
+for Napoleon, and norms with \mdecl{Orientation.oangle} or \mdecl{InnerProductGeometry.angle} for
+Lami. Monge's theorem itself stops at the coordinate determinant; the bridge
+\decl{Monge.det3_eq_zero_iff_collinear} identifies it with \mdecl{Collinear}, but the composed
+statement is not stated as a declaration in the main files (Section~\ref{sec:limits}); the
+Layer-14 file of version~2 states it (\decl{Monge.l14_monge}, Section~\ref{sec:l1415}).
+\end{enumerate}
+The certificates are small. The largest is Desargues's, of degree~12 in eighteen variables; it
+takes about nine seconds to check. None of the proofs uses \lean{decide}, \lean{native\_decide} or
+\lean{polyrith}; every multiplier given to \lean{linear\_combination} is written in the source.
+
+The interest of the method is not that it is new (it is not; see~\cite{Chou}) but that it makes
+the role of each hypothesis visible. A hypothesis is used in exactly one of three ways: to make a
+denominator nonzero so that \lean{field\_simp} can clear it; to supply the polynomial on the right
+of the certificate; or to make a translation lemma apply. Table~\ref{tab:nondeg} at the end of
+Section~\ref{sec:lami} records which is which.
+
+\section{Desargues's theorem}\label{sec:desargues}
+
+\paragraph{Representation.} Let $K$ be a field. A point of $\PP^2(K)$ is represented by a nonzero
+$v\in K^3$, and Mathlib's \mdecl{Projectivization.mk}~\lean{K v hv} is the point it represents. The
+bracket \decl{Desargues.br}~$u\,v\,w=u\cdot(v\times w)$ is the determinant with rows $u,v,w$
+(\decl{Desargues.br_eq_det}, from Mathlib's \mdecl{triple_product_eq_det}). If nonzero $u,v$
+represent \emph{distinct points} of $\PP^2(K)$, that is, $u$ and $v$ are linearly independent,
+then $u\times v\ne0$ represents the line through them. Distinctness of the representing vectors
+is not enough: over $\QQ$, $u=(1,0,0)$ and $v=(2,0,0)$ satisfy $u\ne v$ but represent the same point, and
+$u\times v=0$. (In characteristic~$2$ the vector $v$ is zero and represents no point at all.) Dually, if $l,m$ represent distinct lines then $l\times m\ne0$ represents their
+intersection. For nonzero $o,a,a'$ the condition $[o\,a\,a']=0$ says that the three points
+represented by $o,a,a'$ are collinear. When $a$ and $a'$ represent distinct points this is the
+statement ``$O$ lies on the line $AA'$''; when they represent the same point, the line $AA'$ is
+not defined and $[o\,a\,a']=0$ holds for every $o$. All perspective hypotheses below are stated
+as $[o\,a\,a']=0$, which is meaningful in both cases.
+
+\paragraph{The certificate.} For all $a,b,c,a',b',c'$ in $R^3$, $R$ any commutative ring,
+\begin{equation}\label{eq:des}
+\bigl[(a\times b)\times(a'\times b'),\ (b\times c)\times(b'\times c'),\ (c\times a)\times(c'\times a')\bigr]
+ = [abc]\,[a'b'c']\,\bigl[a\times a',\ b\times b',\ c\times c'\bigr].
+\end{equation}
+This is \decl{Desargues.desargues_det_identity}. The proof rewrites each double cross product with
+Mathlib's \mdecl{cross_cross_eq_smul_sub_smul} ($(u\times v)\times w=(u\cdot w)v-(v\cdot w)u$),
+expands into coordinates, and closes the result with \lean{ring}. No hypothesis appears: the
+identity is unconditional. The three points on the left are the Desargues points
+$P=AB\cap A'B'$, $Q=BC\cap B'C'$, $R=CA\cap C'A'$, and the last factor on the right is the bracket
+of the three joining lines $AA'$, $BB'$, $CC'$.
+
+\paragraph{From the certificate to the theorem.} If a nonzero $o$ satisfies
+$[o\,a\,a']=[o\,b\,b']=[o\,c\,c']=0$, then $o$ is orthogonal to the three vectors $a\times a'$, $b\times b'$, $c\times c'$, which are
+therefore linearly dependent, so their bracket vanishes
+(\decl{Desargues.br_eq_zero_of_dotProduct_eq_zero}, via Mathlib's
+\mdecl{Matrix.exists_mulVec_eq_zero_iff}). By~\eqref{eq:des}, $[PQR]=0$.
+
+\begin{theorem}[Desargues, determinant form]\label{thm:desdet}
+Let $K$ be a field and $o,a,b,c,a',b',c'\in K^3$ with $o\ne0$. If $[o\,a\,a']=[o\,b\,b']=[o\,c\,c']=0$,
+then $[PQR]=0$, where $P,Q,R$ are the cross-product expressions on the left of~\eqref{eq:des}.
+\end{theorem}
+
+\begin{lstlisting}
+theorem desargues_det {o a b c a' b' c' : Fin 3 → K} (ho : o ≠ 0)
+    (hOa : br o a a' = 0) (hOb : br o b b' = 0) (hOc : br o c c' = 0) :
+    br ((a ⨯₃ b) ⨯₃ (a' ⨯₃ b')) ((b ⨯₃ c) ⨯₃ (b' ⨯₃ c')) ((c ⨯₃ a) ⨯₃ (c' ⨯₃ a')) = 0
+\end{lstlisting}
+
+The only non-degeneracy hypothesis is $o\ne0$, and it is needed: with $o=0$ the perspective
+hypotheses are vacuous and the statement would claim that $[PQR]=0$ for all pairs of
+triangles, which is false (the project's negative control found 2{,}946 of 2{,}985 random
+non-perspective configurations over $\QQ$ with $[PQR]\ne0$). Everything else is allowed:
+coincident vertices, degenerate triangles, coincident corresponding sides. In those cases one of
+$P,Q,R$ may be the zero vector and the conclusion says nothing geometric, but it is still true.
+
+\begin{theorem}[Desargues in $\PP^2(K)$]\label{thm:desmk}
+Let $K$ be a field and let $A,B,C,A',B',C',O$ be points of $\PP^2(K)$. Suppose $A\ne B$, $B\ne C$,
+$C\ne A$, $A'\ne B'$, $B'\ne C'$, $C'\ne A'$, and $AB\ne A'B'$, $BC\ne B'C'$, $CA\ne C'A'$ as
+lines. Let $o,a,\dots,c'$ be nonzero representatives of $O,A,\dots,C'$, and suppose
+$[o\,a\,a']=[o\,b\,b']=[o\,c\,c']=0$ (that is, $O,A,A'$ are collinear, and likewise for the other
+two pairs; when $A\ne A'$ this says that $O$ lies on $AA'$). Then the points $AB\cap A'B'$,
+$BC\cap B'C'$ and $CA\cap C'A'$ are collinear.
+\end{theorem}
+
+This is \decl{Desargues.desargues_mk}. Points are written \lean{mk K a ha} and so on; the line
+through two points and the intersection of two lines are both Mathlib's
+\mdecl{Projectivization.cross}; and the conclusion is \mdecl{Projectivization.IsCollinear} of the
+three-point set. The perspective hypotheses are stated on representatives
+(\lean{br o a a' = 0}); no hypothesis $A\ne A'$ is imposed, and a coincidence $A=A'$ simply makes
+the corresponding perspective hypothesis vacuous. The six distinctness hypotheses on vertices and the three on sides have a
+precise role. Mathlib's \mdecl{Projectivization.cross} returns its first argument when the cross
+product of representatives vanishes, so it computes the line through $X$ and $Y$ only when
+$X\ne Y$, and the intersection of two lines only when they are distinct
+(\mdecl{Projectivization.cross_mk_of_ne}). The nine hypotheses are exactly what is needed to
+rewrite every \lean{cross} in the statement as the cross product of representatives, after which
+Theorem~\ref{thm:desdet} and \decl{Desargues.isCollinear_mk_of_br_eq_zero} finish the proof. They
+are not needed for~\eqref{eq:des}. No hypothesis is placed on $O$ beyond its being a point; in
+particular $O$ may coincide with a vertex, and the triangles need not be non-degenerate. No
+assumption on the characteristic of~$K$ is needed.
+
+\paragraph{The converse.} If both triangles are non-degenerate, $[abc]\ne0\ne[a'b'c']$, then by
+\eqref{eq:des} $[PQR]=0$ forces $[AA'\,BB'\,CC']=0$
+(\decl{Desargues.desargues_converse_det}). Non-degeneracy is necessary for this argument: if
+either triangle is degenerate, the right-hand side of~\eqref{eq:des} vanishes for every
+configuration and gives no information. The projective form
+\decl{Desargues.desargues_converse_mk} assumes that the joining vectors $a\times a'$, $b\times b'$,
+$c\times c'$ and the Desargues points $P,Q,R$ are nonzero, and concludes that the three lines
+$AA'$, $BB'$, $CC'$, regarded as points of the dual plane, are collinear. That this is concurrency
+of the three lines in the primal plane is the content of
+\decl{Desargues.exists_dotProduct_eq_zero_of_br_eq_zero}: a vanishing bracket gives a nonzero $o$
+orthogonal to all three, that is, a point on all three lines. A reader looking for a statement of
+the form ``there is a point $O$ on $AA'$, $BB'$ and $CC'$'' has to compose the two declarations;
+Mathlib has no concurrency predicate. Version~2 does this composition in the Layer-15 file:
+\decl{Desargues.Classical.cov_A1_b} gives a point on the three lines, with lines as spans in
+Mathlib's projective plane (Section~\ref{sec:l1415}).
+
+\paragraph{Non-vacuity.} \path{Examples.lean} works out the configuration $O=(0{:}0{:}1)$,
+$A=(1{:}0{:}0)$, $B=(0{:}1{:}0)$, $C=(1{:}1{:}1)$, $A'=(2{:}0{:}3)$, $B'=(0{:}5{:}{-1})$,
+$C'=(4{:}4{:}11)$ over $\QQ$. Both triangles are non-degenerate (\decl{Desargues.ex_nonvacuous}),
+the triangles are in perspective from~$O$ (\decl{Desargues.ex_perspective}), the Desargues points
+are $P=(-2{:}-15{:}0)$, $Q=(-4{:}-39{:}-4)$, $R=(2{:}-12{:}-12)$, all nonzero
+(\decl{Desargues.ex_points_ne_zero}), and $[PQR]=0$ is obtained both from the theorem
+(\decl{Desargues.ex_desargues}) and by direct computation (\decl{Desargues.ex_desargues_compute}).
+
+\section{Monge's theorem}\label{sec:monge}
+
+For circles with centres $O_1,O_2\in K^2$ and radii $r_1\ne r_2$, the external centre of
+similitude is the point dividing $O_1O_2$ externally in the ratio $r_1:r_2$,
+\[
+S_{12}=\frac{r_1O_2-r_2O_1}{r_1-r_2},
+\]
+which is \decl{Monge.ext}~\lean{O₁ O₂ r₁ r₂}, defined componentwise. Collinearity is the vanishing
+of \decl{Monge.det3}~$A\,B\,C=(B-A)\times(C-A)$, the signed double area; over every field,
+$\det_3(A,B,C)=0$ is equivalent to Mathlib's \lean{Collinear K \{A, B, C\}} in $K\times K$
+(\decl{Monge.det3_eq_zero_iff_collinear}).
+
+\begin{theorem}[Monge]\label{thm:monge}
+Let $K$ be a field, $O_1,O_2,O_3\in K^2$, and $r_1,r_2,r_3\in K$ pairwise distinct. Then
+$\det_3(S_{12},S_{23},S_{31})=0$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem monge (O₁ O₂ O₃ : K × K) (r₁ r₂ r₃ : K)
+    (h12 : r₁ ≠ r₂) (h23 : r₂ ≠ r₃) (h31 : r₃ ≠ r₁) :
+    det3 (ext O₁ O₂ r₁ r₂) (ext O₂ O₃ r₂ r₃) (ext O₃ O₁ r₃ r₁) = 0
+\end{lstlisting}
+
+\paragraph{The certificate.} After multiplying by $(r_1-r_2)(r_2-r_3)(r_3-r_1)$ the determinant
+is a polynomial in the nine variables that vanishes identically. The proof is
+\lean{unfold det3 ext; field\_simp; ring}. There is no hypothesis polynomial on the right: the
+three hypotheses are used only to make the three denominators nonzero.
+
+\paragraph{Hypotheses.} \emph{Scope of the geometric discussion.} Everything said below about
+circles, centres of similitude, homotheties and tangents concerns genuine circles, with
+$K=\RR$ and positive real radii. It is not valid for every field element that
+\decl{Monge.monge} admits. For instance, $r_1=1$, $r_2=2$, $r_3=0$ satisfies the three
+hypotheses, but then (as for any $r_1,r_2\ne0$ with $r_3=0$) $S_{23}=S_{31}=O_3$, so two of the three points coincide, the line
+$S_{23}S_{31}$ is undefined, and the conclusion $\det_3=0$ holds trivially. More generally, if
+$r_i=0$ the homothety ratio $r_j/r_i$ displayed below is undefined classically (Lean would read it
+as~$0$). The Lean theorem is an identity over an arbitrary field; its geometric reading is
+restricted to $r_1,r_2,r_3>0$ pairwise distinct.
+
+Distinct radii are exactly the condition that each $S_{ij}$ is a finite
+point. They cannot simply be dropped from the Lean statement: Lean defines $x/0=0$, so with
+$r_1=r_2$ the term \lean{ext O₁ O₂ r₁ r₂} is the origin, and the determinant need not vanish. For
+example, with centres $(0,0),(4,0),(0,3)$ and radii $1,1,3$, a computation in exact rational
+arithmetic with Lean's division convention gives $\det_3=-9$. (This computation was done in Python,
+not in Lean.) Geometrically, the equal-radius cases are of several kinds, none of which is
+formalised. If exactly two radii agree, say $r_1=r_2\ne r_3$, and $O_1\ne O_2$, then $S_{12}$ is
+the point at infinity in the direction of $O_1O_2$, and the projective form of Monge's theorem
+says that $S_{23}S_{31}$ is parallel to $O_1O_2$ (a homothety centred at $O_3$ maps $O_1,O_2$ to
+$S_{31},S_{23}$). If all three radii agree and the centres are distinct, then \emph{all three}
+centres of similitude are at infinity and the statement degenerates to the triviality that three
+points of the line at infinity are collinear; there is no finite Monge line. If two circles are
+identical ($O_i=O_j$, $r_i=r_j$), every point of the plane is fixed by the identity map and there
+is no distinguished centre of similitude at all. No hypothesis on the centres is needed for the
+\emph{identity}: it holds for all $O_i$, including coincident centres. For $r_i\ne r_j$ and
+$O_i=O_j$ (concentric circles) the formula gives $S_{ij}=O_i$, which is indeed the centre of the
+homothety $x\mapsto O_i+\tfrac{r_j}{r_i}(x-O_i)$, but the circles have no common tangents.
+More generally, the formula is meaningful without any geometric configuration assumption only as
+the centre of the positive-ratio homothety; its classical description as the meeting point of the
+two external common tangents requires that those tangents exist, which fails when one circle
+lies strictly inside the other.
+Nor are the radii required to be positive in the formal statement. Because \decl{Monge.monge} is universally quantified
+over $r_1,r_2,r_3\in K$, replacing $r_2$ by $-r_2$ turns $S_{12}$ and $S_{23}$ into the
+\emph{internal} centres of similitude, and gives the classical variant ``two internal centres and
+the third external centre are collinear'' under the hypotheses $r_1\ne-r_2$, $-r_2\ne r_3$,
+$r_3\ne r_1$, where now $r_1,r_2,r_3>0$ are the actual radii. We note this only as an instantiation; it is not stated as a separate declaration in the main files.
+Version~2 proves the companion form (one external and two internal centres, for circles given as
+Mathlib spheres) by the same sign-change argument, using $r_3\mapsto-r_3$ to obtain $E_{12},I_{23},I_{13}$, as \decl{Monge.Classical.cov_A2_b}
+(Section~\ref{sec:l1415}).
+
+\paragraph{Non-vacuity.} For centres $(0,0),(4,0),(0,3)$ and radii $1,2,3$ over $\QQ$, the
+external centres are $(-4,0)$, $(12,-6)$ and $(0,-3/2)$ (\decl{Monge.monge_example_values}), and
+$\det_3=0$ (\decl{Monge.monge_example}).
+
+\paragraph{Scope.} Neither circles nor tangent lines appear in the formal statement. The radii are
+elements of $K$ and \decl{Monge.ext} is a formula. The bridge \decl{Monge.ext_eq_lineMap_homothety}
+shows, for $r_1\ne0$ and $r_1\ne r_2$, that $S_{12}$ is the point
+\lean{AffineMap.lineMap O₁ O₂ (r₁ / (r₁ - r₂))} of the line $O_1O_2$ and that the homothety
+(\mdecl{AffineMap.homothety}) with centre $S_{12}$ and ratio $r_2/r_1$ sends $O_1$ to $O_2$. The
+hypothesis $r_1\ne0$ is needed in addition to $r_1\ne r_2$: for $r_1=0$ the formula gives
+$S_{12}=O_1$, which is not a centre of similitude, and the ratio $r_2/r_1$ is undefined (Lean reads
+it as~$0$). The lemma is about centres only; in the main files, that this homothety maps the one circle onto the other
+is not formalised. Version~2 proves it in the Layer-15 file: for two circles with distinct centres and positive
+unequal radii given as Mathlib spheres, a point at which the homothety of ratio $r_t/r_s$ maps the
+one circle onto the other exists and is unique (\decl{Monge.Classical.cov_A2_obligation_ext}), it is
+the point \decl{Monge.ext} (\decl{Monge.Classical.ext_eq_of_isExt}), and for three circles with
+pairwise distinct radii the three such points are \mdecl{Collinear}
+(\decl{Monge.Classical.cov_A2_a}). Not formalised is the formulation in which the external common
+tangents of each pair meet at~$S_{ij}$ (a formulation that applies only when those tangents
+exist, so not to nested circles). Mathlib's \path{Geometry/Euclidean/MongePoint.lean}
+concerns the Monge point of a simplex, a different theorem, and is not used.
+
+\paragraph{Prior formalisations.} This theorem is not new to Lean, and our proof is not the first;
+two earlier complete Lean proofs exist (Section~\ref{sec:related}).
+
+\section{The Simson line}\label{sec:simson}
+
+\paragraph{Representation.} The Euclidean plane is $\CC$, regarded as a real affine space. For
+$u\ne v$ the foot of the perpendicular from $p$ to the line $uv$ is
+\decl{Simson.perpFoot}~$p\,u\,v=u+t(v-u)$ with
+$t=\langle p-u,v-u\rangle/|v-u|^2$, written in real and imaginary parts
+(\decl{Simson.footParam}). Two lemmas say that this is the foot: it lies on Mathlib's
+\lean{line[ℝ, u, v]} (\decl{Simson.perpFoot_mem_line}), and $p-\mathrm{foot}$ is orthogonal to
+$v-u$ when $u\ne v$ (\decl{Simson.inner_perpFoot}, stated in coordinates). Moreover the parameter
+is $t=\langle p-u,v-u\rangle/\|v-u\|^2$ for Mathlib's real inner product on $\CC$
+(\decl{Simson.footParam_eq_inner}), and the foot is Mathlib's
+\mdecl{EuclideanGeometry.orthogonalProjection} of $p$ onto \lean{line[ℝ, u, v]}
+(\decl{Simson.perpFoot_eq_orthogonalProjection}), with no hypothesis (for $u=v$ both sides
+are~$u$). The signed double area is
+\decl{Simson.area2}, and \decl{Simson.concyc}~$a\,b\,c\,p$ is the $4\times4$ determinant with rows
+$(x,y,x^2+y^2,1)$, written out by cofactor expansion. For a non-degenerate triangle,
+$\mathrm{area2}(a,b,c)\ne0$, it vanishes exactly when $\{a,b,c,p\}$ is Mathlib's
+\mdecl{EuclideanGeometry.Cospherical} (\decl{Simson.concyc_eq_zero_iff_cospherical}). The
+hypothesis cannot be dropped, and $\mathrm{concyc}$ does not vanish merely because $a,b,c$ are
+collinear: for $a,b,c=(0,0),(1,0),(2,0)$ and $p=(0,1)$ one has $\mathrm{concyc}(a,b,c,p)=2$, while
+four points on one line have $\mathrm{concyc}=0$ without being cospherical. (The comment on
+\decl{Simson.concyc} in the cited source describes its zero set inaccurately; the bridge lemma,
+with its hypothesis, is the correct statement.)
+
+\paragraph{The certificate.} Write $D_1=|c-b|^2$, $D_2=|a-c|^2$, $D_3=|b-a|^2$ and $S=\mathrm{area2}(a,b,c)$.
+For pairwise distinct $a,b,c$ and every $p$,
+\begin{equation}\label{eq:simson}
+\mathrm{area2}\bigl(\mathrm{foot}_{bc}(p),\mathrm{foot}_{ca}(p),\mathrm{foot}_{ab}(p)\bigr)\cdot D_1D_2D_3
+ = S^2\cdot\mathrm{concyc}(a,b,c,p).
+\end{equation}
+This is \decl{Simson.area2_perpFoot_mul}, proved by \lean{field\_simp; ring}; the distinctness
+hypotheses make the $D_i$ nonzero (\decl{Simson.sqD_ne_zero}). A second, linear certificate shows
+that four points at distance $r$ from a common $o$ have $\mathrm{concyc}=0$
+(\decl{Simson.concyc_eq_zero_of_dist}): $\mathrm{concyc}$ is a combination of the four equations
+$|x-o|^2=r^2$ with the cofactors as multipliers, given explicitly to \lean{linear\_combination}.
+The factorisation \eqref{eq:simson} was found with \texttt{sympy} (\path{code/cert.py},
+\path{code/gen.py}, \path{code/gen2.py}) and then checked by Lean.
+
+\begin{theorem}[Wallace--Simson, forward direction]\label{thm:simson}
+Let $a,b,c\in\CC$ be pairwise distinct and let $p\in\CC$ be such that $\{a,b,c,p\}$ is
+cospherical. Then the feet of the perpendiculars from $p$ to the lines $bc$, $ca$, $ab$ are
+collinear.
+\end{theorem}
+
+\begin{lstlisting}
+theorem simson {a b c p : ℂ} (hab : a ≠ b) (hbc : b ≠ c) (hca : c ≠ a)
+    (hcirc : EuclideanGeometry.Cospherical ({a, b, c, p} : Set ℂ)) :
+    Collinear ℝ ({perpFoot p b c, perpFoot p c a, perpFoot p a b} : Set ℂ)
+\end{lstlisting}
+
+The hypothesis is Mathlib's \mdecl{EuclideanGeometry.Cospherical}, which in the plane $\CC$ means
+that the four points lie on a common circle (of any radius, including radius~0, which the
+distinctness hypotheses exclude). The conclusion is Mathlib's \mdecl{Collinear}~$\RR$. The
+intermediate \decl{Simson.simson_area} states the conclusion as $\mathrm{area2}=0$ with the
+circle given by a centre $o$ and radius $r$.
+
+\paragraph{Hypotheses.} The only hypotheses are distinctness of the three vertices and the circle
+condition. Distinctness is used only to make the feet well defined and the $D_i$ nonzero. No
+separate hypothesis that the triangle is non-degenerate is needed: three distinct points on a
+circle are not collinear, and in any case \eqref{eq:simson} does not need it. The point $p$ may be
+a vertex, and right-angled triangles are included; the identity covers all of these.
+
+\paragraph{The converse.} The main files of our development prove only the forward direction
+of the Wallace--Simson theorem. For a non-degenerate triangle ($S\ne0$, which implies
+distinctness), \eqref{eq:simson} gives
+$\mathrm{area2}(\text{feet})=0\iff\mathrm{concyc}(a,b,c,p)=0$
+(\decl{Simson.area2_perpFoot_eq_zero_iff}). This is an equivalence between two \emph{local
+determinant expressions}; it is not the geometric converse. Neither side is a Mathlib notion. On
+the circle side the bridge is now two-way for $S\ne0$ (\decl{Simson.concyc_eq_zero_iff_cospherical}),
+but on the feet side it is one-way: \decl{Simson.collinear_of_area2_eq_zero} turns
+$\mathrm{area2}=0$ into \mdecl{Collinear}, and there is no lemma from \mdecl{Collinear} back to
+$\mathrm{area2}=0$. The geometric converse, ``if the feet are collinear then $p$ lies on the
+circumcircle'', was therefore not formalised in the first version of this paper; the missing step
+was that converse bridge for $\mathrm{area2}$. Version~2 supplies it in the Layer-15 file:
+\decl{Simson.Classical.area2_eq_zero_of_collinear} (eight lines) proves that three collinear points
+have $\mathrm{area2}=0$, and \decl{Simson.Classical.cov_A3_b} chains it with the two lemmas above to
+prove the converse for a Mathlib \mdecl{Affine.Triangle} in \lean{EuclideanSpace ℝ (Fin 2)}, with
+conclusion membership in Mathlib's \mdecl{Affine.Simplex.circumsphere} (Section~\ref{sec:l1415}).
+The converse was proved earlier in the Isabelle AFP entry and in
+Guilhot's Rocq development cited in Section~\ref{sec:related}.
+
+\paragraph{Non-vacuity.} The library contains an \lean{example} applying \decl{Simson.simson} to the
+triangle $1,i,-1$ on the unit circle with $p=-i$, and a negative control showing that for $p=0$
+(the centre) the pedal triangle has nonzero area.
+
+\paragraph{Where the reals enter.} The certificate~\eqref{eq:simson} is an identity of
+polynomials in the eight real coordinates $(x,y)$ of $a,b,c,p$ and, as a polynomial identity, it
+holds over any commutative ring. The proof uses the reals in two places: the foot is defined
+through the Euclidean inner product, and $D_i\ne0$ for $a\ne b$ uses that a sum of two real
+squares vanishes only if both do. The second step is what fails if the coordinates are allowed to
+range over a field such as $\CC$ (or any field containing a square root of $-1$) while $D_i$ is
+kept as the \emph{bilinear} expression $(\Delta x)^2+(\Delta y)^2$, which is what the polynomial
+identity contains: this quadratic form is isotropic there, e.g.\ $\Delta=(1,i)$ gives
+$1^2+i^2=0$ although $\Delta\ne0$, so two distinct points can have $D=0$ and the foot is then
+undefined. (The Hermitian expression $|\Delta x|^2+|\Delta y|^2$ is positive for $\Delta\ne0$, but
+it is not a polynomial in the coordinates and does not appear in~\eqref{eq:simson}.) Over an
+arbitrary field one would have to assume the side vectors non-isotropic. This is why the theorem
+is stated in $\CC$ regarded as the real Euclidean plane, with real coordinates, and not over an
+arbitrary field.
+
+\section{Napoleon's theorem}\label{sec:napoleon}
+
+\paragraph{Representation.} The plane is $\CC$. For $\omega\in\CC$, \decl{Napoleon.apex}~$\omega\,P\,Q
+=P+\omega(Q-P)$ is the image of $Q$ under the map $z\mapsto P+\omega(z-P)$. For general $\omega$
+this is a spiral similarity (or, for $\omega=0$, constant), not a rotation; it is a rotation about
+$P$ exactly when $|\omega|=1$.
+The two rotations are $\omega_o=\tfrac12-\tfrac{\sqrt3}2 i$ (by $-\pi/3$, \decl{Napoleon.ωo}) and
+$\omega_i=\overline{\omega_o}$ (\decl{Napoleon.ωi}). The Napoleon points $G_a,G_b,G_c$ are the
+centroids of the triangles erected on $BC$, $CA$, $AB$ (\decl{Napoleon.Ga} and its two
+companions).
+
+\paragraph{The certificate.} If $\omega^2-\omega+1=0$, then for all $A,B,C$
+\begin{equation}\label{eq:nap}
+G_b-G_a-\omega(G_c-G_a)=\tfrac13(A-2B+C)\,(\omega^2-\omega+1).
+\end{equation}
+This is \decl{Napoleon.key}, proved by \lean{linear\_combination (A - 2 * B + C) / 3 * h}. It says that
+$G_b$ is the image of $G_c$ under $z\mapsto G_a+\omega(z-G_a)$. Over $\CC$ the hypothesis
+$\omega^2-\omega+1=0$ already forces $\omega=e^{\pm i\pi/3}$, so this map is in fact a rotation by
+$\pm\pi/3$; but \decl{Napoleon.key} is a ring identity and does not use that.
+
+More precisely, \eqref{eq:nap} needs no hypothesis at all: both sides are polynomials in
+$A,B,C,\omega$, and the identity holds for every $\omega$, not merely for roots of
+$\omega^2-\omega+1$. The Lean declaration \decl{Napoleon.key} states the specialisation
+$G_b-G_a=\omega(G_c-G_a)$ that is used below, and carries $\omega^2-\omega+1=0$ as a hypothesis;
+as formalised it is therefore marginally weaker than the displayed identity, which we have kept in
+the conditional form in which the geometry consumes it.
+
+\begin{theorem}[Napoleon]\label{thm:napoleon}
+For all $A,B,C\in\CC$, the centres $G_a,G_b,G_c$ of the equilateral triangles erected on the
+sides by the rotation $\omega_o$ satisfy $|G_aG_b|=|G_bG_c|=|G_cG_a|$; and the same holds for
+the rotation~$\omega_i$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem napoleon_outer (A B C : ℂ) :
+    dist (Ga ωo A B C) (Gb ωo A B C) = dist (Gb ωo A B C) (Gc ωo A B C) ∧
+    dist (Gb ωo A B C) (Gc ωo A B C) = dist (Gc ωo A B C) (Ga ωo A B C)
+\end{lstlisting}
+
+Both statements (\decl{Napoleon.napoleon_outer}, \decl{Napoleon.napoleon_inner}) are instances of
+\decl{Napoleon.napoleon_general}, which holds for every $\omega$ with $\omega^2-\omega+1=0$,
+$|\omega|=1$ and $|1-\omega|=1$. These three hypotheses are not independent: the roots of
+$\omega^2-\omega+1$ are $\omega=\tfrac12\pm\tfrac{\sqrt3}2i=e^{\pm i\pi/3}$, and both satisfy
+$|\omega|=|1-\omega|=1$, so the two norm hypotheses follow from the first. (Conversely,
+$|\omega|=|1-\omega|=1$ alone also characterises $e^{\pm i\pi/3}$.) The Lean statement keeps all
+three because the proof uses them in different places: the first drives \eqref{eq:nap}, and the
+other two turn it into equalities of distances, since $G_b-G_a=\omega(G_c-G_a)$ and
+$G_c-G_b=(1-\omega)(G_c-G_a)$. Deriving the norm hypotheses from the polynomial one would remove
+two redundant binders; we have not done so. The lemma
+\decl{Napoleon.apex_equilateral} checks that the erected triangles are equilateral, under the
+same two norm hypotheses.
+
+\paragraph{Hypotheses.} Theorem~\ref{thm:napoleon} has none. For a degenerate triangle the
+conclusion still holds, possibly with a Napoleon triangle that is a single point. Orientation
+enters only in the interpretation of $\omega_o$ as ``outward''. The lemma
+\decl{Napoleon.apex_outward} computes the signed area
+$\mathrm{signedArea}(P,Q,\mathrm{apex}\,\omega_o\,P\,Q)=-\tfrac{\sqrt3}4|Q-P|^2$, for all $P,Q$. So
+every triangle erected with $\omega_o$ on a base with $P\ne Q$ is clockwise; when $P=Q$ the erected
+``triangle'' is the single point $P$, its signed area is~$0$, and it has no orientation. If $ABC$
+is counter-clockwise ($\mathrm{signedArea}(A,B,C)>0$, which forces the vertices to be distinct),
+each apex therefore lies on the other side of its base from the third vertex, and the $\omega_o$
+triangles are the outer ones; for a clockwise $ABC$ the outer triangles are the $\omega_i$ ones,
+and \decl{Napoleon.napoleon_inner} covers that case. ``Outward'' is thus expressed through signed
+area rather than through half-planes; in the main files the step from the signed-area statement to ``on the opposite
+side of the line'' is not formalised. Version~2 adds it: \decl{Napoleon.l14_napoleon_outer} takes
+apexes defined by equal sides and Mathlib's strict opposite side
+(\mdecl{AffineSubspace.SOppSide}), with no orientation hypothesis, and
+\decl{Napoleon.Classical.cov_A4_a} proves the classical outer statement in
+\lean{EuclideanSpace ℝ (Fin 2)}, including that the outer Napoleon triangle of a triangle is
+non-degenerate (Section~\ref{sec:l1415}). Mixing orientations (erecting some triangles with $\omega_o$
+and some with $\omega_i$) makes the statement false; the project's numerical check found a spread
+of 1.15 between the three distances in such a configuration.
+
+\paragraph{Non-vacuity.} An \lean{example} checks that for $A=0$, $B=1$, $C=i$ the triangle is
+counter-clockwise, the Napoleon equality holds, and $|G_aG_b|\ne0$.
+
+\paragraph{Prior formalisations.} This theorem is not new to Lean, and our version is not the first
+in a proof assistant to treat the exterior condition; see Section~\ref{sec:related}.
+
+\section{Lami's theorem}\label{sec:lami}
+
+Lami's theorem says that if three forces $F_1,F_2,F_3$ acting at a point are in equilibrium,
+$F_1+F_2+F_3=0$, then
+\[
+\frac{|F_1|}{\sin\alpha}=\frac{|F_2|}{\sin\beta}=\frac{|F_3|}{\sin\gamma},
+\]
+where $\alpha$ is the angle between $F_2$ and $F_3$, $\beta$ the angle between $F_3$ and $F_1$, and
+$\gamma$ the angle between $F_1$ and~$F_2$.
+
+\paragraph{Oriented form and the certificate.} Let $V$ be a real inner product space of dimension
+two with an orientation $o$, and let $\omega$ be its area form (Mathlib's
+\mdecl{Orientation.areaForm}). Substituting $F_3=-F_1-F_2$ and using bilinearity and
+$\omega(x,x)=0$ gives
+\begin{equation}\label{eq:lami}
+\omega(F_1,F_2)=\omega(F_2,F_3)=\omega(F_3,F_1)
+\end{equation}
+(\decl{Lami.areaForm_cyclic}, closed by \lean{ring} after \lean{simp}). This is the certificate.
+The translation to sines is \decl{Lami.areaForm_eq_norm_mul_norm_mul_sin_oangle},
+$\omega(x,y)=\|x\|\,\|y\|\sin\measuredangle(x,y)$ for all $x,y$ including zero, proved through
+Mathlib's K\"ahler form and \mdecl{Complex.sin_arg}. Together they give the product form
+\decl{Lami.lami_oriented_mul}, with equilibrium as the only hypothesis:
+$\|F_2\|\|F_3\|\sin\measuredangle(F_2,F_3)=\|F_3\|\|F_1\|\sin\measuredangle(F_3,F_1)=\|F_1\|\|F_2\|\sin\measuredangle(F_1,F_2)$.
+The ratio form \decl{Lami.lami_oriented} needs $F_1,F_2,F_3\ne0$ and follows from the product
+form by \decl{Lami.ratio_of_mul}: if all $n_i\ne0$ and
+$n_2n_3s_1=n_3n_1s_2=n_1n_2s_3$, then either all $s_i$ vanish or none does, and
+$n_1/s_1=n_2/s_2=n_3/s_3$ in Lean's convention. \decl{Lami.lami_complex} is the instance
+$V=\CC$ with its standard orientation.
+
+\paragraph{Unoriented form.} With Mathlib's unoriented angle \mdecl{InnerProductGeometry.angle}
+(values in $[0,\pi]$), $\|x\|\|y\|\sin\angle(x,y)$ is the square root of the Gram determinant
+$\langle x,x\rangle\langle y,y\rangle-\langle x,y\rangle^2$
+(\decl{Lami.norm_mul_norm_mul_sin_angle}). The three Gram determinants of $(F_2,F_3)$,
+$(F_3,F_1)$, $(F_1,F_2)$ agree once $F_3=-F_1-F_2$ is substituted, again by \lean{ring}. This
+gives \decl{Lami.lami_mul} and \decl{Lami.lami} in every real inner product space; no
+two-dimensionality is assumed, since the three forces span a space of dimension at most two.
+
+\begin{theorem}[Lami, non-degenerate form]\label{thm:lami}
+Let $V$ be a real inner product space and $F_1,F_2,F_3\in V$ nonzero with $F_1+F_2+F_3=0$ and
+$\angle(F_1,F_2)\notin\{0,\pi\}$. Then $\sin\alpha$, $\sin\beta$, $\sin\gamma$ are nonzero and
+$\|F_1\|/\sin\alpha=\|F_2\|/\sin\beta=\|F_3\|/\sin\gamma$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem lami_nondegenerate {F₁ F₂ F₃ : V} (h : F₁ + F₂ + F₃ = 0)
+    (h₁ : F₁ ≠ 0) (h₂ : F₂ ≠ 0) (h₃ : F₃ ≠ 0)
+    (hγ : angle F₁ F₂ ≠ 0) (hγ' : angle F₁ F₂ ≠ π) :
+    (Real.sin (angle F₂ F₃) ≠ 0 ∧ Real.sin (angle F₃ F₁) ≠ 0 ∧ Real.sin (angle F₁ F₂) ≠ 0) ∧
+      ‖F₁‖ / Real.sin (angle F₂ F₃) = ‖F₂‖ / Real.sin (angle F₃ F₁) ∧
+      ‖F₂‖ / Real.sin (angle F₃ F₁) = ‖F₃‖ / Real.sin (angle F₁ F₂)
+\end{lstlisting}
+
+This is the declaration to cite for the classical theorem. The statement \decl{Lami.lami} has the
+same conclusion without the sine conjunct and without the non-parallel hypotheses; it is true, but
+in the parallel case it is true only because Lean defines $x/0=0$. \decl{Lami.lami_degenerate}
+makes this explicit: if $F_1\parallel F_2$ then all three sines vanish. The division-free form
+\decl{Lami.lami_cross}, $\|F_1\|\sin\beta=\|F_2\|\sin\alpha$, needs only $F_3\ne0$.
+
+\paragraph{Converse.} In dimension two, if the three cyclic area forms are equal and nonzero, the
+forces are in equilibrium (\decl{Lami.equilibrium_of_areaForm}, via Mathlib's
+\mdecl{Orientation.inner_mul_areaForm_sub}). Hence three nonzero forces with nonzero oriented sines
+whose magnitudes are proportional to the sines of the opposite oriented angles are in equilibrium
+(\decl{Lami.lami_oriented_converse}). Orientation is essential here: with unoriented angles the
+converse is false, because replacing $F_1$ by $-F_1$ leaves every unoriented sine unchanged but
+destroys equilibrium.
+
+\paragraph{The law of sines.} Lami's theorem is the law of sines for the force triangle with sides
+$\|F_1\|,\|F_2\|,\|F_3\|$ and interior angles $\pi-\alpha,\pi-\beta,\pi-\gamma$. The declaration
+\decl{Lami.lami_via_law_sin} only restates Mathlib's
+\mdecl{InnerProductGeometry.sin_angle_mul_norm_eq_sin_angle_mul_norm}. It is not used in the
+proofs, and the connection between Lami's theorem and the force triangle is not formalised.
+
+{\small
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}
+  >{\raggedright\arraybackslash}p{0.24\textwidth}
+  >{\raggedright\arraybackslash}p{0.27\textwidth}
+  >{\raggedright\arraybackslash}p{0.28\textwidth}@{}}
+\toprule
+Theorem & Hypothesis & Role & Without it \\ \midrule
+Desargues & $o\ne0$ & turns perspective into $[AA'BB'CC']=0$ & statement false \\
+ & $[o\,a\,a']=[o\,b\,b']=[o\,c\,c']=0$ (forward) & perspective from $O$; with $o\ne0$ gives $[(a{\times}a')(b{\times}b')(c{\times}c')]=0$, the third factor of~\eqref{eq:des} & no theorem (the hypothesis) \\
+ & six vertex inequalities, three side inequalities, nonzero representatives & translation: Mathlib's \lean{cross} computes lines and meets & conclusion about the wrong points \\
+ & $[PQR]=0$, $P,Q,R\ne0$, joins $\ne0$ (converse) & hypothesis of the converse; translation & --- \\
+ & $[abc],[a'b'c']\ne0$ (converse) & cancels a factor of~\eqref{eq:des} & no information \\
+Monge & $r_i\ne r_j$ & clears denominators & false in Lean ($x/0=0$); point at infinity \\
+ & (centres) & not needed & --- \\
+ & $r_1\ne0$, $r_1\ne r_2$ (bridge \decl{Monge.ext_eq_lineMap_homothety}) & clears $r_1$ and $r_1-r_2$ & for $r_1=0$, $S_{12}=O_1$ is not a centre of similitude \\
+Simson & $a,b,c$ distinct & clears $D_i$; feet well defined & feet undefined (Lean: $x/0=0$) \\
+ & cospherical & supplies $\mathrm{concyc}=0$ in~\eqref{eq:simson} & false (negative control) \\
+ & $S\ne0$ (determinant equivalence) & cancels $S^2$ & no information \\
+ & $S\ne0$ (bridge \decl{Simson.concyc_eq_zero_iff_cospherical}) & circumcentre formula has denominator $2S$ & false: four distinct collinear points have $\mathrm{concyc}=0$ \\
+Napoleon & $\omega^2-\omega+1=0$ & multiplier in~\eqref{eq:nap} & still implied by the two retained norm hypotheses (not independently removable); false for $\omega$ violating all three \\
+ & $|\omega|=|1-\omega|=1$ & translation to distances & redundant given $\omega^2-\omega+1=0$ (each set implies the other: both say $\omega=e^{\pm i\pi/3}$) \\
+ & (non-degenerate $ABC$) & not needed & --- \\
+Lami & $F_1+F_2+F_3=0$ & substitution in~\eqref{eq:lami} & --- \\
+ & $F_1,F_2,F_3\ne0$ & ratio forms (\decl{Lami.lami}, \decl{Lami.lami_oriented}, \decl{Lami.lami_nondegenerate}) & ratios meaningless \\
+ & $F_3\ne0$ only & division-free form \decl{Lami.lami_cross}: cancels $\|F_3\|$ & product form \decl{Lami.lami_mul} still holds \\
+ & $F_1\nparallel F_2$ & sines nonzero & ratios hold only via $x/0=0$ \\
+ & (converse, area form) $\omega$'s equal, $\omega(F_1,F_2)\ne0$ & hypotheses of \decl{Lami.equilibrium_of_areaForm} & no information \\
+ & (converse, ratio form) $F_i\ne0$, oriented sines $\ne0$, two ratio equalities & hypotheses of \decl{Lami.lami_oriented_converse}; sines clear denominators & false with unoriented angles \\
+\bottomrule
+\end{tabular}
+\caption{Non-degeneracy and other hypotheses of the five theorems, and how each is used.}
+\label{tab:nondeg}
+\end{table}
+}
+
+\section{Does the statement mean what it says?}\label{sec:correct}
+
+Each development introduces some local notions. A reader has to check that they mean what their
+names suggest. The lemmas available for this are as follows.
+\begin{itemize}
+\item \emph{Desargues.} The bracket is the determinant (\decl{Desargues.br_eq_det}); a vanishing
+bracket is equivalent to Mathlib's \mdecl{Projectivization.IsCollinear} of the three points
+(\decl{Desargues.isCollinear_mk_of_br_eq_zero}, \decl{Desargues.br_eq_zero_of_isCollinear_mk});
+and a vanishing bracket of three lines is concurrency
+(\decl{Desargues.exists_dotProduct_eq_zero_of_br_eq_zero},
+\decl{Desargues.br_eq_zero_of_dotProduct_eq_zero}). Lines and intersections in
+Theorem~\ref{thm:desmk} are Mathlib's own. For the worked example, the representatives are nonzero
+(\decl{Desargues.ex_vertices_ne_zero}), the centre $O$ is Mathlib's intersection
+\mdecl{Projectivization.cross} of the lines $AA'$ and $BB'$ (\decl{Desargues.exO_eq_cross}), and
+each of $A',B',C'$ lies on the line from $O$ to the corresponding vertex in the sense of
+\mdecl{Projectivization.IsCollinear} (\decl{Desargues.exA'_isCollinear},
+\decl{Desargues.exB'_isCollinear}, \decl{Desargues.exC'_isCollinear}).
+\item \emph{Monge.} \decl{Monge.det3}~$A\,B\,C=0$ is equivalent to Mathlib's \mdecl{Collinear} over
+every field (\decl{Monge.det3_eq_zero_iff_collinear}). For $r_1\ne0$ and $r_1\ne r_2$,
+\decl{Monge.ext} lies on the line $O_1O_2$ (\mdecl{AffineMap.lineMap}) and is the centre of the
+homothety (\mdecl{AffineMap.homothety}) of ratio $r_2/r_1$ sending $O_1$ to $O_2$
+(\decl{Monge.ext_eq_lineMap_homothety}); for $r_1=0$ it is not a centre of similitude
+(Section~\ref{sec:monge}).
+\item \emph{Simson.} \decl{Simson.perpFoot} is Mathlib's
+\mdecl{EuclideanGeometry.orthogonalProjection} onto the line
+(\decl{Simson.perpFoot_eq_orthogonalProjection}), and \decl{Simson.footParam} is the usual
+inner-product coefficient (\decl{Simson.footParam_eq_inner}). \decl{Simson.area2} has a one-way
+bridge in the main files, \decl{Simson.collinear_of_area2_eq_zero} ($\mathrm{area2}=0$ implies \mdecl{Collinear}), but
+no lemma in the other direction there; version~2 adds it in the Layer-15 file
+(\decl{Simson.Classical.area2_eq_zero_of_collinear}). \decl{Simson.concyc} is equivalent to \mdecl{Cospherical} under
+the hypothesis $\mathrm{area2}(a,b,c)\ne0$ (\decl{Simson.concyc_eq_zero_iff_cospherical}), which
+cannot be dropped (Section~\ref{sec:simson}). The hypothesis and the conclusion of
+Theorem~\ref{thm:simson} are Mathlib notions.
+\item \emph{Napoleon.} The conclusion uses Mathlib's \mdecl{dist}.
+\decl{Napoleon.apex_equilateral} shows that the erected triangles are equilateral, and
+\decl{Napoleon.apex_outward} fixes their orientation (for bases with $P\ne Q$). Each local
+definition has a bridge: \decl{Napoleon.centroid} is Mathlib's \mdecl{Finset.centroid}
+(\decl{Napoleon.centroid_eq_finset_centroid}), and so are the Napoleon points
+(\decl{Napoleon.Ga_eq_centroid}, \decl{Napoleon.Gb_eq_centroid}, \decl{Napoleon.Gc_eq_centroid});
+for a unit complex number, \decl{Napoleon.apex} is Mathlib's \mdecl{rotation} about~$P$
+(\decl{Napoleon.apex_eq_rotation}); \decl{Napoleon.signedArea} is half of
+\mdecl{Complex.orientation}'s area form (\decl{Napoleon.signedArea_eq_areaForm}); and
+$\omega_o=e^{-i\pi/3}$, $\omega_i=e^{i\pi/3}$ (\decl{Napoleon.ωo_eq_exp}, \decl{Napoleon.ωi_eq_exp}).
+\item \emph{Lami.} Hypotheses and conclusions use only norms and Mathlib's oriented and unoriented
+angles. \decl{Lami.areaForm_eq_norm_mul_norm_mul_sin_oangle} and
+\decl{Lami.norm_mul_norm_mul_sin_angle} relate the algebraic objects of the proofs to those
+angles.
+\end{itemize}
+The house bridge inventory (Section~\ref{sec:verify}) lists every local definition and whether it
+is bridged.
+
+\section{Related work}\label{sec:related}
+
+Each project began with a prior-art search of Mathlib (sources and the lists
+\path{docs/100.yaml} and \path{docs/1000.yaml}), GitHub code, repository and pull-request search,
+the Isabelle Archive of Formal Proofs~\cite{AFP}, and the web. The searches were made between
+30~September and 3~October 2026. They are recorded in the \path{SPIKE_REPORT.md} of each
+repository; we summarise them here.
+
+\paragraph{Desargues.} Desargues's theorem is number~87 on Wiedijk's list of 100
+theorems~\cite{Wiedijk100}, which records formalisations in HOL~Light (Harrison), Isabelle (Bordg),
+Rocq (Guilhot and Narboux), Metamath (Megill) and Mizar (Leo\'nczuk and Pra\.zmowski). The
+HOL~Light proof~\cite{HOLDesargues} is a close precedent for ours: it builds the real projective
+plane from nonzero vectors of $\RR^3$, proves that collinearity of three points is the vanishing
+of their bracket (\lean{COLLINEAR\_BRACKET}), and proves Desargues's theorem
+(\lean{DESARGUES\_DIRECT}, following Richter-Gebert's bracket proof) by reducing it to bracket
+identities closed by the ring decision procedure \lean{REAL\_RING}, under seventeen
+non-collinearity hypotheses. It is thus also a coordinate certificate proof, over~$\RR$ rather
+than over an arbitrary field, and with a different factorisation from~\eqref{eq:des}. In Isabelle,
+the AFP entry \emph{Projective Geometry}~\cite{AFPProjective} proves the theorem from an
+axiomatisation of projective space via matroid rank; Magaud, Narboux and Schreck give a Coq proof
+from incidence axioms~\cite{MNS}; these two are synthetic. In Mathlib, \path{docs/100.yaml} (at
+the pinned revision) lists the theorem with no declaration, and
+\path{Projectivization/Constructions.lean} supplies the cross-product API that we use but no
+Desargues statement. The open, unmerged Mathlib pull request \#37456~\cite{PR37456} (created
+31~March 2026; head commit \texttt{0900538c}) proves the affine \emph{parallel} form of
+Desargues's theorem in an affine space. We therefore do not claim a first Lean proof of
+Desargues's theorem: we found no Lean proof of the \emph{projective-plane} formulation, while an
+unmerged pull request covers the affine (parallel) form.
+
+\paragraph{Monge.} Monge's three-circle theorem is \emph{not} new to Lean, and we withdraw the
+claim, made in an earlier draft of this paper, that ours is the first Lean proof. Two
+independent, complete Lean proofs exist. (i)~The benchmark repository
+\path{epfl-lara/icml-26-lean-challenges}~\cite{ShadowBench}, file
+\path{autformalization/problems/geometry/L2/geo_gen_L2_005/ShadowBench/Source/Main.lean} at commit
+\texttt{7541fcecef97cc124f38355a2cd2ba0ec8485dd5} (12~June 2026; 135 lines, no \lean{sorry}),
+proves \lean{EuclideanGeometry.monges\_circle\_theorem} (line~73), with the external homothety
+centres given explicitly. This predates our development (3~October 2026) by about four months,
+and on it alone the claim of priority is withdrawn.
+(ii)~The repository \path{facebookresearch/atlas-lean}~\cite{AtlasLean}, file
+\path{MathlibExt/Geometry/Euclidean/MongeCircles.lean}, added by pull request~\#62 at commit
+\texttt{39febc62dfe68f9651c72eedf7916a7a070141a8} (5~October 2026, 21:40~UTC; 83 lines, no
+\lean{sorry}), proves \lean{monge\_three\_circles\_general}, stated in an arbitrary
+real module with distinct weights as the only hypothesis, and \lean{monge\_three\_circles}. Our
+development was made independently of it.
+\emph{Dates and what they show.} Our Monge development dates from 3~October 2026 and was made
+public at \path{github.com/jpbald93/monge} on 5~October 2026 (repository created 17:16~UTC). The
+Atlas files \path{MongeCircles.lean} and \path{NapoleonTheorem.lean} first became public on
+5~October 2026 between 21:37 and 21:40~UTC, when a batch of import pull requests (\#46--\#65) was
+opened; this is after our work. These are dates of \emph{public} availability only. The Atlas
+pull requests describe the files as migrated from an upstream repository,
+\path{fairinternal/formal-math}, which is private, so we cannot see when the Atlas files were
+written, and earlier private authorship cannot be excluded. Likewise, our own date of
+3~October 2026 is a private date that readers cannot check; only the public dates are
+verifiable. We therefore claim no priority over the Atlas proofs, only that ours was not derived
+from them. The ShadowBench proof (12~June 2026) is earlier on any reading. Our searches
+(GitHub code search for ``monge'' in Lean, Mathlib's \path{docs/1000.yaml}, which lists the
+theorem with no declaration, Mathlib pull requests, the AFP, HOL~Light, Coq and Mizar) missed the
+first of these; they were identified during revision. What remains distinguishable in our version
+is narrow: the statement is in coordinates $K\times K$ over an arbitrary field~$K$, including
+fields of positive characteristic, rather than over~$\RR$ or a real module, and
+Section~\ref{sec:monge} analyses which hypotheses are needed and why (pairwise distinct radii only,
+none on the centres, and the meaning of zero, negative or equal radii). We do not claim that our
+hypotheses are weaker than those of the Atlas proof, whose general form also assumes only distinct
+weights. We did not find a formalisation of the three-circle theorem in other systems, but given
+the above we do not regard that search as reliable.
+
+\paragraph{Simson.} The Wallace--Simson theorem is \emph{not} new to formal mathematics, and the
+first version of ours was weaker than the existing ones in one respect. The Isabelle AFP entry \emph{The
+Wallace--Simson Line Theorem in Isabelle/HOL} by Ramos, Hulak and de Queiroz~\cite{AFPSimson}
+(session \lean{Simson}, 2026) uses complex coordinates, as we do, and proves both the theorem and
+its geometric converse: if the three feet are collinear, then the point lies on the circumcircle.
+Guilhot's Rocq development of oriented angles~\cite{GuilhotAngles,Guilhot} proves the theorem
+\lean{droite\_Simson} in file \path{point_Simson.v} as an equivalence between collinearity of the
+feet and concyclicity, that is, with its converse, under the additional hypothesis
+\lean{\textasciitilde{} colineaire (vec C A) (vec C M)} (the point $M$ is not on line $CA$). Possessing
+the converse does not make its admissible-configuration domain uniformly stronger than ours: our
+forward theorem excludes no position of the point on the circle; it assumes only distinct
+vertices and the circle condition. HOL~Light's \path{Complex/grobner_examples.ml}
+\cite{HOLGrobner} checks an algebraic (Chou-style) encoding of Simson's theorem with the complex
+Gr\"obner-basis procedure \lean{COMPLEX\_ARITH}; the geometric versions in the same file are
+commented out as too slow. The main files of our Lean development prove only the forward direction; their
+\decl{Simson.area2_perpFoot_eq_zero_iff} is a determinant-form statement between local
+expressions, not the geometric converse proved in Isabelle and Rocq. Version~2 adds the geometric
+converse in a Layer-15 file (\decl{Simson.Classical.cov_A3_b}, Section~\ref{sec:simson}), after
+those formalisations; no priority is claimed for it. In Lean, the theorem is not in Mathlib and not in
+\path{docs/1000.yaml}; a GitHub code search for ``simson'' in Lean found one planning file listing
+``SimsonLine -- Define the Simson line'' with no proof~\cite{EGPlan}, and otherwise unrelated hits.
+The original project search missed the Isabelle and Rocq entries; they were identified during
+revision. As far as we know, ours is the first Lean proof of the forward direction, and nothing
+more is claimed.
+
+\paragraph{Napoleon.} Napoleon's theorem has prior formalisations, and our contribution is not
+novelty. A Lean~4 repository by Imran Tanr\i{}kolu~\cite{Tanrikolu} (Lean \texttt{v4.15.0}, 64-line
+file \path{napoleantheorem.lean}, no \lean{sorry}) proves in complex coordinates that the three
+Napoleon points satisfy
+$\mathrm{IsEquilateral}(z_1,z_2,z_3):\ (z_1-z_2)^2+(z_2-z_3)^2+(z_3-z_1)^2=0$. This is the
+algebraic criterion for an equilateral triangle; the repository does not state or prove the
+equality of distances, and treats one rotation only. Its core is the same kind of
+\lean{linear\_combination} certificate as~\eqref{eq:nap}. The AFP entry \emph{Napoleon's
+Theorem} by Ramos, Hulak and de Queiroz~\cite{AFPNapoleon} (2026) formalises the theorem in complex
+coordinates, including the exterior-side condition and both orientations of the rotation.
+The benchmark repository \path{epfl-lara/icml-26-lean-challenges}~\cite{ShadowBench}, file
+\path{autformalization/problems/geometry/L2/geo_gen_L2_006/ShadowBench/Source/Main.lean} at commit
+\texttt{7541fcec} (12~June 2026), contains complete Lean proofs of both the inner and the outer
+Napoleon distance equalities, including side conditions (around lines 269 and 355); this is a
+second earlier Lean proof, and it already states equality of distances for both triangles.
+A further, independent Lean proof was published \emph{after} ours: the repository
+\path{facebookresearch/atlas-lean}~\cite{AtlasLeanNapoleon}, file
+\path{MathlibExt/Geometry/Euclidean/NapoleonTheorem.lean}, added by pull request~\#63 at commit
+\texttt{27a38cfdcea9e80a11c49ff8e2ce17650e264552} (5~October 2026, 21:40~UTC; 400 lines, no
+\lean{sorry}), proves the outer Napoleon theorem in \lean{EuclideanSpace ℝ (Fin 2)}
+(\lean{napoleon\_theorem\_general} and \lean{napoleon\_theorem}), with the apexes given by distance
+equalities and the exterior condition by signed areas, and shows that the common distance is
+positive. Our Napoleon development was made in early October 2026 and made public at
+\path{github.com/jpbald93/napoleon} on 5~October 2026 (repository created 17:16~UTC), a few hours
+before the Atlas file became public, and independently of it. As for Monge, this is a statement
+about public dates only: the Atlas file is migrated from the private repository
+\path{fairinternal/formal-math}, so earlier private authorship cannot be excluded, and we claim
+no priority over it.
+Guilhot's Coq development of plane geometry with oriented angles also treats Napoleon's
+theorem (file \path{point_napoleon.v})~\cite{GuilhotAngles,Guilhot}. In Mathlib, \path{docs/1000.yaml} lists Napoleon's theorem with no
+declaration. Relative to the Tanr\i{}kolu repository, our version states equality of distances,
+proves both Napoleon triangles and the orientation lemma; relative to the ShadowBench proof and the
+AFP entry, it adds nothing of substance beyond its hypothesis analysis.
+
+\paragraph{Lami.} \path{docs/1000.yaml} lists Lami's theorem with no declaration. GitHub code
+search for ``Lami theorem'' and ``lami'' in Lean (51 and 68 hits) returned only false positives,
+repository search found one Java and one HTML project, and a search of Mathlib issues and pull
+requests returned nothing. Mathlib has the law of sines
+(\mdecl{EuclideanGeometry.law_sin}, \mdecl{InnerProductGeometry.sin_angle_mul_norm_eq_sin_angle_mul_norm})
+but no statement about equilibrium of forces.
+
+\paragraph{Summary.} We found no earlier formal proof of Lami's theorem, in Lean or in other
+systems; given that our searches missed existing Monge, Simson and Napoleon work, this is a report
+of what we found, not a claim of priority. Monge's three-circle theorem has two earlier
+independent Lean proofs, one predating ours by four months; our version differs only in its
+arbitrary-field formulation and hypothesis analysis. The Desargues
+development is, as far as we know, the first Lean proof of the projective-plane formulation; the
+theorem is formalised in at least five other systems, including a coordinate proof in HOL~Light,
+and an unmerged Mathlib pull request proves the affine (parallel) form. The Simson development is
+a Lean proof of the forward direction (version~2 adds the converse) of a theorem already formalised, with its converse, in
+Isabelle and in Rocq. Napoleon's theorem is formalised in Lean (twice), Isabelle and Rocq
+already. The searches are not exhaustive, and the Monge, Simson and Napoleon cases show that they
+missed existing work.
+
+\section{Verification}\label{sec:verify}
+
+\emph{The battery results below were produced on the build machine on 5~October 2026. The two
+author-check confirmations have since been supplied and their placeholders resolved; no
+placeholders remain in the paper. The version-2 commits are published at the hashes given in the
+availability paragraph. The Layer-14 and Layer-15 checks of
+version~2 are described in Section~\ref{sec:l1415}.}
+
+\paragraph{What has already been checked.} Each project report records a full \lean{lake build}
+with 0 errors and 0 warnings; on the build machine the cited commits build with 0 errors and 0
+warnings in 1{,}805 jobs (Desargues), 3{,}013 (Monge), 8{,}711 (Simson), 8{,}709 (Napoleon) and
+2{,}428 (Lami). The project reports also record an empty grep of the library sources for \lean{sorry},
+\lean{admit}, \lean{native\_decide}, \lean{axiom}, \lean{\#eval}, \lean{run\_cmd},
+\lean{set\_option}, \lean{macro}, \lean{elab}, \lean{syntax}, \lean{notation} and
+\lean{import Lean}, and \lean{\#print axioms} output, from a file kept outside the library, showing
+only \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound} for 17 (Desargues), 3 (Monge),
+4 (Simson), 5 (Napoleon) and 15 (Lami) declarations; the gate below covers all cited
+declarations, including the bridge lemmas. On 5~October 2026 the library sources,
+\path{gate.sh}, \path{tests/tamper.sh} and Lake files of the cited commits were compared by SHA-256
+with the copies on the build machine and agree. The five repositories were also rebuilt from fresh
+clones of the published commits on a second machine with a different architecture and operating
+system (arm64, macOS): the builds are warning-free, \path{gate.sh} passes in all five at the same
+declaration counts, and \path{tests/tamper.sh} rejects all six defects. Python scripts in each
+\path{code/} directory check the statements numerically: for Desargues, 3{,}000 random perspective
+configurations over $\QQ$ and about 600{,}000 configurations over $\F_5$ including degenerate ones;
+for Monge, 2{,}000 random configurations over $\QQ$; for Simson, 2{,}000 random configurations with
+an off-circle negative control; for Napoleon, 1{,}000 random triangles with two negative controls;
+for Lami, 100{,}000 random equilibrium triples. None of these scripts is part of the formal proof.
+
+\paragraph{House battery.} The same battery as for the earlier AFM papers was run on the
+five repositories (reports of 5~October 2026, 20:42--21:27 UTC). The build machine's copies are not
+git checkouts, so the reports record no commit; their Lean sources, \path{gate.sh},
+\path{tests/tamper.sh} and Lake files are SHA-256-identical to those of the commits cited above, so
+the results apply to those commits.
+\begin{itemize}
+\item \emph{Gate.} \path{gate.sh} in each repository rejects the forbidden tokens, builds the
+library, generates its own \lean{\#print axioms} query for every declaration cited in this paper,
+and fails on any non-standard axiom.
+Result: PASS, standard axioms only, in all five: 24 declarations (Desargues), 7 (Monge),
+12 (Simson), 21 (Napoleon), 17 (Lami).
+\item \emph{Tamper tests.} \path{tests/tamper.sh} plants six defects in scratch copies (a
+\lean{sorry}; a split \lean{axiom}; a fake \lean{\#eval} report; a macro; a deleted headline
+hypothesis; a wrapped extra axiom) and requires each to be rejected.
+Result: 6/6 rejected in each of the five repositories.
+\item \emph{Conclusion and hypothesis mutations.} Small edits to conclusions and hypotheses of
+each cited theorem, with the proof kept, must fail to compile; survivors are classified by hand.
+Result: mutants rejected: Desargues 57/58 (2 by heartbeat timeout), Monge 16/16, Simson 29/29
+(4 by heartbeat timeout), Napoleon 47/47, Lami 44/44. The one survivor, in
+\decl{Desargues.ex_nonvacuous}, replaces $\ne0$ by $\ne1$ in the last conjunct; the value there
+is $[a'b'c']=58$, which is neither $0$ nor~$1$, so the mutant is an equivalent (still true)
+statement and its survival is expected. The Desargues run also covered a scratch file on the
+build machine that is not in the repository (\path{dt1.lean}, a copy of the bracket identity); it
+contributes one mutant (rejected by timeout), one statement and one ablation to the counts below.
+Without it the Desargues figures are 56/57 mutants rejected (1 by timeout), 10 hypothesis sets
+probed, 50 ablations NEEDED and 20/23 statements certified.
+\item \emph{Contradiction probe.} Automation tries to derive \lean{False} from the hypotheses of
+each theorem, with a control that must compile.
+Result: hypothesis sets probed: 11 (Desargues), 2 (Monge), 10 (Simson), 4 (Napoleon),
+14 (Lami), the remaining statements having no hypotheses; 0 found contradictory.
+\item \emph{Hypothesis ablation.} Each Prop hypothesis is replaced by \lean{True} in a renamed copy,
+which must then fail to compile. This shows that the proof uses the hypothesis, not that the
+weakened statement is false; for that, see the remarks in Sections~\ref{sec:desargues}--\ref{sec:lami}.
+Result: NEEDED 51 (Desargues), 5 (Monge), 24 (Simson), 7 (Napoleon), 53 (Lami); UNUSED 0 and
+SKIP 0 in all five; no failed controls. In particular the new hypotheses $r_1\ne0$, $r_1\ne r_2$
+of \decl{Monge.ext_eq_lineMap_homothety} and $\mathrm{area2}(a,b,c)\ne0$ of
+\decl{Simson.concyc_eq_zero_iff_cospherical} are used by their proofs.
+\item \emph{Unused-variable linter.} Every library file is compiled with
+\lean{linter.unusedVariables} enabled, with a positive control.
+Result: 0 warnings, in the library files and in the scratch files of all five repositories.
+\item \emph{Satisfiability.} For each hypothesis-bearing statement, a kernel-checked
+\lean{example} exhibits concrete witnesses for all hypotheses. The non-vacuity examples of
+Sections~\ref{sec:desargues}--\ref{sec:napoleon} already cover the headline statements of
+Desargues, Monge, Simson and Napoleon; Lami has none in the library.
+Result: certified/total: Desargues 21/24, Monge 5/5, Simson 14/16, Napoleon 19/22,
+Lami 14/17; every new bridge lemma is certified. Unresolved, and not counted as success:
+\decl{Desargues.desargues_mk}, \decl{Desargues.desargues_converse_mk},
+\decl{Desargues.br_eq_zero_of_isCollinear_mk}; \decl{Simson.simson},
+\decl{Simson.simson_area}; \decl{Napoleon.apex_equilateral}, \decl{Napoleon.key},
+\decl{Napoleon.napoleon_general}; \decl{Lami.lami_sin_ne_zero}, \decl{Lami.lami_nondegenerate},
+\decl{Lami.lami_oriented_converse}.
+\item \emph{Bridge inventory.} Every local \lean{def} is listed with its bridge to a Mathlib notion,
+if any (Section~\ref{sec:correct}).
+Result (heuristic: a notion counts as bridged if some lemma mentioning it is found): Monge 2/2
+bridged (\decl{Monge.det3}, \decl{Monge.ext}); Simson 4/4 (\decl{Simson.footParam},
+\decl{Simson.perpFoot}, \decl{Simson.area2}, \decl{Simson.concyc}); Napoleon 6/6
+(\decl{Napoleon.centroid}, \decl{Napoleon.apex}, \decl{Napoleon.signedArea}, \decl{Napoleon.Ga},
+\decl{Napoleon.Gb}, \decl{Napoleon.Gc}); Lami has no local definitions. For Desargues the scanner
+reports 11 notions, 8 bridged (the bracket and the example points $O,A,B,C,P,Q,R$) and 3 not
+(\lean{exA'}, \lean{exB'}, \lean{exC'}). That report is an artefact of the scanner: it searches
+for the notion's name with a word-boundary pattern \lean{\textbackslash b}\emph{name}\lean{\textbackslash b},
+which cannot match a name ending in a prime, so \lean{exA'}, \lean{exB'}, \lean{exC'} are never
+found even though \decl{Desargues.exA'_isCollinear}, \decl{Desargues.exB'_isCollinear} and
+\decl{Desargues.exC'_isCollinear} mention them. By inspection, all 11 Desargues notions have
+bridge lemmas. The two Monge and Simson bridges carry the hypotheses stated in
+Sections~\ref{sec:monge} and~\ref{sec:simson} ($r_1\ne0$; $\mathrm{area2}(a,b,c)\ne0$), and
+Simson's \decl{Simson.area2} is bridged in one direction only at the cited commits (the other
+direction is in the Layer-15 file of version~2).
+\end{itemize}
+Automated checks cannot replace comparing the formal statements with their informal counterparts.
+The author has checked each entry of Table~\ref{tab:thms} by hand.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+Version~2 adds two further checks, in two new files of each library, \path{L14.lean} and
+\path{L15Classical.lean} (for example \path{Desargues/L14.lean}, \path{Desargues/L15Classical.lean}).
+The library files of the cited commits are unchanged (SHA-256). With the new files the gates pass
+with 34 declarations (Desargues), 15 (Monge), 21 (Simson), 45 (Napoleon) and 23 (Lami), standard
+axioms only, and \path{tests/tamper.sh} rejects all six defects in each repository (arm64, macOS).
+
+\paragraph{Layer 14: Mathlib-only statements and non-vacuity.} Each of the six numbered theorems has a
+Mathlib-only formulation in \path{L14.lean}, proved from the library theorem through bridges; for
+Napoleon it covers only non-degenerate configurations (see below). A mechanical check of the elaborated types, also with all implicit and instance arguments
+shown, found no constant of the library's namespace. Each restatement has a witness theorem that
+proves every hypothesis on an explicit configuration and that the configuration is non-degenerate:
+\begin{itemize}
+\item Theorem~\ref{thm:desdet}: \decl{Desargues.l14_desargues_det} (bracket as \mdecl{Matrix.det},
+Mathlib's cross product); witness \decl{Desargues.l14w_desargues_det}: both triangles
+non-degenerate, the three Desargues points computed and pairwise non-proportional.
+\item Theorem~\ref{thm:desmk}: \decl{Desargues.l14_desargues}, quantified over points of
+$\PP(K^3)$ rather than representatives, perspective as \mdecl{Projectivization.IsCollinear}; the
+hypotheses ``representative $\ne0$'' disappear. Witness \decl{Desargues.l14w_desargues} over $\QQ$:
+neither triangle collinear, $O$ distinct from the six vertices, $A\ne A'$, $B\ne B'$, $C\ne C'$, the
+three Desargues points pairwise distinct.
+\item Theorem~\ref{thm:monge}: \decl{Monge.l14_monge}, each centre of similitude given by its defining
+property $r_1(O_2-S)=r_2(O_1-S)$, conclusion \mdecl{Collinear}, with exactly the paper's hypotheses
+(and a homothety form \decl{Monge.l14_monge_homothety}, which needs nonzero radii for the ratio);
+witness \decl{Monge.l14w_monge}: the example of Section~\ref{sec:monge}, centres not collinear,
+the three centres of similitude pairwise distinct.
+\item Theorem~\ref{thm:simson}: \decl{Simson.l14_simson}, feet as
+\mdecl{EuclideanGeometry.orthogonalProjection}; witness \decl{Simson.l14w_simson}: $a=5$, $b=3+4i$,
+$c=-4+3i$, $p=-5i$, triangle not collinear, $p$ not a vertex, the three feet computed and pairwise
+distinct.
+\item Theorem~\ref{thm:napoleon}: \decl{Napoleon.l14_napoleon_outer} and
+\decl{Napoleon.l14_napoleon_inner}, apexes by equal sides and strict opposite (same) side, centres
+by \mdecl{Finset.centroid}, no orientation hypothesis; witness \decl{Napoleon.l14w_napoleon}:
+$A=0$, $B=2$, $C=2i$, the three centres computed and pairwise distinct.
+\item Theorem~\ref{thm:lami}: \decl{Lami.l14_lami}, the library statement being already Mathlib-only
+(and \decl{Lami.l14_lami_oriented}); witness \decl{Lami.l14w_lami}: forces $3$, $4i$, $-3-4i$,
+pairwise distinct and nonzero, at a right angle, common ratio~$5$.
+\end{itemize}
+Layer~14 gives Mathlib-only formulations associated with all six numbered theorems. For Napoleon,
+the strict-side formulation covers non-degenerate geometric configurations in either orientation; it
+is not a restatement of the degenerate cases allowed by Theorem~\ref{thm:napoleon}, which remain
+covered by the original rotation-based statements. The secondary
+forms (\decl{Napoleon.l14_napoleon_inner}, \decl{Lami.l14_lami_oriented},
+\decl{Monge.l14_monge_homothety}, \decl{Simson.l14_simson_feet}) have no separate witness, and the
+converses of Table~\ref{tab:thms} are not restated in Layer~14 (the Desargues converse is covered
+by Layer~15). The witnesses give concrete configurations for the Mathlib-only forms of
+\decl{Desargues.desargues_mk}, \decl{Simson.simson} and \decl{Lami.lami_nondegenerate}, which the
+satisfiability check above left unresolved; the battery figures above refer to the cited commits.
+
+\paragraph{Layer 15: comparison with the classical statements.} Another AI agent collected
+textbook statements of the five theorems from the literature, with citations (Coxeter;
+Coxeter--Greitzer; Johnson; encyclopedic sources): Desargues and its converse (A1), Monge with its
+companion form (A2), Wallace--Simson with its converse (A3), the outer and inner Napoleon
+triangles (A4) and Lami (A5). An AI model given only those statements, which saw no code and not
+this paper, wrote them in Lean with Mathlib notions, with its own definitions only where Mathlib has
+none (centres of similitude and equilateral apexes by their defining properties): 9 theorems and 5
+construction obligations, all with \lean{sorry}. Its transcript was audited: a transcript audit in the verification repository found no file read
+beyond its own brief and outputs and no web access. It marked four
+ambiguities and one extra hypothesis (positive radii, since Mathlib's spheres allow radius
+$\le0$), and stated A3 in \lean{EuclideanSpace ℝ (Fin 2)}. A comparer then proved each of the 14
+statements, copied verbatim, from the libraries at the cited commits without changing them, or
+classified it: 9 covered by the library theorems (A1(a), A1(b), A2(a), A2(b), A3(a), A4(a), A4(b),
+A5 and its obligation); 4 outside the paper's statements but proved (the obligations of A1 and the
+two of A2, and the Simson converse A3(b)); none narrower than the library; 1 writer statement false
+as written; none open. The writer's hypotheses $A\ne A'$, $B\ne B'$, $C\ne C'$ in A1(a) and distinct centres in A2(a)
+were not needed; the latter agrees with Table~\ref{tab:nondeg}. New proofs, not in the main files:
+\begin{itemize}
+\item \decl{Simson.Classical.cov_A3_b}: the geometric converse of the Wallace--Simson theorem, through
+the new bridge \decl{Simson.Classical.area2_eq_zero_of_collinear} (Section~\ref{sec:simson}).
+\item \decl{Napoleon.Classical.cov_A4_a}: apexes by Mathlib's half-planes, and the outer Napoleon
+triangle is affinely independent, by an identity for its doubled signed area.
+\item \decl{Monge.Classical.cov_A2_b}: the companion form as a declaration; the paper had only the
+instantiation $r\mapsto-r$ in prose.
+\item \decl{Desargues.Classical.cov_A1_obligation}: two distinct lines of $\PP^2(K)$ meet in exactly
+one point.
+\item \decl{Monge.Classical.cov_A2_obligation_ext}, \decl{Monge.Classical.cov_A2_obligation_int}:
+existence and uniqueness for two circles with positive radii and distinct centres, with unequal
+radii additionally required for the external centre.
+\item \decl{Napoleon.Classical.cov_A4_obligation_corrected}: on each side of a segment with $U\ne V$
+there is exactly one equilateral apex.
+\end{itemize}
+Narrower cases: none. Writer mis-statement (one): \lean{classical\_A4\_obligation} omits $U\ne V$;
+for $U=V$ the only apex is $U$ itself, on the ``line'', so no apex is strictly on either side. The
+negation is proved (\decl{Napoleon.Classical.A4_obligation_false}) and the corrected statement
+above. This is an error of the writer, not of the paper. The comparer also noted, as
+Section~\ref{sec:napoleon} says, that the library's $\omega_o$ apexes are outward only for
+counter-clockwise triangles, so the clockwise case of A4 uses \decl{Napoleon.napoleon_inner}. All
+these proofs depend only on the three standard axioms. They are collected in
+\path{L15Classical.lean} of each repository (namespace \lean{Desargues.Classical} and so on), whose
+gate lists every one of them; the classical definitions and statements are reproduced there
+verbatim.
+
+\section{Limitations and further work}\label{sec:limits}
+
+\begin{itemize}
+\item \emph{Monge stops at a determinant.} The conclusion of \decl{Monge.monge} is $\det_3=0$ for
+explicit formulas. The bridges \decl{Monge.det3_eq_zero_iff_collinear} and
+\decl{Monge.ext_eq_lineMap_homothety} identify $\det_3=0$ with \mdecl{Collinear} and, for
+$r_1\ne0$, $r_1\ne r_2$, the point \decl{Monge.ext} with the centre of a homothety sending $O_1$
+to $O_2$, but the main files give no composed statement about circles: there are no circles in the
+statement, and that the homothety maps one circle onto the other is not proved there. Version~2 adds
+\decl{Monge.l14_monge}, with conclusion \mdecl{Collinear}, and proves in the Layer-15 file, for
+circles with distinct centres and positive unequal radii given as Mathlib spheres, that the
+homothety maps one circle onto the other at a unique external centre and, for three circles with
+pairwise distinct radii, that the three external centres are collinear
+(\decl{Monge.Classical.cov_A2_obligation_ext}, \decl{Monge.Classical.cov_A2_a}). All equal-radius cases are
+excluded (one or three centres of similitude at infinity, or no unique centre for identical
+circles; Section~\ref{sec:monge}), and the tangent-line formulation, which needs the external
+tangents to exist, is not proved.
+\item \emph{Converses.} In the main files the Desargues converse concludes collinearity in the dual
+plane, and turning this into the existence of a point on three lines requires a second lemma; the
+composition is proved in the Layer-15 file (\decl{Desargues.Classical.cov_A1_b}). The main files
+prove only the forward direction of the Simson theorem, and
+\decl{Simson.area2_perpFoot_eq_zero_iff} is only a determinant-level statement; the geometric
+converse (proved in the Isabelle and Rocq developments) was not proved in the first version and is
+proved in version~2, in the Layer-15 file (\decl{Simson.Classical.cov_A3_b}). The Lami converse is oriented only, as it must be.
+\item \emph{Fields.} In the main files Simson and Napoleon are stated in $\CC$ only, not in a general Euclidean
+plane (\lean{EuclideanSpace ℝ (Fin 2)} or an oriented two-dimensional affine space); the Layer-15
+file proves the classical Simson statements (both directions) and both Napoleon statements in
+\lean{EuclideanSpace ℝ (Fin 2)} (Section~\ref{sec:l1415}), and Lami's
+oriented form needs a two-dimensional oriented space. The Simson certificate itself is a
+polynomial identity; a version over an arbitrary ordered field, or over an arbitrary field with
+non-isotropic side vectors, has not been attempted.
+\item \emph{Orientation in Napoleon.} In the main files ``outward'' is expressed by the sign of the area of the
+erected triangles, not by half-planes; the Layer-14 and Layer-15 statements use Mathlib's
+half-planes (\mdecl{AffineSubspace.SOppSide}; Section~\ref{sec:l1415}).
+\item \emph{Desargues in higher dimension.} Only the plane is treated; no statement in projective
+space of dimension at least three, and no axiomatic version.
+\item \emph{Lami and the law of sines.} The force-triangle derivation is not formalised.
+\item \emph{Novelty.} Monge's three-circle theorem already has two complete Lean proofs, one of
+them earlier than ours; Napoleon's theorem is formalised elsewhere, including in Lean; the
+Wallace--Simson theorem and its converse are formalised in Isabelle and Rocq; Desargues's theorem
+is formalised in several other systems (including by coordinates in HOL~Light), and its affine
+parallel form is the subject of an open Mathlib pull request.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs and the Python checking
+scripts, to run the prior-art searches, and to draft this paper. The author directed the work and
+reviewed the paper. The author checked each formal statement in Table~\ref{tab:thms} against its
+informal counterpart by hand. The Layer-14 and Layer-15 files of version~2, the collection of the
+classical statements, their Lean formulation and the comparisons were carried out by AI agents and
+are not part of the author's hand check. The resulting
+formal proofs and counterexample are checked by the Lean kernel; fidelity to the textbook sources
+and the comparison classifications require separate semantic review.
+Every proof is checked by the Lean kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}\sloppy
+\bibitem{AFP} \emph{Archive of Formal Proofs}, \url{https://www.isa-afp.org/}, accessed 4 October
+2026.
+\bibitem{AFPProjective} A.~Bordg, Projective Geometry, \emph{Archive of Formal Proofs}, 2018,
+\url{https://isa-afp.org/entries/Projective_Geometry.html}, accessed 4 October 2026.
+\bibitem{AtlasLean} \emph{atlas-lean}, file
+\path{MathlibExt/Geometry/Euclidean/MongeCircles.lean}, pull request \#62, commit
+\texttt{39febc62dfe68f9651c72eedf7916a7a070141a8} (5 October 2026),
+\url{https://github.com/facebookresearch/atlas-lean}, accessed 7 October 2026.
+\bibitem{AtlasLeanNapoleon} \emph{atlas-lean}, file
+\path{MathlibExt/Geometry/Euclidean/NapoleonTheorem.lean}, pull request \#63, commit
+\texttt{27a38cfdcea9e80a11c49ff8e2ce17650e264552} (5 October 2026),
+\url{https://github.com/facebookresearch/atlas-lean}, accessed 7 October 2026.
+\bibitem{AFPSimson} A.~F.~Ramos, D.~B.~Hulak and R.~J.~G.~B.~de Queiroz, The Wallace--Simson Line
+Theorem in Isabelle/HOL, \emph{Archive of Formal Proofs}, August 2026, session \texttt{Simson},
+\url{https://isa-afp.org/entries/Simson.html}, accessed 4 October 2026.
+\bibitem{Chou} S.-C.~Chou, \emph{Mechanical Geometry Theorem Proving}, D.~Reidel, Dordrecht, 1988.
+\bibitem{Lean4} L.~de Moura and S.~Ullrich, The Lean~4 theorem prover and programming language, in
+\emph{Automated Deduction -- CADE~28}, Lecture Notes in Computer Science 12699, Springer, 2021,
+625--635.
+\bibitem{EGPlan} \emph{EG}, file \path{Plan_files/Plan.lean},
+\url{https://github.com/jjdishere/EG}, accessed 3 October 2026.
+\bibitem{Guilhot} F.~Guilhot, Proofs with Coq of theorems in plane geometry using oriented angles,
+INRIA research report, 2002, \url{https://inria.hal.science/inria-00072226v1}, accessed 4 October
+2026.
+\bibitem{GuilhotAngles} F.~Guilhot, \emph{Formalization of the oriented angles theory} (Coq
+contribution \texttt{Angles}, 2002; files \path{point_Simson.v}, \path{point_napoleon.v}),
+\url{https://github.com/rocq-archive/angles}, accessed 4 October 2026.
+\bibitem{HOLDesargues} J.~Harrison, \emph{HOL Light}, file \path{100/desargues.ml} (Desargues's
+theorem, \lean{DESARGUES\_DIRECT}), \url{https://github.com/jrh13/hol-light}, accessed 4 October
+2026.
+\bibitem{HOLGrobner} J.~Harrison, \emph{HOL Light}, file \path{Complex/grobner_examples.ml}
+(``Simson's theorem (Chou, p7)''), \url{https://github.com/jrh13/hol-light}, accessed 4 October
+2026.
+\bibitem{MNS} N.~Magaud, J.~Narboux and P.~Schreck, A case study in formalizing projective
+geometry in Coq: Desargues theorem, \emph{Computational Geometry} 45 (2012), no.~8, 406--424.
+\bibitem{Mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proceedings of the
+9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020)}, ACM, 2020,
+367--381. Repository: \url{https://github.com/leanprover-community/mathlib4}, accessed 6 October
+2026.
+\bibitem{PR37456} Mathlib pull request \#37456, \emph{feat(LinearAlgebra/AffineSpace): add
+parallel form of Desargues's theorem}, opened 31 March 2026, open and unmerged at the time of
+access, head commit \texttt{0900538cdc1e2951e2f6adb7298f5f8922612233},
+\url{https://github.com/leanprover-community/mathlib4/pull/37456}, accessed 4 October 2026.
+\bibitem{AFPNapoleon} A.~F.~Ramos, D.~B.~Hulak and R.~J.~G.~B.~de Queiroz, Napoleon's Theorem,
+\emph{Archive of Formal Proofs}, 2026, \url{https://isa-afp.org/entries/Napoleon.html}, accessed
+4 October 2026.
+\bibitem{ShadowBench} \emph{icml-26-lean-challenges} (ShadowBench), files
+\path{autformalization/problems/geometry/L2/geo_gen_L2_005/ShadowBench/Source/Main.lean} (Monge) and
+\path{autformalization/problems/geometry/L2/geo_gen_L2_006/ShadowBench/Source/Main.lean} (Napoleon),
+commit \texttt{7541fcecef97cc124f38355a2cd2ba0ec8485dd5} (12 June 2026),
+\url{https://github.com/epfl-lara/icml-26-lean-challenges}, accessed 7 October 2026.
+\bibitem{Tanrikolu} I.~Tanr\i{}kolu, \emph{Napoleon-s-Theorem-in-Lean4}, file
+\path{napoleantheorem.lean}, commit \texttt{0e6eb11}, \url{https://github.com/imran-tanrikolu/Napoleon-s-Theorem-in-Lean4},
+accessed 4 October 2026.
+\bibitem{Wiedijk100} F.~Wiedijk, \emph{Formalizing 100 Theorems},
+\url{https://www.cs.ru.nl/~freek/100/}, accessed 4 October 2026.
+\end{thebibliography}
+
+\end{document}

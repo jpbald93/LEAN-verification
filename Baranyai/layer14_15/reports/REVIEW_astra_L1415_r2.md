@@ -1,0 +1,24 @@
+ACCEPT — Baranyai — round 2: all four round-1 issues resolved; no new issues found.
+
+Paths: P = AFM/Baranyai/baranyai.tex; R = AFM/L14L15/Baranyai/; I = R/INTEGRATE_REPORT.md; U = R/PAPER_UPDATE_REPORT.md; L14 = R/L14_REPORT.md; L15 = R/L15_COMPARE.md; S = R/L15_compare.lean. Line numbers refer to the current files.
+
+| Round-1 issue | Status | Evidence and assessment |
+|---|---|---|
+| 1. Incomplete definition inventory | RESOLVED | P:503–505 now includes four writer definitions, two bridge definitions and the unproved proposition-valued definition. I:24,26,33,41 supports the inventory; S:35 and S:78 independently confirm the two bridge definitions. The author's correction of my proposed one-bridge count is justified. |
+| 2. Overbroad commit/check and unchanged-file claims | RESOLVED | P:510–511 exempts the explicitly identified version-2 checks; P:628–630 restricts unchanged files to the three original library sources and tampering script. I:45–52 records the new checks; I:57–64 distinguishes the unchanged files from the changed root, gate and README. |
+| 3. Claim that every name in the new subsection is new | RESOLVED | P:623–624 now specifies the 15 newly introduced declaration names. U:68 records exactly 15 missing new names at the old pin; P:639–641 still correctly cites the original theorem names. |
+| 4. Table 1's exhaustive scope claim | RESOLVED | P:147–148 limits the table to the original development and directs readers to the additional verification statements. I:26–32 and L15:13–20 substantiate the additional partial instance, new implication and unproved general proposition. |
+
+Author disagreements: FIXES_APPLIED.md contains no REJECT. Its issue-1 PARTIAL response says “the evidence shows **two** bridge `def`s,” quoting “def classesOf” and “def toFinpartition.” This convinces me: the local comparison source declares them at S:35–37 and S:78–91, and I:33 includes both among the seven bridges. The author's cited classesOf line 34 is its docstring; the declaration is line 35, with no effect on the substantive correction. I:26 explicitly records “def classical_Baranyai3_main : Prop”; the omission is fully fixed, not merely partly fixed.
+
+NEW issues: none. No further paper edit requested.
+
+Verification performed:
+- Read the complete current paper, both backup diffs, round-1 review, author response, all four required reports and the complete BLIND_TRANSCRIPT_AUDIT.md. The round-1 diff has exactly five prose replacements; each is accounted for in the table above and introduces no new unsupported claim.
+- Fresh full read of P:626–708: eight Mathlib-only restatements, nine witness declarations, explicit K4 versus theorem-derived witnesses, DecidableEq qualification and the n=0 distinction agree with L14:13–53,57–148,162–163. No stronger non-vacuity or hypothesis-removal claim is introduced.
+- P:668–708 correctly separates six covered statements, one new proof and one still-unproved general statement, rather than presenting all eight as library consequences (L15:13–30,34–49; I:24–35). The arbitrary-size/nondivisible general theorem remains neither proved nor assumed. Verbatim checking and the new bridges match L15:34–38,49 and I:24–33.
+- Blindness is supported by the audit's PASS rows for tmp-blindBaranyai-stmtwriter and tmp-blindBaranyai (no suspicious reads; writer has zero web calls). P:706–708 retains the all-AI, no-human-source-check and van Lint–Wilson-from-memory limitations; U:48–54,88 supports these disclosures. No Baranyai run is identified as voided.
+- All other version-2 edits were checked: file sizes/namespaces and 32+17+27=76 counts (P:75–78,140–148,520–522,631–636; I:19–22,37,40–52); Mathlib bridges and missing Hypergraph bridge (P:482–494,749–752; L14:13–26; L15:15–20,34–38); scoped semantic-check limitation (P:608–614; L15:13–30); restricted generalisation claim (P:753–757; I:26,32); AI-use disclosure (P:769–772; U:58). Version date/subsection reference and unchanged bibliography are consistent with the update report.
+- All eight numbered theorem/lemma/definition blocks are byte-identical to both backups; the shared counter setup is unchanged. The paper source was not edited (SHA-256 before/after: fa3692b2b5c4c1d0d80b90b98f96b4d8a57e5cda9ef9baef2ef3a4b141b96e0d).
+- Compile: ran pdflatex -interaction=nonstopmode baranyai.tex twice in AFM/Baranyai; return codes 0 and 0. grep -c undefined baranyai.log = 0. Output: 15 pages. Pass outputs: /tmp/baranyai-astra-r2-pass1.log and /tmp/baranyai-astra-r2-pass2.log.
+- Existing release tasks remain open, not newly certified: NEWCOMMIT replacement/publication, repinning and the complete new-commit name-gate rerun (I:74–78; U:80–85). Acceptance concerns the reviewed corrections and evidence consistency, not completion of those release tasks or an independent Lean rebuild.

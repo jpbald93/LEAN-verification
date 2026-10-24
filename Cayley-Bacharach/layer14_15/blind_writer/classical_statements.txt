@@ -1,0 +1,50 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Conventions. k is a field; P^2 = P^2(k) is the projective plane over k. A "cubic"
+("conic", "line") is a nonzero homogeneous polynomial F in k[x,y,z] of degree 3
+(resp. 2, 1), taken up to nonzero scalar multiple, or its zero locus. "C passes
+through P" means F(P) = 0.
+
+CB1. Cayley–Bacharach theorem for plane cubics (Chasles' form).
+ (a) Let C1 and C2 be two cubics in P^2 over k with no common component, and suppose
+     they meet in nine distinct points P1, ..., P9. If C is any cubic passing
+     through P1, ..., P8, then C also passes through P9.
+     [Equivalently: C is a linear combination a*F1 + b*F2 of the equations F1, F2
+     of C1, C2.]
+ (b) (Multiplicity version, Fulton.) Let C1, C2 be cubics with no common component,
+     C1 . C2 = P1 + ... + P9 as intersection cycle (points not necessarily
+     distinct, counted with intersection multiplicity), and suppose C1 is
+     irreducible (or, more generally, P1, ..., P9 are simple points of C1).
+     If C is a cubic with C1 . C = P1 + ... + P8 + Q, then Q = P9.
+
+CB2. Eight-point criterion.
+ (a) Let P1, ..., P8 be eight distinct points of P^2 over k such that no four
+     lie on a line and no seven lie on a conic. Then the cubics passing through
+     P1, ..., P8 form a pencil, i.e. the k-vector space of cubic forms vanishing
+     at P1, ..., P8 has dimension exactly 2 (the eight points impose independent
+     conditions on cubics).
+ (b) Consequently (k algebraically closed, or more generally whenever two members
+     of the pencil meet in nine distinct points): all cubics through P1, ..., P8
+     pass through a uniquely determined ninth point P9 (the ninth base point of
+     the pencil), which recovers CB1(a).
+
+CB3. Pascal's theorem.
+ (a) Let Q be a nondegenerate (irreducible) conic in P^2 over k, and let
+     A, B, C, D, E, F be six distinct points on Q. Then the three points
+         X = AB ∩ DE,   Y = BC ∩ EF,   Z = CD ∩ FA
+     (intersections of the pairs of opposite sides of the hexagon ABCDEF)
+     are collinear (the "Pascal line").
+ (b) (Converse / Braikenridge–Maclaurin.) If six points A, ..., F, no three
+     collinear, are such that the three points X, Y, Z above are collinear, then
+     A, ..., F lie on a conic.
+
+CB4. Pappus's hexagon theorem.
+ (a) Let L and M be two distinct lines in P^2 over k. Let A, B, C be three
+     distinct points on L and A', B', C' three distinct points on M, none of
+     them equal to the point L ∩ M. Then the three points
+         X = AB' ∩ A'B,   Y = AC' ∩ A'C,   Z = BC' ∩ B'C
+     are collinear (the "Pappus line").
+ (b) (Hexagon form.) If the six vertices of a hexagon lie alternately on two
+     lines, then the three points of intersection of pairs of opposite sides are
+     collinear. (This is the case of CB3(a) in which the conic degenerates to the
+     pair of lines L ∪ M.)

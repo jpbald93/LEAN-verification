@@ -1,0 +1,57 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Conventions. p, q denote primes. For an odd prime p and an integer a, (a/p) is the
+Legendre symbol. An integer g with p ∤ g is a primitive root modulo p if its
+multiplicative order modulo p is p−1. A safe prime is a prime p such that (p−1)/2 is
+also prime (equivalently p = 2q+1 with q prime; the smallest is p = 5, where q = 2).
+
+Prime1 (Euler's criterion). Let p be an odd prime and a an integer with p ∤ a. Then
+  a^((p−1)/2) ≡ (a/p) (mod p).
+  In particular a is a quadratic residue mod p iff a^((p−1)/2) ≡ 1 (mod p), and a
+  quadratic non-residue iff a^((p−1)/2) ≡ −1 (mod p).
+
+Prime2 (Primitive-root test; Gauss/Tchebychef). Let p be a prime and g an integer with
+  p ∤ g. Then g is a primitive root modulo p if and only if
+  g^((p−1)/r) ≢ 1 (mod p) for every prime divisor r of p−1.
+  Corollary: if p is odd and g is a primitive root mod p, then (g/p) = −1, i.e.
+  g^((p−1)/2) ≡ −1 (mod p). So no quadratic residue is a primitive root.
+
+Prime3 (Primitive roots via the Legendre symbol).
+ (a) Fermat primes. Let p be a prime with p − 1 = 2^k for some k ≥ 1 (p = 3, 5, 17,
+     257, 65537, ...). For an integer a with p ∤ a: a is a primitive root modulo p
+     if and only if (a/p) = −1.
+ (b) Safe primes. Let p = 2q + 1 where p and q are both prime. For an integer a with
+     p ∤ a: a is a primitive root modulo p if and only if (a/p) = −1 and
+     a ≢ −1 (mod p).
+     (Equivalently, every quadratic non-residue mod p other than −1 is a primitive
+     root. For p = 5, −1 is a quadratic residue and the extra condition is vacuous.
+     For every safe prime p ≥ 7, q is odd, so −1 is a non-residue of order 2 and must
+     be excluded.)
+ (c) Generalisation (Wertheim). Let p = 2^k·q^l + 1 be prime, where q is an odd prime
+     and k, l ≥ 1. Then any quadratic non-residue a mod p with a^(2^k) ≢ 1 (mod p)
+     is a primitive root mod p. The case k = 1, l = 1 is (b), and the case
+     k = 2, l = 1 gives p = 4q + 1.
+
+Prime4 (Tchebychef's theorem for primes 4q+1). Let q be an odd prime such that
+  p = 4q + 1 is also prime. Then 2 is a primitive root modulo p.
+
+Prime5 (Chebyshev-type criterion for 10 as a primitive root of 4p+1).
+  Let p and q = 4p + 1 both be prime.
+ (a) If p ≡ 2 (mod 5), then 10 is a primitive root modulo q.
+ (b) Conversely, if 10 is a primitive root modulo q, then p ≡ 2 (mod 5).
+     Combined: 10 is a primitive root mod q if and only if p ≡ 2 (mod 5).
+     Equivalently, the decimal expansion of 1/q has period q − 1, i.e. q is a
+     full-reptend prime in base 10. Examples: (p, q) = (7, 29), (37, 149),
+     (67, 269), ...
+  (Note: p = 2 gives q = 9, which is not prime. So under the hypotheses p is odd and
+  q ≡ 5 (mod 8). Also q ≠ 5, so q ∤ 10.)
+
+Prime6 (Ramesh–Makeshwari, Amer. Math. Monthly 129 (2022), no. 10, p. 971).
+  Let p be a safe prime, i.e. p = 2q + 1 with p and q both prime. Then the least
+  positive primitive root modulo p is a prime number.
+  (Examples: p = 5 → 2; p = 7 → 3; p = 11 → 2; p = 23 → 5; p = 47 → 5.)
+ (a) Underlying lemma (classical). For an odd prime p, the least positive quadratic
+     non-residue modulo p is a prime.
+ (b) For a safe prime p, the least positive primitive root equals the least positive
+     quadratic non-residue modulo p. This follows from Prime3(b), since the least
+     non-residue is < p − 1.

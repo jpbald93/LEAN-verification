@@ -1,0 +1,54 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Conventions. A "plane convex body" is a compact convex subset K of R^2 with nonempty
+interior; its boundary is a closed convex curve. For a unit vector u, the width of K in
+direction u is w_K(u) = h_K(u) + h_K(-u), where h_K(u) = max_{x in K} <x,u> is the support
+function; equivalently, the distance between the two parallel supporting lines of K
+orthogonal to u. K (or its boundary curve) has CONSTANT WIDTH w > 0 if w_K(u) = w for
+every unit vector u. Perimeter = length of the boundary curve (for a convex curve this is
+well defined, e.g. as the supremum of lengths of inscribed polygons).
+
+C1. Barbier's theorem.
+  (a) [smooth form] Let C be a closed convex plane curve of class C^2 (regular, simple,
+      positively curved / convex) which has constant width w. Then the length of C is
+      L(C) = pi * w.
+      (Equivalent support-function form: if p(theta) is the C^2 support function of C, the
+      width condition is p(theta) + p(theta + pi) = w for all theta, and
+      L = integral_0^{2pi} p(theta) d(theta) = pi * w.)
+  (b) [general form, curves with corners allowed] Let K be any plane convex body of
+      constant width w (no smoothness assumed; the boundary may have corner points, as
+      for Reuleaux polygons). Then the perimeter of K equals pi * w.
+      Equivalently: all plane curves of the same constant width w have the same
+      perimeter, namely that of the circle of diameter w.
+
+C2. The Reuleaux triangle.
+  Let A, B, C be the vertices of an equilateral triangle with side length w > 0. The
+  Reuleaux triangle of width w is the intersection of the three closed disks of radius w
+  centred at A, B and C; its boundary consists of three circular arcs of radius w, each
+  centred at one vertex and joining the other two, each of angle pi/3.
+  (a) The Reuleaux triangle is a convex body of constant width w (it is not a disk, so
+      constant width does not characterise the circle), and it has three corner points
+      (A, B, C), at each of which the interior angle is 2pi/3.
+  (b) Its perimeter is 3 * (w * pi/3) = pi * w, in agreement with Barbier's theorem (C1(b)).
+  (c) [often stated alongside] Its area is (1/2)(pi - sqrt 3) w^2; by the
+      Blaschke-Lebesgue theorem this is the minimum area among all plane convex bodies of
+      constant width w (the disk, area pi w^2/4, is the maximum).
+  More generally, Reuleaux polygons (regular or irregular, odd number of sides) of width w
+  are curves of constant width w with corners, and their perimeter is pi * w.
+
+C3. Four-vertex theorem.
+  Definition. Let alpha: R -> R^2 be a regular closed plane curve (periodic) of class at
+  least C^2 with (signed) curvature k(s). A VERTEX of alpha is a point where k has a local
+  extremum (local maximum or local minimum). [do Carmo's variant: if k is C^1, a vertex is
+  a point where k'(s) = 0.]
+  (a) [Mukhopadhyaya 1909, convex/oval form - the standard textbook statement]
+      Every simple closed convex regular plane curve (an "oval": strictly, curvature k > 0
+      everywhere; many texts allow k >= 0 i.e. just convex) of class C^2 (texts often say
+      C^3 or smooth) has at least four vertices. More precisely the curvature function has
+      at least two local maxima and at least two local minima.
+  (b) [Kneser 1912, general form] The convexity hypothesis can be dropped: every simple
+      closed regular plane curve of class C^2 has at least four vertices.
+  Remarks often stated with it: the bound 4 is sharp (a non-circular ellipse has exactly
+  four vertices, at the ends of its axes); for a circle the curvature is constant and
+  every point is a vertex; the "simple" hypothesis cannot be dropped (there are
+  non-simple closed curves, e.g. a limacon with an inner loop, with only two vertices).

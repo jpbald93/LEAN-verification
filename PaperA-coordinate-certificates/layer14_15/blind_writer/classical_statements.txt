@@ -1,0 +1,80 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Conventions. "Line BC" means the full (infinite) line through B and C, not the segment.
+A "triangle" ABC means three non-collinear points A, B, C.
+
+------------------------------------------------------------------------
+A1. DESARGUES'S THEOREM (projective plane over a field)
+
+Let K be a field and P^2(K) the projective plane over K.
+
+A1(a) (Perspective from a point implies perspective from a line.)
+Let ABC and A'B'C' be two triangles in P^2(K) whose corresponding vertices are
+distinct (A != A', B != B', C != C') and whose corresponding sides are distinct
+lines (BC != B'C', CA != C'A', AB != A'B'). Suppose the three lines AA', BB',
+CC' pass through a common point O (the triangles are "perspective from the
+point O"). Then the three points
+    P = BC ∩ B'C',   Q = CA ∩ C'A',   R = AB ∩ A'B'
+are collinear (the triangles are "perspective from a line", the axis PQR).
+
+A1(b) (Converse / dual.) Under the same non-degeneracy hypotheses, if the
+three points P = BC ∩ B'C', Q = CA ∩ C'A', R = AB ∩ A'B' are collinear, then
+the lines AA', BB', CC' are concurrent.
+
+------------------------------------------------------------------------
+A2. MONGE'S THREE CIRCLES THEOREM
+
+For two circles with distinct centres O_i, O_j and unequal radii r_i != r_j,
+the external centre of similitude (external homothety centre) E_ij is the
+point on line O_iO_j dividing the segment O_iO_j externally in the ratio
+r_i : r_j, i.e. the centre of the homothety with positive ratio r_j/r_i that
+maps the first circle onto the second. (When the circles lie outside each
+other, E_ij is the common point of their two external common tangents.)
+
+A2(a) Let three circles in the Euclidean plane have distinct centres O_1, O_2,
+O_3 and pairwise unequal radii r_1, r_2, r_3. Then the three external centres
+of similitude E_12, E_23, E_13 are collinear.
+
+A2(b) (Companion form.) Under the same hypotheses, the external centre of
+similitude of any one pair and the two internal centres of similitude of the
+other two pairs are collinear (e.g. E_12, I_23, I_13 are collinear), where
+I_ij is the point dividing O_iO_j internally in the ratio r_i : r_j.
+
+------------------------------------------------------------------------
+A3. WALLACE–SIMSON LINE
+
+A3(a) Let ABC be a triangle in the Euclidean plane and P a point on its
+circumcircle. Let D, E, F be the feet of the perpendiculars from P to the
+lines BC, CA, AB respectively. Then D, E, F are collinear (the line through
+them is the Simson line, or Wallace line, of P).
+
+A3(b) (Converse.) Conversely, if P is a point such that the feet D, E, F of the
+perpendiculars from P to the lines BC, CA, AB are collinear, then P lies on
+the circumcircle of ABC. (So: D, E, F collinear  <=>  P on the circumcircle.)
+
+------------------------------------------------------------------------
+A4. NAPOLEON'S THEOREM
+
+A4(a) Let ABC be any triangle in the Euclidean plane. On each side, erect an
+equilateral triangle lying outside ABC (i.e. on the opposite side of that
+side's line from the third vertex): BCA', CAB', ABC'. Then the centres
+(centroids) of these three equilateral triangles are the vertices of an
+equilateral triangle (the outer Napoleon triangle).
+
+A4(b) (Inner version.) If instead the equilateral triangles are erected
+inwardly (on the same side of each side's line as the third vertex), their
+centres again form an equilateral triangle (the inner Napoleon triangle),
+possibly degenerate to a point when ABC is itself equilateral.
+
+------------------------------------------------------------------------
+A5. LAMI'S THEOREM
+
+A5. Let three coplanar, concurrent, non-collinear forces F_1, F_2, F_3, with
+magnitudes |F_1|, |F_2|, |F_3|, act at a point and keep it in equilibrium
+(F_1 + F_2 + F_3 = 0). Let alpha be the angle between F_2 and F_3, beta the
+angle between F_3 and F_1, and gamma the angle between F_1 and F_2. Then
+
+        |F_1| / sin(alpha) = |F_2| / sin(beta) = |F_3| / sin(gamma),
+
+i.e. each force is proportional to the sine of the angle between the other
+two.

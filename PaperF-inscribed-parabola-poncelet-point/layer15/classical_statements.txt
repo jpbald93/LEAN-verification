@@ -1,0 +1,17 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Setting A — the complete quadrilateral. Four lines in the Euclidean plane, in general position (no two parallel, no three through one point). They form four triangles (each obtained by omitting one line).
+ C1 (Miquel; used as background). The circumcircles of the four triangles pass through one point M, the Miquel point of the quadrilateral.
+ C2 (Steiner, 1828). The orthocentres of the four triangles lie on one line (the orthocentre line, or Steiner line, of the quadrilateral).
+ C3 (Steiner line of the Miquel point). The reflections of M in the four lines lie on one line, and that line is the orthocentre line of C2.
+ C4 (the inscribed parabola). There is a parabola tangent to all four lines. Its focus is the Miquel point M and its directrix is the orthocentre line of C2. (Classically this parabola is unique; you may state existence and uniqueness separately.) In particular M does not lie on the orthocentre line.
+ C5 (axis). The axis of that parabola is perpendicular to the directrix, and the Newton–Gauss line of the quadrilateral (the line through the midpoints of the three diagonals) is parallel to the axis.
+ C6 (Lambert). The focus of a parabola tangent to the three sides of a triangle lies on the circumcircle of that triangle. Hence the focus of the inscribed parabola of C4 lies on the circumcircles of all four triangles.
+ C7 (vertex). The vertex of a parabola lies on the axis, midway between the focus and the directrix, and is the point of the parabola nearest the directrix.
+
+Setting B — the complete quadrangle. Four points in the Euclidean plane, no three collinear. They form four triangles (each obtained by omitting one point).
+ D1 (Brianchon–Poncelet, 1820–21). The four nine-point circles of the four triangles pass through one common point, the Poncelet point of the quadrangle. It is the centre of the rectangular hyperbola through the four points.
+ D2 (orthocentric exception). If one of the four points is the orthocentre of the triangle formed by the other three (an orthocentric system), the four triangles have the same nine-point circle.
+ D3 (pedal circles). The Poncelet point lies on the pedal circle of each of the four points with respect to the triangle of the other three (the circle through the feet of the perpendiculars from that point to the three sides). (Classically one assumes the point is not on the circumcircle of that triangle, otherwise the feet are collinear — the Simson line.)
+ D4 (diagonal triangle). The Poncelet point lies on the circumcircle of the diagonal triangle (the triangle whose vertices are the three intersection points of opposite sides: AB∩CD, AC∩BD, AD∩BC).
+ D5 (symmetry). The Poncelet point depends only on the set of four points, not on their labelling.

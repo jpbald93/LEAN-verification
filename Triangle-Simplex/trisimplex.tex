@@ -1,0 +1,1136 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% \lean{...}: a Lean identifier. Every argument of \lean is checked by the name gate
+% (gate_names.sh) against the five source trees and the pinned Mathlib.
+\makeatletter
+\def\UrlBreaks{\do\.\do\_\do\'}
+\makeatother
+\DeclareUrlCommand\leanu{\def\UrlFont{\ttfamily\upshape}}
+\DeclareRobustCommand\lean[1]{\ifmmode\text{\leanu{#1}}\else\leanu{#1}\fi}
+% \code{...}: Lean text that is not a single identifier (not name-gated).
+\newcommand{\code}[1]{\texttt{#1}}
+% \ext{...}: a Lean name from a third-party development (breakable, not name-gated).
+\DeclareUrlCommand\ext{\def\UrlFont{\ttfamily\upshape}}
+
+\newcommand{\RR}{\mathbb{R}}
+
+% version-2 commits: carnot=fa8c37951d290d26db66ff83c358b09b156d26e6 viviani=e71460f2edb224b2e7e98a39c6db6bead93613cc degua=daa89522f4a85e6afb8fe4d4d1a94b3d0761943e japanese-theorem=be4503b4e1dfdf7e527e2425276f992ecabb4bc2 poncelet-triangles=aa9da6c4e077cee2e9191ad9011a246ad9e04f2f
+\newcommand{\commitcarnot}{98e5614812f2fc2491a729adf9677bfce9b55217}
+\newcommand{\commitviviani}{029aa3d464db2ac8b3eb2e8f57e79e80f5585803}
+\newcommand{\commitdegua}{d46e6b20717012a9ca49fa3bffb08a5db0bdd2e7}
+\newcommand{\commitjapanese}{34fd0a9c71c6efdca2f154043820f2a6aef7fb3a}
+\newcommand{\commitponceletthree}{9affe6203bbf0ec0f42eeb8c8ce567159de19b40}
+\expandafter\def\csname commitof:carnot\endcsname{\commitcarnot}
+\expandafter\def\csname commitof:viviani\endcsname{\commitviviani}
+\expandafter\def\csname commitof:degua\endcsname{\commitdegua}
+\expandafter\def\csname commitof:japanese\endcsname{\commitjapanese}
+\expandafter\def\csname commitof:poncelet3\endcsname{\commitponceletthree}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\expandafter\def\csname repoof:carnot\endcsname{carnot}
+\expandafter\def\csname repoof:viviani\endcsname{viviani}
+\expandafter\def\csname repoof:degua\endcsname{degua}
+\expandafter\def\csname repoof:japanese\endcsname{japanese-theorem}
+\expandafter\def\csname repoof:poncelet3\endcsname{poncelet-triangles}
+\newcommand{\repo}[1]{https://github.com/jpbald93/\csname repoof:#1\endcsname}
+\newcommand{\src}[4]{\href{\repo{#1}/blob/\commitof{#1}/#2/#3\#L#4}{\texttt{#3}:#4}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,structure,inductive,where,by,fun,noncomputable},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={ℝ}{{$\mathbb{R}$}}1 {ℕ}{{$\mathbb{N}$}}1 {≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2
+    {→}{{$\to$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1 {∈}{{$\in$}}1
+    {∑}{{$\Sigma$}}1 {≤}{{$\le$}}1 {ᵥ}{{$_v$}}1 {Γ}{{$\Gamma$}}1 {ω}{{$\omega$}}1
+    {∘}{{$\circ$}}1 {×}{{$\times$}}1}
+
+\title{Five classical theorems on triangles and simplices,\\ formalised in Lean~4 with Mathlib:\\
+Carnot, Viviani, De~Gua, the Japanese theorem and Poncelet's porism}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{30 September 2026\\ \small Version~2, October 2026: adds Layers~14 and~15 (Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We report Lean~4 formalisations, built on Mathlib, of five classical results of elementary
+geometry: Carnot's theorem $\sum_i d_i(O)=R+r$ for a triangle; Viviani's theorem, generalised to
+simplices of every positive dimension as the identity $\sum_i d_i(p)/h_i=1$; De~Gua's theorem in every
+dimension, for simplices whose edges at one vertex are pairwise orthogonal (with $k$-volume defined by a Gram determinant), together with the projection form obtained from a
+self-contained proof of the Cauchy--Binet formula; the Japanese theorem for convex cyclic polygons,
+for all triangulations by maximal sets of non-crossing diagonals; and Poncelet's porism for
+triangles, with its converse, in the ``construction'' form. The developments follow two strands.
+Viviani, Carnot and the Japanese theorem are statements about signed distances to the facets of a
+simplex, equivalently barycentric coordinates, and Poncelet's porism rests on the same incentre and
+excentre vocabulary together with circle tangency; here Mathlib's \lean{Affine.Simplex} API
+(\lean{signedInfDist}, \lean{height}, \lean{incenter}, \lean{excenter}, \lean{circumcenter})
+supplies most of what is needed. De~Gua's theorem belongs to a second strand, Gram determinants of
+edge vectors. We state every hypothesis exactly,
+explain why each is present, and give lemmas that tie the formal definitions to the familiar
+informal ones. Together the developments have about 3\,200 lines of new Lean code (plus about
+900 lines of verbatim copies; the Layer-14/15 check files added in version~2 have about 2\,200 more), with no \code{sorry} and only Lean's standard axioms. As far as we
+could determine, the geometric signed-distance formulation of Carnot's theorem, the
+$n$-dimensional Viviani and De~Gua theorems in this form, the Japanese theorem and Poncelet's
+porism have no earlier complete Lean formalisation; closely related Lean material does exist for
+the trigonometric identity underlying Carnot's theorem, for the three-dimensional De~Gua theorem,
+for coordinate versions of Viviani's theorem and for the Cauchy--Binet formula, and we describe it
+in Section~\ref{sec:related}.
+\end{abstract}
+
+\section{Introduction}
+
+The five theorems of this paper are classical, short, and familiar from olympiad geometry.
+They are all listed in Mathlib's ``1000+ theorems'' file~\cite{Mathlib1000}, and at the Mathlib
+version we use none of them has a declaration recorded there. They are:
+\begin{itemize}
+\item \emph{Carnot's theorem}. In a triangle with circumcentre $O$, circumradius $R$ and
+inradius $r$, the signed distances from $O$ to the three side lines sum to $R+r$.
+\item \emph{Viviani's theorem}. In an equilateral triangle the distances from an interior point to
+the three sides sum to the altitude.
+\item \emph{De~Gua's theorem}. If the three edges of a tetrahedron at one vertex are pairwise
+perpendicular, the square of the area of the opposite face is the sum of the squares of the areas
+of the other three faces~\cite{ConantBeyer}.
+\item \emph{The Japanese theorem}. For a convex polygon inscribed in a circle, the sum of the
+inradii of the triangles of a triangulation does not depend on the triangulation~\cite{FukagawaPedoe}.
+\item \emph{Poncelet's porism for triangles}. Let $\Gamma$ and $\omega$ be circles with radii
+$R>r>0$ and centres at distance $d$. If $d^2=R(R-2r)$, then every point of $\Gamma$ is a vertex of a
+triangle inscribed in $\Gamma$ and circumscribed about $\omega$. Conversely, if the centre of
+$\omega$ is inside~$\Gamma$ and one such triangle exists, then $d^2=R(R-2r)$~\cite{Flatto}.
+In this paper ``circumscribed about $\omega$'' means that the three side \emph{lines} are tangent
+to~$\omega$; see Section~\ref{sec:poncelet} for how this relates to the classical reading.
+\end{itemize}
+
+\paragraph{Two strands.}
+Four of the five theorems use the vocabulary of \emph{signed distances} from a point to the facets
+of a simplex; De~Gua's theorem uses Gram determinants instead. For a simplex $s$ with vertices $p_0,\dots,p_n$, let $d_i(p)$ be the signed distance
+from $p$ to the hyperplane of the facet opposite $p_i$, positive on the side of $p_i$, and let
+$h_i=d_i(p_i)$ be the $i$-th height. If $p=\sum_i w_ip_i$ with $\sum_iw_i=1$, then
+\begin{equation}\label{eq:bary}
+d_i(p)=w_i\,h_i .
+\end{equation}
+Mathlib provides $d_i$ as \lean{Affine.Simplex.signedInfDist} and \eqref{eq:bary} as
+\lean{Affine.Simplex.signedInfDist_affineCombination}. The roles of the two strands are as follows:
+\begin{itemize}
+\item \emph{Viviani} is the statement $\sum_i d_i/h_i=\sum_iw_i=1$, specialised to equal heights.
+\item \emph{Carnot} is \eqref{eq:bary} for the circumcentre, whose barycentric weights are known,
+followed by a polynomial identity in the side lengths.
+\item \emph{The Japanese theorem} is Carnot's theorem applied to each triangle of the
+triangulation. The contributions of each diagonal cancel, since a diagonal is traversed in
+opposite directions by its two triangles and the signed distance changes sign.
+\item \emph{Poncelet's porism} for triangles does not follow from \eqref{eq:bary}: the forward
+direction is an explicit coordinate construction of tangent lines to a circle. What it shares with
+the strand above is the incentre/excentre vocabulary. Its converse rests on Euler's formula
+$OI^2=R(R-2r)$, a statement about the incentre, the point with $d_0=d_1=d_2=r$: the centre of
+$\omega$ is equidistant from the three side lines, so it is the incentre or an excentre.
+\item \emph{De~Gua's theorem} forms a second strand. Its natural language is Gram determinants of
+edge vectors rather than signed distances, and the general form is the Cauchy--Binet formula. It is
+a companion result, not another application of~\eqref{eq:bary}.
+\end{itemize}
+The actual proof reuse is Carnot $\to$ Japanese (the Japanese development imports a copy of the
+Carnot files), and Viviani and the Poncelet converse share Mathlib's simplex, incentre and
+excentre infrastructure.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item Lean formalisations of all five theorems, with the exact statements given in
+Sections~\ref{sec:carnot}--\ref{sec:poncelet} and indexed in Table~\ref{tab:thms}.
+\item Generalisations where they come cheaply: Viviani for simplices of every positive dimension, with a
+characterisation of the simplices for which the distance sum is constant; De~Gua in every
+dimension and in every real inner product space, with volume given by Definition~\ref{def:volsq}; the Japanese theorem for \emph{every}
+triangulation, defined geometrically as a maximal set of chords with pairwise disjoint interiors;
+Poncelet's porism in the form ``for $\omega$ centred inside $\Gamma$, the construction from one
+point closes if and only if it closes from every point, if and only if $d^2=R(R-2r)$''.
+\item A self-contained Lean proof of the Cauchy--Binet formula for rectangular matrices over a
+commutative ring, which is not in Mathlib at the version we use (Section~\ref{sec:degua}).
+\item Correctness lemmas that connect each formal definition with its informal reading
+(Section~\ref{sec:correct}).
+\end{itemize}
+
+\paragraph{Availability.}
+{\sloppy The five developments are separate Lake projects, published at
+\url{\repo{carnot}}, \url{\repo{viviani}}, \url{\repo{degua}}, \url{\repo{japanese}} and
+\url{\repo{poncelet3}}. Line references in this paper are to commits \texttt{98e5614} (Carnot),
+\texttt{029aa3d} (Viviani), \texttt{d46e6b2} (De~Gua), \texttt{34fd0a9} (Japanese) and
+\texttt{9affe62} (Poncelet). Each repository has a README with build and check commands.
+All five use Lean \texttt{v4.33.1} and the same Mathlib revision
+(\texttt{0df444a3}, tag \texttt{v4.33.1}), pinned in \texttt{lake-manifest.json}.
+The Japanese development contains a verbatim copy of the Carnot development under
+\texttt{Japanese/Carnot/} (only the import prefix differs). The Poncelet development contains, under
+\texttt{Poncelet3/Euler/}, a verbatim copy of three files from the author's separate formalisation
+of Feuerbach's theorem, which provides Euler's formula (again only the import line differs).
+Version~2 of this paper adds the Layer-14 and Layer-15 files of Section~\ref{sec:l1415} in a new
+commit of each repository: \texttt{fa8c37951d290d26db66ff83c358b09b156d26e6} (Carnot), \texttt{e71460f2edb224b2e7e98a39c6db6bead93613cc} (Viviani),
+\texttt{daa89522f4a85e6afb8fe4d4d1a94b3d0761943e} (De~Gua), \texttt{be4503b4e1dfdf7e527e2425276f992ecabb4bc2} (Japanese) and \texttt{aa9da6c4e077cee2e9191ad9011a246ad9e04f2f} (Poncelet). The
+earlier statements and library files are unchanged in that commit (only the root file gains two
+import lines, and \path{gate.sh} and the README are updated), so the line references above are valid
+at both commits. Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Triangle-Simplex} of the repository \url{https://github.com/jpbald93/LEAN-verification}.\par}
+
+{\small\begin{longtable}{@{}>{\raggedright\arraybackslash\hangindent=1.5em\hangafter=1}p{0.52\textwidth}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.26\textwidth}@{}}
+\caption{Main formal statements, grouped by repository. Links point to the declaration line
+at the commit of that repository listed under Availability.}\label{tab:thms}\\
+\toprule
+Lean name & In this paper & Source \\ \midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\small\emph{Table~\ref{tab:thms}, continued}}\\
+\toprule
+Lean name & In this paper & Source \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{carnot}}}\\
+\lean{Carnot.signedSideDist} & Def.~\ref{def:ssd} & \src{carnot}{Carnot}{Main.lean}{27} \\
+\lean{Carnot.signedSideDist_eq_signedInfDist} & Lemma~\ref{lem:carnot-correct} & \src{carnot}{Carnot}{Main.lean}{49} \\
+\lean{Carnot.signedSideDist_incenter} & Lemma~\ref{lem:carnot-correct} & \src{carnot}{Carnot}{Main.lean}{65} \\
+\lean{Carnot.carnot} & Theorem~\ref{thm:carnot} & \src{carnot}{Carnot}{Main.lean}{75} \\
+\lean{Carnot.carnot_sum} & Theorem~\ref{thm:carnot} & \src{carnot}{Carnot}{Main.lean}{97} \\
+\lean{Carnot.signedSideDist_circumcenter_eq} & Theorem~\ref{thm:carnot-cos} & \src{carnot}{Carnot}{Main.lean}{113} \\
+\lean{Carnot.cos_add_cos_add_cos} & Theorem~\ref{thm:carnot-cos} & \src{carnot}{Carnot}{Main.lean}{151} \\
+\lean{Carnot.carnot_poly} & Section~\ref{sec:carnot} & \src{carnot}{Carnot}{Algebra.lean}{32} \\
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{viviani}}}\\
+\lean{Affine.Simplex.sum_signedInfDist_div_height} & Theorem~\ref{thm:viv-weights} & \src{viviani}{Viviani}{Basic.lean}{37} \\
+\lean{Affine.Simplex.sum_signedInfDist_eq_height} & Theorem~\ref{thm:viv-heights} & \src{viviani}{Viviani}{Heights.lean}{34} \\
+\lean{Affine.Simplex.exists_forall_sum_signedInfDist_eq_iff} & Theorem~\ref{thm:viv-heights} & \src{viviani}{Viviani}{Heights.lean}{43} \\
+\lean{Affine.Simplex.signedInfDist_eq_dist_of_mem_closedInterior} & Lemma~\ref{lem:viv-unsigned} & \src{viviani}{Viviani}{Heights.lean}{64} \\
+\lean{Affine.Simplex.sum_dist_eq_height} & Theorem~\ref{thm:viv-heights} & \src{viviani}{Viviani}{Heights.lean}{73} \\
+\lean{Affine.Simplex.Equilateral.height_eq} & Proposition~\ref{prop:equi} & \src{viviani}{Viviani}{Equilateral.lean}{62} \\
+\lean{Affine.Simplex.Regular.sum_dist_eq_height} & Corollary~\ref{cor:viviani} & \src{viviani}{Viviani}{Equilateral.lean}{92} \\
+\lean{Viviani.equilateral_triangle'} & Corollary~\ref{cor:viviani} & \src{viviani}{Viviani}{Equilateral.lean}{109} \\
+\lean{Affine.Simplex.Equilateral.height_eq} + \lean{Affine.Simplex.sum_dist_eq_height} & Corollary~\ref{cor:viviani} (equilateral case) & \src{viviani}{Viviani}{Equilateral.lean}{62}, \src{viviani}{Viviani}{Heights.lean}{73} \\
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{degua}}}\\
+\lean{DeGua.de_gua_three} & Theorem~\ref{thm:degua3} & \src{degua}{DeGua}{Three.lean}{42} \\
+\lean{DeGua.simplexVolSq} & Def.~\ref{def:volsq} & \src{degua}{DeGua}{General.lean}{97} \\
+\lean{DeGua.det_diagonal_add_const} & Lemma~\ref{lem:mdl} & \src{degua}{DeGua}{General.lean}{45} \\
+\lean{DeGua.de_gua} & Theorem~\ref{thm:degua} & \src{degua}{DeGua}{General.lean}{130} \\
+\lean{DeGua.triAreaSq_eq_simplexVolSq} & Lemma~\ref{lem:degua-bridge} & \src{degua}{DeGua}{Bridge.lean}{16} \\
+\lean{DeGua.de_gua_three_of_general} & Lemma~\ref{lem:degua-bridge} & \src{degua}{DeGua}{Bridge.lean}{28} \\
+\lean{DeGua.det_mul_eq_sum_strictMono} & Theorem~\ref{thm:cb} & \src{degua}{DeGua}{CauchyBinet.lean}{33} \\
+\lean{DeGua.det_gram_eq_sum_sq_minors} & Corollary~\ref{cor:proj} & \src{degua}{DeGua}{CauchyBinet.lean}{91} \\
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{japanese}}}\\
+\lean{Japanese.chordDist} & Def.~\ref{def:chord} & \src{japanese}{Japanese}{Basic.lean}{30} \\
+\lean{Japanese.chordDist_swap} & Lemma~\ref{lem:swap} & \src{japanese}{Japanese}{Basic.lean}{35} \\
+\lean{Japanese.triInradius_eq} & Lemma~\ref{lem:carnot-chord} & \src{japanese}{Japanese}{Basic.lean}{130} \\
+\lean{Japanese.japanese_quadrilateral} & Theorem~\ref{thm:jq} & \src{japanese}{Japanese}{Basic.lean}{193} \\
+\lean{Japanese.Triangulation} & Def.~\ref{def:tree} & \src{japanese}{Japanese}{Polygon.lean}{33} \\
+\lean{Japanese.inradiusSum_eq} & Theorem~\ref{thm:jtree} & \src{japanese}{Japanese}{Polygon.lean}{97} \\
+\lean{Japanese.japanese_polygon} & Theorem~\ref{thm:jtree} & \src{japanese}{Japanese}{Polygon.lean}{131} \\
+\lean{Japanese.IsTriangulation} & Def.~\ref{def:triang} & \src{japanese}{Japanese}{Combinatorial.lean}{30} \\
+\lean{Japanese.isTriangulation_iff_exists_tree} & Proposition~\ref{prop:bij} & \src{japanese}{Japanese}{Combinatorial.lean}{415} \\
+\lean{Japanese.Triangulation.chords_injective} & Proposition~\ref{prop:bij} & \src{japanese}{Japanese}{Combinatorial.lean}{453} \\
+\lean{Japanese.treeEquiv} & Proposition~\ref{prop:bij} & \src{japanese}{Japanese}{Combinatorial.lean}{481} \\
+\lean{Japanese.toFinset_triangles} & Proposition~\ref{prop:bij} (triangles $=$ \lean{triangleSet}) & \src{japanese}{Japanese}{Combinatorial.lean}{259} \\
+\lean{Japanese.card_triangleSet} & Proposition~\ref{prop:bij} ($j-i-1$ triangles) & \src{japanese}{Japanese}{Combinatorial.lean}{265} \\
+\lean{Japanese.japanese_polygon_combinatorial} & Theorem~\ref{thm:japanese} & \src{japanese}{Japanese}{Combinatorial.lean}{520} \\
+\lean{Japanese.sbtw_inter_iff_interleave} & Proposition~\ref{prop:cross} & \src{japanese}{Japanese}{Geometric.lean}{182} \\
+\lean{Japanese.geomCrosses_iff} & Proposition~\ref{prop:cross} & \src{japanese}{Japanese}{Geometric.lean}{220} \\
+\lean{Japanese.IsGeomTriangulation} & Def.~\ref{def:triang} & \src{japanese}{Japanese}{Geometric.lean}{209} \\
+\lean{Japanese.japanese_polygon_geometric} & Theorem~\ref{thm:japanese} & \src{japanese}{Japanese}{Geometric.lean}{276} \\
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{poncelet3}}}\\
+\lean{Feuerbach.dist_circumcenter_incenter_sq} & Theorem~\ref{thm:euler} & \src{poncelet3}{Poncelet3/Euler}{Main.lean}{100} \\
+\lean{Feuerbach.dist_circumcenter_excenter_sq} & Theorem~\ref{thm:euler} & \src{poncelet3}{Poncelet3/Euler}{Main.lean}{105} \\
+\lean{Poncelet3.exists_poncelet_triangle} & Theorem~\ref{thm:porism} & \src{poncelet3}{Poncelet3}{Porism.lean}{104} \\
+\lean{Poncelet3.euler_of_isTangent} & Theorem~\ref{thm:converse} & \src{poncelet3}{Poncelet3}{Closure.lean}{35} \\
+\lean{Poncelet3.poncelet_triangle_iff} & Theorem~\ref{thm:converse} & \src{poncelet3}{Poncelet3}{Closure.lean}{105} \\
+\lean{Poncelet3.radius_lt_dist_center_of_mem} & Lemma~\ref{lem:pon-correct} & \src{poncelet3}{Poncelet3}{Construction.lean}{77} \\
+\lean{Poncelet3.tangentsFrom_eq_pair} & Lemma~\ref{lem:pon-correct} & \src{poncelet3}{Poncelet3}{Construction.lean}{263} \\
+\lean{Poncelet3.secondInter_spec} & Lemma~\ref{lem:pon-correct} & \src{poncelet3}{Poncelet3}{Construction.lean}{313} \\
+\lean{Poncelet3.poncelet_construction} & Theorem~\ref{thm:construction} & \src{poncelet3}{Poncelet3}{Construction.lean}{334} \\
+\lean{Poncelet3.ConstructionCloses} & Def.~\ref{def:closes} & \src{poncelet3}{Poncelet3}{Package.lean}{37} \\
+\lean{Poncelet3.poncelet_construction_iff} & Theorem~\ref{thm:construction} & \src{poncelet3}{Poncelet3}{Package.lean}{98} \\
+\lean{Poncelet3.poncelet_all_or_nothing} & Theorem~\ref{thm:construction} & \src{poncelet3}{Poncelet3}{Package.lean}{107} \\
+\end{longtable}}
+
+\section{Setting and Mathlib vocabulary}\label{sec:setting}
+
+Throughout, $V$ is a real inner product space and $P$ a metric affine space over it:
+\begin{center}\small
+\code{[NormedAddCommGroup V] [InnerProductSpace $\mathbb{R}$ V] [MetricSpace P] [NormedAddTorsor V P]}
+\end{center}
+No finite-dimensionality is assumed unless stated. The Japanese theorem and Poncelet's porism
+additionally assume \code{[Fact (finrank $\mathbb{R}$ V = 2)]}, so that $P$ is a Euclidean plane; the Japanese
+theorem also fixes an orientation \code{o : Orientation $\mathbb{R}$ V (Fin 2)}, with area form
+$\omega_o$ (\lean{Orientation.areaForm}).
+
+We use the following Mathlib notions for a simplex \code{s : Affine.Simplex $\mathbb{R}$ P n}; an
+\lean{Affine.Triangle} is the case $n=2$. Heights and signed facet distances require $n\ge1$
+(Mathlib's \code{[NeZero n]}), since a $0$-simplex has no facets.
+\begin{itemize}
+\item \lean{Affine.Simplex.height} \code{s i} is the distance from the $i$-th vertex to the
+affine span of the opposite facet; \lean{Affine.Simplex.height_pos} says it is positive.
+\item \lean{Affine.Simplex.signedInfDist} \code{s i p} is the signed distance from $p$ to the
+affine span of the facet opposite vertex $i$, positive towards vertex~$i$. Components of $p$
+orthogonal to the span of the simplex are ignored.
+\item \lean{Affine.Simplex.circumcenter}, \lean{Affine.Simplex.circumradius},
+\lean{Affine.Simplex.incenter}, \lean{Affine.Simplex.inradius},
+\lean{Affine.Simplex.excenter} and \lean{Affine.Simplex.exradius} have their usual meaning. The
+incentre and excentres are defined for general simplices through weights
+(\lean{Affine.Simplex.excenterWeights}).
+\item \lean{Affine.Simplex.closedInterior} is the set of affine combinations with weights in
+$[0,1]$, that is, the closed simplex.
+\item \lean{Affine.Simplex.Equilateral} means all edges have the same length, and
+\lean{Affine.Simplex.Regular} means every permutation of the vertices is induced by an isometry.
+\end{itemize}
+Circles are \lean{EuclideanGeometry.Sphere} \code{P}. An affine subspace is tangent to a sphere
+(\lean{EuclideanGeometry.Sphere.IsTangent}) if it lies in the tangent space
+(\lean{EuclideanGeometry.Sphere.orthRadius}) at some point of the sphere that it contains.
+\lean{EuclideanGeometry.Sphere.tangentsFrom} \code{A} is the set of maximal tangent spaces
+through $A$, and \lean{EuclideanGeometry.Sphere.secondInter} is the second intersection of a line
+with a sphere. We write \code{line[$\mathbb{R}$, A, B]} for the affine span of $\{A,B\}$.
+
+\section{Carnot's theorem}\label{sec:carnot}
+
+\begin{definition}\label{def:ssd}
+For a triangle $t$ and $i\in\{0,1,2\}$, let $F_i$ be the foot of the altitude from vertex $A_i$
+and $h_i$ the height. The signed side distance of $p$ is
+\[
+\lean{signedSideDist}\ t\ i\ p=\langle p-F_i,\ A_i-F_i\rangle/h_i ,
+\]
+the component of $p-F_i$ along the unit normal to side~$i$ that points towards $A_i$.
+\end{definition}
+
+It agrees with Mathlib's \lean{signedInfDist} on the plane of the triangle
+(Lemma~\ref{lem:carnot-correct}), which is where the circumcentre lies. The key property is \lean{Carnot.signedSideDist_affineCombination}, the
+triangle case of~\eqref{eq:bary}.
+
+\begin{theorem}[Carnot]\label{thm:carnot}
+For every triangle $t$ in $P$,
+\[
+\sum_{i=0}^{2}\lean{signedSideDist}\ t\ i\ O=R+r,
+\]
+where $O$, $R$, $r$ are the circumcentre, circumradius and inradius of~$t$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem carnot :
+    signedSideDist t 0 t.circumcenter + signedSideDist t 1 t.circumcenter +
+        signedSideDist t 2 t.circumcenter = t.circumradius + t.inradius
+\end{lstlisting}
+
+There are no hypotheses beyond $t$ being a triangle, which in Mathlib includes affine
+independence. There is no dimension hypothesis. The distances are signed, and this is essential:
+for an obtuse triangle the circumcentre lies outside, and the distance to the side opposite the
+obtuse angle is negative. Theorem~\ref{thm:carnot-cos} makes the sign convention visible.
+
+\begin{theorem}\label{thm:carnot-cos}
+Let $\alpha_i$ be the angle of $t$ at vertex $A_i$. Then
+$\lean{signedSideDist}\ t\ i\ O=R\cos\alpha_i$ for each $i$, and
+$\cos\alpha_0+\cos\alpha_1+\cos\alpha_2=1+r/R$.
+\end{theorem}
+
+\paragraph{Proof.}
+The circumcentre is written as $O=\sum_iw_iA_i$. With side lengths $a,b,c$ and $k=2\cdot$area,
+one has $h_i=k/a_i$, $2kR=abc$ and, from \lean{Affine.Simplex.inradius_eq_abs_inv_sum},
+$r=k/(a+b+c)$. By \eqref{eq:bary}, Theorem~\ref{thm:carnot} becomes
+$\sum_iw_ik/a_i=R+k/(a+b+c)$, which, after clearing denominators, is the polynomial identity
+\lean{Carnot.carnot_poly}:
+\[
+\bigl(w_0bc+w_1ca+w_2ab\bigr)(a+b+c)=2R^2(a+b+c)+abc .
+\]
+It holds modulo the three equations $|O-A_i|^2=R^2$, written in the side lengths and the weights.
+The coefficients of the \code{linear\_combination} certificate (of degree two) were found with a
+computer algebra system. The cosine form uses three further certificates of degree three and the
+law of cosines from Mathlib. The frame machinery
+(\lean{Carnot.frame_data}, \lean{Carnot.height_sq_mul_sq}) is adapted from the author's
+Feuerbach development.
+
+\section{Viviani's theorem, generalised to simplices}\label{sec:viviani}
+
+Here $s$ is an $n$-simplex with $n\ge1$ (\code{[NeZero n]}), in any real inner product space. We
+write $d_i(p)$ for \code{s.signedInfDist i p} and $h_i$ for \code{s.height i}.
+
+\begin{theorem}\label{thm:viv-weights}
+For every point $p$ in the affine span of $s$, $\sum_i d_i(p)/h_i=1$.
+Moreover, $d_i(p)/h_i$ is the $i$-th barycentric coordinate of~$p$.
+\end{theorem}
+
+\begin{proof}
+Write $p=\sum_iw_ip_i$ with $\sum_iw_i=1$, and apply \eqref{eq:bary}.
+\end{proof}
+
+\begin{theorem}\label{thm:viv-heights}
+Suppose all heights of $s$ are equal to $h$. Then $\sum_id_i(p)=h$ for every $p$ in the affine
+span of~$s$, and $\sum_i\operatorname{dist}(p,\Pi_i)=h$ for every $p$ in the closed simplex, where
+$\Pi_i$ is the affine span of the $i$-th facet. Conversely, if $p\mapsto\sum_id_i(p)$ is constant on
+the affine span of $s$, then all heights are equal.
+\end{theorem}
+
+\begin{lstlisting}
+theorem sum_signedInfDist_eq_height (hh : ∀ i j, s.height i = s.height j)
+    {p : P} (hp : p ∈ affineSpan ℝ (Set.range s.points)) (k : Fin (n + 1)) :
+    ∑ i, s.signedInfDist i p = s.height k
+theorem exists_forall_sum_signedInfDist_eq_iff :
+    (∃ c : ℝ, ∀ p ∈ affineSpan ℝ (Set.range s.points), ∑ i, s.signedInfDist i p = c) ↔
+      ∀ i j, s.height i = s.height j
+\end{lstlisting}
+
+The converse is proved by evaluating the sum at two vertices: $\sum_id_i(p_j)=h_j$.
+
+\paragraph{Why each hypothesis.}
+The signed form holds on the whole affine span, which is the natural domain of~$d_i$. The unsigned
+form needs $p$ in the closed simplex, where all $d_i(p)\ge0$ (weights in $[0,1]$); outside it, some
+distance must be counted negatively. We use Mathlib's \lean{Affine.Simplex.closedInterior}, so the
+unsigned form includes boundary points. ``Distance to a side'' means the distance to the affine span of the
+facet (the side \emph{line} of a triangle), attained at the orthogonal projection
+(\lean{Affine.Simplex.orthogonalProjectionSpan}). This is the classical reading. For an
+equilateral triangle the foot of the perpendicular from a point of the closed triangle lies on the
+side itself, but for a general simplex it need not, and we do not use or prove any such fact.
+
+\begin{proposition}\label{prop:equi}
+All heights of an equilateral simplex are equal.
+\end{proposition}
+
+\begin{proof}
+For $i\ne j$, reflect in the perpendicular bisector hyperplane of $[p_i,p_j]$. This affine isometry
+(\lean{Viviani.perpReflection}) swaps $p_i$ and $p_j$ and fixes every other vertex, since those are
+equidistant from $p_i$ and $p_j$. Heights are invariant under isometries
+(\lean{Affine.Simplex.height_map}) and permute under reindexing
+(\lean{Affine.Simplex.height_reindex}), so $h_i=h_j$.
+\end{proof}
+
+\begin{corollary}[Viviani]\label{cor:viviani}
+For a regular (or just equilateral) simplex, and every point $p$ of the closed simplex, the
+distances from $p$ to the facet hyperplanes sum to the height. For an equilateral triangle
+\code{t} and \code{p $\in$ t.closedInterior}, the three distances sum to \code{t.height 0}.
+\end{corollary}
+
+Equal heights do not imply equilateral when $n\ge3$. Since $h_i\cdot\operatorname{vol}(F_i)=
+n\operatorname{vol}(s)$, equal heights means equal facet volumes. In dimension three this holds for
+every tetrahedron with four congruent faces (a disphenoid), which need not be regular. So
+Theorem~\ref{thm:viv-heights} characterises the simplices with constant distance sum: they are the
+simplices with equal heights, a strictly larger class than the equilateral ones. The identity
+$h_i\operatorname{vol}(F_i)=n\operatorname{vol}(s)$ is not formalised here.
+
+\section{De~Gua's theorem and the Cauchy--Binet formula}\label{sec:degua}
+
+\subsection{The three-dimensional statement}
+In $\RR^3$ (\code{EuclideanSpace $\mathbb{R}$ (Fin 3)}), let
+\lean{DeGua.triAreaSq}~$X\,Y\,Z=|(Y-X)\times(Z-X)|^2/4$, the squared area of a triangle.
+
+\begin{theorem}\label{thm:degua3}
+If $A-O$, $B-O$, $C-O$ are pairwise orthogonal, then
+$\lean{triAreaSq}\,A\,B\,C=\lean{triAreaSq}\,O\,A\,B+\lean{triAreaSq}\,O\,B\,C+\lean{triAreaSq}\,O\,C\,A$.
+\end{theorem}
+
+The proof is one \code{linear\_combination} (\lean{DeGua.cross_sub_sq}).
+
+\subsection{All dimensions}
+There is no cross product in general, so we measure volume by Gram determinants.
+
+\begin{definition}\label{def:volsq}
+For points $x_0,\dots,x_k$ of a real inner product space $E$,
+\[
+\lean{simplexVolSq}\ x=\det\bigl(\langle x_{i}-x_0,\,x_{j}-x_0\rangle\bigr)_{1\le i,j\le k}\big/(k!)^2 .
+\]
+\end{definition}
+
+This is the standard squared $k$-volume of the simplex $x_0\cdots x_k$. We stress that it is a
+\emph{definition}: we have not related it to a measure. Mathlib now has a Euclidean Hausdorff measure
+(\lean{MeasureTheory.Measure.euclideanHausdorffMeasure}), and connecting the two would need the
+facts that a parallelotope has volume $\sqrt{\det G}$ and a simplex $1/k!$ of that.
+
+\begin{theorem}[De~Gua, general form]\label{thm:degua}
+Let $O\in E$ and $P_0,\dots,P_m\in E$ with $P_i-O$ pairwise orthogonal. Then
+\[
+\lean{simplexVolSq}\,(P_0,\dots,P_m)=\sum_{i=0}^m\lean{simplexVolSq}\,(O,P_0,\dots,\widehat{P_i},\dots,P_m).
+\]
+\end{theorem}
+
+\begin{lstlisting}
+theorem de_gua (O : E) {m : ℕ} (P : Fin (m + 1) → E)
+    (h : Pairwise fun i j => inner ℝ (P i - O) (P j - O) = 0) :
+    simplexVolSq P =
+      ∑ i : Fin (m + 1), simplexVolSq (Fin.cons O (P ∘ i.succAbove) : Fin (m + 1) → E)
+\end{lstlisting}
+
+The only hypothesis is orthogonality. The points need not be distinct and $E$ need not be
+finite-dimensional, and degenerate configurations (for instance a zero edge) are allowed.
+
+\begin{lemma}\label{lem:mdl}
+For a finite index type $\iota$, $b\in\RR^\iota$ and $c\in\RR$, with $J$ the all-ones matrix,
+$\det(\operatorname{diag}(b)+cJ)=\prod_ib_i+c\sum_i\prod_{j\ne i}b_j$.
+\end{lemma}
+
+When all $b_i\ne0$, this follows from Mathlib's matrix determinant lemma
+\lean{Matrix.det_one_add_replicateCol_mul_replicateRow}. For general $b$, replace $b$ by
+$b+t\mathbf 1$. Both sides are continuous in $t$, and they agree whenever $t\ne-b_i$ for all $i$,
+that is, on the complement of a finite set. That complement is dense, so they agree at $t=0$. The
+Gram matrix of the edges $P_j-P_0$ of the facet opposite $O$ is
+$\operatorname{diag}(|P_j-O|^2)_{j\ge1}+|P_0-O|^2J$,
+so Lemma~\ref{lem:mdl} gives $\sum_i\prod_{k\ne i}|P_k-O|^2$. The facets through $O$ have diagonal
+Gram matrices with determinants $\prod_{k\ne i}|P_k-O|^2$.
+
+\subsection{Cauchy--Binet and the projection form}
+
+\begin{theorem}[Cauchy--Binet]\label{thm:cb}
+Let $R$ be a commutative ring, $A$ a $k\times n$ and $B$ an $n\times k$ matrix over $R$. Then
+\[
+\det(AB)=\sum_{S}\det(A_{\cdot,S})\det(B_{S,\cdot}),
+\]
+the sum over strictly increasing $S:\{0..k-1\}\to\{0..n-1\}$, i.e.\ over $k$-subsets of columns.
+\end{theorem}
+
+\begin{lstlisting}
+theorem det_mul_eq_sum_strictMono (A : Matrix (Fin k) (Fin n) R)
+    (B : Matrix (Fin n) (Fin k) R) :
+    det (A * B) = ∑ s ∈ univ.filter (fun s : Fin k → Fin n => StrictMono s),
+      det (A.submatrix id s) * det (B.submatrix s id)
+\end{lstlisting}
+
+The proof expands $\det(AB)$ as a sum over all maps $p:\mathrm{Fin}\,k\to\mathrm{Fin}\,n$, drops
+the non-injective ones (their minor has two equal columns), and re-indexes the injective ones as
+pairs (strictly monotone $s$, permutation $\tau$) with Mathlib's \lean{Tuple.sort} and
+\lean{Tuple.unique_monotone}. It covers $k>n$ (both sides vanish) and $k=0$.
+
+\begin{corollary}[Pythagorean theorem for $k$-volumes]\label{cor:proj}
+For $v_0,\dots,v_{k-1}\in\RR^n$, the Gram determinant of $v$ equals the sum, over all coordinate
+$k$-planes, of the squared $k\times k$ minors of the matrix with rows $v_i$. That is, the squared
+volume of the parallelotope spanned by $v$ is the sum of the squared volumes of its orthogonal
+projections onto the coordinate $k$-planes.
+\end{corollary}
+
+For $k=n-1$, applied to the facet opposite the corner of a simplex whose corner edges lie along
+the coordinate axes, this recovers De~Gua's theorem; this is Conant and Beyer's
+generalisation~\cite{ConantBeyer}. We have not formalised that deduction:
+Theorem~\ref{thm:degua} is proved directly.
+Theorem~\ref{thm:cb} is, as far as we could determine, absent from Mathlib at our pinned version,
+and a Mathlib pull request for it is open (Section~\ref{sec:related}). Ours may be useful as a
+second, short proof ($\sim$70 lines); we make no stronger claim.
+
+\section{The Japanese theorem}\label{sec:japanese}
+
+Here $P$ is an oriented Euclidean plane.
+
+\begin{definition}\label{def:chord}
+For points $O,p,q$, let $\lean{chordDist}\ O\ p\ q=\omega_o(q-p,\,O-p)/|pq|$, for $p\ne q$ the signed distance
+from $O$ to the directed line $pq$, positive if $O$ is to the left of the chord $p\to q$ (the total Lean definition returns $0$ when $p=q$). Let
+\lean{Japanese.triInradius}~$a\,b\,c$ be the inradius of the triangle $abc$, or $0$ if $a,b,c$ are
+collinear.
+\end{definition}
+
+\begin{lemma}[cancellation]\label{lem:swap}
+$\lean{chordDist}\ O\ q\ p=-\lean{chordDist}\ O\ p\ q$.
+\end{lemma}
+
+\begin{lemma}[Carnot, chord form]\label{lem:carnot-chord}
+If $a,b,c$ lie on a circle with centre $O$ and radius $R$ and $\omega_o(b-a,c-a)>0$, then
+$\lean{triInradius}\ a\ b\ c=d(ab)+d(bc)+d(ca)-R$, where $d(pq)=\lean{chordDist}\ O\ p\ q$.
+\end{lemma}
+
+This is Theorem~\ref{thm:carnot} (from the copied Carnot files), after identifying the circle with
+the circumcircle (the triangle spans the plane) and Carnot's inward signed distance with the chord
+distance along the counterclockwise side (\lean{Japanese.signedSideDist_eq_chordDist}).
+
+\begin{theorem}[quadrilateral]\label{thm:jq}
+If $A,B,C,D$ lie on a circle and the triangles $ABC$, $ACD$, $ABD$, $BCD$ are positively oriented,
+then $r(ABC)+r(ACD)=r(ABD)+r(BCD)$.
+\end{theorem}
+
+\paragraph{Polygons and triangulations.}
+A polygon is a map $p:\mathbb N\to P$ of which only $p_0,\dots,p_{n-1}$ are used. The hypotheses are
+\begin{itemize}
+\item \code{hs : $\forall$ l < n, p l $\in$ s} for a circle \code{s}, and
+\item \code{hconv}: $\omega_o(p_b-p_a,\ p_c-p_a)>0$ whenever $a<b<c<n$.
+\end{itemize}
+For $n\ge3$ the second says that the polygon is strictly convex and listed counterclockwise. For
+$n=2$ it is vacuous (even $p_0=p_1$ is allowed); the formal theorems handle this harmless
+degenerate case through empty sums of triangles. The hypothesis is needed because
+Lemma~\ref{lem:carnot-chord} requires each triangle to be positively oriented. For a negatively
+oriented triangle the three chord distances change sign, so the chord sum is $-(R+r)$ and the
+formula becomes $r=-d(ab)-d(bc)-d(ca)-R$; reversing the ambient orientation restores the stated
+form. The counterclockwise choice is thus a convention needed by the displayed signed formula, not
+a geometric restriction: the inradius sum itself does not depend on the orientation, and the
+clockwise case follows by reversing~$o$. For points on a circle, \code{hconv} is the same as
+being in counterclockwise cyclic order, but we did not formalise this equivalence.
+
+\begin{definition}\label{def:tree}
+\lean{Japanese.Triangulation}~$i\ j$ is the inductive type with constructors
+\code{edge i : Triangulation i (i+1)} and
+\code{node (i<k) (k<j) : Triangulation i k $\to$ Triangulation k j $\to$ Triangulation i j}.
+Its triangles (\lean{Japanese.Triangulation.triangles}) are the triples $(i,k,j)$ at the nodes.
+\end{definition}
+
+A \code{node} is the triangle $(i,k,j)$ standing on the side $ij$, together with triangulations
+of the two remaining sub-polygons. Summing Lemma~\ref{lem:carnot-chord} over the triangles, the
+diagonals $ik$ and $kj$ cancel by Lemma~\ref{lem:swap}. Induction on the tree gives:
+
+\begin{theorem}\label{thm:jtree}
+Under \code{hs} and \code{hconv}, every $T:\lean{Triangulation}\ 0\ (n-1)$ has inradius sum
+$\sum_{l}d(p_lp_{l+1})-(n-2)R$, where the sum runs over the $n$ sides of the polygon. In particular any
+two such $T,T'$ have the same inradius sum.
+\end{theorem}
+
+No flip-connectivity argument is needed: the value is computed for every tree directly.
+
+\paragraph{Triangulations as sets of chords.}
+The tree type is a convenient model, but a triangulation is usually defined as a maximal set of
+non-crossing diagonals. We prove that the two agree. A chord of $i..j$ is a pair $(a,b)$ with
+$i\le a<b\le j$; the chords $(a,b)$ and $(c,d)$ \emph{cross} if $a<c<b<d$ or $c<a<d<b$
+(\lean{Japanese.Crosses}).
+
+\begin{definition}\label{def:triang}
+$E$ is a \emph{triangulation} of $i..j$ (\lean{Japanese.IsTriangulation}) if all elements are
+chords, no two cross, and every chord that crosses no element of $E$ is in $E$. It is a
+\emph{geometric triangulation} (\lean{Japanese.IsGeomTriangulation}) if the same holds with
+``cross'' replaced by ``the open segments $p_ap_b$ and $p_cp_d$ meet'' for $e\ne f$. The triangles
+of $E$ (\lean{Japanese.triangleSet}) are the triples $(a,b,c)$ with $ab$, $bc$, $ac\in E$.
+\end{definition}
+
+Sides of the polygon and the root side cross nothing, so by maximality they belong to~$E$. Hence
+$E$ minus the sides is exactly a maximal non-crossing set of diagonals, and triangles can be read
+off uniformly. Deriving the triangles from $E$, instead of axiomatising them, avoids conditions such
+as ``each diagonal lies in exactly two triangles''.
+
+\begin{proposition}\label{prop:bij}
+For $i<j$, the map $T\mapsto\lean{Japanese.Triangulation.chords}\ T$ is a bijection from trees to
+triangulations of $i..j$ (\lean{Japanese.treeEquiv}). Under it, the tree's triangles are exactly
+\lean{triangleSet}, and every triangulation of $i..j$ has $j-i-1$ triangles.
+\end{proposition}
+
+The hard direction builds a tree from $E$. If $i+1<j$, let $k$ be the largest $b<j$ with
+$(i,b)\in E$. Then $(k,j)$ crosses no element of $E$, so it is in $E$, and every chord of $E$ other
+than the root side $(i,j)$ lies on one side of $k$ (\lean{Japanese.IsTriangulation.exists_apex}).
+Restricting $E$ to both sides gives triangulations of $i..k$ and $k..j$. Strong
+induction on $j-i$ finishes the proof.
+
+\begin{proposition}\label{prop:cross}
+Under \code{hconv}, for distinct chords $e,f$ of $0..n-1$, the open segments of $e$ and $f$ meet if and
+only if $e$ and $f$ cross. Consequently, geometric and combinatorial triangulations coincide.
+\end{proposition}
+
+For interleaved indices the intersection point is written down explicitly as a ratio of area forms;
+for non-interleaved disjoint pairs both endpoints of one chord lie strictly on one side of the
+other; chords with a shared endpoint never meet in their interiors because three vertices are never
+collinear. The case $e=f$ is excluded because a segment meets itself.
+
+\begin{theorem}[Japanese theorem]\label{thm:japanese}
+Let $n\ge2$, and assume \code{hs} and \code{hconv}. For any two geometric triangulations $E,E'$ of the
+polygon $p_0\cdots p_{n-1}$,
+$\sum_{t\in\lean{triangleSet}\,E}r(t)=\sum_{t\in\lean{triangleSet}\,E'}r(t)$. The same holds for
+combinatorial triangulations.
+\end{theorem}
+
+\begin{lstlisting}
+theorem japanese_polygon_geometric (s : Sphere P) (hn : 2 ≤ n)
+    (hs : ∀ l < n, p l ∈ s)
+    (hconv : ∀ a b c, a < b → b < c → c < n →
+      0 < o.areaForm (p b -ᵥ p a) (p c -ᵥ p a))
+    {E E' : Finset (ℕ × ℕ)} (hE : IsGeomTriangulation p 0 (n - 1) E)
+    (hE' : IsGeomTriangulation p 0 (n - 1) E') :
+    triangleInradiusSum p (triangleSet E) = triangleInradiusSum p (triangleSet E')
+\end{lstlisting}
+
+The hypothesis $n\ge2$ only excludes degenerate cases. What is still not formalised is a
+dissection in the sense of ``a finite family of triangles with disjoint interiors whose union is the
+polygon''; our geometric triangulations are maximal sets of non-crossing chords
+(Section~\ref{sec:limits}).
+
+\section{Poncelet's porism for triangles}\label{sec:poncelet}
+
+Here $P$ is a Euclidean plane, $\Gamma$ and $\omega$ are spheres with centres $O$, $I$ and radii
+$R$, $r$, and $d=|OI|$.
+
+\begin{theorem}[Euler]\label{thm:euler}
+For every triangle, $|OI|^2=R(R-2r)$ and $|OI_i|^2=R(R+2r_i)$, where $I_i$ and $r_i$ are the
+excentre and exradius opposite vertex~$i$.
+\end{theorem}
+
+The two formulas are
+\lean{Feuerbach.dist_circumcenter_incenter_sq} and \lean{Feuerbach.dist_circumcenter_excenter_sq},
+copied from the author's Feuerbach development. Both
+are also proved in Wang's Feuerbach repository and open Mathlib pull request
+(Section~\ref{sec:related}).
+
+\begin{theorem}[porism]\label{thm:porism}
+Assume $0<r$, $r<R$ and $d^2=R(R-2r)$. For every $A\in\Gamma$ there are $B,C\in\Gamma$, with
+$A,B,C$ pairwise distinct, such that the lines $AB$, $AC$ and $BC$ are tangent to~$\omega$.
+\end{theorem}
+
+This, and every Poncelet statement below, asserts tangency of the three side \emph{lines}. It does
+not assert that $\omega$ is the incircle of $ABC$, that the points of tangency lie on the side
+segments, or that the disk bounded by $\omega$ lies in the triangle. \emph{Informally}, that
+classical reading follows under the hypotheses of Theorem~\ref{thm:porism}: they give
+$d<R-r<R$ (\lean{Poncelet3.dist_center_lt}), so $I$ is inside $\Gamma$; by the classification of
+points equidistant from the side lines and Euler's excentral formula used in the proof of
+Theorem~\ref{thm:converse}, $I$ cannot be an excentre, so $\omega$ is the incircle. In the main files this argument
+is not a formal output: the converse proof contains most of it, but the theorem it returns is only
+Euler's relation. Version~2 proves it in the Layer-15 file, for $I$ inside $\Gamma$: three tangent side lines
+make $\omega$ Mathlib's insphere of the triangle (\lean{Poncelet3.Classical.insphere_eq_of_isTangent},
+Section~\ref{sec:l1415}).
+
+\begin{lstlisting}
+theorem exists_poncelet_triangle [Fact (Module.finrank ℝ V = 2)] (Γ ω : Sphere P)
+    (hr : 0 < ω.radius) (hrR : ω.radius < Γ.radius)
+    (hd : dist Γ.center ω.center ^ 2 = Γ.radius * (Γ.radius - 2 * ω.radius))
+    {A : P} (hA : A ∈ Γ) :
+    ∃ B C : P, B ∈ Γ ∧ C ∈ Γ ∧ A ≠ B ∧ A ≠ C ∧ B ≠ C ∧
+      ω.IsTangent line[ℝ, A, B] ∧ ω.IsTangent line[ℝ, A, C] ∧ ω.IsTangent line[ℝ, B, C]
+\end{lstlisting}
+
+\paragraph{Why each hypothesis.}
+Mathlib's spheres may have any real radius. Given $0<r$ and $d^2=R(R-2r)$, the hypothesis $r<R$ is
+equivalent to $R>0$: if $R>0$ then $R-2r=d^2/R\ge0$, so $R>r$. It therefore only excludes
+spheres of nonpositive radius, for which $R(R-2r)>0$ can hold too. The hypothesis $r>0$ excludes a
+point-circle. We do \emph{not} assume that $\omega$ lies inside $\Gamma$, or that $A$ lies
+outside $\omega$: both follow (\lean{Poncelet3.radius_lt_dist_center_of_mem} shows $r<|AI|$).
+
+\paragraph{Proof.}
+We use coordinates and polynomial certificates, not the classical synthetic argument. Take $I$ as
+origin, $u=A-I$ and $v=Ju$ with $J$ the rotation by a right angle, and set $p=|u|^2$. The points
+$B$, $C$ and the three points of tangency are given by explicit formulas in $u$, $v$, $r$, $R$,
+$s=\sqrt{p-r^2}$ and the coordinates $X,Y$ of $O-I$. The facts ``on $\Gamma$'', ``on $\omega$'',
+``perpendicular to the radius'', ``collinear'' and two non-degeneracy identities are 16
+\code{linear\_combination} identities modulo five relations, with coefficients found by
+Gr\"obner-basis reduction in a computer algebra system. Tangency then follows from a dimension
+count: in the plane, a line through two distinct points of $\omega$'s tangent space at $T$ equals
+that tangent space.
+
+\begin{theorem}[converse]\label{thm:converse}
+Suppose $A,B,C\in\Gamma$ are pairwise distinct, the lines $AB$, $AC$, $BC$ are tangent to
+$\omega$, and $|IO|<R$. Then $d^2=R(R-2r)$. Hence, if $0<r<R$ and $|IO|<R$, every point of
+$\Gamma$ is a vertex of such a triangle if and only if $d^2=R(R-2r)$.
+\end{theorem}
+
+\paragraph{Why $I$ must be inside $\Gamma$.}
+The triangle $ABC$ spans the plane, so $\Gamma$ is its circumcircle, and $I$ is at distance $r$
+from all three side lines. By Mathlib's
+\lean{Affine.Simplex.exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter}, $I$ is the
+incentre or an excentre. In the incentre case, Euler's formula applies. In an excentre case,
+$d^2=R(R+2r_i)\ge R^2$, contradicting $|IO|<R$. Without this hypothesis the first statement of
+Theorem~\ref{thm:converse} is false. For example, for $A=(0,0)$, $B=(1,\tfrac1{10})$,
+$C=(1,-\tfrac1{10})$ and $\omega$ the excircle opposite $A$, we have $r_A\approx0.110<R\approx0.505$,
+all three side lines are tangent to $\omega$, and $d^2=R(R+2r_A)\ne R(R-2r_A)$.
+
+\paragraph{Informal remark (not formalised).} In the ``every point'' form, and only there, the
+inside-centre hypothesis can be dropped while keeping $0<r<R$. By the argument above, any one
+triangle forces $d^2=R(R-2r)$ or the excentral alternative $d^2=R(R+2r)$. In the latter,
+$d^2>R^2$, so $d>R$, and $(R+r)^2-d^2=r^2>0$, so $R<d<R+r$. The point of $\Gamma$ on the ray from
+$O$ towards $I$ is at distance $d-R<r$ from $I$, hence strictly inside $\omega$, and no tangent
+to $\omega$ passes through it. So the universal-vertex property rules out the excentral
+alternative. This does \emph{not} remove the inside-centre hypothesis from the one-triangle
+converse, nor from the all-or-nothing equivalence of Theorem~\ref{thm:construction}; the
+excircle example above shows that it cannot be removed from the former.
+
+\paragraph{The construction form.}
+The classical statement is about a construction: draw the two tangents from $A$ to $\omega$, let
+them meet $\Gamma$ again at $B$ and $C$; then $BC$ is tangent to $\omega$. Theorem~\ref{thm:porism}
+only asserts that \emph{some} such $B,C$ exist. We therefore also prove the construction form.
+
+\begin{definition}\label{def:closes}
+\lean{Poncelet3.ConstructionCloses}~$\Gamma\ \omega\ A$ holds if (i) there are two distinct lines
+$\ell_1,\ell_2\in\omega.\lean{tangentsFrom}\ A$ and points $B\in\Gamma\cap\ell_1$,
+$C\in\Gamma\cap\ell_2$ different from $A$; and (ii) for \emph{all} such $\ell_1\ne\ell_2$, $B$, $C$,
+the line $BC$ is tangent to~$\omega$.
+\end{definition}
+
+Part (i) prevents the predicate from holding vacuously, for instance when $A$ is inside $\omega$
+or when a tangent from $A$ touches $\Gamma$ only at~$A$.
+
+\begin{theorem}\label{thm:construction}
+Assume $0<r<R$ and $|IO|<R$, and let $A\in\Gamma$. Then
+\lean{ConstructionCloses}~$\Gamma\ \omega\ A$ holds if and only if $d^2=R(R-2r)$, and if and only if
+\lean{ConstructionCloses}~$\Gamma\ \omega\ A'$ holds for every $A'\in\Gamma$. Moreover, if
+$0<r<R$ and $d^2=R(R-2r)$, then for any two distinct tangents $\ell_1,\ell_2$ from $A$ and any
+second intersections $B$, $C$, the line $BC$ is tangent (\lean{Poncelet3.poncelet_construction}).
+\end{theorem}
+
+The one new algebraic step is completeness of the tangency points: if $T\in\omega$ and $A$ lies
+on the tangent at $T$, then $T$ is one of the two explicit tangency points. From it,
+\lean{tangentsFrom} $A$ has exactly two elements, and each meets $\Gamma$ in exactly one point
+other than~$A$.
+
+\section{Do the statements mean what they say?}\label{sec:correct}
+
+A reader of the statements above must trust several definitions. We list the lemmas that support
+the intended reading.
+
+\begin{lemma}[Carnot]\label{lem:carnot-correct}
+For $p$ in the plane of $t$, $\lean{signedSideDist}\ t\ i\ p=\lean{signedInfDist}\ t\ i\ p$. The
+vertex $A_i$ is at signed distance $h_i>0$ from side~$i$
+(\lean{Carnot.signedSideDist_point_self}), and the incentre is at signed distance $r$ from every
+side (\lean{Carnot.signedSideDist_incenter}).
+\end{lemma}
+
+Together with Theorem~\ref{thm:carnot-cos} ($d_i(O)=R\cos\alpha_i$) this pins down the sign
+convention: the distance is positive on the side of the interior, and negative for the circumcentre
+exactly when the opposite angle is obtuse. The circumcentre lies in the plane of $t$ by Mathlib's
+\lean{Affine.Simplex.circumcenter_mem_affineSpan}, so Carnot's theorem could equally be stated with
+Mathlib's \lean{signedInfDist}; the main files do not, but the Layer-14 file does
+(\lean{Carnot.l14_carnot}, Section~\ref{sec:l1415}).
+
+\begin{lemma}[Viviani]\label{lem:viv-unsigned}
+For $p$ in the closed simplex, $0\le d_i(p)$ and
+$d_i(p)=\operatorname{dist}(p,\ \pi_i(p))$, where $\pi_i$ is the orthogonal projection onto the
+affine span of the $i$-th facet.
+\end{lemma}
+
+So the unsigned Viviani statement uses ordinary distances, computed from Mathlib's
+\lean{Affine.Simplex.faceOpposite} and \lean{Affine.Simplex.orthogonalProjectionSpan}, and does not
+depend on our choice of signed distance.
+
+\begin{lemma}[De~Gua]\label{lem:degua-bridge}
+In $\RR^3$, $\lean{triAreaSq}\ X\ Y\ Z=\lean{simplexVolSq}\,(X,Y,Z)$ (Lagrange's identity), and
+Theorem~\ref{thm:degua3} is the case $m=2$ of Theorem~\ref{thm:degua}
+(\lean{DeGua.de_gua_three_of_general}).
+\end{lemma}
+
+So the Gram-determinant volume agrees with the cross-product area in the one case where both are
+familiar. A reader who is not convinced by Definition~\ref{def:volsq} can rely on
+Theorem~\ref{thm:degua3}, whose definition of area is elementary.
+
+\paragraph{Japanese theorem.}
+Proposition~\ref{prop:bij} and Proposition~\ref{prop:cross} are correctness lemmas: they show that
+the tree model, the combinatorial definition and the geometric definition of a triangulation all
+describe the same objects, and that the triangles are the expected ones, $n-2$ in number
+(\lean{Japanese.IsTriangulation.card_triangleSet}). \lean{Japanese.triInradius} returns $0$ for
+collinear points, but under \code{hconv} no triangle used is degenerate.
+
+\begin{lemma}[Poncelet]\label{lem:pon-correct}
+Under the hypotheses of Theorem~\ref{thm:porism}, for $A\in\Gamma$:
+\begin{enumerate}
+\item[(a)] $A$ lies outside $\omega$ (\lean{Poncelet3.radius_lt_dist_center_of_mem});
+\item[(b)] $\omega.\lean{tangentsFrom}\ A=\{AB,AC\}$ for the triangle of Theorem~\ref{thm:porism},
+and $AB\ne AC$ (\lean{Poncelet3.tangentsFrom_eq_pair}, \lean{Poncelet3.ncard_tangentsFrom});
+\item[(c)] for a tangent $\ell$ from $A$ with nonzero direction vector $v$, Mathlib's
+$\Gamma.\lean{secondInter}\ A\ v$ is the unique point of $\Gamma\cap\ell$ other than $A$
+(\lean{Poncelet3.secondInter_spec}).
+\end{enumerate}
+\end{lemma}
+
+By (b), the $B$ and $C$ of Theorem~\ref{thm:porism} are exactly the points produced by the
+classical construction, and by (c) that construction can be expressed with Mathlib's own
+\lean{secondInter} (\lean{Poncelet3.poncelet_construction_secondInter}).
+
+\section{Related work}\label{sec:related}
+
+Our searches covered the pinned Mathlib source, the
+current \texttt{docs/1000.yaml} of Mathlib's master branch (commit \texttt{6bd5e549},
+30~September 2026), GitHub code and repository search, Mathlib issues and pull requests, and web
+search. A search of the Lean Zulip chat on 30 September 2026 for ``Carnot'', ``Viviani'', ``De Gua'',
+``Japanese theorem'' and ``Poncelet'' returned no relevant results.
+The searches are not exhaustive, and the claims below are ``as far as we could determine''.
+The per-project development notes record earlier rounds of these searches; where their early
+conclusions (``no earlier Lean proof found'') predate the \texttt{lean-genius} findings below, this
+section supersedes them. External code is cited at the commit we read (see the bibliography).
+
+\paragraph{Mathlib.}
+In both the pinned version and current master, \texttt{docs/1000.yaml} lists Viviani's theorem,
+Carnot's theorem (inradius, circumradius), De~Gua's theorem, both Japanese theorems and Poncelet's
+closure theorem with no declaration~\cite{Mathlib1000}. In the pinned \texttt{Mathlib/} source we found no
+occurrence of these names and no Cauchy--Binet formula, and the module list of current master has
+no Cauchy--Binet file. Mathlib does provide most of the vocabulary we use
+(Section~\ref{sec:setting}), including \lean{signedInfDist}, whose \eqref{eq:bary} does most of the
+work for Viviani and Carnot.
+
+\paragraph{Euler's formula and Feuerbach's theorem.}
+Wang's repository \texttt{wwylele/Feuerbach}~\cite{WangFeuerbach} proves Feuerbach's theorem in
+Lean without \code{sorry}, and with it Euler's formula (\ext{dist_incenter_circumcenter}) and
+Euler's inequality. His open Mathlib pull request \#44236~\cite{PR44236} adds, among others,
+\ext{dist_incenter_circumcenter_sq} and \ext{dist_excenter_circumcenter_sq}. So Euler's
+formula, on which our Poncelet development depends, is not new in Lean; our copy comes from an
+independent development by the author. HOL~Light's \texttt{100/feuerbach.ml}~\cite{HOLLight} proves
+Feuerbach's theorem in coordinates.
+
+\paragraph{\texttt{lean-genius}.}
+This public repository of Lean proofs~\cite{LeanGenius} contains several related files. We read
+the five files cited below but did not build them; they contain no \code{sorry} and no declared
+\code{axiom}.
+\begin{itemize}
+\item \texttt{DeGuaTheorem.lean} proves the three-dimensional De~Gua theorem for points of
+\code{Fin 3 $\to$ $\mathbb{R}$}, with cross-product areas, by one \code{linear\_combination}. It is essentially our
+Theorem~\ref{thm:degua3}, so the three-dimensional case is not new in Lean.
+\item \texttt{VivianiTheorem.lean} proves Viviani's theorem for the unit equilateral triangle in
+coordinates, with explicit line equations. \texttt{VivianiTheoremOQ01OQ02.lean} proves that for
+any family of vectors whose sum is $(n+1)$ times a point $g$, the expression
+$\sum_i(a-\langle R^{-1}(g-v_i),P\rangle)$ equals $(n+1)a$; its link to the facets of a regular
+simplex is explained in comments but is not part of the statement. \texttt{VivianiTheoremOQ01OQ01.lean}
+proves a converse for triangles in~$\mathbb C$.
+\item \texttt{CarnotTheorem.lean} proves the trigonometric identity
+$\cos A+\cos B+\cos C=1+4\sin\frac A2\sin\frac B2\sin\frac C2$ for reals with $A+B+C=\pi$. It does not
+mention a triangle, circumcentre or inradius. Several follow-up files (\texttt{CarnotTheoremOQ01*})
+develop related trigonometric identities and inequalities; we only read their headers.
+\end{itemize}
+Our Viviani theorem uses Mathlib's affine simplices and facet distances in every positive
+dimension. Our De~Gua theorem uses Gram-determinant volumes for indexed vertex families in
+arbitrary real inner product spaces, allowing degenerate configurations; it takes a point
+\code{O : E} and a family \code{P : Fin (m+1) $\to$ E}, not an \lean{Affine.Simplex}.
+
+\paragraph{Cauchy--Binet.}
+The formula is not new as a formalisation, in Lean or elsewhere. In Lean: an open Mathlib pull request
+(\#44209, labelled \texttt{awaiting-author} and \texttt{LLM-generated}) adds
+\ext{Matrix.det_mul_eq_sum_det_submatrix}~\cite{PR44209}, and an earlier one (\#40473) was
+closed without merging; \texttt{physlib} has a lemma \ext{cauchyBinet}~\cite{Physlib};
+\texttt{rwst/Subspace-Theorems} has \ext{det_mul_eq_sum_det_submatrix}~\cite{Rwst}; and
+\texttt{kim-em/hex-dev} has, for its own Mathlib-free matrix library, the ordered-column
+expansion underlying Cauchy--Binet~\cite{HexDev}: \ext{det_columnSumMatrix_eq_sum_columnTuples}
+expands the determinant as a sum over all ordered column tuples, repeated-column summands are shown
+to vanish, and \ext{det_gramMatrix_eq_sum_columnTuples} specialises this to a Gram matrix. That
+file's own header calls it the multilinearity form behind Cauchy--Binet; it does not state the
+sum over column subsets of products of two minors. We have not checked the axioms of these. In
+Isabelle/HOL, Divas\'on's AFP entry on the Smith normal form contains
+\ext{Cauchy_Binet}~\cite{DivasonAFP}. In Coq, the CoqEAL library, built on MathComp, proves
+\ext{BinetCauchy} in \path{theory/binetcauchy.v}~\cite{CoqEAL}; it is described by Cano, Cohen,
+D\'en\`es, M\"ortberg and Siles~\cite{CanoEtAl}. Our proof is a self-contained alternative against
+the pinned Mathlib, nothing more.
+
+\paragraph{Other systems.}
+We searched the Isabelle AFP (through its GitHub mirror), HOL~Light (a clone of the repository),
+GeoCoq, and the web, for each of the five theorems.
+\begin{itemize}
+\item \emph{Isabelle AFP}: code search for ``Viviani'', ``Carnot'', ``Poncelet'', ``Japanese'',
+``trirectangular'' and ``Chapple'' found nothing relevant. ``Gua'' is too common a substring to
+search this way.
+\item \emph{HOL~Light}: a case-insensitive search of the repository for ``viviani'', ``poncelet'',
+``carnot'', ``japanese'', ``de gua'' and ``cauchy-binet'' found nothing.
+\item \emph{GeoCoq}: code search for ``Viviani'', ``Carnot'', ``Poncelet'' and ``Japanese'' found
+nothing, and the single hit for ``Gua'' is unrelated.
+\item \emph{Mizar}: we only checked the article file names of the current MML for ``viviani'',
+``carnot'', ``poncelet'', ``gua'' and ``binet'', and found none; we did not search article contents.
+\item \emph{Web}: search for formalisations of each theorem returned only informal sources.
+\end{itemize}
+Apart from reading the CoqEAL file cited above, we did not search the Coq/Rocq ecosystem beyond GeoCoq. % TODO(Josh): check Rocq/Coq libraries beyond GeoCoq, and Mizar article contents
+
+\section{Verification}\label{sec:verify}
+
+All five projects were built with prebuilt Mathlib on a separate build machine; the machine that
+prepared this paper did not run Lean. According to the development notes, Carnot, De~Gua and Poncelet were
+rebuilt from an empty build directory (\code{rm -rf .lake/build; lake build}), and Viviani by a
+``clean \code{lake build}''. The Japanese development was rebuilt from an empty build directory afterwards
+(log \path{clean_build.log}: 8714 jobs, 25\,s, no warnings).
+Build logs are stored for Viviani, De~Gua, Japanese and Poncelet; for Carnot only the notes
+record the build. None of this was reproduced on the machine that prepared this paper.
+Each build finished with no errors and no warnings. Wall-clock times: Carnot 15\,s, Viviani 6\,s,
+De~Gua 10\,s, Japanese 25\,s (clean), Poncelet 30\,s.
+
+\code{\#print axioms} was run on the headline theorems: 6 for Carnot, 8 for Viviani, 7 for
+De~Gua, 29 for the Japanese development and 19 for Poncelet, 69 reports in all. The logs are kept
+in each repository (\path{ax.log}, \path{scratch/axioms.out} for Viviani, or \path{axioms.txt}
+for De~Gua). In each case the driver is a scratch file outside the library (\path{scratch/}).
+Every report is \code{[propext, Classical.choice, Quot.sound]}. Every theorem in
+Table~\ref{tab:thms} either has its own report or occurs in the statement or proof of a theorem
+that has one. Where the development notes and the stored logs differ, the logs are authoritative. A grep over the library sources for
+\code{sorry}, \code{admit}, \code{native\_decide}, \code{axiom}, \code{\#eval}, \code{run\_cmd},
+\code{set\_option}, \code{macro}, \code{elab}, \code{syntax}, \code{notation} and
+\code{import Lean} finds nothing. Each repository also has a \path{gate.sh} that rejects
+forbidden tokens, builds the library, generates its own \code{\#print axioms} queries for every
+declaration cited in this paper (plus those queried during development) and fails on any other
+axiom. On the published commits it prints \code{PASS} with 12 (Carnot), 10 (Viviani), 10 (De~Gua),
+51 (Japanese) and 22 (Poncelet) declarations (at the version-2 commit, 28, 28, 23, 81 and 53; Section~\ref{sec:l1415}). \path{tests/tamper.sh} plants six kinds of defect in
+scratch copies (a \code{sorry}, a split \code{axiom}, a fake \code{\#eval} report, a macro, a
+weakened statement, a wrapped extra axiom); in each repository the gate rejects all six, each with
+a nonzero exit status and the expected failure message.
+
+Each project also has a numerical sanity check in \texttt{code/}, written in Python with the same
+definitions as the Lean code:
+\begin{itemize}
+\item \emph{Carnot}: 20\,000 random triangles, 14\,514 of them obtuse, checking both the sum and
+$d_i=R\cos\alpha_i$; maximum relative error $4.5\cdot10^{-14}$.
+\item \emph{Viviani}: 200 random simplices in each dimension $2$--$5$ with arbitrary affine
+weights, and scaled regular simplices; maximum error $5.9\cdot10^{-12}$.
+\item \emph{De~Gua}: the three-dimensional and general forms in dimensions up to 7, and
+Cauchy--Binet including $k>n$ and $k=0$; maximum relative error $2\cdot10^{-12}$.
+\item \emph{Japanese}: all triangulations of 200 random convex cyclic $n$-gons for $n=4,\dots,7$
+(counts $2,5,14,42$). The tree model and the maximal non-crossing sets are equal as families for
+$n\le8$, and crossing agrees with interleaving for 293\,088 chord pairs.
+\item \emph{Poncelet}: 2\,000 random configurations; the explicit points lie on $\Gamma$ with all
+three distances equal to $r$ (relative error $1.1\cdot10^{-12}$); with $d$ perturbed, the third
+side misses $\omega$.
+\end{itemize}
+
+The step that matters most, comparing the formal statements with the informal theorems, cannot be
+automated; Section~\ref{sec:correct} is meant to help with it.
+The author has checked each statement in Table~\ref{tab:thms} against its informal counterpart by hand.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+Version~2 adds two further checks. Their files are \path{<Lib>/L14.lean} and
+\path{<Lib>/L15Classical.lean} in each repository (\path{Carnot}, \path{Viviani}, \path{DeGua},
+\path{Japanese}, \path{Poncelet3}), at the new commit of each listed under Availability. Every theorem and lemma
+in them is listed in that repository's \path{gate.sh}, which prints \code{PASS} with 28 (Carnot),
+28 (Viviani), 23 (De~Gua), 81 (Japanese) and 53 (Poncelet) declarations, all with the three standard
+axioms only, and \path{tests/tamper.sh} still rejects all six planted defects. The earlier library
+files are byte-for-byte unchanged; only the root file of each library gains two import lines.
+The published \path{gate.sh} used GNU \code{mktemp} options and failed on macOS (BSD tools) before
+checking anything. The new commit uses a portable temporary file name, and the gate passes with BSD
+tools. The \code{wrap} test of \path{tests/tamper.sh} still needs GNU \code{sed}.
+
+\paragraph{Layer 14: statements in Mathlib's language, with witnesses.}
+In \path{<Lib>/L14.lean}, 18 of the numbered results are restated with Mathlib-only types and
+proved from the library theorems through definitional bridges: Theorems~\ref{thm:carnot}
+and~\ref{thm:carnot-cos}, with Mathlib's \lean{signedInfDist} in place of
+\lean{Carnot.signedSideDist} (\lean{Carnot.l14_carnot}); Theorems~\ref{thm:viv-weights}
+and~\ref{thm:viv-heights}, Proposition~\ref{prop:equi} and Corollary~\ref{cor:viviani}, with
+distances and heights written as \lean{Metric.infDist} to the facet span, and the classical
+triangle form \lean{Viviani.l14_viviani_triangle}; Theorems~\ref{thm:degua3}, \ref{thm:degua}
+and~\ref{thm:cb}, Lemma~\ref{lem:mdl} and Corollary~\ref{cor:proj}, with \lean{triAreaSq} and
+\lean{simplexVolSq} unfolded to the cross product and to $\det$ of a Gram matrix divided by $(k!)^2$;
+Lemma~\ref{lem:carnot-chord}, Theorem~\ref{thm:jq} and Theorem~\ref{thm:japanese}, the last with
+\lean{IsGeomTriangulation} written out (\lean{Japanese.l14_japanese_polygon}); and
+Theorems~\ref{thm:euler}, \ref{thm:porism}, \ref{thm:converse} and~\ref{thm:construction}, with
+\lean{ConstructionCloses} unfolded into \lean{tangentsFrom} and \lean{IsTangent}. The elaborated type
+of each restatement contains no constant from our libraries. No restatement turned out false or
+needed an extra hypothesis. The Japanese restatements take an \lean{AffineIndependent} argument,
+because a Mathlib triangle needs one; it follows from the orientation hypotheses and the conclusion
+does not depend on it. For every restated result with hypotheses, a witness theorem proves all
+hypotheses on an explicit configuration and proves that the conclusion is not degenerate: for
+Carnot, the obtuse triangle $0,21,6+8i$ in $\mathbb C$, whose three signed distances $3R/5$,
+$15R/17$, $-13R/85$ are distinct and of both signs (\lean{Carnot.l14w_carnot}); for Viviani, a point
+with weights $(\frac12,\frac14,\frac14)$ in an equilateral triangle in $\RR^3$, whose distances are
+positive and not all equal (\lean{Viviani.l14w_viviani}); for De~Gua, the corner $0,e_0,2e_1,3e_2$,
+with pairwise distinct positive squared face areas $\frac{49}4,1,9,\frac94$, and for
+Cauchy--Binet a $2\times3$ by $3\times2$ product with determinant $7\ne0$; for the Japanese
+theorem, the quadrilateral $1,\frac{3+4i}5,-1,-i$ on the unit circle with its two distinct
+triangulations; for Euler's formula, the triangle $0,4,3i$, with $O\ne I$; and for the porism, its
+converse and the construction, circles with $d^2=\frac54=R(R-2r)$ and the explicit triangle
+$0,4,3i$ with its three points of tangency (\lean{Poncelet3.l14w_poncelet}).
+Lemma~\ref{lem:mdl} and Corollary~\ref{cor:proj} have no hypotheses and need no witness.
+Not restated: Theorem~\ref{thm:jtree} and Propositions~\ref{prop:bij} and~\ref{prop:cross}, which
+concern the tree model and the combinatorial definition (Theorem~\ref{thm:japanese} covers the
+geometric statement); the correctness lemmas of Section~\ref{sec:correct}; and the auxiliary lemma
+\lean{Carnot.carnot_poly}. These were left out to stay within the time box.
+
+\paragraph{Layer 15: comparison with the classical statements.}
+Another agent collected textbook statements of the six topics from the literature, with citations
+(Johnson, Coxeter--Greitzer, Conant--Beyer, Fukagawa--Pedoe, Flatto and others). It cited them from
+memory and did not check page numbers. An AI model given only these statements, with no access to our
+code or to this paper, wrote them in Lean with Mathlib notions and definitions of its own: 22 theorems
+and 3 well-formedness obligations, all with \code{sorry}. Its transcript and self-reported file list
+were audited (a transcript audit in the verification repository; the writer's run passed). A comparer then copied each statement verbatim and either proved it from the libraries,
+with no change to the library files, or classified it: 17 are \emph{covered} (proved), 6 are covered
+only in a \emph{narrower} sense, and 2 are \emph{false as written} because the writer mis-stated
+them. None was classified as out of scope alone, but one of the two false statements (the incentre
+rectangle) is also outside the scope of this paper. The proofs are collected, with the writer's
+definitions and statements reproduced verbatim, in \path{<Lib>/L15Classical.lean}, namespace
+\code{<Lib>.Classical}, i.e.\ \code{Carnot.Classical} (and likewise \code{Viviani.Classical}, \code{DeGua.Classical},
+\code{Japanese.Classical}, \code{Poncelet3.Classical}). All of them depend only on the three standard
+axioms.
+
+\emph{New proofs} (not in the main files):
+\begin{itemize}
+\item \lean{Carnot.Classical.signedDistLine_face_eq} (also in Viviani): for any positive-dimensional simplex and any point in its affine span, the writer's signed distance to a facet equals \lean{signedInfDist}.
+\item \lean{Carnot.Classical.cov_TriSimplex1_b_acute}: for an acute triangle, Carnot's theorem with unsigned distances.
+\item \lean{Carnot.Classical.cov_TriSimplex1_b_acute_inside}: the circumcentre of an acute triangle lies in its interior.
+\item \lean{Viviani.Classical.height_two_eq}: the altitude of an equilateral triangle is $\frac{\sqrt3}2$ times the side; with it, Viviani with value $\frac{\sqrt3}2 s$ (open, closed, signed in the plane).
+\item \lean{DeGua.Classical.cov_TriSimplex2_a_coord_part}: the coordinate form of three-dimensional De~Gua for \lean{simplexVolSq}.
+\item \lean{Japanese.Classical.quad_signs}, \lean{Japanese.Classical.cov_TriSimplex4_b}: in the plane, strictly crossing diagonals together with positive orientation of $ABC$ give the other three orientation hypotheses of Theorem~\ref{thm:jq}, and the quadrilateral theorem holds for a convex quadrilateral (strictly crossing diagonals) with concyclic vertices, in any dimension.
+\item \lean{Japanese.Classical.cov_TriSimplex4_a_obligation}: the triangles of a triangulation of a strictly convex polygon are non-degenerate.
+\item \lean{Japanese.Classical.cov_TriSimplex4_b_obligation_part}: for pairwise distinct vertices, the four triangles of a convex quadrilateral are non-degenerate.
+\item \lean{Poncelet3.Classical.cov_TriSimplex5_b}: the equality case of Euler's inequality, $R=2r$ if and only if the triangle is equilateral.
+\item \lean{Poncelet3.Classical.insphere_eq_of_isTangent}: three tangent side lines and centre inside $\Gamma$ make $\omega$ the insphere of the triangle.
+\item \lean{Poncelet3.Classical.cov_TriSimplex6_a}, \lean{Poncelet3.Classical.cov_TriSimplex6_a_construction}, \lean{Poncelet3.Classical.cov_TriSimplex6_b}, \lean{Poncelet3.Classical.cov_TriSimplex6_b_converse}, \lean{Poncelet3.Classical.cov_TriSimplex6_b_noclose}: the porism, the construction, the criterion and its two converses for triangles with vertices on $\Gamma$ and insphere $\omega$.
+\end{itemize}
+
+\emph{Narrower} (proved part, and what is missing):
+\begin{itemize}
+\item De~Gua in $\RR^3$, its coordinate form, the $n$-simplex form and its coordinate form (four statements): proved for \lean{simplexVolSq}; missing is the link to the writer's volume, Lebesgue measure of the hull in its span (and, for the $n$-simplex form, the indexing of facets by vertex sets).
+\item The Japanese theorem for polygons: proved for maximal non-crossing chord sets and orientation convexity (\lean{Japanese.Classical.cov_TriSimplex4_a_part}); missing are the writer's dissections (cover with disjoint interiors) and side-line convexity.
+\item Two tangents from every point of $\Gamma$: proved only under $d^2=R(R-2r)$ (\lean{Poncelet3.Classical.cov_TriSimplex6_a_obligation_part}); missing is the general case.
+\end{itemize}
+
+\emph{Writer statements false as written}:
+\begin{itemize}
+\item Non-degeneracy of the four triangles of a convex quadrilateral: the writer's convex quadrilateral allows coincident vertices (counterexample $A=B=0$, $C=D=1$ in $\RR$, \lean{Japanese.Classical.not_classical_TriSimplex4_b_obligation}); true for distinct vertices, as above.
+\item The incentre rectangle: false for the same degenerate quadrilateral (\lean{Japanese.Classical.not_classical_TriSimplex4_b_rectangle}); the corrected statement is not proved and is outside this paper.
+\end{itemize}
+The narrower cases are the gaps already stated in Sections~\ref{sec:degua} and~\ref{sec:japanese} and
+in Section~\ref{sec:limits}, and Lemma~\ref{lem:pon-correct}, which assumes $d^2=R(R-2r)$.
+
+\section{Limitations and further work}\label{sec:limits}
+
+\begin{itemize}
+\item \emph{Duplication.} The Japanese development copies the Carnot files, and the Poncelet
+development copies the Euler files. A shared library, or upstreaming to Mathlib, would remove this.
+If PR~\#44236 is merged, the Euler copy should be replaced by Mathlib's lemmas.
+\item \emph{Carnot with Mathlib's signed distance.} Theorem~\ref{thm:carnot} is stated directly with
+\lean{signedInfDist} only in the Layer-14 file (\lean{Carnot.l14_carnot}), not in the main files.
+\item \emph{Volumes.} \lean{simplexVolSq} is a definition, not linked to Mathlib's Euclidean
+Hausdorff measure. For Viviani, we have not proved $h_i\operatorname{vol}(F_i)=n\operatorname{vol}(s)$,
+which would turn ``equal heights'' into ``equal facet volumes''. The Layer-15 comparison
+(Section~\ref{sec:l1415}) classifies the textbook De~Gua statements, written with Lebesgue measure
+on the hull, as covered only in this narrower Gram-determinant sense.
+\item \emph{Dissections.} The Japanese theorem is proved for maximal sets of chords with pairwise
+disjoint open segments. We have not shown that every dissection of the polygon into triangles with
+vertices among the $p_l$ arises this way; that needs an area or measure argument. For this reason the
+Layer-15 comparison classifies the textbook polygon statement (triangulations as dissections, convexity
+by side lines) as covered only in the narrower sense (Section~\ref{sec:l1415}).
+\item \emph{Convex position.} \code{hconv} is phrased with orientations, not with Mathlib's
+\lean{Convex} or \lean{convexHull}, and the polygon is indexed by $\mathbb N$ rather than
+\code{Fin n}. For planar quadrilaterals, the Layer-15 lemma \lean{Japanese.Classical.quad_signs} derives the other three orientation hypotheses from strictly crossing diagonals and positive orientation of $ABC$; the full quadrilateral proof chooses this orientation in the non-degenerate case and treats degenerate cases separately.
+\item \emph{Poncelet.} Only triangles are treated. Poncelet's closure theorem for $n$-gons, even for
+$n=4$ (Fuss's relation), would need a different argument or new certificates. The theorems of
+the main files assert side-line tangency only. The Layer-15 file (Section~\ref{sec:l1415}) proves,
+for $0<r$ and $d<R-r$, the statements with an \lean{Affine.Triangle} whose vertices lie on $\Gamma$
+and whose Mathlib insphere is $\omega$; that the points of tangency lie on the side segments is not
+stated separately. That from every point of $\Gamma$ there are exactly two tangents to $\omega$, each
+meeting $\Gamma$ again, is proved only under $d^2=R(R-2r)$ (Lemma~\ref{lem:pon-correct}).
+\item \emph{Scope.} Lami's theorem, formalised separately by the author, is not part of this paper.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+The formal proofs, the checking scripts and a draft of this paper were prepared with the help of
+large-language-model AI assistants. The author compared each formal statement in
+Table~\ref{tab:thms} with its informal counterpart by hand. The Layer-14 and Layer-15 checks of
+Section~\ref{sec:l1415} (the classical statements, the Lean statements written from them, the
+comparison proofs and the restatements) were produced by AI models. Every proof is checked by the Lean
+kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}
+\bibitem{CanoEtAl} G.~Cano, C.~Cohen, M.~D\'en\`es, A.~M\"ortberg and V.~Siles, Formalized linear
+algebra over elementary divisor rings in Coq, \emph{Logical Methods in Computer Science} 12(2:7),
+2016. \url{https://arxiv.org/abs/1601.07472}.
+\bibitem{ConantBeyer} D.~R.~Conant and W.~A.~Beyer, Generalized Pythagorean theorem, \emph{The
+American Mathematical Monthly} 81 (1974), no.~3, 262--265.
+\bibitem{CoqEAL} CoqEAL contributors, \emph{CoqEAL: the Coq effective algebra library}, file
+\path{theory/binetcauchy.v}, lemma \texttt{BinetCauchy}, \url{https://github.com/rocq-community/coqeal},
+commit \texttt{8fd26cf4}, read 30 September 2026.
+\bibitem{DivasonAFP} J.~Divas\'on, A verified algorithm for computing the Smith normal form of a
+matrix, \emph{Archive of Formal Proofs}, May 2020, theory \texttt{Cauchy\_Binet},
+\url{https://isa-afp.org/entries/Smith_Normal_Form.html}.
+\bibitem{Flatto} L.~Flatto, \emph{Poncelet's Theorem}, American Mathematical Society, 2009.
+\bibitem{FukagawaPedoe} H.~Fukagawa and D.~Pedoe, \emph{Japanese Temple Geometry Problems
+(Sangaku)}, Charles Babbage Research Centre, Winnipeg, 1989.
+\bibitem{HexDev} K.~Morrison, \emph{hex-dev}, file \path{HexDeterminant/CauchyBinet.lean}
+(``Ordered column-tuple expansion underlying Cauchy-Binet''), \url{https://github.com/kim-em/hex-dev},
+commit \texttt{f59485af} (file blob \texttt{4d2ab50a}), read 30 September 2026.
+\bibitem{HOLLight} J.~Harrison, \texttt{100/feuerbach.ml}, HOL~Light repository,
+\url{https://github.com/jrh13/hol-light}, commit \texttt{cba9198d}, read 30 September 2026.
+\bibitem{LeanGenius} R.~J.~Walters, \emph{lean-genius}, files \path{proofs/Proofs/DeGuaTheorem.lean},
+\path{VivianiTheorem.lean}, \path{VivianiTheoremOQ01OQ01.lean}, \path{VivianiTheoremOQ01OQ02.lean},
+\path{CarnotTheorem.lean}, \url{https://github.com/rjwalters/lean-genius}, commit \texttt{8e708586}, read 30 September 2026.
+\bibitem{Mathlib1000} The mathlib Community, \texttt{docs/1000.yaml}, Mathlib repository,
+\url{https://github.com/leanprover-community/mathlib4}, pinned revision and master, accessed
+30 September 2026.
+\bibitem{PR44209} Mathlib pull request \#44209, ``feat(LinearAlgebra/Matrix): add the Cauchy-Binet
+determinant formula'', \url{https://github.com/leanprover-community/mathlib4/pull/44209}, open as of
+30 September 2026.
+\bibitem{PR44236} W.~Wang, Mathlib pull request \#44236, ``feat(Geometry/Euclidean): prove
+Feuerbach's theorem'', \url{https://github.com/leanprover-community/mathlib4/pull/44236}, open as of
+30 September 2026.
+\bibitem{Physlib} \emph{physlib}, file \path{QuantumInfo/ForMathlib/Majorization.lean},
+\url{https://github.com/leanprover-community/physlib}, commit \texttt{d9108194}, read 30 September 2026.
+\bibitem{Rwst} \emph{Subspace-Theorems}, file \path{ArithmeticHeights/CauchyBinet.lean},
+\url{https://github.com/rwst/Subspace-Theorems}, commit \texttt{f10f915b}, read 30 September 2026.
+\bibitem{WangFeuerbach} W.~Wang, \emph{Feuerbach}, \url{https://github.com/wwylele/Feuerbach},
+commit \texttt{bdd66fa4}, read 30 September 2026.
+\end{thebibliography}
+
+\end{document}

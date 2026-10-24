@@ -1,0 +1,11 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Setting — the complete quadrilateral. Four lines in the Euclidean plane, in general position (no two parallel, no three through one point). Each pair meets in a vertex (six vertices). They form four triangles (each obtained by omitting one line). The three diagonals are the segments joining the three pairs of opposite vertices (vertices not on a common line among the four).
+ E1 (Newton–Gauss line, Gauss 1810). The midpoints of the three diagonals are collinear (and not all equal).
+ E2 (Steiner 1828 / Bodenmiller). The orthocentres of the four triangles are collinear (the orthocentre line), and they are not all the same point.
+ E3 (Gauss–Bodenmiller). The three circles having the three diagonals as diameters are coaxal: each orthocentre has the same power with respect to all three circles (so the orthocentre line is their radical axis).
+ E4. The orthocentre line is perpendicular to the Newton–Gauss line.
+ E5 (Miquel, 1838). The circumcircles of the four triangles pass through one common point M (the Miquel point).
+ E6 (Steiner circle). The four circumcentres of the four triangles and the Miquel point M lie on one circle.
+ E7 (Simson line of the quadrilateral). The feet of the perpendiculars from M to the four lines are collinear.
+ E8 (Steiner). That line (E7) is parallel to the orthocentre line (E2).

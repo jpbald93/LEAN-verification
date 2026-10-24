@@ -1,0 +1,1 @@
+jack clifford sat kinds Counter({'hyp-free': 65, 'hyps': 8})

@@ -1,0 +1,11 @@
+== Lester, isosceles A=(0,h), B=(-1,0), C=(1,0)
+ h=0.3: max |x| = 9.53e-62, min separation = 0.331
+ h=0.5: max |x| = 1.36e-61, min separation = 0.0476
+ h=1: max |x| = 3.35e-61, min separation = 0.0774
+ h=2.5: max |x| = 6.23e-61, min separation = 0.148
+== Lester, 120-degree isosceles A=(0,1/sqrt3)
+ |N-A| = 7.78e-62, |F1-A| = 1.56e-61, |F2-O| = 3.48e-61
+== Kosnita boundary example O=0, A=(1,0), B,C=(1/2,±sqrt3/2)
+ sides = 1.0, 1.7321, 1.0;  sum of squares - 5R^2 = 0.0
+ |Oa - A| = 0.0;  Ob = (0.5 - 0.288675j), Oc = (0.5 + 0.288675j) (both x = 1/2: B Ob and C Oc are the line x = 1/2)
+ non-collinear OBC, OCA, OAB: 0.866, -0.866, -0.866

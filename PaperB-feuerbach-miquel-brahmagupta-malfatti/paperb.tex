@@ -1,0 +1,1307 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Code-like text (not checked by a name gate).
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of the four developments. Every \decl{...} is meant to be checked by a
+% name gate (grep for a declaration of that name in the four source trees).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\DeclareUnicodeCharacter{211D}{\ensuremath{\mathbb{R}}}
+\DeclareUnicodeCharacter{2102}{\ensuremath{\mathbb{C}}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\QQ}{\mathbb{Q}}
+% Outputs that a separate job is producing. Must all be filled in before submission.
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. All four developments are PUBLISHED (github.com/jpbald93/<name>) at the commits below
+% (verified via the GitHub API, 7 Oct 2026). For all four, the .lean sources at those commits are
+% byte-identical (SHA-256 / cmp), file for file, to the copies this paper was written from
+% (the copies also hold an unpublished scratch/Ax*.lean each; cited nowhere).
+% ---------------------------------------------------------------------------------------------
+% version-2 commits: feuerbach=83d2486e8c67c26e9642550be397652f72f16850 brahmagupta=ded0ff1c47909479590b1d13ccba1d0d5d14ba26 miquel=9f99fbf4ebc027ea5861abe11416e55bde85a7a6 malfatti=c0f16c5521c524eba5a787e68e7568fde738208f
+\newcommand{\commitfeuerbach}{\texttt{2bf41901548aed8b0e43d2f1bd10bb1a1d54ebf8}}
+\newcommand{\commitbrahmagupta}{\texttt{c5c3ce014dc450ca212df76fade8948aa45421e0}}
+\newcommand{\commitmiquel}{\texttt{401de13c0c4e51f67f87f7252f147048084c4a01}}
+\newcommand{\commitmalfatti}{\texttt{d39519346e71c9af8c349490a4dac5388de4d8f2}}
+% Plain-text forms used inside URLs.
+\expandafter\def\csname commitof:feuerbach\endcsname{2bf41901548aed8b0e43d2f1bd10bb1a1d54ebf8}
+\expandafter\def\csname commitof:brahmagupta\endcsname{c5c3ce014dc450ca212df76fade8948aa45421e0}
+\expandafter\def\csname commitof:miquel\endcsname{401de13c0c4e51f67f87f7252f147048084c4a01}
+\expandafter\def\csname commitof:malfatti\endcsname{d39519346e71c9af8c349490a4dac5388de4d8f2}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+% \src{repo}{Dir}{File}{n}: line n of Dir/File.lean in the given repository. It is a link for
+% the published repositories (those with a commitof: entry above) and plain text otherwise.
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,abbrev,noncomputable,let,by,fun,namespace,end,import},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={≠}{{$\neq$}}1 {→}{{$\to$}}1 {≤}{{$\le$}}1 {ℂ}{{$\mathbb{C}$}}1
+           {ℝ}{{$\mathbb{R}$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1
+           {√}{{$\surd$}}1 {₁}{{$_1$}}1 {₂}{{$_2$}}1 {₃}{{$_3$}}1}
+
+\title{The Malfatti circles in Lean~4, with independent\\
+certificate proofs of Feuerbach, Miquel and Brahmagupta}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean and Python code is licensed under the Apache License 2.0.}}
+\date{7 October 2026 (version~2: 22 October 2026)}
+
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+We formalise four classical theorems about circles in Lean~4 with Mathlib. Only one of them,
+the Malfatti circle construction, is to our knowledge formalised here for the first time; the other
+three have earlier formal proofs and are offered as independent formalisations. \emph{Feuerbach's
+theorem} (number~29 on Wiedijk's list of 100 theorems): the nine-point circle of a triangle is
+internally tangent to the incircle and externally tangent to the three excircles, stated with
+Mathlib's own \mdecl{Affine.Simplex.insphere}, \mdecl{Affine.Simplex.exsphere},
+\mdecl{Affine.Simplex.ninePointCircle} and tangency predicates, together with Euler's formula
+$OI^2=R(R-2r)$, its excentral analogue and Euler's inequality $2r\le R$. \emph{Miquel's theorem}:
+for points on the three (extended) sides of a triangle, none at a vertex, the three Miquel circles
+pass through a common point. \emph{Brahmagupta's formula}: a convex cyclic quadrilateral with
+sides $a,b,c,d$ has (shoelace) area $\sqrt{(s-a)(s-b)(s-c)(s-d)}$, the formal hypotheses also
+admitting some collapsed configurations for which the formula holds trivially, derived from Mathlib's Ptolemy theorem
+through the diagonal form of Bretschneider's formula, which we prove for every quadrilateral.
+\emph{The Malfatti circles}: every triangle in the Euclidean plane has three circles of positive
+radius, each tangent to the two sides through one vertex and any two externally tangent, with
+Malfatti's radius formula $\rho_A=\frac{r}{2(s-a)}\bigl(s-r-(IB+IC-IA)\bigr)$; this is the
+construction, \emph{not} Malfatti's conjecture that these circles maximise the total area, which
+Goldberg disproved in 1967~\cite{Goldberg}.
+In each case the core is an explicit polynomial identity closed by \lean{ring} or
+\lean{linear\_combination}. The four libraries use no \lean{sorry} and depend only on Lean's three
+standard axioms; each passes an axiom gate, a tamper test and a further battery of statement-level
+checks. All four libraries were also rebuilt on a second machine of a different architecture
+(arm64/macOS). Version~2 adds two further layers: each of the four theorems restated with
+Mathlib-only types and an explicit non-degenerate witness, and a comparison with Lean statements
+written by a model from textbook statements alone. The comparison produced proofs that are new to
+these libraries (among them, that each Malfatti circle lies inside the triangle, and the angle form
+of Bretschneider's formula for convex quadrilaterals), found one writer statement false as written,
+and found the libraries narrower in two respects (Brahmagupta's shoelace area has not been formally identified with Lebesgue measure;
+uniqueness of the Malfatti circles is not proved).
+\textbf{Feuerbach's theorem is not new to Lean:} Weiyi Wang has a sorry-free standalone Lean
+repository (January 2026) and an open Mathlib pull request (\#44236, created 26 September 2026).
+Our Feuerbach development is an independent second formalisation, and we claim no priority for
+it. \textbf{Miquel's theorem is not new to formal mathematics either:} it was formalised in
+Isabelle/HOL in the Archive of Formal Proofs entry of Freitas Ramos, Barros Hulak and de~Queiroz
+(August 2026), and earlier in Coq's HighSchoolGeometry library. Our Miquel statement differs in
+assuming only the non-degeneracy conditions that make the three circles exist.
+\textbf{Brahmagupta's formula is not new to Lean:} a complete, sorry-free Lean~4 proof is in the
+ShadowBench repository (\texttt{epfl-lara/icml-26-lean-challenges}, commit of 12 June 2026). What
+our Brahmagupta development adds is limited to statements we did not find there: the
+inequality $K^2\le(s-a)(s-b)(s-c)(s-d)$ and the equivalence of equality with Ptolemy's equality,
+both for arbitrary four points. For the Malfatti circle construction we found no earlier
+formalisation; our searches are not exhaustive, and three of the four searches missed existing
+work. The new contributions are therefore the Malfatti formalisation, a second Lean proof of
+Feuerbach's theorem, a Miquel statement with fewer hypotheses than the earlier ones, and the
+verification methodology with its limits.
+\end{abstract}
+
+\section{Introduction}
+
+Circles are where elementary geometry becomes awkward to formalise. A statement such as ``the
+three circles pass through a common point'' presupposes that the circles exist and are unique;
+``the area of a cyclic quadrilateral'' presupposes an order of the vertices and a notion of area;
+``the nine-point circle touches the incircle'' must decide what happens for an equilateral
+triangle, where the two circles coincide. A formal statement has to settle each of these
+questions, and the settlement is part of the result.
+
+This paper continues an earlier one on Desargues, Monge, Simson, Napoleon and Lami~\cite{PaperA}
+and uses the same method: each theorem is reduced to an identity in coordinates,
+\[
+  (\text{conclusion})\cdot(\text{non-degenerate factor}) \;=\; \sum_i c_i\cdot(\text{hypothesis}_i),
+\]
+with the multipliers $c_i$ written in the source, closed by a decision procedure for commutative
+rings. We call such an identity a \emph{certificate}. The method is classical~\cite{Chou}; what a
+formalisation adds is a translation layer to standard Mathlib notions, and an exact account of
+which non-degeneracy hypotheses are needed and where.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item \emph{Feuerbach's theorem} for a triangle in an arbitrary real inner product space (the
+plane hypothesis of the headline statement is present but unused), with tangency in Mathlib's
+sense, including the degenerate equilateral case; Euler's formula $OI^2=R(R-2r)$, the excentral
+formula $OI_i^2=R(R+2r_i)$, Euler's inequality $2r\le R$, and the distances
+$|NI|=R/2-r$, $|NI_i|=R/2+r_i$ (Section~\ref{sec:feuerbach}). This is \emph{not} the first Lean
+proof of Feuerbach's theorem (Section~\ref{sec:related}).
+\item \emph{Miquel's theorem} in $\CC$, on the extended sides, under exactly the hypotheses that
+make the three circles exist and be unique, in a ``for every circle through these three points''
+form and in a form that constructs the three centres (Section~\ref{sec:miquel}). This is
+\emph{not} the first formal proof of Miquel's theorem; it is the first in Lean that we know of, and
+its hypotheses are weaker than those of the Isabelle version (Section~\ref{sec:related}).
+\item \emph{Brahmagupta's formula} for convex cyclic quadrilaterals in
+$\mathrm{EuclideanSpace}\ \RR\ (\mathrm{Fin}\ 2)$, stated with Mathlib's \mdecl{Cospherical}
+and \mdecl{Sbtw}, together with the diagonal Bretschneider identity for every quadrilateral, the
+inequality $K^2\le(s-a)(s-b)(s-c)(s-d)$ for every quadrilateral, and the equivalence of equality
+with Ptolemy's equality (Section~\ref{sec:brahmagupta}). The area is the shoelace value
+(Section~\ref{sec:limits}). This is \emph{not} the first Lean proof of Brahmagupta's formula: a
+complete proof, by essentially the same route, is in the ShadowBench repository
+(Section~\ref{sec:related}). The only parts we did not find there are the two all-four-point
+statements, the inequality and the Ptolemy equivalence.
+\item The \emph{Malfatti circles} for every triangle in $\mathrm{EuclideanSpace}\ \RR\
+(\mathrm{Fin}\ 2)$: existence of three circles of positive radius, circle $i$ tangent (Mathlib's
+\mdecl{IsTangent}) to the two side lines through vertex $i$ with its centre strictly on the
+interior side of each, any two externally tangent (\mdecl{IsExtTangent}), and Malfatti's radius
+formula (Section~\ref{sec:malfatti}). This is the classical construction, not Malfatti's
+maximal-area conjecture, which is false.
+\item The verification record of the four developments: gate, tamper tests, the house battery,
+non-vacuity witnesses, definition bridges and, for all four, a cross-platform rebuild on
+arm64/macOS (Section~\ref{sec:verify}), together with the limits of these checks; and, in
+version~2, Mathlib-only restatements with non-degenerate witnesses (Layer~14) and a comparison
+with independently written classical statements (Layer~15, Section~\ref{sec:l1415}).
+\end{itemize}
+
+\paragraph{Why a paper and not only Mathlib pull requests.} The code alone does not record three
+things that this paper does. First, the hypothesis analysis: which non-degeneracy conditions each
+statement needs and why, how they compare with earlier formalisations (Miquel against the Isabelle
+version, Feuerbach's equilateral case), and which hypotheses turned out to be unused. Second, the
+passage from a polynomial certificate to a usable geometric statement in Mathlib's vocabulary,
+which is where most of the work and most of the design choices lie (the coincident-intersection
+branch of Miquel, the quarter-angle parametrisation of Malfatti, shoelace area for Brahmagupta).
+Third, the verification methodology together with an honest account of its limits, including what
+the mutation and satisfiability layers did \emph{not} cover. The developments themselves remain
+candidates for Mathlib; for Feuerbach that route runs through Wang's open pull request.
+In short, of the four theorems only the Malfatti construction is new as a formalisation;
+Feuerbach and Brahmagupta are second Lean proofs, and Miquel is a further formal proof
+distinguished by its hypotheses.
+
+\subsection{Availability}\label{sec:avail}
+All four developments are published:
+\begin{itemize}
+\item \lean{Feuerbach}: \url{https://github.com/jpbald93/feuerbach}, commit \commitfeuerbach;
+\item \lean{Miquel}: \url{https://github.com/jpbald93/miquel}, commit \commitmiquel;
+\item \lean{Brahmagupta}: \url{https://github.com/jpbald93/brahmagupta}, commit \commitbrahmagupta;
+\item \lean{Malfatti}: \url{https://github.com/jpbald93/malfatti}, commit \commitmalfatti.
+\end{itemize}
+The code in all four repositories (Lean sources, gate and tamper scripts, and the numerical
+checkers) is released under the Apache License 2.0, the licence used by Mathlib; this paper is
+released under CC BY 4.0.
+The line references in Table~\ref{tab:thms} are links to these pinned commits. For
+all four repositories every \path{.lean} file at these commits is byte-identical to its counterpart
+in the copies from which this paper was written and on which the checks of
+Section~\ref{sec:verify} were run. (Those working copies additionally hold one unpublished
+scratch file each, \path{scratch/Ax*.lean}, used only to print axiom reports; it is cited nowhere.) The toolchain is Lean \texttt{v4.33.1}~\cite{Lean4} with Mathlib~\cite{Mathlib}
+revision \texttt{0df444a3} (tag \texttt{v4.33.1}), pinned in each \path{lake-manifest.json}. The
+libraries, counted on those copies, are \lean{Feuerbach} (five files and an import-only root file,
+630 lines in total), \lean{Miquel} (six files and a root, 1{,}036 lines, of which 346 are the
+definition bridges), \lean{Brahmagupta} (four files and a root, 363 lines) and \lean{Malfatti}
+(five files and a root, 984 lines, of which 202 are the definition bridges and 277 the
+non-vacuity witnesses). All declarations are in the namespace of the library name.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{PaperB-feuerbach-miquel-brahmagupta-malfatti} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+\emph{Version~2.} Each repository has a new published commit (Feuerbach \texttt{83d2486e8c67c26e9642550be397652f72f16850}, Miquel
+\texttt{9f99fbf4ebc027ea5861abe11416e55bde85a7a6}, Brahmagupta \texttt{ded0ff1c47909479590b1d13ccba1d0d5d14ba26}, Malfatti \texttt{c0f16c5521c524eba5a787e68e7568fde738208f}) that adds the
+Layer-14 and Layer-15 files of Section~\ref{sec:l1415}: \path{Feuerbach/L14.lean} (136 lines) and
+\path{Feuerbach/L15Classical.lean} (233), \path{Miquel/L14.lean} (168) and
+\path{Miquel/L15Classical.lean} (139), \path{Brahmagupta/L14.lean} (96) and
+\path{Brahmagupta/L15Classical.lean} (282), \path{Malfatti/L14.lean} (138) and
+\path{Malfatti/L15Classical.lean} (239). The same commit adds their imports to the root file, extends the
+declaration list of \path{gate.sh} and updates the \path{README.md}. The Layer-15 declarations are in the
+namespace \lean{<Lib>.Classical}, for example \lean{Feuerbach.Classical}. All earlier library files are
+byte-identical (SHA-256) to those at the commits above, so every statement, line reference and count
+given for those commits is unchanged. The pins above, and the source links, cover version~1; the new files
+are published at the version~2 commits.
+
+{\small
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}
+  >{\raggedright\arraybackslash}p{0.33\textwidth}
+  >{\raggedright\arraybackslash}p{0.12\textwidth}
+  >{\raggedright\arraybackslash}p{0.20\textwidth}@{}}
+\caption[Informal statements and their formal counterparts]{Informal statements and their formal counterparts. Line numbers refer to the first line
+of the declaration. For Feuerbach, $t$ is an \texttt{Affine.Triangle} in a real inner product
+space (no dimension hypothesis unless stated).}\label{tab:thms}\\
+\toprule
+Informal statement & Lean name & Source & Hypotheses \\ \midrule
+\endfirsthead
+\toprule
+Informal statement & Lean name & Source & Hypotheses \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\emph{Feuerbach (Section~\ref{sec:feuerbach})}}\\
+Circumradius relation $4\,\mathrm{heron}\cdot R^2=a^2b^2c^2$ & \decl{Feuerbach.circ_relation} & \src{feuerbach}{Feuerbach}{Algebra}{22} & three equidistance equations \\
+Certificate $|N-I|^2=(R/2-kT)^2$ & \decl{Feuerbach.nine_in} & \src{feuerbach}{Feuerbach}{Algebra}{28} & frame equations, $k^2=\mathrm{heron}$, $2kR=abc$, $T(a+b+c)=1$ \\
+$h_i^2\cdot(\text{opposite side})^2=\mathrm{heron}$ & \decl{Feuerbach.height_sq_mul_sq} & \src{feuerbach}{Feuerbach}{Geometry}{43} & $t$ \\
+Euler: $OI^2=R(R-2r)$ & \decl{Feuerbach.dist_circumcenter_incenter_sq} & \src{feuerbach}{Feuerbach}{Main}{100} & $t$ \\
+Excentral Euler: $OI_i^2=R(R+2r_i)$ & \decl{Feuerbach.dist_circumcenter_excenter_sq} & \src{feuerbach}{Feuerbach}{Main}{105} & $t$, $i$ \\
+Euler's inequality $2r\le R$ & \decl{Feuerbach.two_mul_inradius_le_circumradius} & \src{feuerbach}{Feuerbach}{Main}{111} & $t$ \\
+$|NI|=R/2-r$ & \decl{Feuerbach.dist_ninePointCircle_center_incenter} & \src{feuerbach}{Feuerbach}{Main}{119} & $t$ \\
+$|NI_i|=R/2+r_i$ & \decl{Feuerbach.dist_ninePointCircle_center_excenter} & \src{feuerbach}{Feuerbach}{Main}{126} & $t$, $i$ \\
+Incircle internally tangent & \decl{Feuerbach.isIntTangent_insphere_ninePointCircle} & \src{feuerbach}{Feuerbach}{Main}{143} & $t$ \\
+Excircles externally tangent & \decl{Feuerbach.isExtTangent_exsphere_ninePointCircle} & \src{feuerbach}{Feuerbach}{Main}{154} & $t$, $i$ \\
+Feuerbach's theorem (Thm.~\ref{thm:feuerbach}) & \decl{Feuerbach.feuerbach} & \src{feuerbach}{Feuerbach}{Main}{163} & $t$; \lean{Fact (finrank ℝ V = 2)} (unused) \\
+Non-vacuity on the 3-4-5 triangle & \decl{Feuerbach.feuerbach_nonvacuous} & \src{feuerbach}{Feuerbach}{Main}{171} & none \\
+Bridge: $\mathrm{qf}=\|pu+qv\|^2$ & \decl{Feuerbach.qf_eq_norm_sq} & \src{feuerbach}{Feuerbach}{Bridge}{26} & none \\
+Bridge: $\mathrm{heron}=(bc\sin A)^2$ & \decl{Feuerbach.heron_eq_sq_two_mul_area} & \src{feuerbach}{Feuerbach}{Bridge}{36} & none \\
+\multicolumn{4}{@{}l}{\emph{Miquel (Section~\ref{sec:miquel}); points in $\CC$}}\\
+Orientation $\mathrm{Dp}$ & \decl{Miquel.Dp} & \src{miquel}{Miquel}{Frame}{26} & definition \\
+Concyclicity determinant $Q$ & \decl{Miquel.Q} & \src{miquel}{Miquel}{Basic}{23} & definition \\
+Certificates ($x$- and $y$-part) & \decl{Miquel.cert_x}, \decl{Miquel.cert_y} & \src{miquel}{Miquel}{Coeffs}{91}, \src{miquel}{Miquel}{Coeffs}{98} & none \\
+Tangency and separation identities & \decl{Miquel.tang}, \decl{Miquel.sep} & \src{miquel}{Miquel}{Coeffs}{106}, \src{miquel}{Miquel}{Coeffs}{113} & none \\
+Miquel in the frame & \decl{Miquel.frame} & \src{miquel}{Miquel}{Frame}{167} & $\Delta\ne0$, $n\ne0,1$, $t\ne0$, $u\ne0$ \\
+Miquel's theorem (Thm.~\ref{thm:miquel}) & \decl{Miquel.miquel} & \src{miquel}{Miquel}{Main}{54} & $\mathrm{Dp}(A,B,C)\ne0$; $n,t,u\notin\{0,1\}$ \\
+Miquel, concyclic form & \decl{Miquel.miquel_concyclic} & \src{miquel}{Miquel}{Main}{97} & same \\
+Example (midpoints) & \decl{Miquel.miquel_example} & \src{miquel}{Miquel}{Main}{136} & none \\
+Negative control & \decl{Miquel.miquel_negative_control} & \src{miquel}{Miquel}{Main}{155} & none \\
+All ten hypotheses met & \decl{Miquel.miquel_hyps_example} & \src{miquel}{Miquel}{Witness}{27} & none \\
+Witness for \lean{core}: second intersection is $(1,1)$ & \decl{Miquel.core_example_point} & \src{miquel}{Miquel}{Witness}{111} & none \\
+Bridge: $\mathrm{Dp}=0\iff$ \mdecl{Collinear} & \decl{Miquel.Dp_eq_zero_iff_collinear} & \src{miquel}{Miquel}{Bridge}{44} & none \\
+Bridge: $Q=\mathrm{Dp}\cdot$ \mdecl{Sphere.power} & \decl{Miquel.Q_eq_Dp_mul_power} & \src{miquel}{Miquel}{Bridge}{92} & $|R-O|=|S-O|=|P-O|$ \\
+\multicolumn{4}{@{}l}{\emph{Brahmagupta (Section~\ref{sec:brahmagupta}); points in $\mathrm{EuclideanSpace}\ \RR\ (\mathrm{Fin}\ 2)$}}\\
+Signed (shoelace) area & \decl{Brahmagupta.signedArea} & \src{brahmagupta}{Brahmagupta}{Basic}{25} & definition \\
+Area $K=|\text{signed area}|$ & \decl{Brahmagupta.area} & \src{brahmagupta}{Brahmagupta}{Basic}{29} & definition \\
+Equals the shoelace sum & \decl{Brahmagupta.signedArea_eq_shoelace} & \src{brahmagupta}{Brahmagupta}{Basic}{31} & none \\
+Diagonal Bretschneider $16K^2=4p^2q^2-(b^2+d^2-a^2-c^2)^2$ & \decl{Brahmagupta.sixteen_area_sq} & \src{brahmagupta}{Brahmagupta}{Basic}{47} & none (any 4 points) \\
+Algebraic identity & \decl{Brahmagupta.brahmagupta_identity} & \src{brahmagupta}{Brahmagupta}{Basic}{55} & none \\
+$K^2\le\prod(s-\cdot)$ & \decl{Brahmagupta.area_sq_le} & \src{brahmagupta}{Brahmagupta}{Basic}{65} & none (any 4 points) \\
+$K^2=\prod(s-\cdot)\iff pq=ac+bd$ & \decl{Brahmagupta.area_sq_eq_iff_ptolemy} & \src{brahmagupta}{Brahmagupta}{Cyclic}{21} & none (any 4 points) \\
+Brahmagupta, squared & \decl{Brahmagupta.brahmagupta_sq} & \src{brahmagupta}{Brahmagupta}{Cyclic}{47} & \mdecl{Cospherical}; diagonals cross (\mdecl{Sbtw}) \\
+Brahmagupta's formula (Thm.~\ref{thm:brahmagupta}) & \decl{Brahmagupta.brahmagupta} & \src{brahmagupta}{Brahmagupta}{Cyclic}{63} & same \\
+Contrapositive test for cyclicity & \decl{Brahmagupta.not_cospherical_of_area_sq_ne} & \src{brahmagupta}{Brahmagupta}{Cyclic}{76} & diagonals cross; $K^2\ne\prod(s-\cdot)$ \\
+Unit square: all hypotheses & \decl{Brahmagupta.unitSquare_example} & \src{brahmagupta}{Brahmagupta}{Examples}{66} & none \\
+Rhombus is not cyclic & \decl{Brahmagupta.rhombus_not_cospherical} & \src{brahmagupta}{Brahmagupta}{Examples}{100} & none \\
+Bridge: $K=\tfrac12\,pq\sin\theta$ & \decl{Brahmagupta.area_eq_half_mul_sin_angle} & \src{brahmagupta}{Brahmagupta}{Bridge}{28} & none \\
+\multicolumn{4}{@{}l}{\emph{Malfatti (Section~\ref{sec:malfatti}); $t$ a triangle; headlines in $\mathrm{EuclideanSpace}\ \RR\ (\mathrm{Fin}\ 2)$}}\\
+Tangent relation $K(p,q,w)=0$ from Heron & \decl{Malfatti.K_eq_zero_of_heron} & \src{malfatti}{Malfatti}{Algebra}{31} & $r>0$; $p,q,w\in(0,1)$; Heron \\
+Radius formula, parametrised & \decl{Malfatti.radius_eq} & \src{malfatti}{Malfatti}{Algebra}{52} & $p\in(0,1)$, $q,w>0$, $K=0$ ($r>0$ unused) \\
+Pairwise tangency identity & \decl{Malfatti.dist_identity} & \src{malfatti}{Malfatti}{Algebra}{69} & $p,q>0$, $K=0$ ($p<1$ unused) \\
+Heron $r^2s=(s-a)(s-b)(s-c)$ & \decl{Malfatti.heron} & \src{malfatti}{Malfatti}{Geometry}{134} & $t$; \lean{finrank ℝ V = 2} \\
+The circles (definition) & \decl{Malfatti.malfattiCircle} & \src{malfatti}{Malfatti}{Geometry}{34} & definition \\
+Side tangency, interior side & \decl{Malfatti.malfattiCircle_tangent_side} & \src{malfatti}{Malfatti}{Geometry}{240} & $t$; \lean{finrank ℝ V = 2}; $i,j,k$ distinct \\
+Pairwise external tangency & \decl{Malfatti.malfattiCircle_isExtTangent} & \src{malfatti}{Malfatti}{Geometry}{280} & $t$; \lean{finrank ℝ V = 2}; $i\ne j$ \\
+Radius formula & \decl{Malfatti.malfattiCircle_radius_formula} & \src{malfatti}{Malfatti}{Geometry}{298} & $t$; \lean{finrank ℝ V = 2} \\
+Existence (Thm.~\ref{thm:malfatti}) & \decl{Malfatti.malfatti_circles_exist} & \src{malfatti}{Malfatti}{Main}{15} & $t$ \\
+Existence with radius formula & \decl{Malfatti.malfatti_circles_formula} & \src{malfatti}{Malfatti}{Main}{31} & $t$ \\
+Instance at $(0,0),(1,0),(0,1)$ & \decl{Malfatti.malfatti_circles_formula_triW} & \src{malfatti}{Malfatti}{Witness}{97} & none \\
+Bridge: $K(\tan a,\tan b,\tan c)=0\iff a+b+c=\pi/4$ & \decl{Malfatti.K_bridge} & \src{malfatti}{Malfatti}{Bridge}{50} & $a,b,c\in(0,\pi/4)$ \\
+Bridge: $D(r,\tan\theta)=r/\sin2\theta$ & \decl{Malfatti.D_bridge} & \src{malfatti}{Malfatti}{Bridge}{38} & $\theta\in(0,\pi/2)$ \\
+Bridge: $\mathrm{tparam}=\tan(A_i/4)$ & \decl{Malfatti.tparam_bridge} & \src{malfatti}{Malfatti}{Bridge}{115} & $t$; \lean{finrank ℝ V = 2} \\
+Bridge: $r\mu(\ldots)$ is the classical radius & \decl{Malfatti.mu_bridge} & \src{malfatti}{Malfatti}{Bridge}{162} & $t$; \lean{finrank ℝ V = 2} \\
+\end{longtable}
+}
+
+\section{The method}\label{sec:method}
+
+The four proofs follow the three steps of~\cite{PaperA}.
+\begin{enumerate}
+\item \emph{Coordinates.} Miquel's theorem is stated for points of $\CC$ and Brahmagupta's for
+points of $\mathrm{EuclideanSpace}\ \RR\ (\mathrm{Fin}\ 2)$; in both, the real and imaginary parts
+(or the two coordinates) are the variables. Feuerbach's theorem is stated for an
+\mdecl{Affine.Triangle} in an arbitrary real inner product space, and no isometry to $\RR^2$ or
+$\CC$ is used. Instead the argument works in the affine frame $(p_0;\,p_1-p_0,\,p_2-p_0)$ of the
+triangle, with the three side lengths $a,b,c$ as real parameters: every Gram entry is a polynomial
+in $a,b,c$, and square roots never appear because the side lengths are themselves variables.
+The Malfatti development likewise works with a triangle in a general 2-dimensional real inner
+product space; its variables are the inradius $r$ and the tangents $p,q,w$ of the quarter angles,
+so that every length is a rational function of them.
+\item \emph{Certificate.} After clearing denominators the conclusion is an explicit combination of
+hypothesis polynomials. The multipliers are computed outside Lean (with SymPy) and written into the
+source; Lean checks them with \lean{ring} or \lean{linear\_combination}. No proof uses
+\lean{native\_decide} or \lean{polyrith}; \lean{decide} appears only for finite facts about
+$\mathrm{Fin}\ 3$.
+\item \emph{Translation.} The coordinate statement is connected with Mathlib's notions:
+\mdecl{EuclideanGeometry.Sphere.IsIntTangent}, \mdecl{EuclideanGeometry.Sphere.IsExtTangent},
+\mdecl{Affine.Simplex.circumcenter}, \mdecl{Affine.Simplex.incenter} and
+\mdecl{Affine.Simplex.excenter} for Feuerbach; \mdecl{dist} for Miquel, with bridges to
+\mdecl{Collinear} and \mdecl{EuclideanGeometry.Sphere.power}; \mdecl{EuclideanGeometry.Cospherical},
+\mdecl{Sbtw} and Mathlib's Ptolemy theorem for Brahmagupta; \mdecl{Affine.Simplex.incenter},
+\mdecl{Affine.Simplex.inradius}, \mdecl{Affine.Simplex.touchpoint},
+\mdecl{EuclideanGeometry.Sphere.IsTangent}, \mdecl{EuclideanGeometry.Sphere.IsExtTangent} and
+\mdecl{AffineSubspace.SSameSide} for Malfatti.
+\end{enumerate}
+The certificates differ greatly in size. Brahmagupta's are closed by \lean{ring} in a few lines.
+Miquel's are linear in the unknown point but of moderate size. Feuerbach's \lean{nine\_*} and
+\lean{euler\_*} certificates are long (a few hundred monomials each) but each compiles in under a
+second; a clean build of the whole Feuerbach library took 14~s on the build machine.
+
+\section{Feuerbach's theorem}\label{sec:feuerbach}
+
+\paragraph{Statement.} Let $V$ be a real inner product space, $P$ a metric affine space over $V$,
+and $t$ an \mdecl{Affine.Triangle}~$\RR$~$P$ (three affinely independent points). Mathlib defines
+the circumcentre $O$, circumradius $R$, incentre $I$ and inradius $r$, the excentres $I_i$ and
+exradii $r_i$ (as \lean{t.excenter \{i\}}, \lean{t.exradius \{i\}}), the insphere, exspheres and
+the nine-point circle with centre $N$, and the predicates \mdecl{IsIntTangent} and
+\mdecl{IsExtTangent} for spheres.
+
+\begin{theorem}[\texttt{Feuerbach.feuerbach}, \src{feuerbach}{Feuerbach}{Main}{163}]\label{thm:feuerbach}
+For every triangle $t$, the incircle of $t$ is internally tangent to the nine-point circle, and for
+each $i\in\mathrm{Fin}\ 3$ the excircle opposite vertex $i$ is externally tangent to the nine-point
+circle:
+\begin{lstlisting}
+theorem feuerbach [Fact (Module.finrank ℝ V = 2)] (t : Triangle ℝ P) :
+    t.insphere.IsIntTangent t.ninePointCircle ∧
+      ∀ i : Fin 3, (t.exsphere {i}).IsExtTangent t.ninePointCircle
+\end{lstlisting}
+\end{theorem}
+
+The two conjuncts are proved separately as \decl{Feuerbach.isIntTangent_insphere_ninePointCircle}
+and \decl{Feuerbach.isExtTangent_exsphere_ninePointCircle}, with \emph{no} dimension hypothesis:
+everything the argument uses lies in the plane of the triangle. The hypothesis
+\lean{Fact (finrank ℝ V = 2)} appears in \decl{Feuerbach.feuerbach} only because it is part of the
+target statement, and it is unused. Non-degeneracy is free, since an \mdecl{Affine.Triangle} is
+affinely independent by definition. The only extra ingredient for the internal case is
+\lean{Nontrivial V}, which \decl{Feuerbach.nontrivial_of_triangle} derives from the triangle.
+
+\paragraph{The equilateral case.} For an equilateral triangle $R/2-r=0$, so the incircle and the
+nine-point circle coincide. Mathlib's \mdecl{IsIntTangent} includes this degenerate same-sphere
+case, and the proof goes through \mdecl{EuclideanGeometry.Sphere.isIntTangent_iff_dist_center},
+which handles it; no case split is needed. The numerical script confirms $|NI|=0=R/2-r$ for an
+equilateral triangle.
+
+\paragraph{Euler's formula and inequality.} On the way we prove
+\[
+ OI^2=R(R-2r),\qquad OI_i^2=R(R+2r_i),\qquad 2r\le R
+\]
+(\decl{Feuerbach.dist_circumcenter_incenter_sq}, \decl{Feuerbach.dist_circumcenter_excenter_sq},
+\decl{Feuerbach.two_mul_inradius_le_circumradius}, \src{feuerbach}{Feuerbach}{Main}{100}--111).
+A search of the pinned Mathlib for \lean{inradius} together with \lean{circumradius} found neither
+Euler's formula nor the inequality, so they are new relative to that revision; Wang's repository
+and pull request (Section~\ref{sec:related}) also prove versions of them.
+
+\paragraph{Proof architecture.} The development has three layers.
+\begin{itemize}
+\item \path{Feuerbach/Algebra.lean} is pure real algebra. With $u=p_1-p_0$, $v=p_2-p_0$ and side
+lengths $a=|p_1p_2|$, $b=|p_0p_2|$, $c=|p_0p_1|$, the quadratic form
+$\mathrm{qf}(a,b,c,p,q)=p^2c^2+pq(b^2+c^2-a^2)+q^2b^2$ is $\|pu+qv\|^2$, and
+$\mathrm{heron}(a,b,c)=(2a^2b^2+2b^2c^2+2c^2a^2-a^4-b^4-c^4)/4$ is the square of twice the area.
+The circumcentre is $p_0+xu+yv$; $k$ is twice the area; $T=1/(\pm a\pm b\pm c)$, so that $kT$ is
+the in- or exradius. The lemmas \decl{Feuerbach.circ_relation} ($4\,\mathrm{heron}\cdot
+R^2=a^2b^2c^2$), \decl{Feuerbach.nine_in}, \decl{Feuerbach.nine_ex0}--\lean{2} (giving
+$|N-I_\varepsilon|^2=(R/2\mp kT)^2$) and \decl{Feuerbach.euler_in}, \decl{Feuerbach.euler_ex0}--\lean{2}
+(giving $|O-I_\varepsilon|^2=R^2\mp2R\,kT$) are each one \lean{linear\_combination}. The
+multipliers were generated by solving the $T$-free homogenised identity by linear algebra over an
+ansatz and adding the multiple of $T\cdot D-1$ by hand.
+\item \path{Feuerbach/Geometry.lean} connects Mathlib's definitions with this algebra. The key
+step is \decl{Feuerbach.height_sq_mul_sq}: $h_i^2\cdot(\text{opposite side})^2=\mathrm{heron}$, a
+Gram-determinant identity (\decl{Feuerbach.gram_of_foot}) applied at the altitude foot. It turns
+Mathlib's excentre weights, which are $\pm1/h_i$, into weights proportional to $\pm$ the side
+lengths. \decl{Feuerbach.frame_data} expresses $O$ and $N$ in the frame and derives $2kR=abc$;
+\decl{Feuerbach.excenter_data} gives the excentre coordinates and $r_\varepsilon=k/(\pm a\pm b\pm c)$,
+taking positivity of the weight sum from Mathlib.
+\item \path{Feuerbach/Main.lean} instantiates a generic lemma \decl{Feuerbach.core} at the incentre
+and the three excentres. Euler's formula gives $2r\le R$, which fixes the sign of the square root
+and yields $|NI|=R/2-r$; then Mathlib's \mdecl{EuclideanGeometry.Sphere.isIntTangent_iff_dist_center}
+and \mdecl{EuclideanGeometry.Sphere.isExtTangent_iff_dist_center} give tangency.
+\end{itemize}
+
+\paragraph{Scope.} Only the three ``true'' excircles, with sign set $\{i\}$, are covered. For a
+triangle the sign sets of size two and three give the same spheres as those of size one and
+zero; Wang's version is stated for every sign set other than $\emptyset$ and the full set, a mild
+generalisation that we have not added.
+
+\paragraph{Numerical check.} The script \path{code/check_feuerbach.py} (not part of the proof)
+computes $O$, $H$, $N=(O+H)/2$, $I$, $I_a$, $I_b$, $I_c$ from first principles and checks the four
+distance identities: on 19{,}998 random triangles the worst relative error is $9.97\times10^{-8}$
+(for badly conditioned triangles); isosceles and equilateral cases give errors of order $10^{-15}$;
+exact SymPy checks on the 3-4-5 triangle, the 13-14-15 triangle and the triangle $(0,0),(3,0),(1,2)$
+give residual~$0$ for the incircle and all three excircles.
+
+\section{Miquel's theorem}\label{sec:miquel}
+
+\paragraph{Model.} The plane is $\CC$ with Mathlib's \mdecl{dist}. For points $a,b,c$ let
+$\mathrm{Dp}(a,b,c)$ (\decl{Miquel.Dp}) be minus the cross product of $b-a$ and $c-a$, so that
+$\mathrm{Dp}(a,b,c)\ne0$ exactly when $a,b,c$ are not collinear
+(\decl{Miquel.Dp_eq_zero_iff_collinear}). Points on the sides are given by real parameters, and the
+\emph{extended} sides are allowed:
+\[
+F=A+n(B-A),\qquad E=A+t(C-A),\qquad D=B+u(C-B).
+\]
+The hypotheses $n,t,u\notin\{0,1\}$ say that $D,E,F$ are not vertices; together with
+$\mathrm{Dp}(A,B,C)\ne0$ they are exactly what makes the triples $(A,E,F)$, $(B,F,D)$, $(C,D,E)$
+non-collinear, so that each of the three circles exists and is unique. (The library states this
+non-collinearity only in prose. Version~2 proves it, for points of the plane on the side lines and
+distinct from the vertices, as \decl{Miquel.Classical.cov_B2_obligation}; see Section~\ref{sec:l1415}.)
+
+\begin{theorem}[\texttt{Miquel.miquel}, \src{miquel}{Miquel}{Main}{54}]\label{thm:miquel}
+Under these hypotheses there is $M\in\CC$ such that, for every $O\in\CC$ and $r\in\RR$: if
+$A,E,F$ are at distance $r$ from $O$ then so is $M$; if $B,F,D$ are at distance $r$ from $O$ then
+so is $M$; and if $C,D,E$ are at distance $r$ from $O$ then so is $M$.
+\end{theorem}
+
+The ``for every circle'' form is meaningful only because the three circles exist; the companion
+\decl{Miquel.miquel_concyclic} (\src{miquel}{Miquel}{Main}{97}) states, under the same hypotheses,
+that there are $O_1,O_2,O_3,M$ with $E,F,M$ on the circle through $A$ centred at $O_1$, $F,D,M$ on
+the circle through $B$ centred at $O_2$, and $D,E,M$ on the circle through $C$ centred at $O_3$.
+Miquel's theorem has earlier formal proofs, in Isabelle/HOL and in Coq; what distinguishes this
+statement is that it assumes only the non-degeneracy conditions above (Section~\ref{sec:related}).
+
+\paragraph{Certificate.} In a translation-invariant frame with $B=A+w$, $C=A+c$ and $M=F+(x,y)$,
+the three circle conditions are polynomials $q_1,q_2,q_3$ in $(x,y)$ (\decl{Miquel.q1}, \decl{Miquel.q2},
+\decl{Miquel.q3}). A plain identity $q_3=P\,q_1+Q\,q_2$ with linear $P,Q$ is impossible: $q_1$ and
+$q_2$ have no constant term, since both circles pass through $F$, while $q_3$ does. Multiplying by
+$x$ or $y$ repairs this. With $K=n\,t\,u\,(n-1)\,|w|^2$ (\decl{Miquel.KK}) the certificates are
+\[
+K\,x\,q_3=P_1q_1+P_2q_2,\qquad K\,y\,q_3=P_1'q_1+P_2'q_2
+\]
+(\decl{Miquel.cert_x}, \decl{Miquel.cert_y}), with $P_i,P_i'$ linear in $(x,y)$ and computed by
+SymPy. Two further identities complete the argument: \decl{Miquel.tang} handles the case $M=F$
+(the constant term of $q_3$ is a multiple of the cross product of the linear parts of $q_1,q_2$),
+and \decl{Miquel.sep} shows that the radical-axis normal is non-zero. All are closed by
+\lean{ring}. The second intersection point of the first two circles is given explicitly
+(\decl{Miquel.rpx}, \decl{Miquel.rpy}); \decl{Miquel.rp_on} shows that it lies on both, and the
+abstract lemma \decl{Miquel.core} uses the certificates to put it on the third, giving
+\decl{Miquel.frame}. The lemma \decl{Miquel.bridge} identifies the concyclicity determinant
+\decl{Miquel.Q} and $\mathrm{Dp}$ with the frame polynomials, again by \lean{ring}.
+
+\paragraph{Examples.} \decl{Miquel.miquel_example} applies the theorem to $A=0$, $B=4$,
+$C=1+3i$ with $D,E,F$ the midpoints, discharging all hypotheses. \decl{Miquel.miquel_negative_control}
+shows that in the same configuration $F$, which lies on the first two circles, lies on no circle
+through $C,D,E$, so membership of the third circle is a real constraint; numerically $F$ is at
+distance about $0.94$ from that circle.
+
+\paragraph{Numerical check.} \path{code/check_miquel_formal.py} checks the exact formal
+configuration, extended sides included, on 20{,}000 random cases: the worst relative residual is
+$2.3\times10^{-11}$, while the negative control has residual at least $2.7\times10^{-5}$.
+
+\section{Brahmagupta's formula}\label{sec:brahmagupta}
+
+\paragraph{Area.} Points are elements of \lean{Pt := EuclideanSpace ℝ (Fin 2)}. For a
+quadrilateral $ABCD$ we define
+\begin{align*}
+\mathrm{signedArea}(A,B,C,D)&=\tfrac12\big((C_0-A_0)(D_1-B_1)-(C_1-A_1)(D_0-B_0)\big),\\
+K=\mathrm{area}(A,B,C,D)&=|\mathrm{signedArea}(A,B,C,D)|,
+\end{align*}
+half the cross product of the diagonals; \decl{Brahmagupta.signedArea_eq_shoelace} proves that
+this equals the shoelace sum $\tfrac12\sum(x_iy_{i+1}-x_{i+1}y_i)$. For a simple (non-self-intersecting)
+quadrilateral this is the enclosed area. For a crossed quadrilateral it is the difference of the
+two lobes, which is why the main theorems assume convexity (Section~\ref{sec:limits}).
+
+\paragraph{Three steps.} Write $a=AB$, $b=BC$, $c=CD$, $d=DA$, $p=AC$, $q=BD$ and $s=(a+b+c+d)/2$.
+\begin{enumerate}
+\item For \emph{every} quadrilateral, $16K^2=4p^2q^2-(b^2+d^2-a^2-c^2)^2$
+(\decl{Brahmagupta.sixteen_area_sq}): the diagonal form of Bretschneider's formula, proved by
+\lean{ring} after expanding distances into coordinates.
+\item As a polynomial identity,
+$16(s-a)(s-b)(s-c)(s-d)=4(ac+bd)^2-(b^2+d^2-a^2-c^2)^2$ (\decl{Brahmagupta.brahmagupta_identity}).
+\item Hence, for every quadrilateral, $K^2=(s-a)(s-b)(s-c)(s-d)$ holds if and only if Ptolemy's
+equality $pq=ac+bd$ holds (\decl{Brahmagupta.area_sq_eq_iff_ptolemy}), and Ptolemy's inequality
+in Mathlib (\mdecl{EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist}) gives
+$K^2\le(s-a)(s-b)(s-c)(s-d)$ for every quadrilateral (\decl{Brahmagupta.area_sq_le}).
+\end{enumerate}
+Mathlib's Ptolemy theorem \mdecl{EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical}
+supplies the equality for a convex cyclic quadrilateral.
+
+\begin{theorem}[\texttt{Brahmagupta.brahmagupta}, \src{brahmagupta}{Brahmagupta}{Cyclic}{63}]\label{thm:brahmagupta}
+Let $A,B,C,D,P$ be points of the Euclidean plane with $\{A,B,C,D\}$ \mdecl{Cospherical}, $P$
+strictly between $A$ and $C$, and $P$ strictly between $B$ and $D$. Then
+$K=\sqrt{(s-a)(s-b)(s-c)(s-d)}$.
+\end{theorem}
+
+\decl{Brahmagupta.brahmagupta_sq} is the squared form. The hypothesis
+$\mathrm{Sbtw}\,A\,P\,C\wedge\mathrm{Sbtw}\,B\,P\,D$ says that the diagonals cross at a point
+interior to both; it is what makes Mathlib's Ptolemy theorem apply. \mdecl{Sbtw} forces $A\ne C$
+and $B\ne D$, but \emph{not} that the four vertices are distinct, so the hypotheses do not by
+themselves describe a non-degenerate convex quadrilateral. For example, $A=B=(-1,0)$,
+$C=D=(1,0)$, $P=(0,0)$ satisfies all three hypotheses (the points lie on the unit circle and $P$ is
+strictly between $A$ and $C$ and between $B$ and $D$), yet the ``quadrilateral'' has collapsed to
+a segment. The theorem remains true there, and trivially so: the shoelace area is $0$, the sides
+are $0,2,0,2$, $s=2$ and $(s-a)(s-b)(s-c)(s-d)=0$. Such configurations are therefore admitted
+rather than excluded; they are not counterexamples. When, in addition, the four vertices are
+pairwise distinct, the two strict-between conditions do make $ABCD$ a convex quadrilateral with
+the vertices in this order, all four sides are positive, and informally the shoelace value is
+then its enclosed area; this last identification is not proved in Lean (Section~\ref{sec:limits}).
+We have not added a corollary with an explicit distinctness hypothesis, since it would assume
+more and conclude nothing new.
+
+\paragraph{Relation to the earlier Lean proof.} Theorem~\ref{thm:brahmagupta} is not new. The
+ShadowBench repository has a complete Lean~4 proof, \lean{brahmagupta\_formula}, of the same
+statement (Section~\ref{sec:related}, \cite{ShadowBenchProof}), by essentially the same route:
+diagonals crossing, Mathlib's Ptolemy theorem, a diagonal identity for the squared area proved
+by \lean{ring} for arbitrary points, and the semiperimeter algebra. Its hypotheses are expressed
+differently (an explicit centre and radius instead of \mdecl{Cospherical}; four orientation
+signs instead of crossing diagonals; the area as the sum of two triangle areas, and $K$ supplied
+through a hypothesis $K=\mathrm{quadrilateralArea}\ldots$), but these are presentational
+differences, not mathematical ones. What our development adds beyond that proof is narrow:
+\decl{Brahmagupta.area_sq_le} and \decl{Brahmagupta.area_sq_eq_iff_ptolemy}, which hold for
+\emph{any} four points with no cyclicity or convexity hypothesis, and the contrapositive test
+\decl{Brahmagupta.not_cospherical_of_area_sq_ne} derived from them, for which we found no earlier
+formal proof; the statement in Mathlib's \mdecl{Cospherical}/\mdecl{Sbtw} vocabulary; the
+definition bridge \decl{Brahmagupta.area_eq_half_mul_sin_angle}; the witnesses; and the
+verification record of Section~\ref{sec:verify}. Version~2 adds the angle form of Bretschneider's
+formula for convex quadrilaterals (Section~\ref{sec:l1415}); we did not search for earlier formal
+proofs of it. We did not compile the ShadowBench proof
+locally (it targets Lean \texttt{v4.29.0}; an attempt under our \texttt{v4.33.1} toolchain timed
+out), so our description of it rests on reading the source, which contains no \lean{sorry}.
+
+\paragraph{Examples.} \decl{Brahmagupta.unitSquare_example} shows that the square with vertices
+$(1,0),(0,1),(-1,0),(0,-1)$ satisfies all hypotheses and has area $2=(\sqrt2)^2$;
+\decl{Brahmagupta.unitSquare_brahmagupta} applies both headline theorems to it.
+\decl{Brahmagupta.rhombus_fails} shows that the convex rhombus $(1,0),(0,2),(-1,0),(0,-2)$ has
+$K^2=16$ while $(s-a)(s-b)(s-c)(s-d)=25$, so by \decl{Brahmagupta.not_cospherical_of_area_sq_ne}
+it is not cyclic (\decl{Brahmagupta.rhombus_not_cospherical}); the cyclic hypothesis cannot be
+dropped. \path{code/check_brahmagupta.py} checks the formula on 10{,}000 random cyclic
+quadrilaterals (relative error below $10^{-13}$) and the general identity on 10{,}000 random
+quadrilaterals.
+
+\section{The Malfatti circles}\label{sec:malfatti}
+
+\paragraph{Construction, not conjecture.} Two different statements carry Malfatti's name, and
+only the first is formalised here. (i) The \emph{Malfatti circles} of a triangle are three
+circles, each tangent to the two sides through one vertex, any two of them externally tangent;
+Malfatti (1803) gave a construction and the radius formula below. (ii) \emph{Malfatti's
+conjecture} (or problem) asserted that these three circles have the largest total area of any
+three non-overlapping circles in the triangle. The conjecture is \emph{false}: Lob and Richmond
+observed that it already fails for the equilateral triangle~\cite{LobRichmond}, and
+Goldberg~\cite{Goldberg} (1967) showed that the Malfatti circles are never optimal; the greedy
+arrangement was proved optimal by Zalgaller and Los'~\cite{ZalgallerLos} (1994). We prove nothing about (ii). The numerical script \path{code/check_malfatti.py}
+reproduces the equilateral counterexample (side~1: Malfatti circles of total area $0.315670$,
+incircle plus two corner circles of radius $r/3$ of total area $0.319977$), but that is a
+floating-point check, not a theorem.\footnote{The script and its output
+(\path{code/check.out}) are in the malfatti repository.}
+
+\paragraph{Statement.} For a triangle $t$ write $r$ for its inradius, $I$ for its incentre,
+$s$ for its semiperimeter (\decl{Malfatti.semi}) and $a_i=|A_{i+1}A_{i+2}|$ for the side opposite
+vertex $A_i$, indices in $\mathrm{Fin}\ 3$.
+
+\begin{theorem}[\texttt{Malfatti.malfatti\_circles\_exist}, \texttt{Malfatti.malfatti\_circles\_formula}, \src{malfatti}{Malfatti}{Main}{15}, \src{malfatti}{Malfatti}{Main}{31}]\label{thm:malfatti}
+Let $t$ be a triangle in $\mathrm{EuclideanSpace}\ \RR\ (\mathrm{Fin}\ 2)$. There are spheres
+(circles) $c_0,c_1,c_2$ such that
+\begin{itemize}
+\item each $c_i$ has positive radius;
+\item for pairwise distinct $i,j,k$, $c_i$ is tangent (\mdecl{IsTangent}) to the line
+$A_iA_j$, and its centre lies strictly on the same side of that line as $A_k$
+(\mdecl{SSameSide});
+\item for $i\ne j$, $c_i$ and $c_j$ are externally tangent (\mdecl{IsExtTangent}).
+\end{itemize}
+Moreover the circles can be chosen with radii
+\[
+\rho_i=\frac{r}{2(s-a_i)}\Bigl(s-r-\bigl(|IA_{i+1}|+|IA_{i+2}|-|IA_i|\bigr)\Bigr).
+\]
+\end{theorem}
+
+\begin{lstlisting}
+theorem malfatti_circles_exist (t : Triangle ℝ (EuclideanSpace ℝ (Fin 2))) :
+    ∃ c : Fin 3 → Sphere (EuclideanSpace ℝ (Fin 2)),
+      (∀ i, 0 < (c i).radius) ∧
+      (∀ i j k, i ≠ j → i ≠ k → j ≠ k →
+        (c i).IsTangent line[ℝ, t.points i, t.points j] ∧
+        line[ℝ, t.points i, t.points j].SSameSide (c i).center (t.points k)) ∧
+      (∀ i j, i ≠ j → (c i).IsExtTangent (c j))
+\end{lstlisting}
+\decl{Malfatti.malfatti_circles_formula} has the same conclusion with the radius equation as an
+additional first conjunct. Non-degeneracy is again free, since an \mdecl{Affine.Triangle} is
+affinely independent. The general-space versions, for a triangle in any real inner product space
+with \lean{Fact (finrank ℝ V = 2)}, are \decl{Malfatti.malfattiCircle_tangent_side} (which also
+names the tangency point, $\mathrm{lineMap}(A_i,T,\mu)$ with $T$ the incircle touch point and
+$\mu\in(0,1)$, so that it lies on the side segment), \decl{Malfatti.malfattiCircle_isExtTangent}
+and \decl{Malfatti.malfattiCircle_radius_formula}; \decl{Malfatti.malfattiCircle_radius_lt_inradius}
+shows $\rho_i<r$.
+
+\paragraph{Construction and certificate.} Each circle is the image of the incircle under the
+homothety at a vertex: the centre is $O_i=A_i+\mu_i(I-A_i)$ and the radius $\mu_i r$
+(\decl{Malfatti.malfattiCircle}), so tangency to the two sides through $A_i$ is inherited from the
+incircle (\decl{Malfatti.isTangentAt_side}). With $p,q,w$ the tangents of the quarter angles at
+$A_i,A_{i+1},A_{i+2}$, defined metrically as $p=(|A_iI|-(s-a_i))/r$ (\decl{Malfatti.tparam}), the
+ratio is $\mu_i=(1+q)(1+w)/(2(1+p))$ (\decl{Malfatti.mu}). The tangent length and the distance
+to the incentre are $X(r,p)=r(1-p^2)/(2p)$ and $D(r,p)=r(1+p^2)/(2p)$. The one geometric input
+is Heron's relation in the form $r^2s=(s-a)(s-b)(s-c)$ (\decl{Malfatti.heron}), proved from the
+barycentric description of the incentre and the Gram matrix
+$\langle A_i-I,A_j-I\rangle=r^2-x_ix_j$ by a \lean{linear\_combination} certificate. Heron's
+relation forces the polynomial relation
+\[
+K(p,q,w)=1-p-q-w-pq-qw-wp+pqw=0
+\]
+(\decl{Malfatti.K_eq_zero_of_heron}), the tangent form of $A/4+B/4+C/4=\pi/4$; the sign of the
+cofactor is controlled by $0<p,q,w<1$. Pairwise tangency (\decl{Malfatti.dist_identity}) and the
+radius formula (\decl{Malfatti.radius_eq}) are then polynomial identities whose difference sides
+are explicit multiples of $K$; the multipliers were found with SymPy.
+
+\paragraph{Scope.} Only existence is proved, by verifying an explicit construction;
+uniqueness of the Malfatti circles is not. In the files of the first version containment is proved
+only in part: the tangency points lie on the side segments and the centres lie in the interior
+half-planes. Version~2 proves full containment: each closed Malfatti disc lies in the closed
+triangle (\decl{Malfatti.Classical.l15_malfatti_subset}, Section~\ref{sec:l1415}).
+
+\paragraph{Numerical check.} \path{code/check_malfatti.py} computes the formula radii with centres
+on the bisectors for 2{,}000 random triangles: the maximum tangency error (to the sides and
+pairwise) is $2.6\times10^{-10}$, while adding $0.01$ inside the bracket of the formula gives errors
+of at least $6.5\times10^{-3}$.
+
+\section{Does the statement mean what it says?}\label{sec:correct}
+
+\paragraph{Feuerbach.} The statement uses only Mathlib's definitions of the triangle centres, the
+in-, ex- and nine-point spheres, and tangency; there is nothing local to trust. The two local
+definitions of the algebra layer are bridged in \path{Feuerbach/Bridge.lean}:
+\decl{Feuerbach.qf_eq_norm_sq} shows $\mathrm{qf}(\|v-u\|,\|v\|,\|u\|,p,q)=\|pu+qv\|^2$, and
+\decl{Feuerbach.heron_eq_sq_two_mul_area} shows that $\mathrm{heron}$ of the three side lengths is
+$(c\,b\sin\angle p_1p_0p_2)^2$. The witness triangle \decl{Feuerbach.tri345} is identified by
+\decl{Feuerbach.tri345_spec} as the 3-4-5 right triangle.
+
+\paragraph{Miquel.} The statement uses \mdecl{dist} and the local $\mathrm{Dp}$.
+\path{Miquel/Bridge.lean} has 26 bridge lemmas covering all 25 local definitions: $\mathrm{Dp}$ is
+the orientation determinant and vanishes exactly on \mdecl{Collinear} triples; $Q$ is the
+$4\times4$ concyclicity determinant and equals $\mathrm{Dp}(P,R,S)$ times Mathlib's
+\mdecl{EuclideanGeometry.Sphere.power} of the fourth point with respect to the circle through
+$P,R,S$ (\decl{Miquel.Q_eq_Dp_mul_power}); the frame coefficients are identified with orientations
+and powers of points; the certificate multipliers, which have no standard meaning, have bridges
+recording their role; and \decl{Miquel.rpx_rpy_spec} shows that $(\mathrm{rpx},\mathrm{rpy})$ is
+the only common zero of the two circle polynomials other than the origin. The docstring of
+\decl{Miquel.Q} (``vanishes iff concyclic or collinear'') was misread by one automated reviewer as
+a false claim; the intended reading, which is correct, is ``all four points lie on a common circle
+or all four lie on a common line'', and the wording could be tightened in a later version.
+
+\paragraph{Brahmagupta.} \decl{Brahmagupta.signedArea_spec} shows that the signed area is half
+the $2\times2$ determinant of the diagonal vectors and splits along $AC$ into the signed areas of
+$ABC$ and $ACD$; \decl{Brahmagupta.area_eq_half_mul_sin_angle} shows
+$K=\tfrac12\,AC\cdot BD\cdot\sin\theta$ with $\theta$ the angle between the diagonals. Neither
+identifies $K$ with a measure (Section~\ref{sec:limits}).
+
+\paragraph{Malfatti.} The headline statements use only Mathlib's triangle, spheres, lines,
+tangency predicates, \mdecl{SSameSide}, incentre and inradius, and the local semiperimeter.
+\path{Malfatti/Bridge.lean} has nine bridge lemmas, one for each of the nine local definitions:
+\decl{Malfatti.X_bridge} ($X(r,\tan\theta)=r/\tan2\theta$, the tangent length $r\cot(A/2)$);
+\decl{Malfatti.D_bridge} ($D(r,\tan\theta)=r/\sin2\theta$, the distance from a vertex to the
+incentre); \decl{Malfatti.K_bridge} ($K(\tan a,\tan b,\tan c)=0\iff a+b+c=\pi/4$);
+\decl{Malfatti.semi_bridge} (half the perimeter, and the sum of the tangent lengths);
+\decl{Malfatti.tl_bridge} ($s-a_i$, and the distance from the vertex to the incircle touch point);
+\decl{Malfatti.tparam_bridge} ($\tan(A_i/4)$ with Mathlib's unoriented angle);
+\decl{Malfatti.mu_bridge} ($r\mu$ at the quarter-angle tangents is Malfatti's classical radius);
+\decl{Malfatti.ratio_bridge} (the ratio $\rho_i/r$, and the homothety ratio at the vertex); and
+\decl{Malfatti.malfattiCircle_bridge} (the defining properties of a Malfatti circle). The bridges
+hold under stated hypotheses, which we record exactly: \decl{Malfatti.K_bridge} needs
+$a,b,c\in(0,\pi/4)$; \decl{Malfatti.D_bridge} needs $\theta\in(0,\pi/2)$; and the geometric bridges
+(\lean{semi}, \lean{tl}, \lean{tparam}, \lean{mu}, \lean{ratio}, \lean{malfattiCircle}) assume a
+2-dimensional plane, \lean{Fact (finrank ℝ V = 2)}. Only \decl{Malfatti.X_bridge} is
+unconditional. These hypotheses are the natural ranges (quarter angles of a triangle lie in
+$(0,\pi/4)$), but a reader should not read the bridges as unconditional identities.
+
+\section{Related work}\label{sec:related}
+
+Each project began with a prior-art search of Mathlib (sources and the lists \path{docs/100.yaml}
+and \path{docs/1000.yaml}), GitHub code, repository and pull-request search, and other systems.
+The searches are recorded in the \path{SPIKE_REPORT.md} of each repository.
+
+\paragraph{Feuerbach: not the first Lean formalisation.} Feuerbach's theorem has earlier Lean
+formalisations, and our contribution is \emph{not} priority. Weiyi Wang (GitHub \texttt{wwylele}),
+the author of Mathlib's \path{NinePointCircle.lean}, has a standalone repository
+\path{wwylele/Feuerbach}~\cite{WangRepo}, created on 29 January 2026, with continuous integration
+passing and no \lean{sorry} in its 741-line \path{Feuerbach/Basic.lean}. It targets Lean
+\texttt{v4.28.0-rc1}, follows a vector proof after Scheer~\cite{Scheer} using areas, heights,
+Heron's formula and sines, and proves the internal tangency of the insphere, the external tangency
+of the exspheres (for every sign set other than $\emptyset$ and the full set), the distance
+$OI$ and the inequality $2r\le R$. Wang has also opened Mathlib pull request
+\#44236~\cite{PR44236}, ``feat(Geometry/Euclidean): prove Feuerbach's theorem'', created on
+26 September 2026; on 7 October 2026 it was open and labelled \texttt{blocked-by-other-PR} and
+\texttt{merge-conflict}. At the pinned Mathlib revision (\texttt{v4.33.1}), \path{docs/100.yaml}
+has no entry for theorem~29. Outside Lean, Wiedijk's list~\cite{Wiedijk100} records formalisations
+in HOL~Light (Harrison), Isabelle (Paulson) and Rocq (the CertiGeo team). Our development was
+written without consulting Wang's code; we found his repository and pull request only in a final
+prior-art search, after our proof was complete. It is a second, independent Lean proof by a
+different route (no angles, sines or Heron import; certificate-driven; about 490 lines for the
+mathematical content before witnesses and bridges were added), and it should be read as such.
+Given that \#44236 is open, contributing to or comparing with that pull request is the natural
+route to Mathlib, rather than a competing one.
+
+\paragraph{Independent formalisations in Atlas.} Independent Lean
+formalisations of three of the four theorems were made public in the repository
+\path{facebookresearch/atlas-lean}~\cite{Atlas}: \path{FeuerbachTheorem.lean},
+\path{MiquelTheorem.lean} and \path{BrahmaguptaArea.lean}. All three first appeared on
+5 October 2026, between 21:37 and 21:40 UTC, in a batch of import pull requests (\#46, \#61, \#62,
+\#63 and \#65; the three files themselves are in \#62 and \#63). Our Miquel, Malfatti, Feuerbach
+and Brahmagupta repositories were made public only on 7 October 2026, so \emph{on the public
+record the Atlas files are earlier than ours}. Our own evidence of earlier completion is private:
+\emph{working-copy file timestamps} (not commit timestamps) and our run log, which show the
+Feuerbach algebra file on 28 September 2026 and the Miquel and Brahmagupta certificate and main
+files complete by 03:45 UTC on 5 October 2026. That is, our working copies were complete before
+the Atlas import, but our repositories were published after it. We did not consult the Atlas
+files, and our developments are independent derivations; we claim \emph{no public priority} over
+them, only independent derivation. (Atlas has no Malfatti file; our claim for Malfatti in the
+Summary rests on the searches below, not on dates.) The Atlas files are imported from an upstream repository,
+\path{fairinternal/formal-math}, which is private; the date on which they were first written
+there is not public, so their earlier private authorship cannot be excluded either.
+
+\paragraph{Miquel: not the first formalisation.} An earlier search by the Miquel project (Mathlib
+sources and both lists, GitHub, the Archive of Formal Proofs, HOL~Light, Coq/Rocq and Mizar) found
+no formal proof, but it was not repeated before writing and it missed two. The Isabelle Archive of
+Formal Proofs has the entry \emph{Miquel's Theorem in Isabelle/HOL} by A.~Freitas Ramos,
+D.~Barros Hulak and R.~J.~G.~B.~de~Queiroz, dated 11 August 2026~\cite{AFPMiquel}. It is
+sorry-free, works in complex coordinates with the points on the side \emph{lines} (the extended
+sides, as here), and proves both a pivot form (\lean{miquel\_pivot}) and a concurrence form
+(\lean{miquel\_concurrent}) in which the common point is constructed, as the reflection of $r$ in
+the line of centres. Mathematically this is the content of \decl{Miquel.miquel} and
+\decl{Miquel.miquel_concyclic}, two months earlier. Coq's HighSchoolGeometry library (F.~Guilhot)
+has \lean{Theorem Miquel}, in pivot form, proved with \lean{Qed}
+(\path{theories/applications_cocyclicite.v}, line~270)~\cite{HSG}; it is relative to an
+axiomatised synthetic geometry, but it is a library theorem, not merely an automated-prover
+benchmark (Miquel's theorem is also a standard benchmark for Wu and Gr\"obner-basis
+provers~\cite{Chou}). We therefore claim no priority for Miquel's theorem. The remaining
+difference is \emph{hypothesis economy}. Our \decl{Miquel.miquel} assumes only
+$\mathrm{Dp}(A,B,C)\ne0$ and $n,t,u\notin\{0,1\}$, which say exactly that the triangle is
+non-degenerate and that no side point is a vertex. The AFP \lean{miquel\_concurrent} assumes these
+conditions too, and in addition that the two given circles have positive radii, $0<R_1$ and
+$0<R_2$, and that the two centres and the common point $r$ are not collinear,
+$\lnot\,\mathrm{collinear}\ o_1\ o_2\ r$ (which excludes the case where the two circles are
+tangent at $r$); its \lean{miquel\_pivot} assumes $m\ne p$, $m\ne q$, $m\ne r$, so that the
+Miquel point is distinct from the three side points. Our proof handles the case $M=F$, which includes
+the case where the first two circles are tangent at $F$, by the identity \decl{Miquel.tang}, and
+it does not require $M$ to differ from the side points, so neither kind of extra hypothesis is
+needed.
+
+\paragraph{Brahmagupta.} In the pinned Mathlib the only \lean{brahmagupta} declaration is the
+Brahmagupta--Fibonacci identity; \path{docs/1000.yaml} has an entry ``Brahmagupta theorem'' that
+refers to the perpendicular-diagonals theorem, not the area formula, with no declaration; there is
+no Bretschneider formula and no quadrilateral area. Mathlib does have Ptolemy's theorem and
+Ptolemy's inequality, on which we build. GitHub searches (Lean, Coq, Isabelle, OCaml; \lean{brahmagupta},
+\lean{Bretschneider}, ``cyclic quadrilateral'', repositories and Mathlib pull requests) found no proof
+of the area formula, but that search was wrong. The ShadowBench autoformalisation
+benchmark~\cite{ShadowBench} contains, under
+\path{autformalization/problems/geometry/L2/geo_gen_L2_007/}, both skeleton files
+\path{docs/skeletons/Skeleton1.lean}--\path{Skeleton4.lean}, which end in \lean{sorry}, and a
+\emph{complete} proof in \path{ShadowBench/Source/Main.lean}~\cite{ShadowBenchProof}. At commit
+\texttt{7541fcecef97cc124f38355a2cd2ba0ec8485dd5} (Lazar Milikic, 12 June 2026) that file has
+334 lines, no \lean{sorry}, the main theorem \lean{brahmagupta\_formula} (line~319) and the lemma
+\lean{brahmagupta\_area\_sq\_semiperimeter} (line~290). Its statement is ours: a convex cyclic
+quadrilateral, the semiperimeter, $K=\sqrt{(s-a)(s-b)(s-c)(s-d)}$, with the area supplied by a
+bridge hypothesis \lean{h\_area : K = quadrilateralArea \ldots}. An earlier draft of this paper
+said that the closest ShadowBench results were \lean{sorry} statements; that was false, because
+we had read only the skeletons. We claim no priority for Brahmagupta's formula. We have not
+compiled the ShadowBench proof (Section~\ref{sec:brahmagupta}). A further search found no proof
+of the all-four-point statements \decl{Brahmagupta.area_sq_le} and
+\decl{Brahmagupta.area_sq_eq_iff_ptolemy}. A web and AFP search found no Brahmagupta area formula
+in Isabelle, HOL~Light (whose \path{100/heron.ml} has Heron's formula only), Coq/Rocq or Mizar.
+These searches are best-effort only.
+
+\paragraph{Malfatti.} The Malfatti project searched, on 7 October 2026, the pinned Mathlib
+(including \path{Archive/}, \path{docs/100.yaml} and \path{docs/1000.yaml}), the Isabelle Archive of
+Formal Proofs (a mirror of 1{,}045 entries, and the AFP site search), HOL~Light, HOL4, GeoCoq, the
+Rocq 100-theorems collection, the Mizar Mathematical Library, GitHub code and repository search
+for Lean, Coq, Isabelle, SML and OCaml, and Wiedijk's 100 and 1000 lists, and found no
+formalisation of the Malfatti circles. The only related item is an open wishlist entry in a
+Mathlib issue (\#6091) for the different statement that the Malfatti circles are never optimal
+(item~(ii) of Section~\ref{sec:malfatti}), not a proof. The search did not cover the Lean Zulip,
+and GitHub code search indexes default branches only.
+
+\paragraph{Summary.} The Atlas files of 5 October 2026 (above) are independent formalisations, public before our repositories,
+of Feuerbach, Miquel and Brahmagupta; we claim only independent derivation, not public priority, against them. They do not change the conclusions below. As far as these searches go, we found no earlier formalisation of the
+Malfatti circle construction; this is the only one of the four theorems we believe to be formalised
+here for the first time. Our Brahmagupta development is a second Lean proof of a theorem already
+proved in Lean in the ShadowBench repository; only its all-four-point inequality and Ptolemy
+equivalence were not found elsewhere. Our Feuerbach development is
+an independent formalisation of a theorem already formalised in Lean (outside Mathlib, with a
+Mathlib pull request open) and in three other systems. Our Miquel development is a further
+formalisation of a theorem already proved in Isabelle/HOL and in Coq, distinguished by its weaker
+hypotheses. The searches are not exhaustive; both the Feuerbach and the Miquel cases show that
+search can miss existing work (GitHub code search returned no hits for Wang's repository, the
+first Miquel search missed an AFP entry, and the first Brahmagupta search saw only the
+\lean{sorry} skeletons of a benchmark problem whose complete proof sat in the same directory).
+The claim for Malfatti should be read with this record in mind.
+
+\section{Verification}\label{sec:verify}
+
+\emph{The Feuerbach, Miquel and Brahmagupta results in this section were obtained on 6--7~October
+2026, and the Malfatti results on 7~October 2026, on the build machine (x86\_64, Linux); some were
+repeated on a second machine (arm64, macOS), as stated. The working copies are not git checkouts.
+For all four developments every \path{.lean} file at the published commits
+(Section~\ref{sec:avail}) is byte-identical to its counterpart in the checked copies (SHA-256 of every \path{.lean} file, and \lean{cmp} on fresh clones).
+Layers~14 and~15 (Section~\ref{sec:l1415}) were added in version~2, on 21--22~October 2026.}
+
+\paragraph{What the checks taught us.} We lead with the lessons that seem reusable beyond these
+four libraries; the counts follow, and should be read in their light.
+\begin{enumerate}
+\item \emph{A witness must exercise the certificate, not merely type-check.} The first
+\decl{Miquel.core} witness took the zero polynomial as its third circle; every check passed, yet it
+exercised none of the certificate multipliers. It was found by reading and replaced by three
+genuine circles with a second intersection point proved to be $(1,1)$, not the origin. Gate, tamper
+and satisfiability layers all accepted the degenerate witness; none of them can detect this.
+\item \emph{A witness should apply the theorem, so that downstream code polices it.} Rewriting
+the Malfatti witnesses to state the target lemma's conclusion and prove it by applying the lemma
+killed 12 of 16 genuine mutation survivors, and in Miquel the four survivors in
+\path{Witness.lean} are rejected by the declarations that consume them. Witnesses written this way
+are also what the harness can link to their theorems (the satisfiability table below).
+\item \emph{Ablation is informative when a proof survives, not when it breaks.} The surviving
+deletions found five redundant hypotheses (\lean{\_hN} in \decl{Miquel.rp_on} and four in
+Malfatti), which is a concrete defect in the statements. A broken proof after deletion says only
+that this proof used the hypothesis.
+\end{enumerate}
+
+\paragraph{What the battery is and is not.} The checks below are not thirteen independent
+safeguards. They separate into four kinds of evidence. \emph{Kernel certification} (build,
+forbidden-token grep, \lean{\#print axioms}, gate) shows that the stated propositions are proved
+from the standard axioms; the tamper test checks that the gate itself rejects planted defects.
+\emph{Statement-meaning evidence} (definition bridges, hand-written witnesses, numerical scripts,
+and the author's reading of Table~\ref{tab:thms}) bears on whether the propositions are the
+intended ones; only the bridges and witnesses are kernel-checked, and their selection is manual.
+\emph{Heuristic testing} (mutation, contradiction probes, ablation, satisfiability, bridge
+inventory) is incomplete by construction: a contradiction probe that finds nothing is not a
+satisfiability proof, mutants are generated only for some declarations, and timeouts are counted
+with type errors. \emph{Platform reproducibility} (the arm64 rebuild) checks the toolchain, not
+the mathematics. The harness also has visible limits: it parsed a docstring as a declaration and
+generated eight phantom mutants and a phantom satisfiability success from it, and its bridge
+inventory had to be corrected by hand. Many layers share the same sources and the same author, and
+their failures are correlated.
+
+\paragraph{Build and axioms.} A clean \lean{lake build} of each library completes with 0 errors and
+0 warnings; for Feuerbach, Miquel and Brahmagupta this took 8{,}710, 8{,}711 and 8{,}710 jobs
+before the witness and bridge files were added (on the final sources: 8{,}712, 8{,}713, 8{,}711, and
+8{,}712 for Malfatti). A
+grep of the library sources for \lean{sorry}, \lean{admit}, \lean{native\_decide}, \lean{axiom},
+\lean{\#eval}, \lean{run\_cmd}, \lean{set\_option}, \lean{macro}, \lean{elab}, \lean{syntax},
+\lean{notation} and \lean{import Lean} is empty, and \lean{\#print axioms} reports only
+\lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}.
+
+\paragraph{House battery.} The battery of the earlier AFM papers was run serially on the build
+machine after the definition bridges and witnesses were added.
+\begin{itemize}
+\item \emph{Gate.} \path{gate.sh} rejects the forbidden tokens, builds the library, generates its
+own \lean{\#print axioms} query for every declaration of the library (theorems, lemmas and
+definitions), and fails on any non-standard axiom.
+Result: PASS, standard axioms only, at \textbf{46} declarations (Feuerbach), \textbf{84} (Miquel,
+after the \lean{core} witness was replaced, below), \textbf{30} (Brahmagupta) and \textbf{77}
+(Malfatti).
+\item \emph{Tamper tests.} \path{tests/tamper.sh} plants six defects in scratch copies (a
+\lean{sorry}; a split \lean{axiom}; a fake \lean{\#eval} report; a macro; a deleted hypothesis; a
+wrapped extra axiom) and requires each to be rejected. The deleted hypotheses are \lean{hpos} of
+\decl{Feuerbach.core}, \lean{hn0} of \decl{Miquel.miquel}, \lean{hcyc} of
+\decl{Brahmagupta.brahmagupta_sq} and \lean{hK} ($K=0$) of \decl{Malfatti.mu_lt_one}.
+Result: \textbf{6/6} rejected in each of the four repositories.
+\item \emph{Mutations.} Small edits to conclusions and hypotheses, with the proof kept, must fail
+to compile. Results: Feuerbach 177/177 rejected, no survivors; Brahmagupta 78/84 rejected,
+6 survivors; Miquel 192/199 rejected, 7 survivors; Malfatti 226/238 rejected, 12 survivors, of
+which 4 are genuine (below). ``Rejected'' includes failures by heartbeat timeout (3 for Feuerbach,
+8 for Miquel, 1 for Malfatti). These totals cover only the declarations for which the harness
+generated mutants, and several headline statements are not among them. For Feuerbach the harness
+generated \emph{no} mutants for \decl{Feuerbach.isIntTangent_insphere_ninePointCircle},
+\decl{Feuerbach.isExtTangent_exsphere_ninePointCircle} and \decl{Feuerbach.nontrivial_of_triangle},
+so ``177/177 rejected'' says nothing about the two tangency theorems. For Brahmagupta it generated
+none for \decl{Brahmagupta.brahmagupta}, \decl{Brahmagupta.brahmagupta_sq},
+\decl{Brahmagupta.area_sq_le}, \decl{Brahmagupta.area_sq_eq_iff_ptolemy},
+\decl{Brahmagupta.brahmagupta_identity} and \decl{Brahmagupta.not_cospherical_of_area_sq_ne},
+that is, for every headline statement of Section~\ref{sec:brahmagupta}; the 84 Brahmagupta
+mutants all lie in the auxiliary lemmas and examples. The five Malfatti declarations without
+mutants are listed below.
+All six Brahmagupta survivors lie inside the concrete examples and were reproduced and classified
+harmless by hand (for instance, a ``not concyclic'' assertion survives almost any small nudge of a
+point, because landing exactly on a circle is non-generic).
+\emph{Miquel.} All Miquel battery figures in this section are from the run on the current
+sources completed on 7 October 2026 (started 17:58 UTC), after the \lean{core} witness was
+replaced. There are seven survivors. Three are in
+\decl{Miquel.miquel_negative_control} (\path{Miquel/Main.lean}) and four in
+\path{Miquel/Witness.lean} (two in \decl{Miquel.miquel_hyps_example}, two in
+\decl{Miquel.core_example}). All seven were reproduced (each mutant compiles with the original
+proof) and ruled on by hand: all seven are harmless and none is a genuine defect. Each mutated
+statement is still a true closed numerical fact under an open ($\ne0$) condition; in the two
+\decl{Miquel.core_example} slots the side condition reduces to $4+4a^2$ and $b^2+4$, strictly
+positive for every real value. For the four survivors in \path{Witness.lean} the downstream
+declaration that consumes the witness (\decl{Miquel.miquel_point_example}, or
+\decl{Miquel.core_example_conclusion} through \decl{Miquel.core}) rejects the mutant with a type
+mismatch.
+\emph{Malfatti.} The non-vacuity witnesses were rewritten so that each states the target lemma's
+conclusion at concrete arguments and is proved by applying the lemma, with its hypotheses
+discharged inline; this killed 12 of the 16 genuine survivors of the previous run. Of the 12
+survivors in the final run, 8 are an artefact of the harness, which parsed a docstring as a
+declaration. The 4 that remain are benign: the mutants of the library lemmas
+\decl{Malfatti.fin3_distinct} (one) and \decl{Malfatti.fin3_third} (two) are true but weaker
+statements about $\mathrm{Fin}\ 3$, killed downstream where the dropped conjunct is used, and the
+mutant of \decl{Malfatti.heron_witness} ($1^2\mapsto1^3$) is value-preserving, since $1^3=1^2$.
+For five declarations (\decl{Malfatti.isTangentAt_side}, \decl{Malfatti.malfattiCircle_isExtTangent},
+\decl{Malfatti.malfattiCircle_tangent_side}, \decl{Malfatti.sSameSide_center},
+\decl{Malfatti.touch_mem}) the harness generated no mutants at all (Section~\ref{sec:limits}).
+The general lesson is that mutation testing is weak on concrete numerical examples and on
+non-generic negative claims.
+\item \emph{Contradictory hypotheses.} No hypothesis set was found contradictory (0 in each).
+\item \emph{Ablation.} Each hypothesis is deleted in turn and the unchanged proof is recompiled.
+Result, as (proof broke)/(proof survived): Feuerbach 70/0; Miquel 186/1; Brahmagupta 6/0; Malfatti
+66/4. The harness labels the first figure ``needed'', but that is too strong: a broken proof shows
+only that \emph{this} proof uses the hypothesis, not that the statement is false without it. The
+second figure is the informative one, since a surviving proof does show the hypothesis redundant. The unused Miquel hypothesis is \lean{\_hN} of \decl{Miquel.rp_on}, already
+named with an underscore. It is genuinely unnecessary: if $\mathrm{rpN}=0$ then, with Lean's
+convention $x/0=0$, the point $(\mathrm{rpx},\mathrm{rpy})$ is the origin, where both circle
+polynomials vanish. The four unused Malfatti hypotheses are $0<r$ in \decl{Malfatti.radius_eq},
+$p<1$ in \decl{Malfatti.dist_identity}, $q<1$ in \decl{Malfatti.mu_lt_one} and $i\ne j$ in
+\decl{Malfatti.fin3_third} (Section~\ref{sec:limits}).
+\item \emph{Unused-variable linter.} 0 warnings in all four libraries.
+\item \emph{Satisfiability.} For each theorem declaration, the harness tries to produce a
+kernel-checked \lean{example} exhibiting values for all its hypotheses. Since the reviewers'
+reports, the harness has a separate route for hand-written witnesses: a witness declaration that
+applies a theorem with its hypotheses discharged is \emph{linked} to that theorem and reported on
+its own line, never folded into the certified count. The denominator is \emph{all} theorem
+declarations, including hypothesis-free and closed statements, which are certified trivially; the
+ratios below are therefore not coverage of hypothesis-bearing statements. Results, separated:
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & machine-certified & witness-linked & unresolved & total \\ \midrule
+Feuerbach & 30 & 0 & \textbf{13} & 43 \\
+Miquel & 40 & 0 & \textbf{19} & 59 \\
+Brahmagupta & 22 & 0 & \textbf{4} & 26 \\
+Malfatti & 26 & 33 & \textbf{8} & 67 \\
+\bottomrule
+\end{tabular}
+\end{center}
+For Malfatti, $26+33=59$ of 67 declarations are credited and 8 are unresolved; the total is 67, not
+the 68 of an earlier run, because the harness no longer parses a docstring as a declaration. For the
+other three libraries no witness is written in the form the linker recognises, so the
+witness-linked count is~0 and the unresolved counts stand as reported: \textbf{13} Feuerbach items
+(algebra and frame lemmas), \textbf{19} Miquel items (bridge and specification lemmas together with
+\decl{Miquel.dist_eq_of_Q_eq_zero}, \decl{Miquel.circ_aux}, \decl{Miquel.core},
+\decl{Miquel.bridge}, \decl{Miquel.miquel} and \decl{Miquel.miquel_concyclic}) and \textbf{4}
+Brahmagupta items. Several of these, including every headline statement, are exercised by the
+hand-written witnesses listed below, but that coverage is established by reading, not by the
+harness, and we do not count it. \decl{Miquel.rp_zero} is machine-certified. An unresolved item is
+one for which no satisfying instance was produced automatically; it is not evidence of vacuity, and
+a certified item is evidence only that the hypotheses are jointly satisfiable.
+\item \emph{Bridge inventory.} The scanner's heuristic reports Miquel 21 of 25 notions bridged,
+Brahmagupta 2 of 4, Feuerbach 0 of 3 and Malfatti 1 of 10. These numbers are under-counts: the
+heuristic does not match the names in the \path{Bridge.lean} files. The inventory we rely on was
+therefore corrected by hand: by inspection every mathematical local definition of the four
+libraries has a bridge lemma (Section~\ref{sec:correct}); for Malfatti that is nine bridges for
+nine definitions, the tenth definition being the witness triangle. This is a reading, not a
+machine check.
+\end{itemize}
+
+\paragraph{Non-vacuity witnesses.} \emph{Feuerbach:} \decl{Feuerbach.feuerbach_nonvacuous}
+instantiates every hypothesis of \decl{Feuerbach.feuerbach} with $V=P=\CC$ (of real dimension~2)
+and the triangle \decl{Feuerbach.tri345} with vertices $0,4,3i$, whose affine independence is
+\decl{Feuerbach.tri345_affineIndependent}; \decl{Feuerbach.algebra_hyps_345} shows that the
+hypotheses of the algebra lemmas are jointly satisfiable ($a,b,c=5,3,4$, $R=5/2$, $k=12$), and
+\decl{Feuerbach.nine_in_345} instantiates \decl{Feuerbach.nine_in} there.
+\emph{Miquel:} \decl{Miquel.miquel_hyps_example} discharges all ten hypotheses of
+\decl{Miquel.miquel} for the midpoint configuration, and \decl{Miquel.miquel_point_example}
+applies the theorem there; further witnesses cover \decl{Miquel.dist_eq_of_Q_eq_zero},
+\decl{Miquel.circ_aux}, \decl{Miquel.bridge} and \decl{Miquel.core}. The \decl{Miquel.core}
+witness \decl{Miquel.core_example} uses three genuine circles, $x^2+y^2-2x$, $x^2+y^2-2y$ (meeting
+at the origin and at $(1,1)$) and $x^2+y^2-2$, with non-zero certificate multipliers;
+\decl{Miquel.core_example_point} proves that the second intersection point of the first two is
+$(1,1)$, not the origin, and \decl{Miquel.core_example_conclusion} applies \decl{Miquel.core} to put
+it on the third circle. (An earlier version of this witness took the zero polynomial as its third
+circle and so did not exercise the certificates; it has been replaced.) \decl{Miquel.rp_zero} has
+no hand-written witness; it is harness-certified satisfiable.
+\emph{Brahmagupta:} the unit square and the rhombus of Section~\ref{sec:brahmagupta}, through
+\decl{Brahmagupta.unitSquare_brahmagupta}, \decl{Brahmagupta.unitSquare_square_area} and
+\decl{Brahmagupta.rhombus_not_cospherical'}.
+\emph{Malfatti:} \decl{Malfatti.malfatti_circles_exist_triW} and
+\decl{Malfatti.malfatti_circles_formula_triW} instantiate the two headline theorems at the right
+triangle \decl{Malfatti.triW} with vertices $(0,0),(1,0),(0,1)$, whose affine independence is
+\decl{Malfatti.triW_affineIndependent}. The algebraic lemmas are instantiated at $r=1$,
+$(p,q,w)=(1/3,1/3,1/7)$ and, so that the $r$-scaling is exercised, at $r=2$,
+$(p,q,w)=(1/3,1/5,3/11)$: Heron's relation (\decl{Malfatti.heron_witness},
+\decl{Malfatti.heron_witness_r2}) is fed to \decl{Malfatti.K_eq_zero_of_heron}, whose conclusion
+$K=0$ is in turn fed to \decl{Malfatti.radius_eq}, \decl{Malfatti.dist_identity} and
+\decl{Malfatti.mu_lt_one}; \decl{Malfatti.param_spec} is instantiated at $(r,x,d)=(3,4,5)$. Each
+witness is the target lemma's conclusion at those arguments, so most changes to the lemma or to a
+numeral break the application (not all: see the value-preserving survivor above).
+
+\paragraph{Cross-platform rebuild on arm64/macOS.} All four libraries
+were rebuilt on a second machine with a different architecture and operating system (Apple
+M5~Pro, arm64, macOS), with the same Lean and Mathlib versions, from sources transferred by
+tarball and checked by SHA-256 on both legs. Before the witnesses and bridges were added, the
+three builds there completed with exit status~0, 0 warnings and the same job counts as on the
+build machine (8{,}710, 8{,}711, 8{,}710), and \lean{\#print axioms} agreed for all 25
+declarations then cited. On the final sources all four libraries built there with exit status~0
+and 0 warnings (8{,}712, 8{,}713, 8{,}711 and 8{,}712 jobs), \path{gate.sh} passed at 46, 84, 30
+and 77 declarations, and \path{tests/tamper.sh} rejected all six defects in each repository. This
+rebuild uses the same sources, toolchain and author, so it checks platform independence, not
+independent authorship.
+
+\paragraph{Limits of these checks.} None of these checks shows that a formal statement says what
+its informal counterpart says. The author has checked each entry of Table~\ref{tab:thms} by hand
+against the cited Lean declaration and confirms that the formal statement, with the listed
+hypotheses, is the informal statement in the same row. This is a single reader's judgement, so it
+was complemented by a blind re-formalisation and, in version~2, by a comparison with classical
+statements (Section~\ref{sec:l1415}).
+
+\paragraph{Blind re-formalisation.} The paper's text, with every Lean name, declaration
+reference and repository link removed, was given to a separate language-model writer that had no
+access to the code. From that text alone it wrote a Lean statement of each of the four theorems.
+Each blind statement was then compared with the corresponding library theorem by proving, in Lean
+against the pinned libraries, both implications: blind statement $\Rightarrow$ library statement
+and library statement $\Rightarrow$ blind statement. Inside these proofs only the premise, the
+local definitions and general Mathlib lemmas were allowed; a transitive walk over the dependency
+closure of all eight implications confirms that none of the fourteen headline theorems of the
+libraries is used. All eight implications were proved, from the standard axioms only, so all four
+pairs are equivalent. Two points are worth recording. For Feuerbach the blind statement has no
+hypothesis that the ambient space is two-dimensional; the library theorem does, and the implication
+from the library statement to the blind one goes through by restricting to the affine span of the
+triangle, confirming that this hypothesis is removable, as stated in Section~\ref{sec:feuerbach}.
+For Feuerbach and Malfatti, identifying the blind statement's explicitly defined centres and radii
+with Mathlib's uses the library's coordinate lemmas for those points, which are definition bridges
+and say nothing about tangency. The comparison is statement-level: it shows that the prose and the
+code state the same propositions, not that either is true. The writer was a model, not an
+independent human formaliser, and it shares the paper's wording; the check guards against
+prose-versus-code drift, not against a shared misreading of the mathematics.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+\emph{These two layers were added in version~2 (21--22~October 2026). Each repository gains the files
+\path{<Lib>/L14.lean} and \path{<Lib>/L15Classical.lean} (Section~\ref{sec:avail}); every earlier library
+file is byte-identical to the published commit. With the new files the gates pass, standard axioms only,
+at 71 (Feuerbach), 101 (Miquel), 50 (Brahmagupta) and 93 (Malfatti) declarations, against 46, 84, 30 and
+77 before. \path{tests/tamper.sh} still rejects all six planted defects in each repository, and a grep of
+each new Layer-15 file for \lean{sorry}, \lean{admit}, \lean{native\_decide}, \lean{axiom},
+\lean{set\_option}, \lean{macro}, \lean{notation}, \lean{run\_cmd}, \lean{\#print} and \lean{\#eval}
+is empty. The battery layers of this section (mutation, ablation, satisfiability) and the arm64
+rebuild were not repeated on the new files.}
+
+\paragraph{Layer 14: statements in Mathlib's language and non-vacuity.} Each of the four numbered
+theorems (Theorems~\ref{thm:feuerbach}--\ref{thm:malfatti}) is restated in \path{<Lib>/L14.lean} with
+Mathlib-only types and proved from the library theorem through bridges. That is six declarations: one
+each for Feuerbach and Brahmagupta, and two each for Miquel and Malfatti. A check of each elaborated type,
+printed with full names, found no constant from the library's namespace. For each theorem a witness proves
+every hypothesis on an explicit configuration and also proves that the conclusion is non-degenerate:
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{0.43\textwidth}p{0.53\textwidth}@{}}
+\toprule
+restatement & witness and distinctness proved\\
+\midrule
+\decl{Feuerbach.l14_feuerbach}: the nine-point circle is given by its defining property, as \emph{any}
+sphere through the three side midpoints & \decl{Feuerbach.l14w_feuerbach}: triangle $0,4,3i$, circle with
+centre $1+\tfrac34i$ and radius $\tfrac54$; the incircle and each excircle differ from it, and the four
+tangent circles are pairwise distinct\\
+\decl{Miquel.l14_miquel}, \decl{Miquel.l14_miquel_cospherical}: $\mathrm{Dp}\ne0$ becomes
+$\neg$\mdecl{Collinear}, the parameters become membership of \lean{line[$\RR$,$\cdot$,$\cdot$]} together with
+``not a vertex'' (equivalent hypotheses), and the circles are written with \mdecl{Cospherical} &
+\decl{Miquel.l14w_miquel}: $A=0$, $B=2$, $C=2i$, with $F=-2$ and $E=-2i$ on extended sides and $D=1+i$;
+the Miquel point is forced to be $-2-2i$, which differs from all six points; the three circles are
+distinct\\
+\decl{Brahmagupta.l14_brahmagupta}: the area is written as $\tfrac12\,AC\cdot BD\sin\theta$, with $\theta$
+Mathlib's angle between the diagonals & \decl{Brahmagupta.l14w_brahmagupta}: $(1,0),(0,1),(-1,0),
+(\tfrac35,-\tfrac45)$; the four vertices are distinct, $BC\ne CD$ (so it is not a square), and the area is $\tfrac95$\\
+\decl{Malfatti.l14_malfatti_circles_exist}, \decl{Malfatti.l14_malfatti_circles_formula}: the statement was
+already Mathlib-only apart from \lean{semi}, which is written out & \decl{Malfatti.l14w_malfatti}: the
+scalene triangle $(0,0),(154,0),(35,120)$ with sides $154,169,125$; \emph{every} family satisfying the
+conclusion has pairwise distinct centres and circles (radii positive, but not computed in closed form)\\
+\bottomrule
+\end{tabular}
+\end{center}
+No Mathlib-only restatement turned out false, and none needed a hypothesis beyond those of the library
+theorem. The \lean{Fact (finrank ℝ V = 2)} hypothesis, which Theorem~\ref{thm:feuerbach} does not use,
+\emph{is} needed in the defining-property form: in dimension at least three, a large sphere through the
+three midpoints is not tangent to the incircle. The Brahmagupta shoelace area is still not formally identified with
+Lebesgue measure (Section~\ref{sec:limits}). The other rows of Table~\ref{tab:thms} (Euler's formula, the distances, the
+all-four-point Brahmagupta statements, the general-space Malfatti lemmas) were not restated, because
+Layer~14 covers only the numbered theorems.
+
+\paragraph{Layer 15: comparison with classical statements.} A separate agent, which saw no formalisation,
+wrote textbook statements of the four theorems (B1--B4), by its own account from memory apart from one
+web source, the Wikipedia page on the Malfatti circles. It attached citations (Feuerbach 1822 and
+Coxeter--Greitzer \S5.6; Miquel 1838 and Johnson \S184; Brahmagupta and Coxeter--Greitzer \S3.2;
+Malfatti 1803 and Stevanovi\'c 2003), but it did not consult these sources and their section references
+were not checked. An AI writer that saw only those statements, and neither the code
+nor this paper, wrote 19 Lean statements with Mathlib notions, each ending in \lean{sorry}. Four of them
+are construction obligations. The writer defined three notions itself: a convex quadrilateral (the
+diagonals cross in their interiors), the area of a quadrilateral (Lebesgue measure of the convex hull)
+and a Malfatti triple (closed discs inside the triangle). Its tool-call transcript, and that of the statement collector, were audited: neither read the paper or
+the code, and the writer made no web access (a transcript audit is in the verification repository). A comparer copied
+the statements verbatim and then either proved each from the development or classified it. All the proofs
+depend only on the three standard axioms. They are collected in \path{<Lib>/L15Classical.lean}
+(namespace \lean{<Lib>.Classical}), whose gates list every one of them; the writer's definitions are
+reproduced there verbatim. Of the 19 statements:
+\begin{itemize}
+\item \emph{covered, 13:} all seven Feuerbach statements (internal and external tangency, the two distance
+forms, the excentre obligation from Mathlib, and the two remarks, newly proved in these libraries in version~2; the equilateral coincidence was
+already described informally in Section~\ref{sec:feuerbach}); Miquel on open sides and on side
+lines, and its non-collinearity obligation (new); the Brahmagupta measure obligation (from Mathlib);
+Malfatti existence, with containment in the triangle (new); and the Malfatti positivity obligation;
+\item \emph{narrower, 4:} Brahmagupta's formula in both forms and the angle form of Bretschneider's
+formula (the last not stated in the version-1 files) are proved for the shoelace area (\decl{Brahmagupta.Classical.cov_B3_a_part},
+\decl{Brahmagupta.Classical.cov_B3_b_part}, \decl{Brahmagupta.Classical.cov_B3_remark_bretschneider_part}).
+For the writer's Lebesgue area they are proved only under the explicit hypothesis \lean{AreaBridge}
+(Lebesgue measure of the convex hull equals the shoelace area for convex quadrilaterals); that
+identification is missing. Malfatti's radius formula is proved for the constructed triple
+(\decl{Malfatti.Classical.cov_B4_b_part}). For \emph{every} Malfatti triple it is proved only from the
+uniqueness statement (\decl{Malfatti.Classical.cov_B4_b_of_unique}); uniqueness itself is missing;
+\item \emph{out of scope, 1:} uniqueness of the Malfatti circles (\lean{classical\_B4\_a\_unique}), which
+the paper does not claim. It is not proved;
+\item \emph{writer statement false as written, 1:} ``a convex quadrilateral is cyclic iff
+$\angle DAB+\angle BCD=\pi$''. The writer's convexity admits four collinear points: $A=(0,0)$, $B=(2,0)$,
+$C=(1,0)$, $D=(\tfrac14,0)$ has angle sum $\pi$ but the points are not cospherical
+(\decl{Brahmagupta.Classical.cov_B3_remark_cyclic_iff_false}). The forward direction is proved for
+distinct consecutive vertices (\decl{Brahmagupta.Classical.cov_B3_remark_cyclic_iff_part}).
+\end{itemize}
+New proofs, not in the files of version~1:
+(i) a triangle is equilateral iff $R=2r$ (\decl{Feuerbach.Classical.l15_equilateral_iff}), so for an
+equilateral triangle the nine-point circle is the incircle
+(\decl{Feuerbach.Classical.cov_B1_remark_equilateral}), and otherwise the internal point of contact is
+unique (\decl{Feuerbach.Classical.cov_B1_remark_unique});
+(ii) the three Miquel triples are non-collinear (\decl{Miquel.Classical.cov_B2_obligation});
+(iii) the angle form of Bretschneider's formula for every convex quadrilateral, with the shoelace area
+(\decl{Brahmagupta.Classical.l15_bretschneider_shoelace});
+(iv) the counterexample and the forward direction above;
+(v) each closed Malfatti disc lies in the closed triangle
+(\decl{Malfatti.Classical.l15_closedBall_incenter_subset}, \decl{Malfatti.Classical.l15_malfatti_subset},
+used in \decl{Malfatti.Classical.cov_B4_a}).
+The writer added no hypothesis that the libraries lack. Where the libraries are more general (Feuerbach in
+any inner product space, Miquel in $\CC$, transported to the writer's plane by a Mathlib isometry), the
+writer's statements are special cases. As with the blind re-formalisation, the writer was a model, not an
+independent human formaliser. It was not supplied this paper's wording, but the classical statements it
+formalised were themselves collected by an agent.
+
+\section{Limitations and further work}\label{sec:limits}
+
+\begin{itemize}
+\item \emph{Feuerbach: prior art.} The theorem is already formalised in Lean by Wang
+(standalone repository and open Mathlib pull request \#44236) and in HOL~Light, Isabelle and Rocq.
+Our development is independent but not first. Smaller points: only the three excircles with sign
+set $\{i\}$ are stated; the tangency point (the Feuerbach point) is not given explicitly, although
+Mathlib's characterisation produces it inside an existential (version~2 proves that it is unique for a
+non-equilateral triangle, \decl{Feuerbach.Classical.cov_B1_remark_unique}); and the long machine-generated
+\lean{linear\_combination} certificates would need shortening before they could be offered to
+Mathlib.
+\item \emph{Feuerbach: a global instance.} \path{Feuerbach/Witness.lean} declares a
+\lean{noncomputable instance : Inhabited (Triangle ℝ ℂ)} so that the automated satisfiability
+checker has a default triangle. Adding a default instance can in principle affect elaboration
+elsewhere; the paper's non-vacuity claim rests on \decl{Feuerbach.feuerbach_nonvacuous}, not on the
+instance. We have decided to keep it in the published version: it adds no axiom and no hypothesis
+to any theorem, the satisfiability layer uses it as its default triangle, and removing it would
+change the pinned commit on which every check of Section~\ref{sec:verify} was run. It is an orphan
+instance on a Mathlib type, so it would be dropped from any Mathlib submission.
+\item \emph{Brahmagupta: prior art.} Brahmagupta's formula is already proved in Lean~4, without
+\lean{sorry}, in the ShadowBench repository (commit of 12 June 2026). Our development is not first;
+what it adds is the all-four-point inequality and Ptolemy equivalence, the statement in Mathlib's
+vocabulary and the verification record. We did not compile the earlier proof.
+\item \emph{Brahmagupta: area is the shoelace value.} \decl{Brahmagupta.area} is the absolute
+value of the shoelace expression. It is \emph{not} identified with the Lebesgue measure of the
+convex hull of $\{A,B,C,D\}$; that bridge needs polygon-measure groundwork that Mathlib does not
+have. For a convex quadrilateral, which the headline theorems assume, the shoelace value is the
+geometric area, but this is not proved inside Lean. For the same reason, the classical statements of
+Layer~15, which use Lebesgue measure, are proved only under this identification as an explicit
+hypothesis (Section~\ref{sec:l1415}).
+\item \emph{Brahmagupta: trigonometric Bretschneider only for convex quadrilaterals.} The angle form
+$K^2=(s-a)(s-b)(s-c)(s-d)-abcd\cos^2\tfrac{\alpha+\gamma}2$ is proved in version~2, with the shoelace
+area, for convex quadrilaterals (diagonals crossing in their interiors), as
+\decl{Brahmagupta.Classical.l15_bretschneider_shoelace} (Section~\ref{sec:l1415}); the version-1 files
+have only the angle-free diagonal form \decl{Brahmagupta.sixteen_area_sq}, valid for every
+quadrilateral.
+\item \emph{Brahmagupta: degenerate configurations.} The hypotheses of
+\decl{Brahmagupta.brahmagupta} (\mdecl{Cospherical} and two \mdecl{Sbtw} conditions) do not force the
+four vertices to be distinct: for instance $A=B$ and $C=D$ on a diameter are allowed. In such
+collapsed cases the formula holds with both sides~$0$. The informal reading ``convex cyclic
+quadrilateral'' is accurate only when the vertices are also distinct (Section~\ref{sec:brahmagupta}).
+\item \emph{Brahmagupta: non-convex orderings.} Crossed (self-intersecting) orderings of four
+concyclic points are not covered. For them \decl{Brahmagupta.brahmagupta_sq} does not apply, and
+\decl{Brahmagupta.area_sq_eq_iff_ptolemy} shows that the formula fails unless Ptolemy's equality
+holds for that ordering.
+\item \emph{Miquel: model and degeneracies.} The theorem is stated in $\CC$ with explicit
+coordinates and \mdecl{dist}, not with Mathlib's \mdecl{EuclideanGeometry.Sphere} or
+\mdecl{EuclideanGeometry.Cospherical} API. Version~2 adds such restatements:
+\decl{Miquel.l14_miquel_cospherical}, with \mdecl{Collinear}, side lines and \mdecl{Cospherical}, still in
+$\CC$, and the classical statements in $\mathrm{EuclideanSpace}\ \RR\ (\mathrm{Fin}\ 2)$
+(\decl{Miquel.Classical.cov_B2_b}; Section~\ref{sec:l1415}).
+Degenerate configurations (a collinear triangle, or $D,E,F$ at a vertex) are excluded rather than
+handled. $M$ is not proved distinct from $D,E,F$, and can coincide with one of them in tangent
+configurations. The Miquel-point corollaries (spiral similarity, the complete-quadrilateral and
+pentagon theorems) are not formalised.
+\item \emph{Miquel: prior art.} Miquel's theorem is already formalised in Isabelle/HOL (AFP,
+August 2026) and in Coq's HighSchoolGeometry. Our development is not first; its distinguishing
+feature is that it needs no hypotheses beyond non-degeneracy of the triangle and of the side points.
+\item \emph{Miquel: an unwitnessed lemma and a decoupled control.} \decl{Miquel.rp_zero} has no
+hand-written witness; it is harness-certified satisfiable. \decl{Miquel.miquel_negative_control} is a standalone numerical
+non-concyclicity fact with no formal link to \decl{Miquel.miquel_example}; it supports the claim
+that membership of the third circle is a real constraint only by inspection.
+\item \emph{Malfatti: not the conjecture.} We formalise the construction and the radius formula
+only. Malfatti's maximal-area conjecture is false (Goldberg 1967) and is not formalised, nor is the
+optimality of the greedy arrangement (Zalgaller and Los' 1994).
+\item \emph{Malfatti: uniqueness.} Uniqueness of the Malfatti circles is not proved. Consequently the
+radius formula is proved for the constructed circles, and for an arbitrary triple satisfying the
+classical conditions only under uniqueness as a hypothesis (\decl{Malfatti.Classical.cov_B4_b_of_unique}).
+Containment, listed here in version~1, is now proved: each closed disc lies in the closed triangle
+(\decl{Malfatti.Classical.l15_malfatti_subset}, Section~\ref{sec:l1415}).
+\item \emph{Malfatti: conditional bridges.} \decl{Malfatti.K_bridge} holds only for
+$a,b,c\in(0,\pi/4)$, \decl{Malfatti.D_bridge} only for $\theta\in(0,\pi/2)$, and the geometric
+bridges assume a 2-dimensional plane (Section~\ref{sec:correct}).
+\item \emph{Malfatti: four unused hypotheses.} Ablation finds four hypotheses that the proofs do not
+use: $0<r$ in \decl{Malfatti.radius_eq}, $p<1$ in \decl{Malfatti.dist_identity}, $q<1$ in
+\decl{Malfatti.mu_lt_one} and $i\ne j$ in \decl{Malfatti.fin3_third} (for any $i,j\in\mathrm{Fin}\ 3$
+some $k$ avoids both). None affects soundness, but each lemma is stated more weakly than it could
+be, and the hypotheses should be dropped or justified before publication.
+\item \emph{Malfatti: declarations without mutants.} The mutation harness generated no mutants
+for \decl{Malfatti.isTangentAt_side}, \decl{Malfatti.malfattiCircle_isExtTangent},
+\decl{Malfatti.malfattiCircle_tangent_side}, \decl{Malfatti.sSameSide_center} and
+\decl{Malfatti.touch_mem}, so the mutation layer says nothing about these five statements; they
+have been checked only by reading and by their use in the headline theorems.
+\item \emph{Feuerbach and Brahmagupta: declarations without mutants.} The harness generated no
+mutants for the Feuerbach tangency theorems \decl{Feuerbach.isIntTangent_insphere_ninePointCircle}
+and \decl{Feuerbach.isExtTangent_exsphere_ninePointCircle} or for
+\decl{Feuerbach.nontrivial_of_triangle}, nor for Brahmagupta's headline statements
+\decl{Brahmagupta.brahmagupta}, \decl{Brahmagupta.brahmagupta_sq}, \decl{Brahmagupta.area_sq_le},
+\decl{Brahmagupta.area_sq_eq_iff_ptolemy}, \decl{Brahmagupta.brahmagupta_identity} and
+\decl{Brahmagupta.not_cospherical_of_area_sq_ne}. The mutation layer says nothing about these nine
+statements; they have been checked by reading, by the witnesses and by the numerical scripts.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs and the Python checking
+scripts, to run the prior-art searches and the verification battery, and to draft this paper. The
+author directed the work and reviewed the paper. Every proof is checked by the Lean kernel, and
+the author takes responsibility for all content.
+
+\begin{thebibliography}{99}\sloppy
+\bibitem{AFP} \emph{Archive of Formal Proofs}, \url{https://www.isa-afp.org/}.
+\bibitem{AFPMiquel} A.~Freitas Ramos, D.~Barros Hulak and R.~J.~G.~B.~de~Queiroz, Miquel's
+Theorem in Isabelle/HOL, \emph{Archive of Formal Proofs}, 11 August 2026,
+\url{https://isa-afp.org/entries/Miquel.html}; source \path{thys/Miquel/Miquel.thy} in
+\url{https://github.com/isabelle-prover/mirror-afp-devel}, accessed 7 October 2026.
+\bibitem{HSG} F.~Guilhot et al., \emph{HighSchoolGeometry} (Rocq community library),
+\path{theories/applications_cocyclicite.v}, \lean{Theorem Miquel},
+\url{https://github.com/rocq-community/HighSchoolGeometry}, accessed 7 October 2026.
+\bibitem{Atlas} \emph{atlas-lean}, \url{https://github.com/facebookresearch/atlas-lean}, files
+\path{FeuerbachTheorem.lean}, \path{MiquelTheorem.lean} and \path{BrahmaguptaArea.lean}, imported
+in pull requests \#46, \#61, \#62, \#63 and \#65 on 5 October 2026 (21:37--21:40 UTC) from the
+private repository \path{fairinternal/formal-math}; accessed 7 October 2026.
+\bibitem{Chou} S.-C.~Chou, \emph{Mechanical Geometry Theorem Proving}, D.~Reidel, Dordrecht, 1988.
+\bibitem{Goldberg} M.~Goldberg, On the original Malfatti problem, \emph{Mathematics Magazine}
+40 (1967), 241--247.
+\bibitem{Lean4} L.~de Moura and S.~Ullrich, The Lean~4 theorem prover and programming language, in
+\emph{Automated Deduction -- CADE~28}, Lecture Notes in Computer Science 12699, Springer, 2021,
+625--635.
+\bibitem{LobRichmond} H.~Lob and H.~W.~Richmond, On the solutions of Malfatti's problem for a
+triangle, \emph{Proceedings of the London Mathematical Society} (2) 30 (1930), 287--304.
+\bibitem{Mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proceedings of the
+9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020)}, ACM, 2020,
+367--381. Repository: \url{https://github.com/leanprover-community/mathlib4}.
+\bibitem{PaperA} J.~Bald, Classical plane geometry by coordinate certificates: Desargues, Monge,
+Simson, Napoleon and Lami in Lean~4, manuscript, 2026, not yet published. Lean sources:
+\url{https://github.com/jpbald93/desargues}, \url{https://github.com/jpbald93/monge},
+\url{https://github.com/jpbald93/simson}, \url{https://github.com/jpbald93/napoleon} and
+\url{https://github.com/jpbald93/lami}.
+\bibitem{PR44236} W.~Wang, Mathlib pull request \#44236, \emph{feat(Geometry/Euclidean): prove
+Feuerbach's theorem}, opened 26 September 2026, open at the time of access,
+\url{https://github.com/leanprover-community/mathlib4/pull/44236}, accessed 7 October 2026.
+\bibitem{Scheer} M.~Scheer, A simple vector proof of Feuerbach's theorem, arXiv:1107.1152.
+\bibitem{ShadowBench} ShadowBench problem \path{geo_gen_L2_007},
+\url{https://github.com/epfl-lara/icml-26-lean-challenges/tree/main/autformalization/problems/geometry/L2/geo_gen_L2_007};
+accompanying paper \url{https://arxiv.org/html/2608.29270v1}, \S J.5.
+\bibitem{ShadowBenchProof} L.~Milikic (EPFL LARA), \lean{brahmagupta\_formula}, file
+\path{autformalization/problems/geometry/L2/geo_gen_L2_007/ShadowBench/Source/Main.lean} in
+\url{https://github.com/epfl-lara/icml-26-lean-challenges}, commit
+\texttt{7541fcecef97cc124f38355a2cd2ba0ec8485dd5}, 12 June 2026 (commit message ``Checkpoint
+autoformalization proof state''), accessed 7 October 2026.
+\bibitem{WangRepo} W.~Wang, \emph{Feuerbach} (Formalization of Feuerbach's Theorem),
+\url{https://github.com/wwylele/Feuerbach}, created 29 January 2026, accessed 7 October 2026.
+\bibitem{ZalgallerLos} V.~A.~Zalgaller and G.~A.~Los', The solution of Malfatti's problem,
+\emph{Journal of Mathematical Sciences} 72 (1994), 3163--3177.
+\bibitem{Wiedijk100} F.~Wiedijk, \emph{Formalizing 100 Theorems},
+\url{https://www.cs.ru.nl/~freek/100/}, accessed 7 October 2026.
+\end{thebibliography}
+
+\end{document}

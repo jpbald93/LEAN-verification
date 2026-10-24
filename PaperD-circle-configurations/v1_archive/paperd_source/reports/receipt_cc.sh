@@ -1,0 +1,7 @@
+#!/bin/bash
+# Final receipts: fresh git clone of each published repo at its pinned commit.
+MODE=$1; OUT=$2; W=$HOME/receipt_$(date -u +%Y%m%d_%H%M); rm -rf $W; mkdir -p $W; cd $W
+if [ "$MODE" = john ]; then export PATH="$HOME/.local/gitonly:$HOME/.elan/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/.local/bin"; PK=$HOME/lean/clifford/.lake/packages; SHA="shasum -a 256"; ulimit -n 10240; bash $HOME/lean/fix-mathlib.sh >/dev/null 2>&1; else export PATH=$HOME/.elan/bin:$PATH; PK=$HOME/barbier/.lake/packages; SHA=sha256sum; fi
+echo "RECEIPT $MODE $(date -u) host=$(hostname) arch=$(uname -m)" > $OUT; echo "lean: $(lean --version)" >> $OUT
+echo "===== cliffordchain pin ba083b2158e1b96e2360b6e7d8fe04bd278ff5e2" >> $OUT; git clone -q https://github.com/jpbald93/cliffordchain cliffordchain && cd cliffordchain && git checkout -q ba083b2158e1b96e2360b6e7d8fe04bd278ff5e2 && echo "HEAD $(git rev-parse HEAD) status:$(git status --porcelain | wc -l | tr -d " ")" >> $OUT && echo "mathlib $(python3 -c 'import json;print([p["rev"] for p in json.load(open("lake-manifest.json"))["packages"] if p["name"]=="mathlib"][0])')" >> $OUT && find . -name "*.lean" -not -path "./.git/*" -not -path "./.lake/*" -not -path "./tests/*" | LC_ALL=C sort | xargs $SHA >> $OUT && mkdir -p .lake && ln -s $PK .lake/packages && lake build > build.log 2>&1; echo "build rc=$?" >> $OUT; bash gate.sh 2>&1 | tail -1 >> $OUT; bash tests/tamper.sh 2>&1 | tail -1 >> $OUT; cd $W
+echo "DONE $(date -u)" >> $OUT

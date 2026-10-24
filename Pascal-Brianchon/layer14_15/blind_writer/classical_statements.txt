@@ -1,0 +1,46 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Setting. P^2(K) is the projective plane over a field K (points = 1-dim subspaces of K^3,
+lines = 2-dim subspaces). A conic is the zero set C = {[x] : Q(x) = 0} of a nonzero
+quadratic form Q on K^3; it is non-degenerate if Q is non-degenerate (non-singular:
+not equivalent to a form in fewer than three variables) and C contains at least one point
+(so C is not empty and not a line pair, double line or single point). A non-degenerate conic
+contains no three collinear points. For points X != Y, XY denotes the line through them.
+
+Pascal1 (Pascal's theorem).
+  Let C be a non-degenerate conic in P^2(K) and let A, B, C', D, E, F be six distinct
+  points of C (the "hexagon" A B C' D E F). Then the three points
+        P = AB ∩ DE,   Q = BC' ∩ EF,   R = C'D ∩ FA
+  (intersections of the three pairs of opposite sides) are collinear.
+  (The line through them is the Pascal line of the hexagon.)
+
+Pascal2 (limiting / degenerate forms — stated in the classical sources as corollaries).
+  (a) Five-point form: let A, B, C', D, E be five distinct points of a non-degenerate
+      conic C and t_A the tangent line to C at A. Applying Pascal1 to the hexagon
+      A A B C' D E, with the side "AA" read as t_A, the points
+        t_A ∩ C'D,   AB ∩ DE,   BC' ∩ EA
+      are collinear.
+  (b) Pappus (degenerate conic = pair of lines): if A, C', E are distinct points on a line
+      l and B, D, F distinct points on a line m != l, all six different from l ∩ m, then
+      AB ∩ DE, BC' ∩ EF, C'D ∩ FA are collinear.
+
+Pascal3 (converse; Braikenridge–Maclaurin).
+  If six distinct points A, B, C', D, E, F of P^2(K), no three collinear, are such that
+  AB ∩ DE, BC' ∩ EF, C'D ∩ FA are collinear, then the six points lie on a
+  non-degenerate conic.
+
+Brianchon1 (Brianchon's theorem).  Assume char K != 2.
+  Let C be a non-degenerate conic in P^2(K) and let a, b, c, d, e, f be six distinct
+  tangent lines of C (the sides of a circumscribed hexagon). Let the vertices be
+        V1 = a∩b, V2 = b∩c, V3 = c∩d, V4 = d∩e, V5 = e∩f, V6 = f∩a.
+  Then the three diagonals V1V4, V2V5, V3V6 joining opposite vertices are concurrent
+  (the common point is the Brianchon point).
+
+Brianchon2 (dual form, for comparison).
+  (a) Brianchon1 is the plane dual of Pascal1: under the polarity defined by C, the six
+      tangent lines correspond to their six points of contact, the vertices a∩b, ... to the
+      sides of the inscribed hexagon, and concurrence of the diagonals to collinearity of
+      the Pascal points.
+  (b) Degenerate form: if two adjacent sides coincide (a = b), their "intersection" is
+      read as the point of contact of a with C, and the conclusion still holds
+      (pentagon form).

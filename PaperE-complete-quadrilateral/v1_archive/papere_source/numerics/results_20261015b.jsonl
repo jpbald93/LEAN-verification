@@ -1,0 +1,15 @@
+{"check": "1 newton_gauss", "configs": 1000, "worst_residual": "4.68e-60"}
+{"check": "2 orthocentres_collinear", "configs": 1000, "worst_residual": "2.38e-59"}
+{"check": "3 bodenmiller", "configs": 1000, "worst_residual": "1.31e-54"}
+{"check": "4 orthocentre_line_perp", "configs": 1000, "worst_residual": "8.89e-60"}
+{"check": "5 miquel", "configs": 1000, "worst_residual": "1.45e-57"}
+{"check": "6 steiner_circle", "configs": 1000, "worst_residual": "6.28e-58"}
+{"check": "7 simson", "configs": 1000, "worst_residual": "1.16e-57"}
+{"check": "8 steiner_parallel (via H3-H4, generic)", "configs": 1000, "worst_residual": "3.31e-58"}
+{"check": "8 steiner_parallel_line (all H_i-H_4)", "configs": 1000, "worst_residual": "1.45e-58"}
+{"check": "perp: |H3-H4| (should be 0)", "configs": 300, "worst_residual": "7.49e-59"}
+{"check": "perp: 8 steiner_parallel_line (all H_i-H_4)", "configs": 300, "worst_residual": "2.65e-59"}
+{"control": "ctl newton (one midpoint from unperturbed config)", "configs": 1000, "min_violation": "2.68e-7"}
+{"control": "ctl miquel (unperturbed M on perturbed circles)", "configs": 1000, "min_violation": "1.05e-8"}
+{"control": "ctl simson (feet from a non-Miquel point)", "configs": 1000, "min_violation": "0.00316"}
+{"control": "perp: min(|H1-H3|,|H2-H3|) (should be >0)", "configs": 300, "min_violation": "0.161"}

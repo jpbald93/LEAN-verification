@@ -1,0 +1,72 @@
+--- papere.tex.bak-preastra2	2026-10-15 15:46:42.899621858 -0400
++++ papere.tex	2026-10-15 15:46:42.935771708 -0400
+@@ -351,7 +351,8 @@
+ this correspondence, and the two developments are independent.
+ 
+ \section{Verification}\label{sec:verify}
+-\paragraph{Gates and tampering.} \PH{final receipts after publishing.} Before publishing, each development
++\paragraph{Gates and tampering.} \PH{final receipts after publishing, including machine-labelled
++receipts for the 62-declaration \lean{quadmiquel} on both machines.} Before publishing, each development
+ was gated and tamper-tested on both machines: an x86-64 Linux machine and an arm64 macOS machine.
+ \lean{quadnewton}: 35 declarations, \lean{quadmiquel}: 62 declarations, all with standard axioms only;
+ every planted defect rejected (six tests each: a hidden \lean{sorry}, an axiom split across two lines,
+@@ -373,11 +374,14 @@
+ \ref{thm:miquel} Miquel (relative) & $1.5\times10^{-57}$\\
+ \ref{thm:steiner} Steiner circle (relative) & $6.3\times10^{-58}$\\
+ \ref{thm:simson} Simson line & $1.2\times10^{-57}$\\
+-\ref{thm:par} parallelism (normalised) & $3.3\times10^{-58}$\\
++\ref{thm:par} parallelism, all $H_i-H_4$ (normalised) & $1.5\times10^{-58}$\\
+ \bottomrule
+ \end{tabular}
+ \end{center}
+-Three negative controls failed in every trial, with smallest violations $2.7\times10^{-7}$ (Newton--Gauss
++A separate run of 300 configurations with $L_1\perp L_2$ forced (same margins) checks the
++exceptional case: there $|H_3-H_4|\le7.5\times10^{-59}$, both $H_1$ and $H_2$ stay at distance at least
++$0.16$ from $H_3$, and the parallelism residual over all $H_i-H_4$ is at most $2.7\times10^{-59}$. Three
++negative controls failed in every trial, with smallest violations $2.7\times10^{-7}$ (Newton--Gauss
+ with one midpoint of the configuration and two of a perturbed copy, $L_1$ shifted by $0.1$), $1.1\times10^{-8}$ (the unperturbed $M$ on the
+ perturbed circumcircles) and $3.2\times10^{-3}$ (feet from a point other than $M$). Numerical checks are
+ evidence, not proofs.
+@@ -385,8 +389,9 @@
+ \paragraph{Statement-level battery.} Both developments, with their bridge files, were run through the
+ battery used in the earlier papers, on both machines (15 October 2026). The two machines agree in every
+ category except satisfiability, where some declarations are certified on one machine and not the other.
+-\PH{the figures for \lean{quadmiquel} are for the development before \lean{Parallel.lean} was added;
+-the final run is in progress.}
++\PH{All \lean{quadmiquel} battery results below, including the qualitative ones and the
++cross-machine agreement, refer to the revision before \lean{Parallel.lean} was added; the final run is
++in progress.}
+ \begin{itemize}
+ \item \emph{Conclusion mutations.} \lean{quadnewton} 149/149 and \lean{quadmiquel} 259/259 rejected (two
+ of them by the heartbeat limit); no survivors. The generator alters only conclusions of certain forms
+@@ -396,7 +401,7 @@
+ \item \emph{Contradiction probe.} No contradiction derived from the hypotheses of any declaration (40 and
+ 97 probed). This does not show that the hypotheses are consistent.
+ \item \emph{Satisfiability.} Certified for 48 (x86-64) or 51 (arm64) of 69 declarations of
+-\lean{quadnewton} and 86 or 83 of 128 of \lean{quadmiquel}; every main theorem is among the unresolved.
++\lean{quadnewton} and 86 or 83 of 128 of \lean{quadmiquel}; every main theorem included in the run is among the unresolved.
+ The numerical re-check exhibits configurations in general position for each.
+ \item \emph{Hypothesis ablation.} Each hypothesis binder is removed in turn and the unchanged proof
+ re-checked; a failure shows that this proof uses the binder, not that it is logically necessary. In
+@@ -415,15 +420,18 @@
+ wrote the proofs only the text of this paper with every code name, source link and the verification
+ material removed. From the prose alone it wrote ten Lean statements, one for each part of
+ Theorems~\ref{thm:newton}--\ref{thm:par}, with its own definitions taken from the formulas of
+-Section~\ref{sec:model}. A third model then proved in Lean, for each of the ten, that the blind
+-statement implies ours and ours implies it, using only the premise, unfolding of definitions, and
++Section~\ref{sec:model}. Two separate comparer runs, using the same model as the proof author (the blind
++writer was a different model), then proved in Lean, for each of the ten, that the blind statement
++implies ours and ours implies it, using only the premise, unfolding of definitions, and
+ general Mathlib lemmas (no theorem of our developments in any proof body). All twenty implications were
+ proved, with standard axioms only; no difference was found. The comparisons needed only definitional
+ agreements between the two sets of definitions, plus one rewriting of the power of a point
+ ($\operatorname{normSq}$ versus the squared norm). This check is only as independent as the blind text
+ allows: the model section gives the defining formulas, so it tests the statements of the theorems, not
+ the choice of definitions, which Section~\ref{sec:bridges} addresses. The writer's claim to have read
+-only the blind text is checked against its tool-call log, which is archived. \PH{author's hand check.}
++only the blind text was checked by the author against its full transcript; the complete arguments of
++all six tool calls it made (two reads of the blind text; shell commands that write and compile its own
++file) are archived, with machine names redacted. \PH{author's hand check.}
+ 
+ \section{Limitations}\label{sec:limits}
+ \begin{enumerate}

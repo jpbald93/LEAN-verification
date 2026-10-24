@@ -1,0 +1,346 @@
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+  The centrepiece is the beginning of Clifford's
+chain: for four circles through a common point in general position, the four circles through
+triples of their second intersection points have a common point (the case $n=4$); for five such
+circles the five points so obtained lie on one circle \emph{or one line} (the case $n=5$); and, under
+a stated further non-degeneracy condition, for six circles the six circles so obtained have a common
+point (the case $n=6$). We also prove Miquel's five-circles theorem for the pentagram (again with
+the conclusion ``on a circle or on a line''), Lester's theorem that the circumcentre, the
+nine-point centre and the two Fermat points of a scalene triangle are concyclic, the
+Sawayama--Th\'ebault theorem on the centres of the two Th\'ebault circles and the incentre, and
+Kosnita's concurrence theorem; and, as two short companions in the same style, Blundon's
+inequalities and the Steiner--Lehmus theorem. Every degenerate configuration that a statement
+excludes is named, and for several exclusions we exhibit configurations showing that the hypothesis
+cannot simply be dropped. 
+In the sources and search scope listed in Section~\ref{sec:related} we found no previous complete formal
+proof of any of these theorems, with one partial exception: the algebraic core of Steiner--Lehmus
+  The formal proofs we found closest to the circle theorems are of
+the three-circle Miquel theorem, which is the base case of Clifford's chain.
+\end{abstract}
+
+\section{Introduction}
+
+Many of the most attractive theorems of nineteenth-century plane geometry are \emph{incidence
+theorems for circles}: some construction is carried out with circles, and at the end several points
+turn out to lie on one circle, or several circles turn out to pass through one point. The simplest is
+Miquel's pivot theorem \cite{miquel1838}: if a point is chosen on each side of a triangle, the three
+circles through a vertex and the two chosen points on the adjacent sides pass through a common
+point. 
+
+Clifford \cite{clifford1871} discovered that Miquel's theorem is the first step of an infinite chain.
+Take $n$ circles in general position through a common point $M$. Any two meet again in a point;
+any three determine a circle through their three such points; for four circles, the four circles so
+obtained are concurrent; for five, the five points so obtained are concyclic; for six, the six circles
+so obtained are concurrent; and so on, alternating between points and circles. Miquel's five-circles
+theorem, the Sawayama--Th\'ebault theorem and Kosnita's theorem are further classical circle
+configurations, treated in the standard texts \cite{johnson1929,pedoe1970} and, for Th\'ebault's
+problem, by computer algebra \cite{chou1988}; Lester's theorem is more recent \cite{lester1997,yiu2010}.
+ 
+
+\subsection{Contributions}
+ 
+\begin{enumerate}
+\item \textbf{Clifford's chain, $n=4,5,6$} (Theorems~\ref{thm:cliff4}--\ref{thm:cliff6}), in an explicit
+complex-coordinate model, together with a second, independent development
+(Section~\ref{sec:chain}) which defines an existential predicate for the chain at every $n$,
+proves the cases $n=4,5$ in that general form, and proves the $n=5$ case with no hypothesis beyond general position.
+\item \textbf{Miquel's five-circles theorem} (Theorem~\ref{thm:five}).
+\item \textbf{Lester's theorem} (Theorem~\ref{thm:lester}).
+\item \textbf{The Sawayama--Th\'ebault theorem} (Theorem~\ref{thm:thebault}).
+\item \textbf{Kosnita's theorem} (Theorem~\ref{thm:kosnita}).
+\item \textbf{Blundon's inequalities} and \textbf{the Steiner--Lehmus theorem}
+(Theorems~\ref{thm:blundon} and~\ref{thm:steiner}), which are not circle configurations but were
+proved by the same method in the same project.
+\end{enumerate}
+
+\paragraph{Method.} The proofs follow the method of the earlier papers in this series
+\cite{paperA,paperB}: choose coordinates (usually complex), reduce the geometric conclusion to the
+  The certificates come with
+  They
+are large (the $n=6$ Clifford case is the largest) but entirely mechanical; what needs care is the
+\emph{statements}, and in particular their non-degeneracy hypotheses.
+
+\paragraph{What is not claimed.} We do not prove Clifford's chain for general $n$
+(Section~\ref{sec:chain}). Every theorem is stated for configurations satisfying explicit
+non-degeneracy hypotheses; Section~\ref{sec:degen} lists them and says which cannot simply be dropped.
+Theorems are stated in the Euclidean plane, not in the inversive (M\"obius) plane, so ``circle'' means
+a Euclidean circle, and lines appear only as stated alternatives.
+
+\subsection{Availability}\label{sec:avail}
+ 33.  File and line counts below are of the library
+[NAME] files, including the root import file, counting every physical line (comments and blank
+lines included) and excluding scratch files; in total 21 files and 4{,}475 lines.
+\begin{center}\small
+ [omitted] 
+\end{center}
+They are published on GitHub; the paper is checked against these commits, and every source reference
+  Every declaration cited with a qualified name in this paper, such as [NAME], is in its development's list;
+other names (in plain typewriter type) are auxiliary definitions or lemmas covered in that way.
+ 
+
+\section{Clifford's chain: $n = 4, 5, 6$}\label{sec:clifford}
+
+\subsection{The model}
+We identify the plane with $\CC$ and put the common point $M$ at the origin. A circle through $0$ is
+determined by its centre $c\neq 0$: it is the circle $\lvert z-c\rvert=\lvert c\rvert$, i.e.\
+$z\bar z = \bar c z + c\bar z$ ([NAME]). For two such circles with distinct centres
+$c_i\neq c_j$, define
+\[
+ P_{ij} \;=\; \frac{\bar c_i\,c_j - c_i\,\bar c_j}{\bar c_i - \bar c_j}
+\]
+([NAME], ); for example $c_1=1$, $c_2=i$ give $P_{12}=1+i$.
+ 
+It is the second intersection point when it differs from $0$; it equals $0$ exactly when the circles
+are tangent at $0$ (e.g.\ $c_1=1$, $c_2=2$), which the theorems below exclude by assuming $P_{ij}\neq 0$.
+For three circles $i,j,k$, $\Gamma_{ijk}$ ([NAME], ) is the
+circumcircle of $P_{ij},P_{ik},P_{jk}$, with centre given by an explicit circumcentre formula
+([NAME], ); when the three points are not
+  
+
+\subsection{The theorems}
+
+\begin{theorem}[Clifford, $n=4$; [NAME]]\label{thm:cliff4}
+Let four circles pass through a common point $M$, with centres $c_1,\dots,c_4$. Suppose every
+second intersection point $P_{ij}$ ($i<j$) differs from $M$, and for each triple $\{i,j,k\}$ the
+three points $P_{ij},P_{ik},P_{jk}$ are not collinear. Then the four circles
+$\Gamma_{123},\Gamma_{124},\Gamma_{134},\Gamma_{234}$ have a common point.
+\end{theorem}
+
+The theorem () asserts existence only. Its witness is an explicit
+point, a ratio of two determinant-like polynomials in the centres and their conjugates,
+  We do not prove that the common point
+is unique, and the theorems below are about these explicit points.
+
+\begin{theorem}[Clifford, $n=5$; [NAME], [NAME]]\label{thm:cliff5}
+Let five circles pass through $M$, with every $P_{ij}\neq M$ and no triple $P_{ij},P_{ik},P_{jk}$
+collinear. For each $k$, let $P_k=\mathrm{cp}$ of the four circles other than circle $k$. Then each
+$P_k$ lies on the four circles $\Gamma$ of those four, and the five points $P_1,\dots,P_5$ lie on one
+circle or on one line.
+\end{theorem}
+
+  [NAME] ()
+asserts that there \emph{exist} five points with these incidences that lie on a circle or a line;
+[NAME] () proves the circle-or-line
+conclusion for the five explicit points $\mathrm{cp}$, and [NAME] gives
+their incidences. The disjunction is not a weakening: in the independent agent's numerical check (reported figures, script not kept), configurations
+satisfying every hypothesis were found in which the five points are pairwise distinct (minimum spacing
+$0.042$) and collinear to $5\times10^{-60}$. The second alternative corresponds to the usual inversive
+formulation, in which a line is a circle through $\infty$; our statement is the finite Euclidean
+circle-or-line form of it, under the stated hypotheses.
+
+\begin{theorem}[Clifford, $n=6$; [NAME]]\label{thm:cliff6}
+Let six circles pass through $M$, with every $P_{ij}\neq M$ and no triple $P_{ij},P_{ik},P_{jk}$
+collinear. For each five-element subset $S$ of the six, let $P^S_T=\mathrm{cp}(c_T)$ for the five
+four-element subsets $T\subset S$, and let $C_S$ be the circle through three designated ones of them
+(for $S=\{1,\dots,5\}$: those of $\{1,2,3,4\}$, $\{1,2,3,5\}$, $\{1,2,4,5\}$; the six choices are listed
+  Suppose those three points are not collinear, for each $S$. Then all five
+points $P^S_T$ lie on $C_S$, for each $S$, and the six circles $C_S$ have a common point.
+\end{theorem}
+
+The six extra hypotheses ([NAME]--[NAME] in ) say that the
+three designated points of each $S$ are not collinear, so that $C_S$ is a genuine circle; they exclude
+exactly the case that Theorem~\ref{thm:cliff5} allows in its second alternative (and the case of
+coincident points). So Theorem~\ref{thm:cliff6} is narrower than the
+generalized-circle statement: it is Clifford's third theorem for configurations whose five-point
+circles are honest circles. The proof reduces all six memberships to one polynomial identity
+([NAME], ), the largest certificate in this paper.
+
+\subsection{The chain for general $n$}\label{sec:chain}
+A second, independently written development, [NAME], defines an existential incidence
+predicate for the whole chain. Its \emph{generalized circles} ([NAME],
+  The proved case $n=5$ uses the radius-$0$ case when all five points coincide. For centres $c:\{0,\dots,n-1\}\to\CC$, the predicate
+$\mathrm{Chain}(n,c,X)$ () says that $X$ is a Clifford object of
+level $n$: for $n=0,1,2$ the point $M$, the circle itself, and the point $P_{01}$; for odd $n\ge3$, a
+generalized circle containing, for each $i$, \emph{some} level-$(n-1)$ point of the circles other than
+$i$; for even $n\ge4$, a single point lying, for each $i$, on \emph{some} level-$(n-1)$ object of the
+circles other than $i$. The predicate asserts existence at each level; it does not assert that the
+objects are unique or that the choices at different levels cohere. Clifford's theorem for $n$ circles is the statement $\mathrm{CliffordChain}(n)$: in general
+position (pairwise transversal, every triple non-degenerate) a level-$n$ object exists
+(). The general-position conditions are stated as
+polynomial inequalities, and a bridge file ties them to geometry (
+onwards): [NAME]~$c\,d$ holds if and only if $M$, $c$, $d$ are not collinear
+([NAME]); the first condition of [NAME] holds if and only if the three
+centres are not collinear ([NAME]); and, for pairwise transversal circles with
+non-collinear centres, the second holds if and only if the three second intersection points are not
+collinear ([NAME]). The last needs the non-collinear centres: the underlying
+identity is $X\prod\lvert c_i-c_j\rvert^2=\mathrm{triP}^2\cdot\mathrm{cycP}$, where $X$ is the collinearity
+determinant of the three points. Together, [NAME] says that [NAME] means
+exactly ``neither the centres nor the three second intersection points are collinear''; and
+ 
+
+\begin{theorem}[[NAME], [NAME]]\label{thm:chain}
+$\mathrm{CliffordChain}(4)$ and $\mathrm{CliffordChain}(5)$ hold.
+\end{theorem}
+
+The $n=5$ case rests on [NAME] ():
+in general position the five points are concyclic or collinear, with no further hypothesis. (The
+same development also contains a version of the $n=5$ theorem with an extra coefficient condition,
+[NAME], which excludes some genuine configurations; we do not cite that version as
+Clifford's theorem.) $\mathrm{CliffordChain}(n)$ for general $n$ is defined but \emph{not} proved;
+proving it would need an induction that the present certificate method does not provide.
+
+\section{Miquel's five circles}\label{sec:five}
+
+Take a pentagon $A_0,\dots,A_4$, extend its sides to form a pentagram with outer points
+$T_0,\dots,T_4$, and draw the five circles through $A_{i-1}$, $A_i$ and the triangle point $T_i$.
+Consecutive circles meet again at points $M_i$. Miquel's theorem \cite{miquel1838} says that the five
+points $M_i$ are concyclic.
+
+\begin{theorem}[[NAME]]\label{thm:five}
+Let $A,T,M:\{0,\dots,4\}\to\CC$ be injective, with no point of one family equal to a point of
+another (so the fifteen labelled points are pairwise distinct). Suppose that for each $i$ (indices mod~5) the points $A_{i-1},A_i,T_{i+1},T_{i-1}$ are
+collinear and the points $A_{i-1},A_i,T_i,M_{i-1},M_i$ are concyclic. Then $M_0,\dots,M_4$ lie on one
+circle or on one line.
+\end{theorem}
+
+The collinearity hypotheses say that $T_{i\pm1}$ lie on the line $A_{i-1}A_i$, which is the
+pentagram incidence; the concyclicity hypotheses say that $M_{i-1}$ and $M_i$ are the second
+intersections of the circle of triangle $i$ with its neighbours. Distinctness of the fifteen points
+excludes, in particular, tangent circles (a second intersection coinciding with $A_i$). Again the
+alternative is genuine: the independent agent's numerical check (reported figures, script not kept) found a non-degenerate pentagram (minimum point
+separation $0.52$) whose five points $M_i$ are collinear to $10^{-39}$. Unlike the other developments,
+the core of this proof is not polynomial algebra. Concyclicity of four points is reduced to the
+vanishing of the imaginary part of a cross-ratio, and that to an equality of doubled directed angles
+([NAME]); the core lemma ([NAME], )
+is then an angle chase, written as a sequence of additive certificates, and is reused for the five
+cyclic relabellings. The theorem is .
+
+\section{Lester's circle}\label{sec:lester}
+
+\begin{theorem}[Lester; [NAME]]\label{thm:lester}
+Let $ABC$ be a scalene triangle in the plane. Let $F_1$ be its first Fermat point, the common point of
+the three lines joining each vertex to the apex of the equilateral triangle erected outwards on the
+opposite side, and $F_2$ its second Fermat point (the same with the equilateral triangles erected
+inwards). Then the circumcentre, the nine-point centre, $F_1$ and $F_2$ are concyclic.
+\end{theorem}
+
+The theorem is due to Lester \cite{lester1997}; see \cite{yiu2010} for the circles of Lester, Evans
+and Parry. The hypothesis is \emph{scalene}, not merely ``not equilateral''. For an isosceles triangle
+all four points lie on the axis of symmetry, and for a typical one they are four distinct points: for
+$A=(0,h)$, $B=(-1,0)$, $C=(1,0)$ with $h\in\{0.3,\,0.5,\,1,\,2.5\}$ we computed (60 digits, archived script) four distinct collinear
+points (minimum separation $0.048$ to $0.33$), which are not concyclic. So the scalene hypothesis cannot
+simply be weakened to ``not equilateral''. It does more than is needed, though: in some isosceles
+triangles points coincide and the conclusion holds trivially, since [NAME] is a property of
+a \emph{set}. For the isosceles triangle with apex angle $120^\circ$, $A=(0,1/\sqrt3)$, the nine-point
+centre and the first Fermat point both equal $A$, and the second Fermat point equals the circumcentre,
+so the set of four points has only two elements.
+  The theorem is . It
+assumes the Fermat points and does not assert their existence.
+
+\section{The Sawayama--Th\'ebault theorem}\label{sec:thebault}
+
+Th\'ebault proposed in 1938 \cite{thebault1938} the following problem, which had been proved already
+by Y. Sawayama in 1905 \cite{sawayama1905}; see \cite{ayme2003} for its history.
+
+\begin{theorem}[Sawayama--Th\'ebault; [NAME]]\label{thm:thebault}
+Let $ABC$ be a triangle and $D$ a point strictly between $B$ and $C$. Let $P$ be the centre of a
+circle tangent to the lines $AD$ and $BC$, internally tangent to the circumcircle of $ABC$, and lying in
+the angle $\angle ADB$; let $Q$ be the centre of such a circle lying in the angle $\angle ADC$. Then
+$P$, $Q$ and the incentre of $ABC$ are collinear.
+\end{theorem}
+
+The definition [NAME] () says that there is
+$r>0$ with $P$ at distance $r$ from both lines, at distance $R-r$ from the circumcentre, on the same
+side of $AD$ as $B$ (resp.\ $C$) and on the same side of $BC$ as $A$; the two side conditions
+together are exactly ``in the open angle''. In the independent numerical check, each angle
+contained exactly one such circle, so the definition picks out the intended circle.  ``Exactly one such circle'' is the agent's reported observation on 1989 sampled triangles (script not kept), not a proved
+uniqueness statement. The theorem assumes $P$ and $Q$ and does not assert their existence. It is
+.
+
+\section{Kosnita's theorem}\label{sec:kosnita}
+
+\begin{theorem}[Kosnita; [NAME]]\label{thm:kosnita}
+Let $ABC$ be a triangle with circumcentre $O$, and let $O_a,O_b,O_c$ be the circumcentres of the
+triangles $OBC$, $OCA$, $OAB$. Suppose that no two of $A,B,C$ are diametrically opposite (so that
+$OBC$, $OCA$, $OAB$ are triangles) and that $AB^2+BC^2+CA^2\neq 5R^2$, where $R$ is the circumradius.
+Then the lines $AO_a$, $BO_b$, $CO_c$ are concurrent.
+\end{theorem}
+
+The circumcentres are specified by equidistance ([NAME], [NAME], \ldots), which in the
+plane is equivalent. The first exclusion ([NAME], [NAME], [NAME]: $O,B,C$ not collinear, etc.) excludes
+right triangles, for which $O$ is the midpoint of a side and $O_a$ does not exist.  We keep it because the proof uses it. The second, $\mathrm{hS}$, cannot simply be
+dropped. Classically the concurrence point (the Kosnita point, $X_{54}$ in Kimberling's encyclopedia
+\cite{etc}; our theorem does not identify it) is at infinity for triangles with
+$AB^2+BC^2+CA^2=5R^2$. In the independent agent's numerical check, three sampled triangles on that locus
+gave three pairwise parallel, distinct lines (determinants of the line pairs about $10^{-61}$,
+separations about $0.18$; reported figures, script not kept), so for them no common point exists and
+the conclusion fails. Not every triangle on the locus behaves this way. For the isosceles triangle $A=(1,0)$, $B,C=(\tfrac12,\pm\tfrac{\sqrt3}2)$ on the unit circle
+  So we do not claim a uniform description of the excluded locus; only that the
+affine conclusion fails on part of it. Relative to a projective statement ``concurrent, possibly at infinity'' the exclusion is a
+weakening. The
+theorem is ; see \cite{grinberg2003} for the Kosnita point.
+
+\section{Two companions: Blundon and Steiner--Lehmus}\label{sec:companions}
+
+\begin{theorem}[Blundon; [NAME]]\label{thm:blundon}
+For a triangle in a real inner product space with circumradius $R$, inradius $r$ and semiperimeter $s$,
+\[
+2R^2+10Rr-r^2-2(R-2r)\sqrt{R^2-2Rr}\;\le\; s^2\;\le\;2R^2+10Rr-r^2+2(R-2r)\sqrt{R^2-2Rr}.
+\]
+\end{theorem}
+Blundon proved that these bounds are best possible \cite{blundon1965}.  The proof is a single
+polynomial certificate ([NAME]): with $x,y,z$ the tangent lengths,
+$s^3\bigl(4r^2E+\Delta^2\bigr)=0$ where $E=s^4-2(2R^2+10Rr-r^2)s^2+r(4R+r)^3$ and $\Delta$ is the product
+of the differences of the sides; hence $E\le 0$, which is the stated pair of inequalities. Bridges tie
+$R$ and $r$ to the side lengths ([NAME], [NAME]).
+The theorem is .
+
+\begin{theorem}[Steiner--Lehmus; [NAME]]\label{thm:steiner}
+In a non-degenerate triangle $ABC$, let $E$ on segment $AC$ and $F$ on segment $AB$ be the feet of
+the internal bisectors from $B$ and $C$. If $BE=CF$ then $AB=AC$.
+\end{theorem}
+  The theorem holds in any real inner product space, and is
+. (The proof is direct; the theorem's notoriety for
+lacking a direct proof \cite{gilbert1963,coxeter1967} concerns synthetic proofs.) The algebraic step
+alone, $b=c$ from equality of the two bisector-length \emph{formulas} over positive side lengths, has
+ 
+
+\section{Non-degeneracy: what each statement excludes}\label{sec:degen}
+
+\begin{center}\small
+ [omitted] 
+\end{center}
+
+\section{Does the statement mean what it says?}\label{sec:blind}
+  Results to be inserted.}
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Formal proofs.} The Archive of Formal Proofs entry on Miquel's theorem \cite{afpmiquel} proves both the incidence
+form of the three-circle (pivot) theorem (a point on two of the circles lies on the third) and the
+existence of the common point; Rocq's HighSchoolGeometry \cite{hsgeometry} proves the incidence form of
+  These three served as a control for our searches.
+ 
+
+   
+
+The search has limits. The Zulip search covered the public archive only, up to about 2
+October 2026; the live search needs a login.  ProofAtlas has no public API, so we used its own index and a
+third-party [NAME] search. The absence of a hit is a statement about this scope only.
+
+\paragraph{Machine proofs outside proof assistants.} Wu's method and its successors prove many of
+geometry theorems by computer algebra, among them Th\'ebault's problem \cite{chou1988}. Java Geometry
+Expert lists Steiner--Lehmus among its examples, and a Gr\"obner-basis prover (Hasclid) has an example
+file for a Blundon-type bound, which we did not run.  In
+Wu's method the non-degeneracy conditions are produced by the method \cite{chou1988}; our statements
+state them explicitly.
+
+\paragraph{Our earlier papers. 
+
+ \section{Limitations and further work}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{Clifford's chain for general $n$} is defined but not proved; only $n\le6$ is proved, and
+$n=6$ only when the five-point circles are not lines.
+\item \textbf{Euclidean, not inversive.} All statements are about Euclidean circles; lines enter only
+as stated alternatives. An inversive-plane formulation would remove several exclusions.
+\item \textbf{Existence.} Lester and Sawayama--Th\'ebault assume the Fermat points and the Th\'ebault
+circles; we do not prove that they exist.
+\item \textbf{Blind checks}, when done, can establish equivalence of statements, not correctness of
+the prose.
+\end{enumerate}
+
+ 

@@ -1,0 +1,3 @@
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "clifford_n5 (five Clifford points concyclic or collinear)", "configs": 500, "worst_residual": "1.23e-57", "control_violated": 500, "control_trials": 500, "min_point_separation": "0.00173"}
+{"done": true, "seconds": 1.2}

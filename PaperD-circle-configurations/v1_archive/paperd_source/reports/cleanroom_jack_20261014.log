@@ -1,0 +1,34 @@
+CLEANROOM Wed Oct 14 02:00:45 PM UTC 2026 tgz 7d463b79f8d05df4f048183a59113c52835ad843c9c6e1b1d771940f448ec9fa  /tmp/paperd_pub.tgz
+===== clifford
+build rc=0
+PASS (20 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== cliffordchain
+build rc=0
+PASS (21 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== fivecircles
+build rc=0
+PASS (6 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== lester
+build rc=0
+PASS (19 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== thebault
+build rc=0
+PASS (12 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== kosnita
+build rc=0
+PASS (11 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== blundon
+build rc=0
+PASS (5 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== steinerlehmus
+build rc=0
+PASS (3 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+DONE Wed Oct 14 02:13:24 PM UTC 2026

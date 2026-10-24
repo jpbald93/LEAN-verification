@@ -1,0 +1,47 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Notation: a triangle ABC is non-degenerate (A, B, C not collinear); a = BC, b = CA, c = AB,
+s = (a+b+c)/2 the semiperimeter, r the inradius, I the incenter.
+
+B1. FEUERBACH'S THEOREM.
+  Let ABC be a triangle. Its nine-point circle (the circle through the midpoints of the three
+  sides, the feet of the three altitudes, and the midpoints of the segments joining the
+  orthocenter to the vertices) is tangent to the incircle and to each of the three excircles.
+  (a) The nine-point circle is internally tangent to the incircle (the incircle lies inside the
+      nine-point circle). Equivalently, with N the nine-point centre and R the circumradius,
+      NI = R/2 - r.
+  (b) The nine-point circle is externally tangent to each of the three excircles. Equivalently,
+      for the excircle with centre I_A and radius r_A opposite A, N I_A = R/2 + r_A (and
+      likewise for B, C).
+  Remark: if ABC is equilateral, the nine-point circle coincides with the incircle (NI = 0,
+  R/2 = r); otherwise the point of contact in (a) is unique (the Feuerbach point).
+
+B2. MIQUEL'S THEOREM (triangle / "pivot" theorem).
+  Let ABC be a triangle and let D, E, F be points on the sides BC, CA, AB respectively
+  (most commonly: on the side lines, distinct from the vertices). Then the three circles
+  through A, E, F; through B, F, D; and through C, D, E pass through a common point M
+  (the Miquel point).
+  (Where one of the triples is collinear, the "circle" is to be read as the line through
+  those points; with D, E, F distinct from the vertices and on the open segments, each of
+  the three triples is non-collinear and the circles are genuine circles.)
+
+B3. BRAHMAGUPTA'S FORMULA.
+  Let ABCD be a (convex) cyclic quadrilateral, i.e. its four vertices lie on a circle, with
+  side lengths a = AB, b = BC, c = CD, d = DA, and semiperimeter s = (a+b+c+d)/2. Then its
+  area K is
+      K = sqrt( (s-a)(s-b)(s-c)(s-d) ).
+  Equivalently 16 K^2 = (-a+b+c+d)(a-b+c+d)(a+b-c+d)(a+b+c-d).
+  (Letting d -> 0 recovers Heron's formula. For a general convex quadrilateral, Bretschneider:
+  K^2 = (s-a)(s-b)(s-c)(s-d) - abcd cos^2((A+C)/2), which reduces to B3 iff A + C = pi.)
+
+B4. MALFATTI CIRCLES.
+  (a) Existence. In every triangle ABC there exist three circles lying inside the triangle,
+      each tangent to the other two (externally) and each tangent to two sides of the
+      triangle: the circle C_A tangent to sides AB and AC, C_B tangent to BA and BC, C_C
+      tangent to CA and CB. (These three circles are uniquely determined by these conditions.)
+  (b) Radii (Malfatti's formula). Let d = IA, e = IB, f = IC be the distances from the
+      incenter to the vertices. Then the radii r_1, r_2, r_3 of the Malfatti circles near
+      A, B, C respectively are
+        r_1 = r / (2(s-a)) * ( s - r + d - e - f ),
+        r_2 = r / (2(s-b)) * ( s - r - d + e - f ),
+        r_3 = r / (2(s-c)) * ( s - r - d - e + f ).

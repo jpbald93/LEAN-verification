@@ -1,0 +1,661 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Code-like text (not checked by a name gate).
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of the two developments; every \decl{...} is checked by namegate_c.sh
+% (it must be in that repository's gate.sh REQUIRED list).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. Both developments are published; the \src anchors below link to these commits.
+% ---------------------------------------------------------------------------------------------
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\expandafter\def\csname commitof:barbier\endcsname{7baae0430954ce78ddf8d6e6bf5a4b841d7b2367}
+\expandafter\def\csname commitof:fourvertex\endcsname{14d10449dd1a206f5342099d65d5f4180830d423}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+
+\title{Barbier's theorem for the Reuleaux triangle and the convex four-vertex theorem\\
+in Lean~4, through support functions}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
+\date{10 October 2026}
+
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+We give machine-checked proofs, in Lean~4 with Mathlib, of two classical theorems on convex plane
+curves, both developed in one model: a curve is described by its support function $h$, and is
+traced as $\gamma_h(\theta) = (h(\theta) + i\,h'(\theta))\,e^{i\theta}$.
+The first is Barbier's theorem: a curve of constant width $w$ has perimeter $\pi w$. We prove it
+not only for twice continuously differentiable support functions but for support functions that are
+merely $C^1$, with $h'$ differentiable and $h+h''\ge 0$ outside a countable set and $h+h''$
+integrable there. This covers the Reuleaux
+triangle, which we construct, show to satisfy the hypotheses, and show not to be twice
+continuously differentiable, so the smooth theorem does not reach it. For the Reuleaux triangle we also identify the perimeter
+with Mathlib's length and exhibit it as a Mathlib convex body of constant width. The second is the four-vertex theorem for
+ovals given by $C^3$ support functions with $h+h''>0$: the curvature is constant or has at least four
+alternating local extrema in a period. We tie each of our own definitions to a standard notion: the perimeter to
+Mathlib's length (total variation) --- for smooth support functions, and separately for the Reuleaux
+triangle --- via a lemma, not in Mathlib, that the length of a $C^1$ curve
+is finite and equals $\int\lvert\gamma'\rvert$; the support function to an actual convex set, whose
+support values and widths we compute; and our curvature to the textbook formula
+$(x'y''-y'x'')/\lvert\gamma'\rvert^3$, for a curve we prove to be simple and closed.
+All proofs use only Lean's three standard axioms. We know of no previous complete formal proof of
+either theorem in any proof assistant, and no formalisation of the Reuleaux triangle.
+\end{abstract}
+
+\section{Introduction}
+
+A compact convex set in the plane has \emph{constant width} $w$ if every pair of parallel support
+lines is at distance $w$. Barbier's theorem \cite{barbier1860} says that every such set has perimeter $\pi w$:
+the circle of diameter $w$ is far from the only example, but all of them have the circle's
+perimeter. The best-known non-circular example is the Reuleaux triangle, bounded by three circular
+arcs of radius $w$, each centred at the opposite corner; see \cite{martini2019} for the theory of
+constant width.
+
+The four-vertex theorem \cite{mukhopadhyaya1909,kneser1912} says that the
+curvature of a simple closed smooth plane curve is either constant or has at least four local
+extrema. A standard proof for strictly convex curves goes through the support function and a
+Sturm--Hurwitz-type lemma: a continuous $2\pi$-periodic function orthogonal to $1$, $\cos$ and $\sin$
+changes sign at least four times in a period, unless it vanishes; see \cite{osserman1985,gluck1971,deturck2007} for the history and the converse.
+
+Both theorems appear on the ``1000+ theorems'' list that Mathlib tracks, and neither has a formal
+proof there (Section~\ref{sec:related}). This paper gives complete Lean~4 proofs of both, in a
+common model, and says exactly how far each statement reaches.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{Barbier, with corners} (Theorem~\ref{thm:barbierpw}): a curve whose support function is
+$C^1$, $2\pi$-periodic and of constant width $w$, with $h'$ differentiable and $h+h''\ge 0$ outside a
+countable set and $h+h''$ integrable (Definition~\ref{def:pcw}), has
+perimeter $\pi w$. The smooth version (Theorem~\ref{thm:barbier}) is a special case
+(Proposition~\ref{prop:topw}).
+\item \textbf{The Reuleaux triangle} (Theorem~\ref{thm:reuleaux}): an explicit support function,
+proved to satisfy the hypotheses of Theorem~\ref{thm:barbierpw}, to have perimeter $\pi w$, to have
+three corners pairwise at distance $w$ and sides that are arcs of radius $w$ about the opposite
+corner, and \emph{not} to be twice continuously differentiable; and, with Mathlib's length in
+place of our own perimeter, that the length is $\pi w$ (Theorem~\ref{thm:reuleaux}(f)).
+\item \textbf{The four-vertex theorem for ovals given by $C^3$ support functions with $h+h''>0$}
+(Theorems~\ref{thm:fourvertex} and~\ref{thm:fvtextbook}), with the Sturm--Hurwitz lemma
+(Lemma~\ref{lem:sturm}).
+\item \textbf{Bridges to standard notions} (Section~\ref{sec:bridges}): the length of a $C^1$ curve
+is finite and equals $\int\lvert\gamma'\rvert$ (Theorem~\ref{thm:length}); our perimeter is
+Mathlib's length for smooth support functions (Corollary~\ref{cor:perlen}) and, separately, for the
+Reuleaux triangle (Theorem~\ref{thm:reuleaux}(f)); the support function $h$ is the support function of
+an explicit convex set of constant width $w$, packaged as a Mathlib convex body
+(Theorems~\ref{thm:body} and~\ref{thm:convbody}); our curvature is the
+textbook signed curvature of a simple closed curve (Theorem~\ref{thm:curv}).
+\end{enumerate}
+
+\paragraph{What is not claimed.} We do not prove that every convex body of constant width has a
+support function of the form we assume, so Theorem~\ref{thm:barbierpw} is Barbier's theorem for
+curves \emph{given} by such support functions, not for arbitrary convex bodies. The four-vertex
+theorem is proved for ovals given by $C^3$ support functions with $h+h''>0$, not for general
+simple closed curves. Section~\ref{sec:limits} lists these and the other limitations.
+
+\subsection{Availability}\label{sec:avail}
+The proofs are in two Lean~4 developments, \lean{barbier} (ten files, 2{,}746 lines) and
+\lean{fourvertex} (six files, 858 lines), on Lean v4.33.1 \cite{lean4} with Mathlib \cite{mathlib2020} pinned at revision
+\texttt{0df444a3}. They are published as \url{https://github.com/jpbald93/barbier} (commit
+\texttt{7baae04}) and \url{https://github.com/jpbald93/fourvertex} (commit \texttt{14d1044}); every
+source reference in this paper links to those commits. Each development has a gate script: it rejects \lean{sorry}, \lean{admit},
+\lean{native\_decide}, \lean{axiom} and meta-programming commands in the sources, builds the library,
+and checks with \lean{\#print axioms} that every listed declaration (62 in \lean{barbier}, 48 in
+\lean{fourvertex}) depends only on \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}.
+Every declaration named in this paper is in those lists (Section~\ref{sec:verify}).
+
+\section{The support-function model}\label{sec:model}
+
+We identify the plane with $\CC$. For $h:\RR\to\RR$ write $h'$ for its derivative, with the usual
+Lean convention that the derivative is $0$ where it does not exist.
+
+\begin{definition}[curve and perimeter]\label{def:curve}
+The \emph{curve} of $h$ is $\gamma_h(\theta) = (h(\theta) + i\,h'(\theta))\,e^{i\theta}$, and its
+\emph{perimeter} is $P(h) = \int_0^{2\pi}\lvert\gamma_h'(\theta)\rvert\,d\theta$
+(\decl{Barbier.curve}, \src{barbier}{Barbier}{Basic}{28}; \decl{Barbier.perimeter}, \src{barbier}{Barbier}{Basic}{31}).
+\end{definition}
+
+The geometry behind the formula: $\langle\gamma_h(\theta), e^{i\theta}\rangle = h(\theta)$, so
+$\gamma_h(\theta)$ lies on the line with outer normal $e^{i\theta}$ at signed distance $h(\theta)$
+from the origin, and when $h$ is $C^2$ the velocity is
+$\gamma_h'(\theta) = (h+h'')(\theta)\cdot i e^{i\theta}$, tangent to that line
+(\decl{Barbier.bridge_curve}, \src{barbier}{Barbier}{Bridge}{37}). So $\rho = h+h''$ is the radius
+of curvature, and the curve is convex where $\rho\ge 0$.
+
+\begin{definition}[smooth constant-width support function]\label{def:cws}
+$h$ is a \emph{smooth constant-width support function of width $w$}
+(\decl{Barbier.ConstWidthSupport}, \src{barbier}{Barbier}{Basic}{21}) if $h$ is $C^2$ and
+$2\pi$-periodic, $h(\theta)+h(\theta+\pi) = w$ for all $\theta$, and $h+h''\ge 0$ everywhere.
+\end{definition}
+
+\begin{definition}[piecewise constant-width support function]\label{def:pcw}
+$h$ is a \emph{piecewise constant-width support function of width $w$}
+(\decl{Barbier.PiecewiseConstWidth}, \src{barbier}{Barbier}{Piecewise}{23}) if $h$ is $C^1$ and
+$2\pi$-periodic, $h(\theta)+h(\theta+\pi) = w$ for all $\theta$, there is a countable set $S$ such
+that for every $\theta\notin S$ the function $h'$ is differentiable at $\theta$ and
+$h(\theta)+h''(\theta)\ge 0$, and $h+h''$ is integrable on $[0,2\pi]$.
+\end{definition}
+
+Countability of $S$ is exactly what the fundamental theorem of calculus with a countable exceptional
+set needs (Mathlib's \mdecl{intervalIntegral.integral_eq_of_hasDerivAt_off_countable_of_le}). It
+allows finitely many corners per period, as in the Reuleaux triangle, and more.
+
+\section{Barbier's theorem}\label{sec:barbier}
+
+\begin{theorem}[Barbier, smooth]\label{thm:barbier}
+If $h$ is a smooth constant-width support function of width $w$, then $P(h) = \pi w$
+(\decl{Barbier.barbier}, \src{barbier}{Barbier}{Basic}{110}).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Since $h+h''\ge 0$, $\lvert\gamma_h'\rvert = h+h''$ (\decl{Barbier.norm_deriv_curve_of_convex}, \src{barbier}{Barbier}{Basic}{80}). Periodicity of $h'$ gives $\int_0^{2\pi}h'' = 0$, so
+$P(h) = \int_0^{2\pi}h$ (\decl{Barbier.perimeter_eq_integral}, \src{barbier}{Barbier}{Basic}{99}).
+Splitting $[0,2\pi]$ at $\pi$ and using $h(\theta)+h(\theta+\pi) = w$ gives $\int_0^{2\pi}h = \pi w$
+(\decl{Barbier.integral_support_eq}, \src{barbier}{Barbier}{Basic}{34}); this step needs only
+continuity of $h$.
+\end{proof}
+
+\begin{proposition}\label{prop:topw}
+Every smooth constant-width support function of width $w$ is a piecewise one of width $w$
+(\decl{Barbier.ConstWidthSupport.toPiecewise}, \src{barbier}{Barbier}{Piecewise}{57}).
+\end{proposition}
+
+\begin{theorem}[Barbier, with corners]\label{thm:barbierpw}
+If $h$ is a piecewise constant-width support function of width $w$, then $P(h) = \pi w$
+(\decl{Barbier.barbier_piecewise}, \src{barbier}{Barbier}{Piecewise}{72}).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Off $S$ the derivative of $\gamma_h$ is still $(h+h'')\,i e^{i\theta}$, which needs only $h$ to be
+$C^1$ and $h'$ differentiable at that point, so $\lvert\gamma_h'\rvert = h+h''$ off $S$. A countable
+set is Lebesgue-null, so $P(h) = \int_0^{2\pi}(h+h'')$. The function $h'$ is continuous, periodic,
+and differentiable off $S$ with integrable derivative, so the countable-exception fundamental theorem
+of calculus gives $\int_0^{2\pi}h'' = h'(2\pi)-h'(0) = 0$. The last step is as before.
+\end{proof}
+
+The care needed is in the junk values: where a derivative does not exist, Lean assigns it the value
+$0$, so on $S$ both $h''$ and $\gamma_h'$ may take junk values, and the proof never uses those values
+except through null sets.
+
+\paragraph{Examples.} The circle of diameter $w$ (\decl{Barbier.circle_perimeter}, \src{barbier}{Barbier}{Examples}{23}) and the smooth family
+$h(\theta) = a + b\cos 3\theta$ with $0\le 8b\le a$, non-circular when $b>0$ (\decl{Barbier.trefoil_perimeter}, \src{barbier}{Barbier}{Examples}{66}) are instances of Theorem~\ref{thm:barbier}. For the circle, the
+curve is Mathlib's \mdecl{circleMap} and the perimeter is $2\pi\lvert r\rvert$
+(\decl{Barbier.bridge_perimeter}, \src{barbier}{Barbier}{Bridge}{122}).
+
+\section{The Reuleaux triangle}\label{sec:reuleaux}
+
+\begin{definition}[Reuleaux support function]\label{def:reuleaux}
+For $w\in\RR$ let
+\[
+  g_w(p) = \begin{cases} \dfrac{w}{\sqrt3}\cos p, & p\le \pi/6,\\[1ex]
+  w - \dfrac{w}{\sqrt3}\cos(p-\pi/3), & p > \pi/6,\end{cases}
+\]
+and let $R_w(\theta) = g_w(p)$, where $p$ is the unique number in $[-\pi/6, -\pi/6+2\pi/3)$
+congruent to $\theta$ modulo $2\pi/3$ (\decl{Barbier.reuleauxPiece}, \src{barbier}{Barbier}{Reuleaux}{10}; \decl{Barbier.reuleaux}, \src{barbier}{Barbier}{Reuleaux}{16}).
+\end{definition}
+
+On the first branch $R_w$ is the support function of the single corner at distance $w/\sqrt3$ from
+the centre; on the second it is the support function of the arc of radius $w$ centred at the
+opposite corner. So $h+h''$ is $0$ on the corner pieces and $w$ on the arc pieces, and it jumps at
+six points per period.
+
+\begin{theorem}[Reuleaux triangle]\label{thm:reuleaux}
+Let $w>0$. Then:
+\begin{enumerate}
+\item[(a)] $R_w$ is a piecewise constant-width support function of width $w$
+(\decl{Barbier.reuleaux_constWidth}, \src{barbier}{Barbier}{Reuleaux}{1074});
+\item[(b)] $P(R_w) = \pi w$ (\decl{Barbier.reuleaux_perimeter}, \src{barbier}{Barbier}{Reuleaux}{1083});
+\item[(c)] $R_w$ is not twice continuously differentiable (\decl{Barbier.reuleaux_not_smooth}, \src{barbier}{Barbier}{Reuleaux}{1086});
+\item[(d)] the points $\gamma(0)$, $\gamma(2\pi/3)$, $\gamma(4\pi/3)$ of the curve of $R_w$ are pairwise
+at distance $w$ (\decl{Barbier.reuleaux_vertices}, \src{barbier}{Barbier}{Reuleaux}{1133});
+\item[(e)] for every $\theta\in[5\pi/6, 7\pi/6]$, $\lvert\gamma(\theta)-\gamma(0)\rvert = w$
+(\decl{Barbier.reuleaux_arc}, \src{barbier}{Barbier}{Reuleaux}{1368});
+\item[(f)] the total variation of $\gamma_{R_w}$ on $[0,2\pi]$ is finite
+(\decl{Barbier.reuleaux_length_ne_top}, \src{barbier}{Barbier}{ReuleauxLength}{296}), equals our
+perimeter (\decl{Barbier.reuleaux_perimeter_eq_eVariationOn}, \src{barbier}{Barbier}{ReuleauxLength}{300}),
+and equals $\pi w$ (\decl{Barbier.reuleaux_length}, \src{barbier}{Barbier}{ReuleauxLength}{248}).
+\end{enumerate}
+\end{theorem}
+
+Part (b) is Theorem~\ref{thm:barbierpw} applied to (a). Part (c) is what makes (b) new: by (c), $R_w$
+satisfies no $C^2$ hypothesis, so the smooth Theorem~\ref{thm:barbier} cannot be applied to it. The
+proof of (c) computes the one-sided limits of $R_w''$ at $\pi/6$, namely $-w/2$ and $w/2$, and
+contradicts continuity of the second derivative. Parts (d) and (e) say the curve really is the
+Reuleaux triangle: (d) gives an equilateral triangle of side $w$, and (e) says one side is an arc of
+radius $w$ about the opposite corner (the other two follow by the $2\pi/3$-periodicity of $R_w$).
+
+Most of the 1{,}379 lines of \lean{Reuleaux.lean} are in (a): $C^1$-smoothness across the wrap-around
+points of the angle reduction, where one-sided derivatives must be matched, and the bookkeeping of
+the reduction modulo $2\pi/3$ (Mathlib's \mdecl{toIcoMod}).
+
+\section{The four-vertex theorem}\label{sec:fourvertex}
+
+The \lean{fourvertex} development uses the same curve $\gamma_h$ (\decl{FourVertex.curve}, \src{fourvertex}{FourVertex}{Support}{25}) and the radius of curvature $\rho = h+h''$
+(\decl{FourVertex.radius}, \src{fourvertex}{FourVertex}{Support}{17}).
+
+\begin{definition}
+A function $g$ has \emph{four sign changes} (\decl{FourVertex.FourSignChanges}, \src{fourvertex}{FourVertex}{Basic}{18}) if there are $t_1<t_2<t_3<t_4<t_1+2\pi$ with $g(t_1)>0$,
+$g(t_2)<0$, $g(t_3)>0$, $g(t_4)<0$. A function $f$ has \emph{four vertices}
+(\decl{FourVertex.FourVertices}, \src{fourvertex}{FourVertex}{Vertices}{73}) if there are
+$c_1<c_2<c_3<c_4<c_1+2\pi$ at which $f$ has, in order, a local maximum, minimum, maximum and minimum.
+\end{definition}
+
+\begin{lemma}[Sturm--Hurwitz type]\label{lem:sturm}
+Let $g$ be continuous and $2\pi$-periodic with $\int_0^{2\pi}g = \int_0^{2\pi}g\cos =
+\int_0^{2\pi}g\sin = 0$. Then $g\equiv 0$ or $g$ has four sign changes
+(\decl{FourVertex.eq_zero_or_fourSignChanges}, \src{fourvertex}{FourVertex}{Basic}{150}).
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+If $g$ has at most two sign changes, choose $a,b$ with $\cos(t-a)-\cos b$ having the same sign
+pattern as $g$; then $g(t)(\cos(t-a)-\cos b)\ge 0$ and is not identically $0$, but its integral is
+$0$ by the three orthogonality conditions, a contradiction. Sign changes come in pairs by
+periodicity.
+\end{proof}
+
+\begin{theorem}[four-vertex, radius form]\label{thm:radius}
+If $h$ is $C^3$ and $2\pi$-periodic, then $\rho$ is constant or $\rho'$ has four sign changes
+(\decl{FourVertex.radius_const_or_fourSignChanges}, \src{fourvertex}{FourVertex}{Support}{124}).
+\end{theorem}
+
+Integration by parts shows $\rho'$ is orthogonal to $1$, $\cos$ and $\sin$ (the terms
+$h'+h'''$ integrate against $\cos$ and $\sin$ to $0$), so Lemma~\ref{lem:sturm} applies. No convexity
+is needed for this analytic statement.
+
+\begin{theorem}[four-vertex theorem for support-function ovals]\label{thm:fourvertex}
+Let $h$ be $C^3$ and $2\pi$-periodic with $\rho>0$ everywhere. Then the curvature $1/\rho$ is
+constant, or there are $c_1<c_2<c_3<c_4<c_1+2\pi$ at which $1/\rho$ has, in order, a local minimum,
+maximum, minimum and maximum (\decl{FourVertex.four_vertex}, \src{fourvertex}{FourVertex}{Vertices}{103}).
+\end{theorem}
+
+The step from four sign changes of $\rho'$ to four alternating extrema of $\rho$ is
+\decl{FourVertex.fourVertices_of_fourSignChanges}; taking reciprocals swaps maxima and minima. The
+oval with support function $5+\cos 2\theta$ is a non-circular example (\decl{FourVertex.oval}, \src{fourvertex}{FourVertex}{Examples}{11}; \decl{FourVertex.oval_four_vertex}, \src{fourvertex}{FourVertex}{Examples}{51}): its radius of curvature ranges over $[2,8]$, attaining
+both ends (\decl{FourVertex.bridge_oval}, \src{fourvertex}{FourVertex}{Bridge}{111}).
+
+\section{Bridges to standard notions}\label{sec:bridges}
+
+The theorems above are stated with our own definitions: our perimeter, our constant-width condition,
+our curvature. This section proves that those definitions mean what they are meant to.
+
+\subsection{Length}
+
+Mathlib defines the length of a curve on $[a,b]$ as its total variation \mdecl{eVariationOn}: the
+supremum over partitions of $\sum\lvert\gamma(t_{k+1})-\gamma(t_k)\rvert$, a value in $[0,\infty]$.
+At our Mathlib pin there is no lemma computing it as an integral.
+
+\begin{theorem}[length of a $C^1$ curve]\label{thm:length}
+If $\gamma:\RR\to\CC$ is $C^1$ and $a\le b$, then the total variation of $\gamma$ on $[a,b]$ is
+finite and equals $\int_a^b\lvert\gamma'(t)\rvert\,dt$
+(\decl{Barbier.length_eq_integral_norm_deriv}, \src{barbier}{Barbier}{ArclenFinite}{50}; the
+finiteness alone is \decl{Barbier.eVariationOn_ne_top_of_contDiff}, \src{barbier}{Barbier}{ArclenFinite}{7}, and the equation alone
+\decl{Barbier.eVariationOn_eq_integral_norm_deriv}, \src{barbier}{Barbier}{Bridge}{144}).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For a partition, $\lvert\gamma(t_{k+1})-\gamma(t_k)\rvert\le\int_{t_k}^{t_{k+1}}\lvert\gamma'\rvert$;
+summing gives variation $\le\int_a^b\lvert\gamma'\rvert$, in particular finiteness. For the converse,
+let $V(s)$ be the variation on $[a,s]$. Additivity of variation over adjacent intervals and the
+two-sided estimate $\lvert\gamma(s+\delta)-\gamma(s)\rvert\le V(s+\delta)-V(s)\le
+\int_s^{s+\delta}\lvert\gamma'\rvert$, both $\delta\lvert\gamma'(s)\rvert+o(\delta)$ by uniform
+continuity of $\gamma'$, give $V'(s) = \lvert\gamma'(s)\rvert$ from the right, and the fundamental
+theorem of calculus concludes.
+\end{proof}
+
+The finiteness clause matters in Lean: the conversion of $[0,\infty]$ to $\RR$ sends $\infty$ to $0$,
+so the equation alone would not by itself exclude infinite length. It was added after the blind
+check of Section~\ref{sec:blind} flagged the difference.
+
+\begin{corollary}[perimeter is length]\label{cor:perlen}
+If $h$ is $C^2$ and $2\pi$-periodic with $h+h''\ge 0$, then $P(h)$ is the total variation of
+$\gamma_h$ on $[0,2\pi]$ (\decl{Barbier.perimeter_eq_eVariationOn}, \src{barbier}{Barbier}{Bridge}{165}).
+\end{corollary}
+
+For the Reuleaux triangle $\gamma'$ is discontinuous, so Corollary~\ref{cor:perlen} does not apply to
+it as stated; the Reuleaux triangle is covered separately by Theorem~\ref{thm:reuleaux}(f), and a
+general perimeter-equals-length bridge for the whole piecewise class is left open
+(Section~\ref{sec:limits}).
+
+\subsection{The convex set}
+
+Mathlib has no support function (its convex-body file lists support sets as future work), so we
+construct the set directly.
+
+\begin{definition}
+The \emph{body} of $h$ is $K_h = \bigcap_{\theta}\{z : \mathrm{Re}(z\,e^{-i\theta})\le h(\theta)\}$
+(\decl{Barbier.body}, \src{barbier}{Barbier}{Bridge}{172}).
+\end{definition}
+
+\begin{theorem}[the body]\label{thm:body}
+$K_h$ is convex for every $h$ (\decl{Barbier.convex_body}, \src{barbier}{Barbier}{Bridge}{175}). If $h$
+is a piecewise constant-width support function of width $w$ then, for every $\theta$:
+\begin{enumerate}
+\item[(a)] $h(\theta)$ is the greatest value of $\langle\gamma_h(\varphi), e^{i\theta}\rangle$ over
+$\varphi\in\RR$, attained at $\varphi = \theta$ (\decl{Barbier.bridge_support_piecewise}, \src{barbier}{Barbier}{BridgePiecewise}{109});
+\item[(b)] $\gamma_h(\theta)\in K_h$ (\decl{Barbier.curve_mem_body_piecewise}, \src{barbier}{Barbier}{BridgePiecewise}{170});
+\item[(c)] the supremum of $\mathrm{Re}(z\,e^{-i\theta})$ over $z\in K_h$ is $h(\theta)$
+(\decl{Barbier.support_body_piecewise}, \src{barbier}{Barbier}{BridgePiecewise}{177});
+\item[(d)] the support values of $K_h$ in directions $\theta$ and $\theta+\pi$ add up to $w$
+(\decl{Barbier.width_body_piecewise}, \src{barbier}{Barbier}{BridgePiecewise}{184}).
+\end{enumerate}
+The smooth versions are \decl{Barbier.curve_mem_body}, \decl{Barbier.support_body} and
+\decl{Barbier.width_body} (\src{barbier}{Barbier}{Bridge}{180}--197).
+\end{theorem}
+
+\begin{theorem}[the body is a convex body]\label{thm:convbody}
+If $h$ is a piecewise constant-width support function of width $w$, then $K_h$ is compact
+(\decl{Barbier.isCompact_body_piecewise}, \src{barbier}{Barbier}{ConvexBodyBridge}{57}) and nonempty
+(\decl{Barbier.body_nonempty_piecewise}, \src{barbier}{Barbier}{ConvexBodyBridge}{60}); with
+convexity this makes $K_h$ a Mathlib \mdecl{ConvexBody} whose support values are $h$ and whose width
+in every direction is $w$ (\decl{Barbier.exists_convexBody_piecewise}, \src{barbier}{Barbier}{ConvexBodyBridge}{64}). In particular, for $w>0$, the Reuleaux triangle is a Mathlib convex
+body of constant width $w$ (\decl{Barbier.reuleaux_convexBody}, \src{barbier}{Barbier}{ConvexBodyBridge}{75}).
+\end{theorem}
+
+Boundedness is the only new input: $h$ is continuous and periodic, so $\lvert h\rvert$ is bounded by
+$M$; a point $z$ of $K_h$ is bounded by the constraint in the direction of $z$ itself,
+$\lVert z\rVert = \langle z, e^{i\arg z}\rangle \le h(\arg z) \le M$.
+
+So $h$ is the support function of the convex set $K_h$, and $K_h$ has width $w$ in every direction:
+it is a set of constant width in the standard sense, and by Theorem~\ref{thm:reuleaux} this includes
+the Reuleaux triangle. The proof of (a) differentiates
+$\varphi\mapsto\langle\gamma_h(\varphi), e^{i\theta}\rangle$, with derivative
+$\rho(\varphi)\sin(\theta-\varphi)$ off $S$, and integrates. A supremum of an unbounded set of reals
+is $0$ in Lean, so (c) and (d) are proved through attainment (part (a) and part (b)), not read off a
+supremum that might be junk.
+
+\subsection{Curvature and simplicity}
+
+Mathlib has no curvature of plane curves, so we define the textbook one.
+
+\begin{definition}
+The \emph{signed curvature} of $\gamma:\RR\to\CC$ at $t$ is
+$\kappa_\gamma(t) = \mathrm{Im}(\overline{\gamma'(t)}\,\gamma''(t))/\lvert\gamma'(t)\rvert^3$, which is
+$(x'y''-y'x'')/(x'^2+y'^2)^{3/2}$ for $\gamma = x+iy$ (\decl{FourVertex.signedCurvature}, \src{fourvertex}{FourVertex}{Curvature}{15}).
+\end{definition}
+
+\begin{theorem}[curvature and simplicity]\label{thm:curv}
+\begin{enumerate}
+\item[(a)] If $h$ is $C^3$ and $\rho(\theta)>0$, then $\kappa_{\gamma_h}(\theta) = 1/\rho(\theta)$
+(\decl{FourVertex.signedCurvature_curve}, \src{fourvertex}{FourVertex}{Curvature}{129}).
+\item[(b)] If $h$ is $2\pi$-periodic, so is $\gamma_h$ (\decl{FourVertex.curve_periodic}, \src{fourvertex}{FourVertex}{Curvature}{168}).
+\item[(c)] If $h$ is $C^3$ and $2\pi$-periodic with $\rho>0$ everywhere, then $\gamma_h$ is injective on $[0,2\pi)$
+(\decl{FourVertex.curve_injOn}, \src{fourvertex}{FourVertex}{Curvature}{179}).
+\end{enumerate}
+\end{theorem}
+
+For (a), $\gamma_h' = \rho\,ie^{i\theta}$ (\decl{FourVertex.bridge_radius}, \src{fourvertex}{FourVertex}{Bridge}{38}) gives $\gamma_h'' = \rho'\,ie^{i\theta}-\rho\,e^{i\theta}$,
+so $\overline{\gamma_h'}\gamma_h'' = \rho\rho'+i\rho^2$ and $\kappa = \rho^2/\rho^3$. For (c), the
+function $\varphi\mapsto\langle\gamma_h(\varphi),e^{i\theta}\rangle$ has derivative
+$\rho(\varphi)\sin(\theta-\varphi)$, so it is strictly increasing on $[\theta-\pi,\theta]$ and strictly
+decreasing on $[\theta,\theta+\pi]$, with maximum $h(\theta)$ attained only at $\theta$ in that
+window. If $\gamma_h(a) = \gamma_h(b)$ with $a\ne b$ in $[0,2\pi)$, reduce $b$ into the window around
+$a$ by periodicity and contradict strictness.
+
+So under the hypotheses of Theorem~\ref{thm:fourvertex}, $\gamma_h$ is a simple closed curve and
+$1/\rho$ is its signed curvature. The theorem can therefore be restated with no reference to
+support functions in its conclusion:
+
+\begin{theorem}[four-vertex theorem, textbook form]\label{thm:fvtextbook}
+Let $h$ be $C^3$ and $2\pi$-periodic with $\rho>0$. Then the signed curvature of the simple closed
+curve $\gamma_h$ is constant, or it has, at some $c_1<c_2<c_3<c_4<c_1+2\pi$, a local minimum, maximum,
+minimum and maximum, in order (\decl{FourVertex.four_vertex_signedCurvature}, \src{fourvertex}{FourVertex}{Curvature}{228}).
+\end{theorem}
+
+The four points are distinct points of the circle $\RR/2\pi\mathbb{Z}$, and each is a local extremum
+in Mathlib's sense (\decl{FourVertex.bridge_FourVertices}, \src{fourvertex}{FourVertex}{Bridge}{95};
+\decl{FourVertex.bridge_FourSignChanges}, \src{fourvertex}{FourVertex}{Bridge}{64}).
+
+\section{Does the statement mean what it says?}\label{sec:blind}
+
+A complete proof only shows that \emph{the Lean statement} is true. To test whether the Lean
+statements say what this paper says, we ran a blind re-formalisation in three rounds.
+
+\paragraph{Round 1 (before this paper).} Fifteen \lean{barbier} results were written out in plain
+language by the author's assistant from the code, translated into Lean by an independent model, and
+compared. Fourteen pairs were equivalent at once. The fifteenth was the length lemma: the blind
+statement asserted finiteness and ours did not. We strengthened ours (Theorem~\ref{thm:length} now
+states finiteness), after which that pair was equivalent too.
+
+\paragraph{Round 2 (this paper).} The mathematical sections of this draft, with every code name, source
+reference and description of the formalisation removed automatically, were given to a model different
+from the one that wrote the proofs. It produced Lean statements of all 22 results and parts of
+Sections~\ref{sec:barbier}--\ref{sec:bridges}, reading only that text (self-reported; Mathlib API
+lookups allowed). A first attempt was rejected on review because two of its definitions were not
+faithful (length defined as the constant~$0$, and the Reuleaux angle reduction omitted); the second
+attempt was reviewed definition by definition. A third model then proved, for each pair, that the blind
+statement and ours imply each other, using only unfolding of definitions, repackaging and general
+Mathlib lemmas, never one of our theorems. The Reuleaux-length and convex-body results were added to
+the draft afterwards and checked the same way in a third round, with seven further blind statements
+(the only difference being a form one, $\mathrm{ofReal}$ against $\mathrm{toReal}$, in the pair for
+Theorem~\ref{thm:reuleaux}(f)).
+
+\paragraph{Result.} Twenty-six of the 29 pairs are equivalent in both directions, including the Reuleaux
+support function (which the blind writer defined with a floor function rather than \mdecl{toIcoMod}),
+the piecewise hypothesis class, the body and its support values, and both forms of the four-vertex
+theorem. A twenty-seventh pair, the Reuleaux perimeter, is equivalent in both directions once the
+finiteness of the length (pair 23) is supplied as a separate hypothesis. The other two pairs differed in one direction only, and in the safe one: an earlier version of
+this draft stated Theorem~\ref{thm:curv}(a) and~(b) under the hypotheses of part~(c), while the Lean
+theorems need fewer (no periodicity for~(a); no smoothness for~(b)). Our statements were therefore
+stronger than claimed. We reworded Theorem~\ref{thm:curv} so each part states exactly its own
+hypotheses.
+
+\paragraph{Caveats.} The blind writers self-reported which files they read. The comparison establishes
+equivalence of statements, not correctness of the prose proofs.
+
+\section{Related work}\label{sec:related}
+
+We searched for prior formal proofs of both theorems in Mathlib (pinned and current), its pull
+requests and issues, the Archive of Formal Proofs \cite{afp}, Coq libraries (GeoCoq, MathComp and its analysis
+library), HOL Light, HOL4, Mizar, Metamath (\texttt{set.mm} and \texttt{iset.mm}), the ``100
+theorems'' and ``1000+ theorems'' lists, GitHub code search, the public Lean Zulip archive, and
+several benchmark and autoformalisation collections. We count only a complete, sorry-free proof as
+prior art.
+
+\paragraph{Barbier.} We found no formal statement or proof in any system, and no formalisation of the
+Reuleaux triangle. The ``1000+'' entry for Barbier's theorem is empty in every system column.
+
+\paragraph{Four-vertex.} The closest work is in \texttt{facebookresearch/atlas-lean} \cite{atlaslean}
+(file \texttt{FourVertex.lean}, present from the repository's initial commit of 28 May 2026), which
+states an incomplete four-vertex theorem for smooth positive-curvature parametrised simple closed
+curves, concluding four stationary points of the curvature rather than the alternating local extrema
+used here. Its Sturm--Hurwitz lemma and
+its final assembly step are \lean{sorry}. We compiled it at our Mathlib pin (after eight line-local
+compatibility edits, no statement changed), and \lean{\#print axioms} confirms that its four-vertex
+theorem and its Sturm--Hurwitz lemma depend on \lean{sorryAx}. A second Lean repository
+(\texttt{mirajcs/TheFourVertexTheorem}) \cite{mirajcs} has definitions and \lean{sorry}s but no four-vertex
+statement. A 2025 Zulip thread records an intention to formalise the theorem, with no code posted. To
+our knowledge, Lemma~\ref{lem:sturm} and Theorem~\ref{thm:fourvertex} are the first complete formal
+proofs of a Sturm--Hurwitz-type lemma and of a four-vertex theorem.
+
+\paragraph{Support functions.} Mathlib has convex bodies (\mdecl{ConvexBody}) but no support function.
+The nearest external Lean work is \texttt{deancureton/MovingSofa} \cite{movingssofa} (September 2026), an
+autoformalisation of Baek's \cite{baek2024} moving-sofa proof, which defines support values and directional width of
+a set and uses \mdecl{eVariationOn} for boundary length. It states neither theorem treated here.
+
+\paragraph{Our earlier papers.} Two earlier papers in this series formalised classical Euclidean
+results by coordinate certificates: Paper~A \cite{paperA} and Paper~B \cite{paperB}. The present paper is the first in the series on
+analytic geometry of curves.
+
+\section{Verification}\label{sec:verify}
+
+\paragraph{Gates.} Each repository's gate script is described in Section~\ref{sec:avail}. Both gates passed on two machines of different
+architecture, an x86-64 Linux machine and an arm64 macOS machine: \lean{barbier} with 62 declarations
+and \lean{fourvertex} with 48, all with only the three standard axioms. The runs were made on
+9--10 October 2026 on the sources that were subsequently published; the published commits contain
+byte-identical sources (checked by hash), so the gate results apply to them.
+
+\paragraph{Tampering tests.} Each repository has a tampering suite that copies the project, plants one
+defect and checks that the gate rejects it at the expected stage: a hidden \lean{sorry}, an
+\lean{axiom} declaration split across two lines, a fake \lean{\#print axioms} report printed by
+\lean{\#eval}, a macro that could redefine commands, a dropped hypothesis that breaks a proof, and an
+extra axiom that only the output parser can catch. All six were rejected in both repositories (run of 10 October 2026, on the x86-64 machine).
+
+\paragraph{Statements not weakened.} The Reuleaux and corner statements were written first, as
+statements with \lean{sorry} proofs, then proved by coding agents under the rule that no statement
+may change. We compared every statement and definition before and after: all are word-for-word
+identical. The pre-existing smooth Barbier and four-vertex theorem statements and proofs are
+unchanged by the work of this paper; the bridge modules and the root import files were extended with
+new lemmas and imports, while the pre-existing \lean{Barbier/Basic.lean} and \lean{Barbier/Examples.lean}
+are byte-for-byte unchanged from their earlier versions.
+
+\paragraph{Statements checked by hand.} The author read every statement quoted in this paper against
+the corresponding Lean source by hand, and confirmed that each informal statement agrees with the
+formal statement it quotes.
+
+\paragraph{Statement-level checks.} Beyond the gate and the tampering suite, both developments were
+run through a statement-level battery. It mutates each theorem (numeric literals, inequalities and
+equalities altered) and checks that the proof rejects the mutant; it probes the hypotheses for
+consistency; it tries to certify each statement satisfiable; it ablates each hypothesis to see
+whether the proof uses it; and it lints for unused variables. Results: \lean{barbier} 386 mutants,
+370 rejected, 16 survived; \lean{fourvertex} 91 mutants, 86 rejected, 5 survived. Every survivor is a
+mutant that is still \emph{true} --- a looser numeric bound (e.g.\ $2w$ to $3w$), a constant changed in
+an auxiliary inequality that stays valid ($\pi/6$ to $\pi/7$), or a strictly stronger hypothesis ---
+so survival is expected and is not a defect: the proofs simply do not depend on the exact constant.
+The contradiction probe found no contradictory hypothesis set. Satisfiability was certified for 101
+of the 168 \lean{barbier} declarations and 26 of the 47 \lean{fourvertex} declarations; the rest are
+recorded as unresolved rather than assumed, because no witness was produced. Hypothesis ablation
+found every hypothesis used except two in \lean{barbier} (\decl{Barbier.perimeter_eq_eVariationOn}
+does not use its convexity hypothesis, and one auxiliary interval lemma does not use its hypothesis
+$w>0$), both of which make the theorem slightly more restrictive than necessary without affecting its
+correctness.
+The unused-variable linter reports no warnings.
+
+\paragraph{Name gate.} A script checks that every declaration named in this paper is in its
+repository's gate list and that every source anchor points at a line declaring that name.
+
+\section{Limitations and further work}\label{sec:limits}
+
+\begin{enumerate}
+\item \textbf{Barbier for curves given by support functions.} We do not prove that every convex body of
+constant width has a support function satisfying Definition~\ref{def:pcw}. That would need the
+general theory of support functions of convex bodies (absent from Mathlib) and a regularity argument.
+\item \textbf{Four-vertex for ovals.} Theorem~\ref{thm:fvtextbook} covers strictly convex $C^3$ curves
+given by $C^3$ support functions with $h+h''>0$. The general theorem for simple closed curves
+\cite{kneser1912}, and the converse \cite{dahlberg2005}, are not attempted.
+\item \textbf{Perimeter versus length in the piecewise class.} Corollary~\ref{cor:perlen} bridges our
+perimeter to Mathlib's length only for smooth support functions, and Theorem~\ref{thm:reuleaux}(f) for
+the Reuleaux triangle; we do not prove a general bridge for the whole piecewise class.
+\item \textbf{Blind checks} establish equivalence of statements, not correctness of the prose
+proofs, and rely on the writers' self-reports (Section~\ref{sec:blind}).
+\end{enumerate}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs, to run the prior-art searches
+and the verification battery, and to draft this paper. The author directed the work and reviewed the
+paper. Every proof is checked by the Lean kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}
+
+\bibitem{barbier1860}
+E.~Barbier,
+\emph{Note sur le probl\`eme de l'aiguille et le jeu du joint couvert},
+Journal de Math\'ematiques Pures et Appliqu\'ees, 2\textsuperscript{e} s\'erie, tome~5 (1860), 273--286.
+
+\bibitem{mukhopadhyaya1909}
+S.~Mukhopadhyaya,
+\emph{New methods in the geometry of a plane arc},
+Bulletin of the Calcutta Mathematical Society \textbf{1} (1909), 31--37.
+
+\bibitem{kneser1912}
+A.~Kneser,
+\emph{Bemerkungen \"uber die Anzahl der Extreme der Kr\"ummung auf geschlossenen Kurven und \"uber verwandte Fragen in einer nicht-euklidischen Geometrie},
+in: Festschrift Heinrich Weber, Teubner, Leipzig, 1912, 170--180.
+
+\bibitem{gluck1971}
+H.~Gluck,
+\emph{The converse to the four-vertex theorem},
+L'Enseignement Math\'ematique \textbf{17} (1971), 295--309.
+
+\bibitem{osserman1985}
+R.~Osserman,
+\emph{The four-or-more vertex theorem},
+American Mathematical Monthly \textbf{92} (1985), no.~5, 332--337.
+
+\bibitem{dahlberg2005}
+B.~E.~J.~Dahlberg,
+\emph{The converse of the four vertex theorem},
+Proceedings of the American Mathematical Society \textbf{133} (2005), no.~7, 2131--2135.
+
+\bibitem{deturck2007}
+D.~DeTurck, H.~Gluck, D.~Pomerleano and D.~S.~Vick,
+\emph{The four vertex theorem and its converse},
+Notices of the American Mathematical Society \textbf{54} (2007), no.~2, 192--207.
+
+\bibitem{martini2019}
+H.~Martini, L.~Montejano and D.~Oliveros,
+\emph{Bodies of Constant Width: An Introduction to Convex Geometry with Applications},
+Birkh\"auser/Springer, 2019.
+
+\bibitem{lean4}
+L.~de Moura and S.~Ullrich,
+\emph{The Lean 4 theorem prover and programming language},
+in: Automated Deduction -- CADE-28, Lecture Notes in Computer Science \textbf{12699}, Springer, 2021, 625--635.
+
+\bibitem{mathlib2020}
+The mathlib Community,
+\emph{The Lean mathematical library},
+in: Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP '20), ACM, 2020, 367--381.
+
+\bibitem{afp}
+\emph{Archive of Formal Proofs}, ISSN 2150-914x. \url{https://isa-afp.org}
+
+\bibitem{atlaslean}
+Meta Fundamental AI Research (FAIR),
+\emph{atlas-lean}, GitHub repository, 2026. \url{https://github.com/facebookresearch/atlas-lean}
+
+\bibitem{mirajcs}
+\emph{mirajcs/TheFourVertexTheorem},
+GitHub repository, 2026. \url{https://github.com/mirajcs/TheFourVertexTheorem}
+
+\bibitem{movingssofa}
+D.~Cureton,
+\emph{MovingSofa} (Lean formalisation of Baek's moving-sofa proof),
+GitHub repository, 2026. \url{https://github.com/deancureton/MovingSofa}
+
+\bibitem{baek2024}
+J.~Baek,
+\emph{Optimality of Gerver's sofa}, arXiv:2411.19826 [math.MG], 2024.
+
+\bibitem{paperA}
+J.~Bald,
+\emph{Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23239930}
+
+\bibitem{paperB}
+J.~Bald,
+\emph{The Malfatti circles in Lean~4, with independent certificate proofs of Feuerbach, Miquel and Brahmagupta},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23240500}
+
+\end{thebibliography}
+
+\end{document}

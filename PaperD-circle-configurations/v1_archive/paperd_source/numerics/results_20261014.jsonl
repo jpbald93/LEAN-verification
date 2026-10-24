@@ -1,0 +1,27 @@
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "clifford_n4 (four Gamma circles concurrent)", "configs": 1000, "worst_residual": "1.12e-58", "control_violated": 1000, "control_trials": 1000}
+{"done": true, "seconds": 1.2}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "clifford_n5 (five Clifford points concyclic or collinear)", "configs": 500, "worst_residual": "1.23e-57", "control_violated": 500, "control_trials": 500, "min_point_separation": "0.00173"}
+{"done": true, "seconds": 1.2}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "clifford_n6 (six five-point circles, each through its 5 points, concurrent)", "configs": 100, "worst_residual": "1.07e-57", "control_violated": 100, "control_trials": 100}
+{"done": true, "seconds": 1.1}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "fivecircles (M_0..M_4 concyclic or collinear)", "configs": 500, "worst_residual": "1.75e-59", "control_violated": 500, "control_trials": 500}
+{"done": true, "seconds": 0.9}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "lester (O, N, F1, F2 concyclic, scalene)", "configs": 1000, "worst_residual": "1.58e-58", "control_violated": 1000, "control_trials": 1000}
+{"done": true, "seconds": 0.3}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "sawayama_thebault (P, Q, incentre collinear)", "configs": 300, "worst_residual": "2.41e-60", "control_violated": 300, "control_trials": 300}
+{"done": true, "seconds": 3.5}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "kosnita (A Oa, B Ob, C Oc concurrent)", "configs": 1000, "worst_residual": "1.23e-59", "control_violated": 1000, "control_trials": 1000}
+{"done": true, "seconds": 0.4}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "steiner_lehmus (equal bisectors => AB = AC)", "configs": 200, "worst_residual": "7.78e-62", "note": "each configuration found by root-finding BE = CF"}
+{"done": true, "seconds": 0.2}
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "blundon (lo <= s^2 <= hi)", "configs": 1000, "min_relative_margin": "4.51e-11", "note": "margin >= 0 means both inequalities hold", "control": "upper bound without the root term", "control_violated": 310, "control_trials": 1000}
+{"done": true, "seconds": 0.1}

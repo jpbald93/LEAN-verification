@@ -1,0 +1,246 @@
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+Four lines in general position form a complete quadrilateral: six vertices, three diagonals, and
+four triangles, one for each line omitted.  On the side of the diagonals: the midpoints of the three diagonals are
+collinear (the Newton--Gauss line); the orthocentres of the four triangles are collinear; every
+orthocentre has equal power with respect to the three circles on the diagonals as diameters (the
+Gauss--Bodenmiller theorem); and the line of the orthocentres is perpendicular to the Newton--Gauss
+line. On the side of the circles: the circumcircles of the four triangles pass through a common point
+$M$, given by an explicit formula (the Miquel point); the four circumcentres and $M$ lie on one circle
+(the Steiner, or Miquel, circle); the feet of the perpendiculars from $M$ to the four lines are
+collinear (the Simson line of the quadrilateral); and that line is parallel to the line of the four
+  The two halves are separate developments that share one file of definitions. We also
+show that two of the four orthocentres can coincide in general position (two of them coincide exactly
+when two of the lines are perpendicular), so the orthocentre line is determined only because the four
+are never all equal, which we prove. The local definitions (line, intersection, circumcentre,
+orthocentre, foot of a perpendicular, power of a point, general position) are proved equal to
+   In the sources we searched, the Newton--Gauss line and the four-line Miquel
+theorem already have formal proofs (in HOL~Light and Rocq); we found none of the other six in any
+ 
+\end{abstract}
+
+\section{Introduction}
+
+A \emph{complete quadrilateral} is a set of four lines in the plane, no two parallel and no three
+through a point. Its six intersection points are its \emph{vertices}; the three segments joining the
+pairs of vertices that do not lie on a common line are its \emph{diagonals}; and omitting one line at a
+time leaves four triangles. The configuration carries a remarkable family of classical theorems,
+found between Gauss and Steiner in the first third of the nineteenth century
+\cite{steiner1828,coolidge1916,johnson1929}. Two of them concern points: the midpoints of the diagonals
+lie on a line, and so do the four orthocentres. Two concern circles: the circles on the diagonals as
+diameters are coaxal, and the four circumcircles pass through one point. The rest tie the two
+families together. 
+
+ [omitted] 
+
+\subsection{Contributions}
+\begin{itemize}
+\item One model of the complete quadrilateral in $\CC$, with explicit formulas for the intersection
+point of two lines, the circumcentre, the orthocentre and the foot of a perpendicular
+(Section~\ref{sec:model}), shared by two independent developments.
+\item The eight theorems, each stated for arbitrary four lines with the single hypothesis
+$\mathrm{GenPos}$ (Sections~\ref{sec:diag} and~\ref{sec:circ}). The collinearity and concyclicity
+ 
+\item An explicit formula for the Miquel point, as the centre of a spiral similarity
+(Section~\ref{sec:circ}).
+\item A small finding about the statements themselves: in general position two of the four
+orthocentres can coincide; $H_3=H_4$ exactly when $L_1\perp L_2$ ([NAME]).
+So ``the line of the orthocentres'' needs the fact, which we prove, that they are not all equal
+(Section~\ref{sec:diag}), and Steiner's parallelism, stated for a fixed pair of orthocentres, needs
+that pair to be distinct (Section~\ref{sec:circ}).
+ 
+\end{itemize}
+
+\paragraph{What is not claimed.} We prove each theorem for one fixed labelling of the four lines; the
+statements are symmetric in content but we did not prove the symmetry. The diagonal circles are shown
+to be coaxal in the sense that the four orthocentres have equal power with respect to all three, which
+ 
+
+\subsection{Availability}\label{sec:avail}
+ 33.  File and line counts are of the library [NAME] files, including the root
+import file and counting every physical line; in total 13 files and 2{,}692 lines.
+\begin{center}\small
+ [omitted] 
+\end{center}
+ }
+ 
+
+\section{The model}\label{sec:model}
+
+Both developments start from the same file [NAME], identical up to the name of its
+namespace. Points are complex numbers. For $a,b\in\CC$ let $\operatorname{cr}(a,b)=\operatorname{Im}(\bar a b)$,
+the cross product of $a$ and $b$ as plane vectors. A line $L$ is a pair $(p,d)$ of a point and a
+direction, with carrier $\{z:\operatorname{cr}(d,z-p)=0\}$. For lines $L=(p,d)$ and $M=(q,e)$,
+\[
+  \operatorname{meet}(L,M)=p+\frac{\operatorname{cr}(e,q-p)}{\operatorname{cr}(e,d)}\,d ,
+\]
+which is their intersection point when $\operatorname{cr}(e,d)\neq0$. Four lines $L_1,\dots,L_4$ are in
+\emph{general position} ($\mathrm{GenPos}$) if their directions are nonzero, no two are parallel
+($\operatorname{cr}(d_i,d_j)\ne0$), and no three pass through one point
+($\operatorname{meet}(L_i,L_j)\notin L_k$ for the four triples). We write $A_{ij}=\operatorname{meet}(L_i,L_j)$
+for the six vertices; the diagonals are $A_{12}A_{34}$, $A_{13}A_{24}$ and $A_{14}A_{23}$; and
+$T_k$ is the triangle of the three vertices not on $L_k$: $T_4=(A_{12},A_{13},A_{23})$,
+$T_3=(A_{12},A_{14},A_{24})$, $T_2=(A_{13},A_{14},A_{34})$, $T_1=(A_{23},A_{24},A_{34})$.
+
+The circumcentre, the orthocentre and the foot of a perpendicular are given by explicit formulas:
+\[
+  \operatorname{circ}(a,b,c)=a+\frac{|b-a|^2(c-a)-|c-a|^2(b-a)}{\overline{(b-a)}(c-a)-(b-a)\overline{(c-a)}},\qquad
+  \operatorname{ortho}(a,b,c)=a+b+c-2\operatorname{circ}(a,b,c),
+\]
+\[
+  \operatorname{foot}(z,L)=p+\frac{\operatorname{Re}\big(\bar d(z-p)\big)}{|d|^2}\,d .
+\]
+The orthocentre is defined through Euler's relation $H=A+B+C-2O$. Section~\ref{sec:bridges} proves
+ 
+
+\paragraph{Normal coordinates.} Both developments first prove that general position puts the
+configuration into a normal form. In [NAME] ([NAME]): there are
+$O,u,w\in\CC$ and real $s,t$ with $A_{12}=O$, $A_{13}=O+u$, $A_{23}=O+w$, $A_{14}=O+su$,
+$A_{24}=O+tw$ and $A_{34}=O+\big(s(1-t)u+t(s-1)w\big)/(s-t)$, where $\operatorname{cr}(u,w)\neq0$,
+$s,t\notin\{0,1\}$ and $s\neq t$. [NAME] proves the same normal form independently, in its own
+notation. The central coordinate identities are then rational-function identities in
+$u,w,\bar u,\bar w,s,t$ with those non-vanishing conditions, discharged principally by
+[NAME], [NAME] and [NAME] with the conjugates treated as
+independent variables; incidence and non-degeneracy lemmas connect them to the geometric conclusions. The two developments were written separately, by different agents on different
+machines, from the shared definitions.
+
+\section{The diagonals and the orthocentres}\label{sec:diag}
+
+All four theorems of this section are in [NAME].
+
+\begin{theorem}[Newton--Gauss line; [NAME]]\label{thm:newton}
+If $L_1,\dots,L_4$ are in general position, the midpoints of the three diagonals are collinear; and
+the midpoints of $A_{12}A_{34}$ and $A_{13}A_{24}$ are distinct ([NAME]).
+\end{theorem}
+
+\begin{theorem}[Orthocentre line; [NAME], [NAME]]\label{thm:ortho}
+If $L_1,\dots,L_4$ are in general position, the orthocentres $H_1,\dots,H_4$ of $T_1,\dots,T_4$ are
+collinear, and they are not all equal: $H_3\neq H_4$ or $H_2\neq H_4$.
+\end{theorem}
+
+The second part is needed, and cannot be strengthened to a fixed pair. For $L_1$ the real axis, $L_2$
+the imaginary axis, $L_3$ the line through $1$ and $i$, and $L_4$ the line through $2$ and $-2i$, the
+lines are in general position and $H_1=H_2=\tfrac32-\tfrac12i$, $H_3=H_4=0$ (checked in exact rational
+arithmetic). So any one pair of orthocentres can coincide, and ``the line of the orthocentres'' is
+determined only because the four are never all equal.
+
+For points $P\neq Q$ let $\operatorname{pw}(z;P,Q)=|z-\tfrac{P+Q}2|^2-\tfrac14|P-Q|^2$, the power of $z$
+ 
+
+\begin{theorem}[Gauss--Bodenmiller; [NAME]]\label{thm:boden}
+If $L_1,\dots,L_4$ are in general position, each orthocentre $H_k$ has the same power with respect to
+the three circles having the diagonals as diameters.
+\end{theorem}
+
+Since the centres of these circles (the diagonal midpoints) are pairwise distinct
+ 
+
+\begin{theorem}[[NAME]]\label{thm:perp}
+If $L_1,\dots,L_4$ are in general position, then for any two orthocentres $H,H'$,
+$\operatorname{Re}\big((m_2-m_1)\overline{(H'-H)}\big)=0$, where $m_1,m_2$ are the midpoints of
+$A_{12}A_{34}$ and $A_{13}A_{24}$.
+\end{theorem}
+With $m_1\neq m_2$ (Theorem~\ref{thm:newton}) and two distinct orthocentres (Theorem~\ref{thm:ortho}),
+this is the perpendicularity of the orthocentre line and the Newton--Gauss line. When $H=H'$ the
+statement holds trivially. 
+
+\section{The circles}\label{sec:circ}
+
+All four theorems of this section are in [NAME]. The Miquel point is given explicitly:
+\[
+  M=A_{12}+\frac{(A_{13}-A_{12})(A_{24}-A_{12})-(A_{23}-A_{12})(A_{14}-A_{12})}{A_{13}+A_{24}-A_{23}-A_{14}}
+\]
+([NAME]), the centre of the spiral similarity taking $A_{13}\mapsto A_{14}$ and
+$A_{23}\mapsto A_{24}$. General position makes the denominator nonzero. $M$ is the reflection of $A_{12}$ in the line
+through the circumcentres of $T_4$ and $T_3$, so it is the second intersection point of those two
+circles; it is none of the six vertices; and it is the only point on the circumcircles of $T_4$,
+$T_3$ and $T_1$ ([NAME], [NAME],
+[NAME]).
+
+\begin{theorem}[Miquel point; [NAME]]\label{thm:miquel}
+If $L_1,\dots,L_4$ are in general position, $M$ lies on the circumcircle of each of $T_1,\dots,T_4$
+(the circle with centre $\operatorname{circ}(T_k)$ through the vertices of $T_k$).
+\end{theorem}
+
+\begin{theorem}[Steiner circle; [NAME]]\label{thm:steiner}
+If $L_1,\dots,L_4$ are in general position, the four circumcentres $\operatorname{circ}(T_1),\dots,
+\operatorname{circ}(T_4)$ and $M$ are cospherical (lie on one circle).
+\end{theorem}
+
+\begin{theorem}[Simson line of the quadrilateral; [NAME]]\label{thm:simson}
+If $L_1,\dots,L_4$ are in general position, the feet of the perpendiculars from $M$ to
+$L_1,\dots,L_4$ are collinear.
+\end{theorem}
+Classically this follows from the triangle Simson line: $M$ is on the circumcircle of each $T_k$, so
+the three feet on the sides of $T_k$ are collinear, and the four triples overlap. Our proof is direct. The four feet are pairwise distinct ([NAME]), so the
+line is determined.
+
+\begin{theorem}[Steiner; [NAME]]\label{thm:par}
+If $L_1,\dots,L_4$ are in general position, with $F_k$ the foot of the perpendicular from $M$ to $L_k$,
+the line through $F_1$ and $F_2$ is parallel ([NAME]) to the affine span of
+the four orthocentres $H_1,\dots,H_4$.
+\end{theorem}
+The line through $F_1,F_2$ is the Simson line (Theorem~\ref{thm:simson}; $F_1\ne F_2$), and the affine
+span of the orthocentres is the orthocentre line: within this development we also prove that the four
+are collinear and not all equal ([NAME],
+[NAME]). The proof goes through the cross-product relations
+$\operatorname{cr}(F_2-F_1,\,H_i-H_4)=0$ for $i=1,2,3$ ([NAME]).
+
+A fixed pair of orthocentres would not do. $H_3=H_4$ exactly when $L_1\perp L_2$
+([NAME]): then both $T_3$ and $T_4$ have their right angle at $A_{12}$, and
+both orthocentres are $A_{12}$; the example after Theorem~\ref{thm:ortho} is of this kind. The first
+version of the theorem we proved, [NAME], used the line through
+$H_4$ and $H_3$ and needed the extra hypothesis $L_1\not\perp L_2$. The theorem above needs none,
+because when $H_3=H_4$ both $H_1$ and $H_2$ differ from it ([NAME]);
+$H_1=H_2$ can still happen.
+
+ 
+\end{itemize}
+Each bridge was first checked numerically, including on forced degenerate inputs; the only statement
+that failed as first written was the fixed-pair parallel form [NAME]
+(Section~\ref{sec:circ}), which led to Theorem~\ref{thm:par}.
+
+\section{Related work}\label{sec:related}
+\paragraph{Classical.} The theorems are classical; standard accounts are Johnson \cite{johnson1929}
+(where the coaxality of the diagonal circles appears as the Gauss--Bodenmiller theorem, p.~172) and
+Coolidge \cite{coolidge1916}. Several of them, including the Miquel point and circle of the complete
+quadrilateral, go back to Steiner's 1828 note on the complete quadrilateral \cite{steiner1828}. We do
+not attempt finer historical attributions.
+
+\paragraph{Formal proofs.  Two of the
+eight have complete formal proofs:
+\begin{itemize}
+\item the Newton--Gauss line, as [NAME] in HOL~Light's [NAME]
+(Chou's example~15 \cite{chou1988}, proved by a Gr\"obner-basis procedure) \cite{hollight}, and as
+[NAME] in the Rocq area-method library \cite{areamethod};
+\item the four-line Miquel theorem, as [NAME] in Rocq's HighSchoolGeometry
+\cite{hsgeometry,guilhot2005}, in conditional form: under the library's incidence and
+non-collinearity hypotheses (which exclude, for instance, the shared vertex itself), a point on two
+specified circumcircles lies on the other two. It does not construct the common point; our
+Theorem~\ref{thm:miquel} gives it by an explicit formula.
+\end{itemize}
+  The triangle
+  A synthetic engine (Newclid/JGEX) also proves the four-line Miquel theorem, but its
+proofs are not checked by a proof assistant. The search was run by one agent; we re-read the three
+hits ([NAME], [NAME] and [NAME]) at their sources and confirmed that they state
+the theorems described. These are completed proofs relative to their libraries' own foundations
+ 
+
+\paragraph{This series.  Paper~A proves the triangle
+Simson line; Paper~D Clifford's chain for four to six circles through a common point. Classically, inversion at
+ 
+
+ \section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{One labelling.} Each theorem is proved for the given order of the lines; the symmetric
+versions are not stated.
+\item \textbf{Local notions.} The theorems are stated with the local definitions; the bridges of
+ 
+\item \textbf{Coaxality} is stated through equal powers, not as a pencil of circles.
+\item \textbf{Prior art.} Two of the eight theorems have earlier formal proofs in other systems.
+\end{enumerate}
+
+ 

@@ -1,0 +1,16 @@
+RECEIPT jack Wed Oct 14 08:52:06 PM UTC 2026 host=x86-machine arch=x86_64
+lean: Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+===== cliffordchain pin ba083b2158e1b96e2360b6e7d8fe04bd278ff5e2
+HEAD ba083b2158e1b96e2360b6e7d8fe04bd278ff5e2 status:0
+mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+c119b340423dff6c57bf007b7518dafccb8ebee374c7b091ad2dce7319ab3932  ./Clifford.lean
+d5c14edbf2da8ec8288484b4eeee54e30e85cf04e5c440c406b4c7144ca0cb16  ./Clifford/Basic.lean
+93eb80b639791dc7e271249a79e0439dd3fd08c831eb71e367129c52c8cecf5b  ./Clifford/Bridge.lean
+ba4fc1b3c567f5d69ca33ea2bcbab0dfaed3a54a779e3405efdb4241be65b83b  ./Clifford/Classify.lean
+2a7cf40b4c473e56c97db8b1485aa5ad468c9cbb5c9a56b5b7ac9adaf33cc463  ./Clifford/Clean.lean
+d6bf1cc913841fd487c539c61e4db62054e62d4b861af3a3cb9eaac8cf35d57a  ./Clifford/Counter6.lean
+90b42ad2f407f49b7ebc955573af3823727cef5403047ccd2467222afd36eeff  ./Clifford/General.lean
+build rc=0
+PASS (32 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+DONE Wed Oct 14 08:54:19 PM UTC 2026

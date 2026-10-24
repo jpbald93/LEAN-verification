@@ -1,0 +1,887 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Code-like text (not checked by a name gate).
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of our developments; every \decl{...} must be in that repository's gate.sh
+% REQUIRED list (checked by the name gate).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. Published 2026-10-14; every \src links to the file and line at this commit.
+% ---------------------------------------------------------------------------------------------
+\expandafter\def\csname commitof:clifford\endcsname{209abaa5e638f37aee8ec374e29b74341297cc46}
+\expandafter\def\csname commitof:cliffordchain\endcsname{ba083b2158e1b96e2360b6e7d8fe04bd278ff5e2}
+\expandafter\def\csname commitof:fivecircles\endcsname{f1fd9b7b2bd9f6b1e881425019f86fc49adba927}
+\expandafter\def\csname commitof:lester\endcsname{9f94754987cbb9ddb8bf14bef295f2bfedb077df}
+\expandafter\def\csname commitof:thebault\endcsname{c37f92e53c9ed790a2c90afdef95a7a35e6a7842}
+\expandafter\def\csname commitof:kosnita\endcsname{702f0263a70136830aee7a9fd38ec7f4fc7d304d}
+\expandafter\def\csname commitof:blundon\endcsname{118b4c9f3afd6d4120ea2c2d2e60c1e70d7dc8b8}
+\expandafter\def\csname commitof:steinerlehmus\endcsname{a3a3d26bee6c68eae6d564228355524c46fe546d}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+
+\title{Circle configurations in classical plane geometry, formalized in Lean~4:\\
+Clifford's chain, Miquel's five circles, Lester, Sawayama--Th\'ebault and Kosnita}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
+\date{14 October 2026}
+
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+We give machine-checked proofs, in Lean~4 with Mathlib, of a family of classical theorems about
+configurations of circles in the Euclidean plane. The centrepiece is the beginning of Clifford's
+chain: for four circles through a common point in general position, the four circles through
+triples of their second intersection points have a common point (the case $n=4$); for five such
+circles the five points so obtained lie on one circle \emph{or one line} (the case $n=5$); and, under
+a stated further non-degeneracy condition, for six circles the six circles so obtained have a common
+point (the case $n=6$). We also prove Miquel's five-circles theorem for the pentagram (again with
+the conclusion ``on a circle or on a line''), Lester's theorem that the circumcentre, the
+nine-point centre and the two Fermat points of a scalene triangle are concyclic, the
+Sawayama--Th\'ebault theorem on the centres of the two Th\'ebault circles and the incentre, and
+Kosnita's concurrence theorem; and, as two short companions in the same style, Blundon's
+inequalities and the Steiner--Lehmus theorem. Every degenerate configuration that a statement
+excludes is named, and for several exclusions we exhibit configurations showing that the hypothesis
+cannot simply be dropped. All proofs use only Lean's three standard axioms.
+In the sources and search scope listed in Section~\ref{sec:related} we found no previous complete formal
+proof of any of these theorems, with one partial exception: the algebraic core of Steiner--Lehmus
+(over side lengths, with the bisector length given by its formula) has a Lean proof, and we found no
+formal proof of the geometric theorem. The formal proofs we found closest to the circle theorems are of
+the three-circle Miquel theorem, which is the base case of Clifford's chain. We also show, with an
+explicit six-circle configuration, that the natural finite-plane formalization of the chain is false
+for every $n\ge6$: its Clifford point lies at infinity.
+\end{abstract}
+
+\section{Introduction}
+
+Many of the most attractive theorems of nineteenth-century plane geometry are \emph{incidence
+theorems for circles}: some construction is carried out with circles, and at the end several points
+turn out to lie on one circle, or several circles turn out to pass through one point. The simplest is
+Miquel's pivot theorem \cite{miquel1838}: if a point is chosen on each side of a triangle, the three
+circles through a vertex and the two chosen points on the adjacent sides pass through a common
+point. It is formalized in Isabelle/HOL \cite{afpmiquel}, both as an incidence statement and with
+existence of the common point; Rocq's HighSchoolGeometry \cite{hsgeometry} has the incidence form of
+the related four-line (complete quadrilateral) Miquel theorem.
+
+Clifford \cite{clifford1871} discovered that Miquel's theorem is the first step of an infinite chain.
+Take $n$ circles in general position through a common point $M$. Any two meet again in a point;
+any three determine a circle through their three such points; for four circles, the four circles so
+obtained are concurrent; for five, the five points so obtained are concyclic; for six, the six circles
+so obtained are concurrent; and so on, alternating between points and circles. Miquel's five-circles
+theorem, the Sawayama--Th\'ebault theorem and Kosnita's theorem are further classical circle
+configurations, treated in the standard texts \cite{johnson1929,pedoe1970} and, for Th\'ebault's
+problem, by computer algebra \cite{chou1988}; Lester's theorem is more recent \cite{lester1997,yiu2010}.
+In the sources we searched (Section~\ref{sec:related}) we found no complete formal proof of any of them
+in a proof assistant.
+
+\subsection{Contributions}
+All results below are proved in Lean~4 \cite{lean4} with Mathlib \cite{mathlib2020}.
+\begin{enumerate}
+\item \textbf{Clifford's chain, $n=4,5,6$} (Theorems~\ref{thm:cliff4}--\ref{thm:cliff6}), in an explicit
+complex-coordinate model, together with a second, independent development
+(Section~\ref{sec:chain}) which defines an existential predicate for the chain at every $n$,
+proves the cases $n=4,5$ in that general form ($n=5$ with no hypothesis beyond general position),
+and proves that it fails for every $n\ge6$: an explicit six-circle configuration in general position has
+its Clifford point at infinity, where the finite plane has no room for it.
+\item \textbf{Miquel's five-circles theorem} (Theorem~\ref{thm:five}).
+\item \textbf{Lester's theorem} (Theorem~\ref{thm:lester}).
+\item \textbf{The Sawayama--Th\'ebault theorem} (Theorem~\ref{thm:thebault}).
+\item \textbf{Kosnita's theorem} (Theorem~\ref{thm:kosnita}).
+\item \textbf{Blundon's inequalities} and \textbf{the Steiner--Lehmus theorem}
+(Theorems~\ref{thm:blundon} and~\ref{thm:steiner}), which are not circle configurations but were
+proved by the same method in the same project.
+\end{enumerate}
+
+\paragraph{Method.} The proofs follow the method of the earlier papers in this series
+\cite{paperA,paperB}: choose coordinates (usually complex), reduce the geometric conclusion to the
+vanishing of a polynomial in the coordinates, and prove that vanishing in Lean by an explicit
+algebraic certificate (\lean{linear\_combination}, \lean{field\_simp}, \lean{nlinarith}); the exception
+is the five-circles theorem, whose core lemma is an argument with doubled directed angles
+(Section~\ref{sec:five}). The certificates come with
+separate lemmas tying the coordinate objects to Mathlib's notions (circumcentre, incentre,
+nine-point circle, \mdecl{Cospherical}, \mdecl{Concyclic}, \mdecl{Collinear}). They
+are large (the $n=6$ Clifford case is the largest) but entirely mechanical; what needs care is the
+\emph{statements}, and in particular their non-degeneracy hypotheses.
+
+\paragraph{What is not claimed.} We do not prove Clifford's chain for general $n$, and we show that
+the natural finite-plane statement of it is false for $n\ge6$ (Sections~\ref{sec:chain}
+and~\ref{sec:chainfail}). Every theorem is stated for configurations satisfying explicit
+non-degeneracy hypotheses; Section~\ref{sec:degen} lists them and says which cannot simply be dropped.
+Theorems are stated in the Euclidean plane, not in the inversive (M\"obius) plane, so ``circle'' means
+a Euclidean circle, and lines appear only as stated alternatives.
+
+\subsection{Availability}\label{sec:avail}
+The proofs are in eight Lean~4 developments on Lean v4.33.1 with Mathlib pinned at revision
+\texttt{0df444a3} (all eight lockfiles agree). File and line counts below are of the library
+\lean{.lean} files, including the root import file, counting every physical line (comments and blank
+lines included) and excluding scratch files; in total 24 files and 5{,}049 lines.
+\begin{center}\small
+\begin{tabular}{llrr}
+\toprule
+development & content & files & lines\\
+\midrule
+\lean{clifford} & Clifford $n=4,5,6$ & 3 & 1{,}271\\
+\lean{cliffordchain} & the chain predicate: $n=4,5$; fails for $n\ge6$ & 7 & 1{,}679\\
+\lean{fivecircles} & Miquel's five circles & 2 & 428\\
+\lean{lester} & Lester's theorem & 4 & 506\\
+\lean{thebault} & Sawayama--Th\'ebault & 2 & 559\\
+\lean{kosnita} & Kosnita's theorem & 2 & 249\\
+\lean{blundon}, \lean{steinerlehmus} & Blundon; Steiner--Lehmus & 2+2 & 228+129\\
+\bottomrule
+\end{tabular}
+\end{center}
+They are published on GitHub; the paper is checked against these commits, and every source reference
+(\texttt{File}:\textit{line}) links to that line at the commit:
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+development & repository & commit\\
+\midrule
+\lean{clifford} & \url{https://github.com/jpbald93/clifford} & \texttt{209abaa5e638}\\
+\lean{cliffordchain} & \url{https://github.com/jpbald93/cliffordchain} & \texttt{ba083b2158e1}\\
+\lean{fivecircles} & \url{https://github.com/jpbald93/fivecircles} & \texttt{f1fd9b7b2bd9}\\
+\lean{lester} & \url{https://github.com/jpbald93/lester} & \texttt{9f94754987cb}\\
+\lean{thebault} & \url{https://github.com/jpbald93/thebault} & \texttt{c37f92e53c9e}\\
+\lean{kosnita} & \url{https://github.com/jpbald93/kosnita} & \texttt{702f0263a701}\\
+\lean{blundon} & \url{https://github.com/jpbald93/blundon} & \texttt{118b4c9f3afd}\\
+\lean{steinerlehmus} & \url{https://github.com/jpbald93/steinerlehmus} & \texttt{a3a3d26bee6c}\\
+\bottomrule
+\end{tabular}
+\end{center}
+Each development has a gate script that rejects \lean{sorry}, \lean{admit}, \lean{native\_decide},
+\lean{axiom} and meta-programming commands in the sources, builds the library, and checks with
+\lean{\#print axioms} that every listed declaration depends only on \lean{propext},
+\lean{Classical.choice} and \lean{Quot.sound}; definitions and lemmas they depend on are covered
+transitively. Every declaration cited with a qualified name in this paper, such as \decl{Clifford.clifford_one}, is in its development's list;
+other names (in plain typewriter type) are auxiliary definitions or lemmas covered in that way.
+The gate runs in its strict default mode (a permissive \lean{SCAFFOLD=1} mode exists for development
+and was not used).
+
+\section{Clifford's chain: $n = 4, 5, 6$}\label{sec:clifford}
+
+\subsection{The model}
+We identify the plane with $\CC$ and put the common point $M$ at the origin. A circle through $0$ is
+determined by its centre $c\neq 0$: it is the circle $\lvert z-c\rvert=\lvert c\rvert$, i.e.\
+$z\bar z = \bar c z + c\bar z$ (\decl{Clifford.circ_throughOrigin}). For two such circles with distinct centres
+$c_i\neq c_j$, define
+\[
+ P_{ij} \;=\; \frac{\bar c_i\,c_j - c_i\,\bar c_j}{\bar c_i - \bar c_j}
+\]
+(\lean{secondInter}, \src{clifford}{Clifford}{Basic}{194}); for example $c_1=1$, $c_2=i$ give $P_{12}=1+i$.
+Lean proves that $P_{ij}$ lies on both circles (\decl{Clifford.secondInter_mem_left}, \decl{Clifford.secondInter_mem_right}).
+It is the second intersection point when it differs from $0$; it equals $0$ exactly when the circles
+are tangent at $0$ (e.g.\ $c_1=1$, $c_2=2$), which the theorems below exclude by assuming $P_{ij}\neq 0$.
+For three circles $i,j,k$, $\Gamma_{ijk}$ (\lean{gam}, \src{clifford}{Clifford}{Basic}{203}) is the
+circumcircle of $P_{ij},P_{ik},P_{jk}$, with centre given by an explicit circumcentre formula
+(\lean{ccenter}, \src{clifford}{Clifford}{Basic}{197}); when the three points are not
+collinear Lean proves that they lie on it (\decl{Clifford.mem_circumcircle_left} and its two
+companions). Mathlib's \mdecl{EuclideanGeometry.Sphere} is used for circles throughout.
+
+\subsection{The theorems}
+
+\begin{theorem}[Clifford, $n=4$; \decl{Clifford.clifford_one}]\label{thm:cliff4}
+Let four circles pass through a common point $M$, with centres $c_1,\dots,c_4$. Suppose every
+second intersection point $P_{ij}$ ($i<j$) differs from $M$, and for each triple $\{i,j,k\}$ the
+three points $P_{ij},P_{ik},P_{jk}$ are not collinear. Then the four circles
+$\Gamma_{123},\Gamma_{124},\Gamma_{134},\Gamma_{234}$ have a common point.
+\end{theorem}
+
+The theorem (\src{clifford}{Clifford}{Basic}{381}) asserts existence only. Its witness is an explicit
+point, a ratio of two determinant-like polynomials in the centres and their conjugates,
+$\mathrm{cp}(c_1,c_2,c_3,c_4)$ (\lean{cliffordPoint}, \src{clifford}{Clifford}{Basic}{309}); Lean proves
+that it lies on each $\Gamma_{ijk}$ (\decl{Clifford.cliffordPoint_mem_gam}, \src{clifford}{Clifford}{Basic}{323},
+and \decl{Clifford.cliffordPoint_mem_gams} for all four at once). We do not prove that the common point
+is unique, and the theorems below are about these explicit points.
+
+\begin{theorem}[Clifford, $n=5$; \decl{Clifford.clifford_two}, \decl{Clifford.clifford_two_explicit}]\label{thm:cliff5}
+Let five circles pass through $M$, with every $P_{ij}\neq M$ and no triple $P_{ij},P_{ik},P_{jk}$
+collinear. For each $k$, let $P_k=\mathrm{cp}$ of the four circles other than circle $k$. Then each
+$P_k$ lies on the four circles $\Gamma$ of those four, and the five points $P_1,\dots,P_5$ lie on one
+circle or on one line.
+\end{theorem}
+
+In Lean the statement is split in two. \decl{Clifford.clifford_two} (\src{clifford}{Clifford}{Third}{543})
+asserts that there \emph{exist} five points with these incidences that lie on a circle or a line;
+\decl{Clifford.clifford_two_explicit} (\src{clifford}{Clifford}{Third}{457}) proves the circle-or-line
+conclusion for the five explicit points $\mathrm{cp}$, and \decl{Clifford.cliffordPoint_mem_gams} gives
+their incidences. The disjunction is not a weakening: in the independent agent's numerical check (reported figures, script not kept), configurations
+satisfying every hypothesis were found in which the five points are pairwise distinct (minimum spacing
+$0.042$) and collinear to $5\times10^{-60}$. The second alternative corresponds to the usual inversive
+formulation, in which a line is a circle through $\infty$; our statement is the finite Euclidean
+circle-or-line form of it, under the stated hypotheses.
+
+\begin{theorem}[Clifford, $n=6$; \decl{Clifford.clifford_three}]\label{thm:cliff6}
+Let six circles pass through $M$, with every $P_{ij}\neq M$ and no triple $P_{ij},P_{ik},P_{jk}$
+collinear. For each five-element subset $S$ of the six, let $P^S_T=\mathrm{cp}(c_T)$ for the five
+four-element subsets $T\subset S$, and let $C_S$ be the circle through three designated ones of them
+(for $S=\{1,\dots,5\}$: those of $\{1,2,3,4\}$, $\{1,2,3,5\}$, $\{1,2,4,5\}$; the six choices are listed
+in the Lean statement). Suppose those three points are not collinear, for each $S$. Then all five
+points $P^S_T$ lie on $C_S$, for each $S$, and the six circles $C_S$ have a common point.
+\end{theorem}
+
+The six extra hypotheses (\lean{m1}--\lean{m6} in \src{clifford}{Clifford}{Third}{780}) say that the
+three designated points of each $S$ are not collinear, so that $C_S$ is a genuine circle; they exclude
+exactly the case that Theorem~\ref{thm:cliff5} allows in its second alternative (and the case of
+coincident points). So Theorem~\ref{thm:cliff6} is narrower than the
+generalized-circle statement: it is Clifford's third theorem for configurations whose five-point
+circles are honest circles. The proof reduces all six memberships to one polynomial identity
+(\decl{Clifford.master}, \src{clifford}{Clifford}{Third}{187}), the largest certificate in this paper.
+
+\subsection{The chain for general $n$}\label{sec:chain}
+A second, independently written development, \lean{cliffordchain}, defines an existential incidence
+predicate for the whole chain. Its \emph{generalized circles} (\lean{IsGCircle},
+\src{cliffordchain}{Clifford}{Clean}{156}) are lines and Mathlib spheres \mdecl{Metric.sphere}~$o\,r$ for
+any real $r$; so a radius-$0$ ``circle'' (a single point) and, formally, the empty set ($r<0$) are
+included. The proved case $n=5$ uses the radius-$0$ case when all five points coincide. For centres $c:\{0,\dots,n-1\}\to\CC$, the predicate
+$\mathrm{Chain}(n,c,X)$ (\src{cliffordchain}{Clifford}{Clean}{165}) says that $X$ is a Clifford object of
+level $n$: for $n=0,1,2$ the point $M$, the circle itself, and the point $P_{01}$; for odd $n\ge3$, a
+generalized circle containing, for each $i$, \emph{some} level-$(n-1)$ point of the circles other than
+$i$; for even $n\ge4$, a single point lying, for each $i$, on \emph{some} level-$(n-1)$ object of the
+circles other than $i$. The predicate asserts existence at each level; it does not assert that the
+objects are unique or that the choices at different levels cohere. The development's intended general statement is $\mathrm{CliffordChain}(n)$: in general
+position (pairwise transversal, every triple non-degenerate) a level-$n$ object exists
+(\src{cliffordchain}{Clifford}{Clean}{184}). The general-position conditions are stated as
+polynomial inequalities, and a bridge file ties them to geometry (\src{cliffordchain}{Clifford}{Bridge}{58}
+onwards): \lean{Transversal}~$c\,d$ holds if and only if $M$, $c$, $d$ are not collinear
+(\decl{Clifford.transversal_iff}); the first condition of \lean{GenTriple} holds if and only if the three
+centres are not collinear (\decl{Clifford.triP_ne_zero_iff}); and, for pairwise transversal circles with
+non-collinear centres, the second holds if and only if the three second intersection points are not
+collinear (\decl{Clifford.cycP_ne_zero_iff}). The last needs the non-collinear centres: the underlying
+identity is $X\prod\lvert c_i-c_j\rvert^2=\mathrm{triP}^2\cdot\mathrm{cycP}$, where $X$ is the collinearity
+determinant of the three points. Together, \decl{Clifford.genTriple_iff} says that \lean{GenTriple} means
+exactly ``neither the centres nor the three second intersection points are collinear''; and
+\decl{Clifford.onCircleM_iff_mem_sphere} identifies the circle model with Mathlib's \mdecl{Metric.sphere}.
+
+\begin{theorem}[\decl{Clifford.cliffordChain_four}, \decl{Clifford.cliffordChain_five}]\label{thm:chain}
+$\mathrm{CliffordChain}(4)$ and $\mathrm{CliffordChain}(5)$ hold.
+\end{theorem}
+
+The $n=5$ case rests on \decl{Clifford.clifford_two_clean} (\src{cliffordchain}{Clifford}{Clean}{123}):
+in general position the five points are concyclic or collinear, with no further hypothesis. (The
+same development also contains a version of the $n=5$ theorem with an extra coefficient condition,
+\lean{CliffordNondeg}, which excludes some genuine configurations; we do not cite that version as
+Clifford's theorem.) For $n\ge6$ the predicate is in fact false; see Section~\ref{sec:chainfail}.
+
+\subsection{The finite-plane chain fails for $n\ge6$}\label{sec:chainfail}
+The predicate $\mathrm{Chain}$ places every Clifford object in the finite plane $\CC$. Classically,
+Clifford's theorem lives in the inversive plane: after inversion at $M$ the $n$ circles become $n$ lines
+in general position, whose Clifford objects are honest points and circles, and the inverse image of a
+Clifford point that happens to be $M$ itself is the point at infinity. Nothing in ``pairwise transversal,
+every triple non-degenerate'' prevents this, and the finite-plane predicate has no point at infinity to
+use. We prove that this already happens for six circles, and therefore for every $n\ge6$.
+
+\begin{theorem}[\decl{Clifford.Counter6.not_cliffordChain_six}, \decl{Clifford.not_cliffordChain_of_six_le}, \decl{Clifford.cliffordChain_iff}]\label{thm:chainfail}
+For the six centres
+\[
+  c=(3-6i,\;6-3i,\;1+2i,\;-2-i,\;-4i,\;4)
+\]
+the circles through $M=0$ are in general position in the sense of $\mathrm{CliffordChain}$, but no
+level-$6$ object exists. Consequently $\mathrm{CliffordChain}(n)$ fails for every $n\ge6$, and
+$\mathrm{CliffordChain}(n)$ holds if and only if $n\le5$.
+\end{theorem}
+
+Number the centres $c_1,\dots,c_6$ in the order displayed. For this configuration every level-$4$
+object is forced (by the three circles through it) to be the classical Clifford point, and for each
+of the six five-circle subfamilies the five such points are distinct and \emph{collinear}, so the
+level-$5$ objects are forced to be lines: for instance $\operatorname{Re}z=4$ when circle~$5$ is omitted
+and $\operatorname{Im}z=-4$ when circle~$6$ is omitted. These two lines meet at $4-4i$, which is not on
+the line for omitted circle~$1$, so no point lies on all three, let alone all six, level-$5$ objects
+(\src{cliffordchain}{Clifford}{Counter6}{182}). The kernel checks what the proof needs: general position,
+the nine level-$4$ points that determine these three lines, and their non-concurrence, all in exact
+arithmetic over $\mathbb{Q}(i)$. The full picture (all fifteen level-$4$ points and all six lines) was
+checked outside Lean in exact rational arithmetic, by the agent and independently by us. Replacing $c_6=4$ by $4+\varepsilon$ (real $\varepsilon\ne0$, small enough that the configuration stays in general position) gives, in exact arithmetic, the
+classical level-$6$ point $4-4i+50/\varepsilon$, which goes to infinity as $\varepsilon\to0$. The step to $n\ge7$ uses that a level-$(n+1)$ object requires a level-$n$
+object of the subfamily omitting the last circle, together with the fact that any family in general
+position can be extended by one more circle in general position (the new centre is taken on a parabola,
+which meets each excluded locus in finitely many points); see \src{cliffordchain}{Clifford}{Classify}{57}
+and \src{cliffordchain}{Clifford}{Classify}{167}.
+
+Together, Theorems~\ref{thm:chain} and~\ref{thm:chainfail} settle the predicate completely: it is a
+correct formalization of the cases $n=4,5$ but not of Clifford's theorem for $n\ge6$. A faithful general statement needs either
+the Riemann sphere (even-level objects in $\CC\cup\{\infty\}$, lines counted as circles through
+$\infty$) or the equivalent formulation for $n$ lines. In the same exploration (60 digits, random
+centres) the classical chain exists for $n\le8$ and agrees with a closed form after inversion, but we
+have not formalized either corrected statement. The six-circle theorem of Section~\ref{sec:clifford}
+(Theorem~\ref{thm:cliff6}) is unaffected: its hypotheses $m_1$--$m_6$ require the designated triples to be non-collinear, and in this
+configuration every five-point set is collinear (an argument, not a machine-checked statement).
+
+\section{Miquel's five circles}\label{sec:five}
+
+Take a pentagon $A_0,\dots,A_4$, extend its sides to form a pentagram with outer points
+$T_0,\dots,T_4$, and draw the five circles through $A_{i-1}$, $A_i$ and the triangle point $T_i$.
+Consecutive circles meet again at points $M_i$. Miquel's theorem \cite{miquel1838} says that the five
+points $M_i$ are concyclic.
+
+\begin{theorem}[\decl{Fivecircles.fivecircles}]\label{thm:five}
+Let $A,T,M:\{0,\dots,4\}\to\CC$ be injective, with no point of one family equal to a point of
+another (so the fifteen labelled points are pairwise distinct). Suppose that for each $i$ (indices mod~5) the points $A_{i-1},A_i,T_{i+1},T_{i-1}$ are
+collinear and the points $A_{i-1},A_i,T_i,M_{i-1},M_i$ are concyclic. Then $M_0,\dots,M_4$ lie on one
+circle or on one line.
+\end{theorem}
+
+The collinearity hypotheses say that $T_{i\pm1}$ lie on the line $A_{i-1}A_i$, which is the
+pentagram incidence; the concyclicity hypotheses say that $M_{i-1}$ and $M_i$ are the second
+intersections of the circle of triangle $i$ with its neighbours. Distinctness of the fifteen points
+excludes, in particular, tangent circles (a second intersection coinciding with $A_i$). Again the
+alternative is genuine: the independent agent's numerical check (reported figures, script not kept) found a non-degenerate pentagram (minimum point
+separation $0.52$) whose five points $M_i$ are collinear to $10^{-39}$. Unlike the other developments,
+the core of this proof is not polynomial algebra. Concyclicity of four points is reduced to the
+vanishing of the imaginary part of a cross-ratio, and that to an equality of doubled directed angles
+(\mdecl{Real.Angle}); the core lemma (\decl{Fivecircles.core}, \src{fivecircles}{Fivecircles}{Basic}{167})
+is then an angle chase, written as a sequence of additive certificates, and is reused for the five
+cyclic relabellings. The theorem is \src{fivecircles}{Fivecircles}{Basic}{383}.
+
+\section{Lester's circle}\label{sec:lester}
+
+\begin{theorem}[Lester; \decl{Lester.lester}]\label{thm:lester}
+Let $ABC$ be a scalene triangle in the plane. Let $F_1$ be its first Fermat point, the common point of
+the three lines joining each vertex to the apex of the equilateral triangle erected outwards on the
+opposite side, and $F_2$ its second Fermat point (the same with the equilateral triangles erected
+inwards). Then the circumcentre, the nine-point centre, $F_1$ and $F_2$ are concyclic.
+\end{theorem}
+
+The theorem is due to Lester \cite{lester1997}; see \cite{yiu2010} for the circles of Lester, Evans
+and Parry. The hypothesis is \emph{scalene}, not merely ``not equilateral''. For an isosceles triangle
+all four points lie on the axis of symmetry, and for a typical one they are four distinct points: for
+$A=(0,h)$, $B=(-1,0)$, $C=(1,0)$ with $h\in\{0.3,\,0.5,\,1,\,2.5\}$ we computed (60 digits, archived script) four distinct collinear
+points (minimum separation $0.048$ to $0.33$), which are not concyclic. So the scalene hypothesis cannot
+simply be weakened to ``not equilateral''. It does more than is needed, though: in some isosceles
+triangles points coincide and the conclusion holds trivially, since \mdecl{Concyclic} is a property of
+a \emph{set}. For the isosceles triangle with apex angle $120^\circ$, $A=(0,1/\sqrt3)$, the nine-point
+centre and the first Fermat point both equal $A$, and the second Fermat point equals the circumcentre,
+so the set of four points has only two elements.
+The circumcentre is Mathlib's; the nine-point centre is defined as the midpoint of the circumcentre and
+the orthocentre and proved equal to the centre of Mathlib's nine-point circle
+(\decl{Lester.bridge_ninePointCenter}); the equilateral apexes are proved equilateral
+(\decl{Lester.bridge_apexOut}, \decl{Lester.bridge_apexIn}); and $e^{i\pi/3}$ is identified with the
+Cartesian constant used (\decl{Lester.bridge_ω}). The theorem is \src{lester}{Lester}{Basic}{56}. It
+assumes the Fermat points and does not assert their existence.
+
+\section{The Sawayama--Th\'ebault theorem}\label{sec:thebault}
+
+Th\'ebault proposed in 1938 \cite{thebault1938} the following problem, which had been proved already
+by Sawayama in 1905 \cite{sawayama1905}; see \cite{ayme2003} for its history.
+
+\begin{theorem}[Sawayama--Th\'ebault; \decl{Thebault3.sawayama_thebault}]\label{thm:thebault}
+Let $ABC$ be a triangle and $D$ a point strictly between $B$ and $C$. Let $P$ be the centre of a
+circle tangent to the lines $AD$ and $BC$, internally tangent to the circumcircle of $ABC$, and lying in
+the angle $\angle ADB$; let $Q$ be the centre of such a circle lying in the angle $\angle ADC$. Then
+$P$, $Q$ and the incentre of $ABC$ are collinear.
+\end{theorem}
+
+The definition \lean{IsThebaultCircle} (\src{thebault}{Thebault3}{Basic}{32}) says that there is
+$r>0$ with $P$ at distance $r$ from both lines, at distance $R-r$ from the circumcentre, on the same
+side of $AD$ as $B$ (resp.\ $C$) and on the same side of $BC$ as $A$; the two side conditions
+together are exactly ``in the open angle''. In the independent numerical check, each angle
+contained exactly one such circle, so the definition picks out the intended circle. The incentre is Mathlib's, and
+\decl{Thebault3.tri_incenter_spec} proves it equidistant from the three side lines and on the inner
+side of each. ``Exactly one such circle'' is the agent's reported observation on 1989 sampled triangles (script not kept), not a proved
+uniqueness statement. The theorem assumes $P$ and $Q$ and does not assert their existence. It is
+\src{thebault}{Thebault3}{Basic}{514}.
+
+\section{Kosnita's theorem}\label{sec:kosnita}
+
+\begin{theorem}[Kosnita; \decl{Kosnita.kosnita}]\label{thm:kosnita}
+Let $ABC$ be a triangle with circumcentre $O$, and let $O_a,O_b,O_c$ be the circumcentres of the
+triangles $OBC$, $OCA$, $OAB$. Suppose that no two of $A,B,C$ are diametrically opposite (so that
+$OBC$, $OCA$, $OAB$ are triangles) and that $AB^2+BC^2+CA^2\neq 5R^2$, where $R$ is the circumradius.
+Then the lines $AO_a$, $BO_b$, $CO_c$ are concurrent.
+\end{theorem}
+
+The circumcentres are specified by equidistance (\lean{hOa1}, \lean{hOa2}, \ldots), which in the
+plane is equivalent. The first exclusion (\lean{hOBC}, \lean{hOCA}, \lean{hOAB}: $O,B,C$ not collinear, etc.) excludes
+right triangles, for which $O$ is the midpoint of a side and $O_a$ does not exist. In the Lean
+statement it is in fact redundant: if $O,B,C$ were collinear, then $O$ would be the midpoint of $BC$, and
+no point is equidistant from three distinct collinear points, so the equidistance hypotheses for $O_a$
+could not hold. We keep it because the proof uses it. The second, $\lean{hS}$, cannot simply be
+dropped. The concurrence point (classically the Kosnita point, $X_{54}$ in Kimberling's encyclopedia
+\cite{etc}; our theorem does not identify it) can fail to exist on the locus $AB^2+BC^2+CA^2=5R^2$.
+In the independent agent's numerical check, three sampled triangles on that locus
+gave three pairwise parallel, distinct lines (determinants of the line pairs about $10^{-61}$,
+separations about $0.18$; reported figures, script not kept), so for them no common point exists and
+the conclusion fails. Not every triangle on the locus behaves this way. For the isosceles triangle $A=(1,0)$, $B,C=(\tfrac12,\pm\tfrac{\sqrt3}2)$ on the unit circle
+(sides $1,\sqrt3,1$, angle $120^\circ$ at $A$), $O_a=A$, so ``the line $AO_a$'' is undefined, while $BO_b$ and $CO_c$ are the same line; here the Lean conclusion holds trivially (any point
+of that line will do). So we do not claim a uniform description of the excluded locus; only that the
+affine conclusion fails on part of it. Relative to a projective statement ``concurrent, possibly at infinity'' the exclusion is a
+weakening. The
+theorem is \src{kosnita}{Kosnita}{Basic}{180}; see \cite{grinberg2003} for the Kosnita point.
+
+\section{Two companions: Blundon and Steiner--Lehmus}\label{sec:companions}
+
+\begin{theorem}[Blundon; \decl{Blundon.blundon}]\label{thm:blundon}
+For a triangle in a real inner product space with circumradius $R$, inradius $r$ and semiperimeter $s$,
+\[
+2R^2+10Rr-r^2-2(R-2r)\sqrt{R^2-2Rr}\;\le\; s^2\;\le\;2R^2+10Rr-r^2+2(R-2r)\sqrt{R^2-2Rr}.
+\]
+\end{theorem}
+Blundon proved that these bounds are best possible \cite{blundon1965}. $R$ and $r$ are Mathlib's
+\mdecl{Affine.Simplex.circumradius} and \mdecl{Affine.Simplex.inradius}. The proof is a single
+polynomial certificate (\decl{Blundon.core_identity}): with $x,y,z$ the tangent lengths,
+$s^3\bigl(4r^2E+\Delta^2\bigr)=0$ where $E=s^4-2(2R^2+10Rr-r^2)s^2+r(4R+r)^3$ and $\Delta$ is the product
+of the differences of the sides; hence $E\le 0$, which is the stated pair of inequalities. Bridges tie
+$R$ and $r$ to the side lengths (\decl{Blundon.circumradius_sq_mul}, \decl{Blundon.height_sq_mul}).
+The theorem is \src{blundon}{Blundon}{Basic}{147}.
+
+\begin{theorem}[Steiner--Lehmus; \decl{SteinerLehmus.steiner_lehmus}]\label{thm:steiner}
+In a non-degenerate triangle $ABC$, let $E$ on segment $AC$ and $F$ on segment $AB$ be the feet of
+the internal bisectors from $B$ and $C$. If $BE=CF$ then $AB=AC$.
+\end{theorem}
+The bisector-length formula $BE^2(BA+BC)^2 = BA\cdot BC\,((BA+BC)^2-AC^2)$ is proved from Mathlib's
+angles (\decl{SteinerLehmus.bisector_foot_sq}); the two cleared formulas then force $b=c$ through the
+factorisation $(b-c)\cdot a(a+b+c)(a^3+a^2b+a^2c+3abc+b^2c+bc^2)=0$
+(\decl{SteinerLehmus.algebraic_core}). The theorem holds in any real inner product space, and is
+\src{steinerlehmus}{SteinerLehmus}{Basic}{112}. (The proof is direct; the theorem's notoriety for
+lacking a direct proof \cite{gilbert1963,coxeter1967} concerns synthetic proofs.) The algebraic step
+alone, $b=c$ from equality of the two bisector-length \emph{formulas} over positive side lengths, has
+an earlier sorry-free Lean proof \cite{leangeniusSL}; what is new here is the geometric statement, with
+the bisector feet given as points and the bisector condition as an equality of Mathlib angles, and the
+bridge \decl{SteinerLehmus.bisector_foot_sq} from it to the formula.
+
+\section{Non-degeneracy: what each statement excludes}\label{sec:degen}
+
+\begin{center}\small
+\begin{tabular}{p{2.6cm}p{6.2cm}p{5.2cm}}
+\toprule
+theorem & excluded configurations & status\\
+\midrule
+Clifford $n=4,5,6$ & tangent circles or equal centres ($P_{ij}=M$); a $\Gamma_{ijk}$ that is a line
+(three collinear $P$'s) & standard general position\\
+Clifford $n=5$ & --- (conclusion: circle \emph{or} line) & line case genuine\\
+Clifford $n=6$ & three designated points of some $C_S$ collinear or coincident & narrower than the inversive statement\\
+Five circles & any coincidence among the fifteen labelled points, incl.\ tangent circles & line case genuine\\
+Lester & isosceles triangles & cannot be weakened to ``not equilateral''\\
+Sawayama--Th\'ebault & $D$ at $B$ or $C$; degenerate triangle & classical setting\\
+Kosnita & right triangles (redundant given the other hypotheses); $AB^2+BC^2+CA^2=5R^2$ & $5R^2$ case cannot be dropped (affine)\\
+Blundon, Steiner--Lehmus & degenerate triangle & ---\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Does the statement mean what it says?}\label{sec:blind}
+The verification battery checks that proofs are accepted and gives partial evidence against vacuous
+statements; it does not
+show that a Lean statement says what the prose says. To test that, we removed every code name, code
+listing and link from the mathematical sections of the paper and gave the remaining prose to a
+language model that had not worked on the developments, with instructions to read nothing else. (Its
+archived tool log shows that the only file it read was the prepared text; it also compiled a short
+probe of Mathlib names, and its own statements, on the x86-64 machine; the text was produced before
+Section~\ref{sec:chainfail} was written, so Theorem~\ref{thm:chainfail} is not covered.) It wrote twelve
+Lean statements: one for each theorem, two for Theorem~\ref{thm:cliff5} (the existential and the explicit
+form) and two for Theorem~\ref{thm:chain} ($n=4,5$), with every notion it needed defined from the prose,
+and it marked the places where it found the prose ambiguous. A second model, different from the
+writer, then tried to prove in Lean, for each pair, that the published statement implies the blind
+one and conversely. In these proofs it could use the premise, unfolding of definitions, and general
+Mathlib lemmas, together with the small bridge lemmas about the developments' own notions (for example
+\decl{Clifford.transversal_iff} and \decl{Lester.bridge_apexOut}), but never the published theorem
+itself, so that the check is about the statements and not about their truth. We recompiled the
+comparison files ourselves (no \lean{sorry}, no axioms) and checked that no published theorem is used
+in a proof.
+
+Ten of the twelve pairs are equivalent in both directions: Theorems~\ref{thm:cliff4} and~\ref{thm:chain}
+(both parts), the existential part of Theorem~\ref{thm:cliff5}, and Theorems~\ref{thm:five}
+to~\ref{thm:steiner}. The equivalences are not all literal. Lester's theorem was stated over
+$\mathbb{R}^2$ with apexes defined geometrically and is proved in $\mathbb{C}$ with explicit apexes; the
+blind Kosnita statement uses lines and ``$O$ is not the midpoint of a side'' where ours uses collinear
+triples and non-collinearity; the blind chain predicate is defined by recursion on objects rather than
+sets. The two remaining pairs are the explicit-point parts of Theorems~\ref{thm:cliff5}
+and~\ref{thm:cliff6}. Our prose does not give the formula of the explicit point \lean{cp}, so the blind
+writer quantified over \emph{every} common point of the four circles, as its ambiguity note records.
+Each direction then holds once one missing fact is supplied as a premise: that \lean{cp} is a common
+point (from blind to ours), or that the common point is unique (from ours to blind). We have not proved
+uniqueness. So for these two theorems the check found a real gap, though in our prose rather than in
+the Lean: the prose does not determine the Lean statement. Theorems~\ref{thm:cliff5} and~\ref{thm:cliff6}
+are about the explicit point $\mathrm{cp}$ of Section~\ref{sec:clifford}, whose defining formula is in
+the source and not in the text; read as statements about every common point, they would claim more than
+we prove. For Theorem~\ref{thm:cliff6} the writer also had to guess which three points of each
+five-point set are designated; its guess agrees with ours for all six sets. Apart from this
+underspecification, no difference between prose and Lean was found. The blind text, the blind
+statements, the writer's tool log, the comparison files, our recompilation log and both models' reports
+are archived.
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Formal proofs.} The Archive of Formal Proofs entry on Miquel's theorem \cite{afpmiquel} proves both the incidence
+form of the three-circle (pivot) theorem (a point on two of the circles lies on the third) and the
+existence of the common point; Rocq's HighSchoolGeometry \cite{hsgeometry} proves the incidence form of
+the four-line Miquel theorem; and a community Lean repository \cite{leangenius} proves the incidence
+form of the pivot theorem. These three served as a control for our searches.
+Mathlib's list of 1000 theorems \cite{mathlib1000} lists Clifford's circle theorems, the five circles
+theorem, Lester's theorem, Th\'ebault's theorem and the Steiner--Lehmus theorem, all without a
+formalisation; Kosnita and Blundon are not on the list.
+
+On 13 October 2026 we searched for each of the classical theorems formalised here
+(Theorems~\ref{thm:cliff4}--\ref{thm:chain} and~\ref{thm:five}--\ref{thm:steiner}; the predicate-specific
+Theorem~\ref{thm:chainfail} was not a search target): Mathlib
+(code, \texttt{docs/100.yaml} and \texttt{docs/1000.yaml}, issues and pull requests); the full
+Archive of Formal Proofs \cite{afp} (a mirror of 7 October 2026 with 1045 entries, by full-text search,
+plus the live front page for newer entries);
+all 1500 articles of the Mizar library; full clones of HOL4 and HOL Light; Metamath's \texttt{set.mm};
+Rocq's GeoCoq and HighSchoolGeometry; ProofAtlas (sitemap and search index); the public archive of
+the Lean Zulip; compfiles and \texttt{formal-conjectures}; the lean-genius repository \cite{leangenius}
+(full tree and pull requests); and GitHub code search. In this scope we found no formalisation,
+complete or partial,
+of Theorems~\ref{thm:cliff4}--\ref{thm:chain} and~\ref{thm:five}--\ref{thm:kosnita}, and no complete formal proof of Blundon's
+inequalities; the nearest is a Lean proof of Gerretsen's weaker inequality $s^2\le4R^2+4Rr+3r^2$
+\cite{leangeniusG}. For Steiner--Lehmus the algebraic core is proved in Lean \cite{leangeniusSL}
+(Section~\ref{sec:companions}), and the Acorn library states the theorem without a proof
+\cite{acornSL}.
+
+The search has limits. The Zulip search covered the public archive only, up to about 2
+October 2026; the live search needs a login. GitHub's code index does not cover every repository,
+returns at most about 50 results per query, and rate limits forced us to use queries not restricted by
+language, which we filtered by hand. ProofAtlas has no public API, so we used its own index and a
+third-party \lean{site:} search. The absence of a hit is a statement about this scope only.
+
+\paragraph{Machine proofs outside proof assistants.} Wu's method and its successors prove many of
+geometry theorems by computer algebra, among them Th\'ebault's problem \cite{chou1988}. Java Geometry
+Expert lists Steiner--Lehmus among its examples, and a Gr\"obner-basis prover (Hasclid) has an example
+file for a Blundon-type bound, which we did not run. None of these is checked by a proof kernel. In
+Wu's method the non-degeneracy conditions are produced by the method \cite{chou1988}; our statements
+state them explicitly.
+
+\paragraph{Our earlier papers.} Papers~A \cite{paperA} and~B \cite{paperB} formalised other classical
+results by the same coordinate-certificate method, and Paper~C \cite{paperC} treated Barbier's theorem
+and the four-vertex theorem.
+
+\section{Verification}\label{sec:verify}
+
+\paragraph{Gates and tampering tests.} The gates pass with only the three standard axioms:
+\lean{clifford} 20 declarations, \lean{cliffordchain} 32, \lean{lester} 19, \lean{thebault} 12,
+\lean{kosnita} 11, \lean{fivecircles} 6, \lean{blundon} 5, \lean{steinerlehmus} 3 (108 in all). Each
+tampering suite plants a hidden \lean{sorry}, an \lean{axiom} split across two lines, a fake
+\lean{\#print axioms} report, a command-redefining macro, a wrapper axiom, and one or more broken
+hypotheses or bridges that should make the build fail; every planted defect was rejected.
+The table records the final receipts. On 14 October 2026, on each machine, a script cloned each of the
+eight repositories from GitHub, checked out the commit pinned in this paper (and recorded that the
+working tree was clean), recorded the Lean and Mathlib revisions and the SHA-256 hash of every library
+file, built the library with only the pinned Mathlib supplied, and ran the gate and the tampering suite.
+The two logs are archived.
+\begin{center}\small
+\begin{tabular}{lcc}
+\toprule
+development & x86-64 Linux & arm64 macOS\\
+\midrule
+\lean{clifford} & 20 / tamper OK & 20 / tamper OK\\
+\lean{cliffordchain} & 32 / tamper OK & 32 / tamper OK\\
+\lean{fivecircles} & 6 / tamper OK & 6 / tamper OK\\
+\lean{lester} & 19 / tamper OK & 19 / tamper OK\\
+\lean{thebault} & 12 / tamper OK & 12 / tamper OK\\
+\lean{kosnita} & 11 / tamper OK & 11 / tamper OK\\
+\lean{blundon} & 5 / tamper OK & 5 / tamper OK\\
+\lean{steinerlehmus} & 3 / tamper OK & 3 / tamper OK\\
+\bottomrule
+\end{tabular}
+\end{center}
+Entries are the number of declarations for which the gate passed, and whether every planted defect was
+rejected. All sixteen checkouts were at the pinned commit with a clean working tree; the 24 library-file hashes
+agree between the two logs and with the published commits, and every build used Mathlib
+\texttt{0df444a3} (recorded separately, because a bug in the script left that field of the logs
+empty). In the first run the script checked out the previous commit of \lean{cliffordchain}, which
+differs from the pinned one only in a text file; that development was re-run at the pinned commit on
+both machines with a corrected script, with the results shown, and both runs are archived. (Earlier gate runs, on intermediate versions, are also archived but are superseded by these.)
+
+\paragraph{Independent re-verification.} For six of the eight developments (both Clifford
+developments, \lean{fivecircles}, \lean{lester}, \lean{thebault}, \lean{kosnita}) a separate agent, not
+the one that wrote the proofs, read the statements against the classical theorems hypothesis by
+hypothesis and re-checked them numerically; its reports are archived. Their scripts were not kept, so
+we re-did the numerical part reproducibly for all eight developments, with a single script that computes each configuration from coordinate formulas (for Lester it
+follows the Lean development's orientation and apex conventions, so it cannot detect a convention
+error there; the conclusion is symmetric in $F_1,F_2$ anyway), fixed random seeds, 60-digit
+arithmetic, and, for every theorem except Steiner--Lehmus, a deliberately false variant as a negative
+control on the same configurations (script,
+seeds and output archived with SHA-256 checksums). Results, as configurations / worst residual /
+false variant violated:
+\begin{center}\small
+\begin{tabular}{lrrl}
+\toprule
+theorem & configs & worst residual & negative control violated\\
+\midrule
+Clifford $n=4$ & 1000 & $1.1\times10^{-58}$ & 1000/1000\\
+Clifford $n=5$ & 500 & $1.2\times10^{-57}$ & 500/500\\
+Clifford $n=6$ & 100 & $1.1\times10^{-57}$ & 100/100\\
+Five circles & 500 & $1.8\times10^{-59}$ & 500/500\\
+Lester & 1000 & $1.6\times10^{-58}$ & 1000/1000\\
+Sawayama--Th\'ebault & 300 & $2.4\times10^{-60}$ & 300/300\\
+Kosnita & 1000 & $1.2\times10^{-59}$ & 1000/1000\\
+Steiner--Lehmus & 200 & $7.8\times10^{-62}$ & ---\\
+Blundon & 1000 & (min.\ margin $4.5\times10^{-11}\ge0$) & 310/1000\\
+\bottomrule
+\end{tabular}
+\end{center}
+Each configuration satisfies the hypotheses of the Lean statement up to a margin (pairwise and triple
+non-degeneracy of the input circles, and of the output triples the script tests, at least $10^{-3}$
+for Clifford; the designated triples of Theorem~\ref{thm:cliff6} are non-collinear, being distinct concyclic
+points, but are not held to that margin; scalene by at least $10^{-2}$ for Lester, and so on). The
+Steiner--Lehmus configurations were found by solving $BE=CF$ for the third vertex from random starting
+points; every solution found was isosceles. For Blundon the residual column gives the smallest relative
+margin by which $s^2$ lies inside the two bounds, and the control is the false bound obtained by dropping
+the square-root term, which fails in 310 of 1000 triangles. (In the agents' earlier runs, one five-circles control held in 1 of 1000 trials; in the re-run
+every control except Blundon's was violated in every trial. For Clifford $n=6$ the script checks
+non-collinearity of three of the five points of each $C_S$, not of the three designated in the Lean
+statement; the designated ones follow, since the five points are distinct and concyclic.) Numerical
+checks are evidence, not proofs.
+
+\paragraph{Statement-level checks.} Every development was then run through the statement-level
+battery used in the earlier papers, on 13 and 14 October 2026: \lean{clifford} on the x86-64 machine
+and the other seven on the arm64 machine. The battery ran on the sources as they stood on 13 October;
+since then only comments (docstrings) of \lean{lester} and \lean{kosnita} have changed, with line numbers
+preserved. \lean{cliffordchain} was re-run on 14 October at the published commit, including the bridge
+and classification files, and the figures below for it are from that run. The gates and tampering
+suites were re-run on the final sources on both machines.
+\begin{itemize}
+\item \emph{Conclusion mutations.} The mutation generator alters conclusions of the forms it supports
+(equalities negated, numeric literals changed) and re-checks the proof. It produced 656 mutants; 618
+were rejected by an error, 36 by the heartbeat limit (which shows only that the mutated proof did not
+complete within the limit), and two survived, both still true: in an auxiliary sign lemma of
+\lean{thebault}, the conclusion $\sigma X<0$ weakened to $\sigma X<1$; and in \lean{cliffordchain},
+$\mathrm{CliffordChain}(1)$ changed to $\mathrm{CliffordChain}(2)$, which also holds by definition (the
+classification proof that uses the lemma then failed to build). Per development:
+\lean{clifford} 129/129, \lean{cliffordchain} 283/284, \lean{lester} 82/82, \lean{thebault} 64/65,
+\lean{fivecircles} 36/36, \lean{kosnita} 33/33, \lean{blundon} 21/21, \lean{steinerlehmus} 6/6.
+\emph{Most main theorems produced no mutants}, because their conclusions (membership, \mdecl{Collinear},
+\mdecl{Concyclic}, disjunctions and existentials of these) have no form the generator alters:
+\decl{Clifford.clifford_one}, \decl{Clifford.clifford_two}, \decl{Clifford.clifford_two_explicit},
+\decl{Clifford.clifford_three}, the second development's \lean{clifford\_one}, \lean{clifford\_two} and
+\decl{Clifford.clifford_two_clean}, \decl{Lester.lester}, \decl{Thebault3.sawayama_thebault},
+\decl{Fivecircles.fivecircles} and \decl{Kosnita.kosnita}. The mutants that were generated test mainly
+the auxiliary algebra, and \decl{Blundon.blundon} and \decl{SteinerLehmus.steiner_lehmus}. (The
+\lean{cleanand} tampering test of the second development does check by hand that replacing the
+disjunction of \decl{Clifford.clifford_two_clean} by a conjunction breaks the build.)
+\item \emph{Contradiction probe.} For each declaration with hypotheses, automation tries to derive
+\lean{False} from the hypotheses alone. In every development the corrected probes found no
+contradiction. This does not show that the hypotheses are consistent. (A first run of
+\lean{clifford} reported 24 contradictions. All were proof checks killed by the operating system for
+lack of memory, which the probe had misread as success; 87 mutation checks were killed in the same way
+and left unclassified. We changed the harness to count any abnormal exit as an error, removed those
+111 records, and re-ran them with less parallelism. The pre-fix result file, which contains the 24 and
+the 87 records, is archived with the reports.)
+\item \emph{Satisfiability.} The battery tries to certify, by a Lean witness, that a declaration's
+hypotheses can hold together. Of 362 declarations, 241 were certified: 57 with hypotheses, 150 whose
+binders are hypothesis-free, and 34 closed statements (the split is taken from the per-declaration
+result files); the other 121 are recorded as unresolved. The closed statements include
+\decl{Clifford.cliffordChain_four}, \decl{Clifford.cliffordChain_five} and
+\decl{Clifford.Counter6.not_cliffordChain_six}, for which ``certified'' is trivial; the classification
+theorems are certified too, which says nothing beyond their being stated. Every main theorem of
+Sections~\ref{sec:clifford}--\ref{sec:companions} \emph{with} hypotheses is among the unresolved. So the battery does not
+certify that the hypotheses of any main theorem can be satisfied. The numerical re-check above exhibits configurations satisfying all hypotheses of
+each main theorem (with the margins stated there); this is evidence, not a certificate.
+\item \emph{Hypothesis ablation.} Each hypothesis \emph{binder} is removed in turn, and we check whether
+the unchanged proof still goes through. This tests binders, not their parts: a bundled hypothesis such
+as \lean{GenPos5} (many conditions in one binder) or the Fermat-point predicates (three line
+memberships each; the Lester proof uses two of the three) counts as one. In \lean{cliffordchain},
+\lean{lester}, \lean{thebault}, \lean{fivecircles}, \lean{blundon} and \lean{steinerlehmus} every tested
+binder was needed. In \lean{kosnita} two binders of the auxiliary lemma \lean{cert\_den} were not
+(they carry a leading underscore for that reason). In \lean{clifford}, \decl{Clifford.clifford_one},
+\decl{Clifford.clifford_two} and \decl{Clifford.clifford_three} needed every binder (10, 20 and 41), but \decl{Clifford.clifford_two_explicit} did not need
+five of its ten non-collinearity hypotheses (\lean{n135}, \lean{n145}, \lean{n235}, \lean{n245},
+\lean{n345}; it has twenty hypotheses in all), the auxiliary lemma \lean{five\_NN} six of its, and \lean{ZD\_ne\_zero} four (all are
+non-collinearity hypotheses for triples involving circle 5 or 6; we also confirmed the first two cases
+by reading the proofs). These
+theorems are stated under more hypotheses than their proofs use; they remain correct. A binder the
+unchanged proof needs is not thereby shown to be logically necessary.
+\item \emph{Linter.} The unused-variable linter reports no warnings in the library files of all eight
+developments as battery-tested (for \lean{cliffordchain}, at the published commit).
+\end{itemize}
+These checks show that the proofs are accepted and use only the standard axioms, and give evidence
+that statements and hypotheses are not vacuous or idle. They do not show that a formal statement means
+what the prose says. That question is addressed only partly: by the independent re-verification above
+and by the blind re-formalisation of Section~\ref{sec:blind} and the author's
+statement-by-statement check.
+
+\paragraph{Statements checked by hand.} The author read each of the fourteen main statements as given in
+this paper against its Lean statement at the published commit (a sheet pairing the two, with links to
+the source lines, is archived with the reports) and found them to agree. This is a reading check, not a
+proof; Section~\ref{sec:blind} explains why the explicit-point theorems must be read with the explicit
+point.
+
+\section{Limitations and further work}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{Clifford's chain for general $n$} is not proved. The finite-plane predicate we wrote for it
+is false for every $n\ge6$ (Theorem~\ref{thm:chainfail}); a corrected statement, on the Riemann sphere
+or for $n$ lines, is formulated in prose only. Clifford's theorem itself is proved for $n\le6$, and for
+$n=6$ only when the five-point circles are not lines.
+\item \textbf{Euclidean, not inversive.} All statements are about Euclidean circles; lines enter only
+as stated alternatives. An inversive-plane formulation would remove several exclusions.
+\item \textbf{Existence.} Lester and Sawayama--Th\'ebault assume the Fermat points and the Th\'ebault
+circles; we do not prove that they exist.
+\item \textbf{Blind checks} establish equivalence of statements, not correctness of the prose; the
+blind writer's isolation is shown by its archived tool log, not enforced; two of the twelve comparisons are
+conditional on a fact (uniqueness of the Clifford point) that we have not proved; and
+Theorem~\ref{thm:chainfail} was not blind-checked.
+\end{enumerate}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs, to run the prior-art searches
+and the verification battery, and to draft this paper. The author directed the work and reviewed the
+paper. Every proof is checked by the Lean kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}
+
+\bibitem{miquel1838}
+A.~Miquel,
+\emph{Th\'eor\`emes sur les intersections des cercles et des sph\`eres},
+Journal de Math\'ematiques Pures et Appliqu\'ees \textbf{3} (1838), 517--522.
+
+\bibitem{clifford1871}
+W.~K.~Clifford,
+\emph{Synthetic proof of Miquel's theorem},
+The Oxford, Cambridge, and Dublin Messenger of Mathematics \textbf{5} (1871), 124--141.
+
+\bibitem{johnson1929}
+R.~A.~Johnson,
+\emph{Modern Geometry: An Elementary Treatise on the Geometry of the Triangle and the Circle},
+Houghton Mifflin, Boston, 1929.
+
+\bibitem{pedoe1970}
+D.~Pedoe,
+\emph{A Course of Geometry for Colleges and Universities},
+Cambridge University Press, 1970.
+
+\bibitem{lester1997}
+J.~A.~Lester,
+\emph{Triangles III: Complex triangle functions},
+Aequationes Mathematicae \textbf{53} (1997), 4--35.
+
+\bibitem{yiu2010}
+P.~Yiu,
+\emph{The circles of Lester, Evans, Parry, and their generalizations},
+Forum Geometricorum \textbf{10} (2010), 175--209.
+
+\bibitem{sawayama1905}
+Y.~Sawayama,
+\emph{A new geometrical proposition},
+American Mathematical Monthly \textbf{12} (1905), 222--224.
+
+\bibitem{thebault1938}
+V.~Th\'ebault,
+Problem 3887,
+American Mathematical Monthly \textbf{45} (1938), 482--483.
+
+\bibitem{ayme2003}
+J.-L.~Ayme,
+\emph{Sawayama and Th\'ebault's theorem},
+Forum Geometricorum \textbf{3} (2003), 225--229.
+
+\bibitem{grinberg2003}
+D.~Grinberg,
+\emph{On the Kosnita point and the reflection triangle},
+Forum Geometricorum \textbf{3} (2003), 105--111.
+
+\bibitem{etc}
+C.~Kimberling,
+\emph{Encyclopedia of Triangle Centers},
+\url{https://faculty.evansville.edu/ck6/encyclopedia/ETC.html}.
+
+\bibitem{blundon1965}
+W.~J.~Blundon,
+\emph{Inequalities associated with the triangle},
+Canadian Mathematical Bulletin \textbf{8} (1965), 615--626.
+
+\bibitem{gilbert1963}
+G.~Gilbert and D.~MacDonnell,
+\emph{The Steiner--Lehmus theorem},
+American Mathematical Monthly \textbf{70} (1963), 79--80.
+
+\bibitem{coxeter1967}
+H.~S.~M.~Coxeter and S.~L.~Greitzer,
+\emph{Geometry Revisited},
+Mathematical Association of America, 1967.
+
+\bibitem{chou1988}
+S.-C.~Chou,
+\emph{Mechanical Geometry Theorem Proving},
+D.~Reidel, Dordrecht, 1988.
+
+\bibitem{afpmiquel}
+A.~Freitas Ramos, D.~Barros Hulak and R.~J.~G.~B.~de Queiroz,
+\emph{Miquel's Theorem in Isabelle/HOL}, Archive of Formal Proofs, 11 August 2026.
+\url{https://www.isa-afp.org/entries/Miquel.html}
+
+\bibitem{hsgeometry}
+\emph{HighSchoolGeometry} (Rocq library), file \texttt{applications\_cocyclicite.v}.
+\url{https://github.com/rocq-community/HighSchoolGeometry}
+
+\bibitem{leangenius}
+R.~Walters,
+\emph{lean-genius}, GitHub repository, pull request 25056, 2026.
+\url{https://github.com/rjwalters/lean-genius/pull/25056}
+
+\bibitem{leangeniusSL}
+R.~Walters,
+\emph{lean-genius}, file \texttt{proofs/Proofs/SteinerLehmusTheoremOQ01.lean}, pull request 25041, 2026.
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/SteinerLehmusTheoremOQ01.lean}
+
+\bibitem{leangeniusG}
+R.~Walters,
+\emph{lean-genius}, file \texttt{proofs/Proofs/HeronsFormulaOQ06OQ02.lean} (Gerretsen's inequality), 2026.
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/HeronsFormulaOQ06OQ02.lean}
+
+\bibitem{acornSL}
+\emph{acornlib} (Acorn prover library), file \texttt{src/theorems1000/theorem\_steiner\_lehmus.ac}.
+\url{https://github.com/acornprover/acornlib/blob/master/src/theorems1000/theorem_steiner_lehmus.ac}
+
+\bibitem{mathlib1000}
+The mathlib Community, \emph{1000+ theorems in Lean}, \texttt{docs/1000.yaml}.
+\url{https://leanprover-community.github.io/1000.html}
+
+\bibitem{afp}
+\emph{Archive of Formal Proofs}, ISSN 2150-914x. \url{https://isa-afp.org}
+
+\bibitem{lean4}
+L.~de Moura and S.~Ullrich,
+\emph{The Lean 4 theorem prover and programming language},
+in: Automated Deduction -- CADE-28, Lecture Notes in Computer Science \textbf{12699}, Springer, 2021, 625--635.
+
+\bibitem{mathlib2020}
+The mathlib Community,
+\emph{The Lean mathematical library},
+in: Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP '20), ACM, 2020, 367--381.
+
+\bibitem{paperA}
+J.~Bald,
+\emph{Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23239930}
+
+\bibitem{paperB}
+J.~Bald,
+\emph{The Malfatti circles in Lean~4, with independent certificate proofs of Feuerbach, Miquel and Brahmagupta},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23240500}
+
+\bibitem{paperC}
+J.~Bald,
+\emph{Barbier's theorem for the Reuleaux triangle and the convex four-vertex theorem in Lean~4, through support functions},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23323062}
+
+\end{thebibliography}
+
+\end{document}

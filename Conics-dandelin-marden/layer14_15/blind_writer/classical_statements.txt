@@ -1,0 +1,63 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Setting for Conics1-Conics3: Euclidean 3-space. A (right circular, double) cone K has
+apex V, axis a line L through V, and half-opening angle alpha with 0 < alpha < pi/2;
+K is the union of all lines through V making angle alpha with L. A plane P not through V
+makes angle beta (0 <= beta <= pi/2) with the axis L. The section P ∩ K is
+  an ellipse    if beta > alpha (P meets only one nappe, in a closed curve; beta = pi/2 gives a circle),
+  a parabola    if beta = alpha (P parallel to exactly one generator),
+  a hyperbola   if beta < alpha (P meets both nappes).
+
+Conics1 (Dandelin spheres, ellipse).
+ Let P be a plane not through V with beta > alpha, so that E = P ∩ K is an ellipse.
+ (a) There are exactly two spheres S1, S2 that are each tangent to the cone K along a
+     circle (C1, C2 respectively) and tangent to the plane P (at points F1, F2
+     respectively); they lie inside the same nappe, on opposite sides of P.
+ (b) F1 and F2 are the foci of E: for every point X of E,
+         |X F1| + |X F2| = constant,
+     the constant being the length of the segment of any generator of K between the
+     circles C1 and C2 (equivalently, the major axis 2a of E).
+
+Conics2 (Dandelin spheres, hyperbola).
+ Let P be a plane not through V with beta < alpha, so that H = P ∩ K is a hyperbola
+ (two branches, one on each nappe).
+ (a) There are exactly two spheres S1, S2, one inside each nappe, each tangent to K along
+     a circle (C1, C2) and tangent to P (at F1, F2).
+ (b) F1 and F2 are the foci of H: for every point X of H,
+         | |X F1| - |X F2| | = constant,
+     the constant being the length of the segment of any generator between C1 and C2
+     (equivalently, the transverse axis 2a of H).
+
+Conics3 (Focus-directrix property via Dandelin spheres; includes the parabola).
+ Let P be a plane not through V, Q = P ∩ K a non-degenerate section (ellipse, parabola or
+ hyperbola, not a circle). Let S be a Dandelin sphere: tangent to K along a circle C lying
+ in a plane P_C, and tangent to P at F. (For the parabola, beta = alpha, there is exactly
+ one such sphere.) Let d = P ∩ P_C (a line, since P is not parallel to P_C when Q is not a
+ circle).
+ (a) For every point X of Q,
+         |X F| = e · dist(X, d),   where   e = cos(beta) / cos(alpha),
+     a constant (the eccentricity); F is a focus and d the corresponding directrix.
+ (b) Consequently e < 1 for the ellipse, e = 1 for the parabola (|XF| = dist(X,d): the
+     parabola is the locus of points of P equidistant from F and d), e > 1 for the hyperbola.
+ (c) (Converse, planar form.) Given in a plane a line d, a point F not on d, and e > 0, the
+     locus {X : |XF| = e · dist(X,d)} is an ellipse if e < 1, a parabola if e = 1, a
+     hyperbola if e > 1, with F as a focus and d as the corresponding directrix.
+
+Setting for Conics4-Conics5: the complex plane C identified with the Euclidean plane;
+ a, b, c in C are the vertices of a non-degenerate triangle (not collinear).
+
+Conics4 (Steiner inellipse: existence and uniqueness).
+ (a) There is a unique ellipse inscribed in the triangle abc (i.e. tangent to all three
+     side lines, lying in the closed triangle) that is tangent to each side at its midpoint.
+ (b) Its centre is the centroid g = (a+b+c)/3. Among all ellipses inscribed in the
+     triangle it is the one of maximal area (area = pi/(3 sqrt 3) · area(abc)).
+
+Conics5 (Marden's theorem; Siebeck 1864).
+ Let p(z) = (z - a)(z - b)(z - c), with a, b, c the non-collinear vertices of a triangle.
+ Then the two roots of p'(z) (counted with multiplicity) are the foci of the Steiner
+ inellipse of the triangle. (If p' has a double root, the inellipse is a circle centred
+ at it; this happens iff the triangle is equilateral.)
+ Equivalently, the foci f1, f2 satisfy f1 + f2 = 2(a+b+c)/3 and f1 f2 = (ab+bc+ca)/3.
+ (General Siebeck form, not required: if the inscribed ellipse is tangent to the sides at
+ the points dividing them in ratios m1:m2, etc., its foci are the roots of
+ m1/(z-a) + m2/(z-b) + m3/(z-c) = 0; Marden's theorem is m1 = m2 = m3.)

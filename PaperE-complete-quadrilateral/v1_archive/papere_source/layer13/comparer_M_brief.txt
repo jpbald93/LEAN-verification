@@ -1,0 +1,25 @@
+LAYER 13 — COMPARER (statement-level equivalence check). Do all work inline; do NOT spawn background subagents or tasks. Time box: ~3 hours. Whatever happens, finish by writing the report.
+
+CONTEXT. A paper formalizes eight theorems on the complete quadrilateral in Lean 4. An independent "blind" writer, who saw only the paper's prose (no code), wrote 10 Lean statements `blind_1..blind_10` (with `:= by sorry`) plus `Blind...` definitions, in ~/reformal/PaperEBlind.lean on the x86 machine jack (jack). Read that file there (ssh ... 'cat ~/reformal/PaperEBlind.lean'). Your job: for the blind statements assigned to you, decide whether each says the same thing as the REAL Lean statement, by proving implications in Lean.
+
+RULES (strict):
+ - For each pair write, in the scratch file, `def blindK_stmt : Prop := ∀ (L₁ L₂ L₃ L₄ : BlindLine), BlindGenPos L₁ L₂ L₃ L₄ → <conclusion>` copying the Blind definitions and statement VERBATIM (rename the namespace if needed; no sorry anywhere), and prove `theorem rb_K : (type_of% @<RealDecl>) → blindK_stmt` and `theorem br_K : blindK_stmt → (type_of% @<RealDecl>)` (or restate the real type verbatim as `def realK_stmt : Prop`).
+ - The Blind structure `BlindLine` is a different type from the real `Line`; translate between them with an explicit map (⟨L.p, L.d⟩) and prove the needed definitional agreements (BlindCr = cr, BlindMeet = meet, BlindGenPos ↔ GenPos, BlindCirc = circ, BlindOrtho = ortho, BlindFoot = foot, BlindPw = pw, BlindMiquel = miquelPt, BlindCircumcircle vs the real circle, …) as small lemmas by unfolding — these are part of the comparison and must be reported (if one of them is NOT a definitional/unfolding fact, that is itself a DIFFERENCE).
+ - In the PROOF BODIES you may use: the premise, unfolding definitions, those agreement lemmas, and general Mathlib lemmas. You may NOT use the repository's own theorems (e.g. you may not prove the blind statement by applying QuadNewton.newton_gauss to get a truth-level proof — the premise is the real statement as a hypothesis, use THAT). The repository's DEFINITIONS and its bridge lemmas about notions (Bridge.lean: carrier_eq_line, meet_eq_iff, collinear_iff_cr, circ_eq_circumcenter, foot_eq_orthogonalProjection, pw_eq_power, genPos_iff, …) may be used and must be reported.
+ - Statement-level: both sides are true theorems, so a truth-level proof is vacuous. If an implication needs genuine geometry or algebra beyond repackaging/specialising/unfolding, STOP on that direction and record a DIFFERENCE: what separates them, which side is stronger, classify REAL (the paper's prose and the Lean really differ — important!) or AMBIGUITY-ARTEFACT (traces to an `-- AMBIGUOUS` comment in the blind file or to redacted text). A concrete reason / counterexample is ideal.
+ - "Lean more general than the blind statement" (R→B easy, B→R impossible) is SAFE: report it as such.
+ - No sorry/admit/native_decide/axiom in any finished scratch file. A direction you could not do is omitted and reported.
+ - Do NOT edit any library file of the repository; work only in scratch/ (create it if missing; scratch/ is not built by lake build). Time-box each pair ~25 minutes.
+
+FINISH: compile each scratch file and record the exit code; grep each for sorry|admit|native_decide|axiom (must be empty except in comments); record the library hash before and after: `find . -name '*.lean' -not -path './.lake/*' -not -path './scratch/*' | LC_ALL=C sort | xargs shasum -a 256 | shasum -a 256`.
+REPORT: write ~/lean/quadmiquel_l13/L13_COMPARE_M.md (on john) on the machine and print it as your final answer: a table `pair | R→B | B→R | difference (none / SAFE-Lean-more-general / REAL / ARTEFACT) | note`, all agreement/bridge lemmas used, compile exit codes, forbidden-token grep, library hash before/after, and the scratch file paths.
+
+MACHINE: john (arm64 Mac), ssh -o BatchMode=yes john. Repo ~/lean/quadmiquel_l13 (namespace QuadMiquel, built; includes QuadMiquel/Parallel.lean). Copy the blind file there first: ssh jack 'cat ~/reformal/PaperEBlind.lean' > /tmp/PaperEBlind.lean && scp /tmp/PaperEBlind.lean john:lean/quadmiquel_l13/scratch/PaperEBlind.lean (read-only reference). Scratch file: ~/lean/quadmiquel_l13/scratch/L13_compare.lean starting with `import QuadMiquel`. Build ONLY via the wrapper from inside the repo: cd ~/lean/quadmiquel_l13 && ~/lean/jl lake env lean scratch/L13_compare.lean. NEVER lake update / cache get. macOS: shasum -a 256, no `timeout`. Kill only processes you started, by PID.
+
+PAIRING TABLE (fixed by the author; do not re-pair; if a pairing looks wrong, say so):
+| blind | paper label | real declaration |
+| blind_7 | thm:miquel | QuadMiquel.miquel |
+| blind_8 | thm:steiner | QuadMiquel.steiner_circle |
+| blind_9 | thm:simson | QuadMiquel.simson |
+| blind_10 | thm:par | QuadMiquel.steiner_parallel_line |
+Ignore blind_1..blind_6 (another comparer handles them). Note: blind_7 uses a circumcircle defined as the sphere centred at circ(T) through T's FIRST vertex — check whether the real `miquel` uses the same radius convention, and report.

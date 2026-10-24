@@ -1,0 +1,1003 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% \lean{...} / \decl{...}: a Lean identifier. Every argument that looks like a Lean name is
+% checked by namecheck.py against the two source trees and the pinned Mathlib.
+\makeatletter
+\def\UrlBreaks{\do\.\do\_\do\'}
+\makeatother
+\DeclareUrlCommand\leanu{\def\UrlFont{\ttfamily\upshape}}
+\DeclareRobustCommand\lean[1]{\ifmmode\text{\leanu{#1}}\else\leanu{#1}\fi}
+\DeclareRobustCommand\decl[1]{\lean{#1}}
+% \code{...}: Lean text that is not a single identifier (not name-checked).
+\newcommand{\code}[1]{\texttt{#1}}
+% \ext{...}: a Lean name from a third-party development (breakable, not name-checked).
+\DeclareUrlCommand\ext{\def\UrlFont{\ttfamily\upshape}}
+
+\newcommand{\RR}{\mathbb{R}}
+
+% version-2 commits: casey=8e9058891620926763871d85a204a7a980354f21 fuss=c5a5915b223e5f7fce56e5c5dcaba450ef36ad48
+\newcommand{\commitcasey}{a83c43b8d7c8b1b98c213366cfa27eec8b8ad6c3}
+\newcommand{\commitfuss}{671efdc610147022ef66e9794988ba72114f85a4}
+\expandafter\def\csname commitof:casey\endcsname{\commitcasey}
+\expandafter\def\csname commitof:fuss\endcsname{\commitfuss}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\expandafter\def\csname repoof:casey\endcsname{casey}
+\expandafter\def\csname repoof:fuss\endcsname{fuss}
+\newcommand{\repo}[1]{https://github.com/jpbald93/\csname repoof:#1\endcsname}
+\newcommand{\src}[4]{\href{\repo{#1}/blob/\commitof{#1}/#2/#3\#L#4}{\texttt{#3}:#4}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,structure,inductive,where,by,fun,noncomputable},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={ℝ}{{$\mathbb{R}$}}1 {ℕ}{{$\mathbb{N}$}}1 {≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2
+    {→}{{$\to$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1 {∈}{{$\in$}}1
+    {≤}{{$\le$}}1 {ᵥ}{{$_v$}}1 {Γ}{{$\Gamma$}}1 {ω}{{$\omega$}}1 {π}{{$\pi$}}1
+    {∠}{{$\angle$}}1 {•}{{$\bullet$}}1 {⟪}{{$\langle\!\langle$}}1 {⟫}{{$\rangle\!\rangle$}}1
+    {‖}{{$\|$}}1 {₀}{{$_0$}}1 {₁}{{$_1$}}1 {₂}{{$_2$}}1 {₃}{{$_3$}}1 {₄}{{$_4$}}1
+    {×}{{$\times$}}1}
+
+\title{Casey's theorem and Fuss's theorem,\\ formalised in Lean~4 with Mathlib}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{30 September 2026; version~2, 22 October 2026 (adds Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We report two small Lean~4 formalisations, built on Mathlib, of classical theorems about circles.
+The first is \emph{Casey's theorem} (1866), the generalisation of Ptolemy's theorem in which the
+four points on a circle $\Gamma$ are replaced by four circles tangent to $\Gamma$ and distances are
+replaced by lengths of common tangents. We prove it in every real inner product space, for circles
+internally tangent to $\Gamma$ and, through a signed radius, for any mixture of internally and
+externally tangent circles; with all radii zero it specialises to Mathlib's Ptolemy theorem, which
+the proof reuses. The second is \emph{Fuss's theorem} (1797): if a quadrilateral is inscribed in a
+circle of radius $R$ and its four side lines are tangent to a circle of radius $r$ whose centre is at
+distance $d\ne R$ from the first centre, with $r>0$, then $(R^2-d^2)^2=2r^2(R^2+d^2)$. We prove it in a Euclidean
+plane, together with the converse in the form of Poncelet's porism for quadrilaterals: under Fuss's
+relation every non-stalling four-step chain of the tangent construction (with the hypotheses of
+Theorem~\ref{thm:closes}) closes, and if the inner circle lies inside
+the outer one, every point of the outer circle is a vertex of such a quadrilateral. Both
+original core developments are short (about 200 and 870 lines), contain no \code{sorry} and use only Lean's
+standard axioms. As far as we could determine, neither theorem had a formal proof before.
+The quadrilaterals need not be convex: convexity, and contact of the inner circle with the side
+segments, are not proved, so the textbook forms of the converse and of Poncelet closure for convex
+bicentric quadrilaterals are covered only in this narrower form. Version~2 adds Mathlib-only
+restatements with non-degenerate witnesses and a comparison with independently formalised textbook
+statements.
+\end{abstract}
+
+\section{Introduction}
+
+This paper describes Lean~4 proofs of two classical theorems about configurations of circles.
+Casey's theorem is listed in Mathlib's ``1000+ theorems'' file, and Fuss's theorem is the case $n=4$ of
+Poncelet's closure theorem, which is also listed; neither entry has a declaration recorded
+there~\cite{Mathlib1000}.
+
+\paragraph{Casey's theorem.}
+Let $\Gamma$ be a circle and let $C_1,C_2,C_3,C_4$ be circles internally tangent to $\Gamma$ at
+points $T_1,T_2,T_3,T_4$ which lie on $\Gamma$ in this cyclic order. For $i\ne j$ let $t_{ij}$ be the
+length of a common external tangent of $C_i$ and $C_j$; if $C_i$ and $C_j$ have centres at distance
+$\delta_{ij}$ and radii $r_i,r_j$, then $t_{ij}=\sqrt{\delta_{ij}^2-(r_i-r_j)^2}$. Then
+\begin{equation}\label{eq:casey}
+t_{12}\,t_{34}+t_{23}\,t_{41}=t_{13}\,t_{24}.
+\end{equation}
+When all four circles shrink to points, $t_{ij}=|T_iT_j|$ and \eqref{eq:casey} is Ptolemy's theorem
+for the cyclic quadrilateral $T_1T_2T_3T_4$. The theorem was published by John
+Casey in 1866~\cite{Casey1866} and appears in his textbook~\cite{CaseySequel}.
+There, and in most later accounts, it is stated together with a converse (four circles whose
+tangent lengths satisfy a relation of the form \eqref{eq:casey} are tangent to a common circle or
+line); we do not formalise the converse (Section~\ref{sec:l1415} shows that a direct formalisation of it without non-degeneracy hypotheses is false). A standard variant allows some of the $C_i$ to be externally
+tangent to $\Gamma$, with $t_{ij}$ then the length of an \emph{internal} common tangent when $C_i$
+and $C_j$ touch $\Gamma$ from different sides; our signed-radius form covers this.
+
+\paragraph{Fuss's theorem.}
+A quadrilateral is \emph{bicentric} if it has a circumcircle $\Gamma$ (centre $O$, radius $R$) and
+an incircle $\omega$ (centre $I$, radius $r$). With $d=|OI|$, Nicolaus Fuss showed in
+a paper presented in 1794 and printed in 1797~\cite{Fuss1797} that
+\begin{equation}\label{eq:fuss}
+(R^2-d^2)^2=2r^2(R^2+d^2),\qquad\text{equivalently}\qquad
+\frac1{(R-d)^2}+\frac1{(R+d)^2}=\frac1{r^2}.
+\end{equation}
+The triangle analogue is the Euler--Chapple formula $d^2=R(R-2r)$. Poncelet's closure theorem
+(1822)~\cite{Poncelet1822,Flatto} explains both: given two circles, one inside the other, start at a
+point of the outer circle, draw a tangent to the inner circle, take its second intersection with
+the outer circle, draw the other tangent from there, and repeat. Whether the resulting chain closes
+after $n$ steps does not depend on the starting point. For $n=3$ the closure condition is the
+Euler--Chapple relation and for $n=4$ it is Fuss's relation~\eqref{eq:fuss}. The triangle case,
+including the Euler--Chapple relation as a closure criterion, is formalised in a companion
+paper~\cite{BaldTriangles}; here we treat $n=4$.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item A proof of Casey's theorem (Theorem~\ref{thm:casey}) in an arbitrary real inner product
+space, for four circles internally tangent to a circle~$\Gamma$, and a signed-radius version
+(Theorem~\ref{thm:casey-le}) that allows circles externally tangent to $\Gamma$. The only
+nontrivial input is Mathlib's Ptolemy theorem; the new work is the tangent-length formula
+$t_{ij}=|T_iT_j|\sqrt{R-r_i}\sqrt{R-r_j}/R$ (Lemma~\ref{lem:tl}).
+\item A proof of Fuss's theorem (Theorem~\ref{thm:fuss}) in a Euclidean plane for quadrilaterals
+that need not be convex, with the single non-degeneracy hypothesis $d\ne R$; closure of the tangent
+construction after four steps under~\eqref{eq:fuss} (Theorem~\ref{thm:closes}); existence of a
+bicentric quadrilateral through every point of $\Gamma$ when $\omega$ lies inside $\Gamma$
+(Theorem~\ref{thm:exists}); and the resulting ``all or nothing'' statements
+(Corollary~\ref{cor:aon}).
+\item Lemmas that tie the definitions to their informal reading (Section~\ref{sec:correct}),
+including a formal non-vacuity theorem for Fuss's theorem and a
+counterexample showing that the hypothesis $d\ne R$ cannot be dropped.
+\item (Version~2.) Restatements of the main theorems with Mathlib-only types, each with an explicit
+non-degenerate witness, and a comparison with textbook statements formalised independently by an AI
+model (Section~\ref{sec:l1415}). The forward textbook Fuss statement is covered with the additional
+hypothesis $d<R$ and without the square-characterisation clause; its converse and the Poncelet statements
+are covered only with side-line tangency, without proofs of convexity or contact on the side segments.
+\end{itemize}
+
+\paragraph{Availability.}
+{\sloppy The two developments are separate Lake projects, published at
+\url{\repo{casey}} and \url{\repo{fuss}}.
+Line references in this paper are to commits \texttt{5f6252c} (Casey) and
+\texttt{671efdc} (Fuss); the Casey references are also valid at the pinned commit \texttt{a83c43b},
+which adds \path{Casey/Bridge.lean} and leaves \path{Basic.lean} and \path{Main.lean} unchanged.
+Version~2 of this paper adds, in a new commit of each repository (Casey \texttt{8e9058891620926763871d85a204a7a980354f21}, Fuss
+\texttt{c5a5915b223e5f7fce56e5c5dcaba450ef36ad48}), the Layer-14 and Layer-15 files \path{Casey/L14.lean} (174 lines),
+\path{Casey/L15Classical.lean} (394), \path{Fuss/L14.lean} (354) and \path{Fuss/L15Classical.lean}
+(418) of Section~\ref{sec:l1415}; that commit changes only the root import files, \path{gate.sh} and the
+README, and all earlier statements and library files are unchanged. Both use Lean \texttt{v4.33.1} and Mathlib revision
+\texttt{0df444a3} (tag \texttt{v4.33.1}), pinned in \texttt{lake-manifest.json}; this is the same
+Mathlib as in the companion paper~\cite{BaldTriangles}. The original Casey core consists of
+\path{Casey/Basic.lean} and \path{Casey/Main.lean} (200 lines, plus its original 2-line root file). The original Fuss core consists of six
+files under \path{Fuss/} (866 lines): \path{Plane.lean}, \path{Forward.lean}, \path{Porism.lean},
+\path{Steps.lean}, \path{Geometry.lean} and \path{Example.lean}. Two lemmas of
+\path{Fuss/Geometry.lean} are copied from the triangle development \path{poncelet-triangles}
+of~\cite{BaldTriangles}, with the namespace changed and a provenance note added to the
+docstring (Section~\ref{sec:fuss-setting}). Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Casey-Fuss} of the repository \url{https://github.com/jpbald93/LEAN-verification}.\par}
+
+{\small\begin{longtable}{@{}>{\raggedright\arraybackslash\hangindent=1.5em\hangafter=1}p{0.50\textwidth}p{0.18\textwidth}>{\raggedright\arraybackslash}p{0.26\textwidth}@{}}
+\caption{Main formal statements. Links point to the declaration line at the commit listed under
+Availability.}\label{tab:thms}\\
+\toprule
+Lean name & In this paper & Source \\ \midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\small\emph{Table~\ref{tab:thms}, continued}}\\
+\toprule
+Lean name & In this paper & Source \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{casey}}}\\
+\lean{Casey.tangentCentre} & Def.~\ref{def:tc} & \src{casey}{Casey}{Basic.lean}{28} \\
+\lean{Casey.tangentLength} & Def.~\ref{def:tc} & \src{casey}{Casey}{Basic.lean}{33} \\
+\lean{Casey.tangentCentre_zero} & Section~\ref{sec:casey-correct} & \src{casey}{Casey}{Basic.lean}{43} \\
+\lean{Casey.tangentLength_zero} & Section~\ref{sec:casey-correct} & \src{casey}{Casey}{Basic.lean}{47} \\
+\lean{Casey.dist_tangentCentre_center} & Lemma~\ref{lem:spec} & \src{casey}{Casey}{Basic.lean}{51} \\
+\lean{Casey.dist_tangentCentre_sq_sub_sq} & Lemma~\ref{lem:key} & \src{casey}{Casey}{Basic.lean}{62} \\
+\lean{Casey.tangentLength_tangentCentre} & Lemma~\ref{lem:tl} & \src{casey}{Casey}{Basic.lean}{77} \\
+\lean{Casey.cospherical_of_dist_eq} & Section~\ref{sec:casey-proof} & \src{casey}{Casey}{Main.lean}{25} \\
+\lean{Casey.casey_of_le} & Theorem~\ref{thm:casey-le} & \src{casey}{Casey}{Main.lean}{34} \\
+\lean{Casey.casey} & Theorem~\ref{thm:casey} & \src{casey}{Casey}{Main.lean}{61} \\
+\lean{Casey.tangentCentre_spec} & Lemma~\ref{lem:spec} & \src{casey}{Casey}{Main.lean}{76} \\
+\lean{Casey.tangentCentre_spec_external} & Lemma~\ref{lem:spec} & \src{casey}{Casey}{Main.lean}{90} \\
+\lean{Casey.casey_zero_radii_eq_ptolemy} & Corollary~\ref{cor:ptolemy} & \src{casey}{Casey}{Main.lean}{102} \\
+\multicolumn{3}{@{}l}{\emph{Repo \texttt{fuss}}}\\
+\lean{Fuss.parallel_of_inner_eq_zero} & Lemma~\ref{lem:plane} & \src{fuss}{Fuss}{Plane.lean}{22} \\
+\lean{Fuss.eq_or_eq_or_eq_of_inner} & Lemma~\ref{lem:plane} & \src{fuss}{Fuss}{Plane.lean}{51} \\
+\lean{Fuss.vertex_smul} & Lemma~\ref{lem:plane} & \src{fuss}{Fuss}{Plane.lean}{83} \\
+\lean{Fuss.vertex_rel} & Lemma~\ref{lem:vrel} & \src{fuss}{Fuss}{Forward.lean}{21} \\
+\lean{Fuss.not_three_on_line} & Section~\ref{sec:fuss-forward} & \src{fuss}{Fuss}{Forward.lean}{57} \\
+\lean{Fuss.fuss_vec} & Section~\ref{sec:fuss-forward} & \src{fuss}{Fuss}{Forward.lean}{71} \\
+\lean{Fuss.vertex_unique} & Section~\ref{sec:fuss-closure} & \src{fuss}{Fuss}{Porism.lean}{22} \\
+\lean{Fuss.chain_distinct} & Section~\ref{sec:fuss-exists} & \src{fuss}{Fuss}{Porism.lean}{31} \\
+\lean{Fuss.closes_vec} & Section~\ref{sec:fuss-closure} & \src{fuss}{Fuss}{Porism.lean}{59} \\
+\lean{Fuss.first_tangent} & Section~\ref{sec:fuss-exists} & \src{fuss}{Fuss}{Steps.lean}{42} \\
+\lean{Fuss.other_tangent} & Section~\ref{sec:fuss-exists} & \src{fuss}{Fuss}{Steps.lean}{64} \\
+\lean{Fuss.second_point} & Section~\ref{sec:fuss-exists} & \src{fuss}{Fuss}{Steps.lean}{87} \\
+\lean{Fuss.step} & Section~\ref{sec:fuss-exists} & \src{fuss}{Fuss}{Steps.lean}{119} \\
+\lean{Fuss.isTangent_of_mem_orthRadius} & Section~\ref{sec:fuss-setting} & \src{fuss}{Fuss}{Geometry.lean}{33} \\
+\lean{Fuss.IsBicentric} & Def.~\ref{def:bic} & \src{fuss}{Fuss}{Geometry.lean}{96} \\
+\lean{Fuss.fuss_of_isBicentric} & Theorem~\ref{thm:fuss} & \src{fuss}{Fuss}{Geometry.lean}{105} \\
+\lean{Fuss.poncelet_chain_closes} & Theorem~\ref{thm:closes} & \src{fuss}{Fuss}{Geometry.lean}{142} \\
+\lean{Fuss.exists_quad_vec} & Section~\ref{sec:fuss-exists} & \src{fuss}{Fuss}{Geometry.lean}{175} \\
+\lean{Fuss.exists_bicentric_of_fuss} & Theorem~\ref{thm:exists} & \src{fuss}{Fuss}{Geometry.lean}{202} \\
+\lean{Fuss.fuss_iff_exists} & Corollary~\ref{cor:aon} & \src{fuss}{Fuss}{Geometry.lean}{241} \\
+\lean{Fuss.fuss_iff_forall} & Corollary~\ref{cor:aon} & \src{fuss}{Fuss}{Geometry.lean}{257} \\
+\lean{Fuss.exists_iff_forall} & Corollary~\ref{cor:aon} & \src{fuss}{Fuss}{Geometry.lean}{273} \\
+\lean{Fuss.fuss_iff_reciprocal} & Proposition~\ref{prop:recip} & \src{fuss}{Fuss}{Geometry.lean}{280} \\
+\lean{Fuss.nonvacuous} & Proposition~\ref{prop:nonvac} & \src{fuss}{Fuss}{Example.lean}{18} \\
+\end{longtable}}
+
+\section{Setting and representation}\label{sec:setting}
+
+Throughout, $V$ is a real inner product space and $P$ a metric affine space over it:
+\begin{center}\small
+\code{[NormedAddCommGroup V] [InnerProductSpace $\mathbb{R}$ V] [MetricSpace P] [NormedAddTorsor V P]}
+\end{center}
+For Casey's theorem no dimension assumption is made. For Fuss's theorem we add
+\code{[Fact (Module.finrank $\mathbb{R}$ V = 2)]}, so that $P$ is a Euclidean plane; the model plane
+\lean{EuclideanSpace}~\code{$\mathbb{R}$ (Fin 2)} is used for the non-vacuity example. We write
+$\angle\,a\,p\,c$ for Mathlib's unoriented angle \lean{EuclideanGeometry.angle}.
+
+\subsection{Casey: circles as centre and signed radius}\label{sec:casey-setting}
+
+In the Casey development a circle is not a Mathlib \lean{EuclideanGeometry.Sphere}; it is given by
+its centre and a real number, and tangency is built into the choice of centre.
+
+\begin{definition}\label{def:tc}
+Let $\Gamma$ have centre $O$ and radius $R$, and let $T$ be a point.
+\begin{itemize}
+\item $\lean{Casey.tangentCentre}\ O\ T\ R\ r = O+(1-r/R)(T-O)$ is the centre of the circle of radius
+$r$ internally tangent to $\Gamma$ at $T$.
+\item $\lean{Casey.tangentLength}\ c_1\ c_2\ r_1\ r_2=\sqrt{|c_1c_2|^2-(r_1-r_2)^2}$, with
+Mathlib's \lean{Real.sqrt} (which returns $0$ on negative arguments).
+\end{itemize}
+\end{definition}
+
+For $0\le r<R$ and $T\in\Gamma$ the point $c=\lean{tangentCentre}\ O\ T\ R\ r$ lies on the segment
+$OT$ at distance $R-r$ from $O$ and at distance $r$ from $T$, so the circle with centre $c$ and
+radius $r$ touches $\Gamma$ from inside at $T$ (Lemma~\ref{lem:spec}). For $r<0$ the same formula
+puts $c$ on the ray $OT$ beyond $T$, at distance $R+|r|$ from $O$ and $|r|$ from $T$: the circle of
+radius $|r|$ with centre $c$ touches $\Gamma$ from outside at $T$. So one real parameter $r\le R$
+encodes both kinds of tangency, and we call it a \emph{signed radius}. With signed radii
+$r_i,r_j$, the quantity $|c_ic_j|^2-(r_i-r_j)^2$ is the squared length of the common external
+tangent when $r_i,r_j$ have the same sign, and of the common internal tangent (for which the
+relevant radius sum is $|r_i|+|r_j|=r_i-r_j$) when $r_i\ge0\ge r_j$. This is the classical
+convention for the mixed form of Casey's theorem.
+
+\paragraph{Cyclic order.}
+Following Mathlib's Ptolemy theorem, the cyclic order of $T_1,\dots,T_4$ on $\Gamma$ is expressed by
+a point $p$ with $\angle\,T_1\,p\,T_3=\pi$ and $\angle\,T_2\,p\,T_4=\pi$: the diagonals $T_1T_3$ and
+$T_2T_4$ meet at a point strictly inside both. For four \emph{distinct} points on a circle this is the usual meaning of ``$T_1,T_2,T_3,T_4$ in this
+cyclic order'' (up to reversal); each angle hypothesis is strict betweenness
+(\lean{EuclideanGeometry.angle_eq_pi_iff_sbtw}). The hypotheses also admit repeated adjacent
+points, e.g.\ $T_1=T_2$ and $T_3=T_4$ at opposite ends of a diameter; the identities remain true there. Mathlib's theorem is
+\begin{lstlisting}
+theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}
+    (h : Cospherical ({a, b, c, d} : Set P)) (hapc : ∠ a p c = π) (hbpd : ∠ b p d = π) :
+    dist a b * dist c d + dist b c * dist d a = dist a c * dist b d
+\end{lstlisting}
+(\lean{EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical}, by Candales and Davidson),
+and our statements take the same two angle hypotheses.
+
+\subsection{Fuss: Mathlib spheres and tangent lines}\label{sec:fuss-setting}
+
+In the Fuss development the circles are Mathlib spheres \code{$\Gamma$ $\omega$ : Sphere P}, with
+$R=\Gamma.\mathrm{radius}$, $r=\omega.\mathrm{radius}$ and $d=\code{dist $\Gamma$.center $\omega$.center}$.
+The formal statements are written with these expressions; we abbreviate them as $R,r,d$.
+A line is \code{line[$\mathbb{R}$, A, B]}, the affine span of $\{A,B\}$. Tangency is Mathlib's
+\lean{EuclideanGeometry.Sphere.IsTangent}: an affine subspace is tangent to $\omega$ if it contains
+a point $T\in\omega$ and lies in the tangent space $\omega.\lean{orthRadius}\ T$, the affine
+subspace through $T$ orthogonal to the radius at~$T$.
+
+\begin{definition}\label{def:bic}
+$\lean{Fuss.IsBicentric}\ \Gamma\ \omega\ A\ B\ C\ D$ holds if $A,B,C,D\in\Gamma$ are pairwise
+distinct and the four side lines $AB$, $BC$, $CD$, $DA$ are tangent to $\omega$:
+\begin{lstlisting}
+def IsBicentric (Γ ω : Sphere P) (A B C D : P) : Prop :=
+  A ∈ Γ ∧ B ∈ Γ ∧ C ∈ Γ ∧ D ∈ Γ ∧
+    A ≠ B ∧ B ≠ C ∧ C ≠ D ∧ D ≠ A ∧ A ≠ C ∧ B ≠ D ∧
+    ω.IsTangent line[ℝ, A, B] ∧ ω.IsTangent line[ℝ, B, C] ∧ ω.IsTangent line[ℝ, C, D] ∧
+    ω.IsTangent line[ℝ, D, A]
+\end{lstlisting}
+\end{definition}
+
+This definition does not ask for convexity, nor that the points of tangency lie on the side
+segments. It therefore includes crossed (self-intersecting) quadrilaterals whose four side lines
+touch~$\omega$. Section~\ref{sec:correct} discusses this choice.
+
+The proofs work in vectors relative to the centre $I$ of $\omega$. A point $X$ becomes
+$x=X-I$; the centre of $\Gamma$ becomes $o=O-I$, so $\|o\|=d$; membership $X\in\Gamma$ becomes
+$\|x-o\|^2=R^2$, and for $T\in\omega$ the condition $X\in\omega.\lean{orthRadius}\ T$ becomes
+$\langle x,t\rangle=r^2$ (\lean{Fuss.mem_orthRadius_iff}). The translation lemmas
+\lean{Fuss.vec_of_mem}, \lean{Fuss.mem_of_vec} and \lean{Fuss.vec_of_mem_center} are one-line
+rewrites. In the other direction, \lean{Fuss.isTangent_of_mem_orthRadius} says that in a plane, for
+$T\ne$ the centre of $\omega$, the line through two distinct points of the tangent space at $T$ is
+tangent to $\omega$; it and
+\lean{Fuss.exists_mem_sphere} (a circle of positive radius in a nontrivial space has a point) are
+the two lemmas copied from~\cite{BaldTriangles}.
+
+\section{Casey's theorem}\label{sec:casey}
+
+\subsection{Statements}
+
+\begin{theorem}[Casey]\label{thm:casey}
+Let $R>0$, let $T_1,\dots,T_4$ be points with $|T_iO|=R$, let $p$ be a point with
+$\angle\,T_1\,p\,T_3=\pi$ and $\angle\,T_2\,p\,T_4=\pi$, and let $0\le r_i<R$. Put
+$c_i=\lean{tangentCentre}\ O\ T_i\ R\ r_i$ and $t_{ij}=\lean{tangentLength}\ c_i\ c_j\ r_i\ r_j$. Then
+$t_{12}t_{34}+t_{23}t_{41}=t_{13}t_{24}$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem casey {O T₁ T₂ T₃ T₄ p : P} {R r₁ r₂ r₃ r₄ : ℝ} (hR : 0 < R)
+    (hr₁ : 0 ≤ r₁ ∧ r₁ < R) (hr₂ : 0 ≤ r₂ ∧ r₂ < R) (hr₃ : 0 ≤ r₃ ∧ r₃ < R)
+    (hr₄ : 0 ≤ r₄ ∧ r₄ < R)
+    (h₁ : dist T₁ O = R) (h₂ : dist T₂ O = R) (h₃ : dist T₃ O = R) (h₄ : dist T₄ O = R)
+    (h₁₃ : ∠ T₁ p T₃ = π) (h₂₄ : ∠ T₂ p T₄ = π) :
+    tangentLength (tangentCentre O T₁ R r₁) (tangentCentre O T₂ R r₂) r₁ r₂ *
+        tangentLength (tangentCentre O T₃ R r₃) (tangentCentre O T₄ R r₄) r₃ r₄ +
+      tangentLength (tangentCentre O T₂ R r₂) (tangentCentre O T₃ R r₃) r₂ r₃ *
+        tangentLength (tangentCentre O T₄ R r₄) (tangentCentre O T₁ R r₁) r₄ r₁ =
+      tangentLength (tangentCentre O T₁ R r₁) (tangentCentre O T₃ R r₃) r₁ r₃ *
+        tangentLength (tangentCentre O T₂ R r₂) (tangentCentre O T₄ R r₄) r₂ r₄
+\end{lstlisting}
+
+\begin{theorem}[Casey, signed radii]\label{thm:casey-le}
+The conclusion of Theorem~\ref{thm:casey} holds under the same hypotheses with $0\le r_i<R$ replaced by
+$r_i\le R$ (\lean{Casey.casey_of_le}). In particular it holds for any combination of circles
+internally tangent ($0\le r_i<R$) and externally tangent ($r_i<0$) to $\Gamma$.
+\end{theorem}
+
+Theorem~\ref{thm:casey} is proved from Theorem~\ref{thm:casey-le} in one line. The value $r_i=R$ is
+allowed in Theorem~\ref{thm:casey-le}; then $c_i=O$ and the ``circle'' is $\Gamma$ itself, every
+$t_{ij}$ involving $i$ is $0$ by Lemma~\ref{lem:tl}, and the identity reduces to $0=0$.
+
+\begin{corollary}[Ptolemy]\label{cor:ptolemy}
+Under the hypotheses on $R$, $T_i$ and $p$ of Theorem~\ref{thm:casey},
+$|T_1T_2|\,|T_3T_4|+|T_2T_3|\,|T_4T_1|=|T_1T_3|\,|T_2T_4|$
+(\lean{Casey.casey_zero_radii_eq_ptolemy}).
+\end{corollary}
+
+This is obtained by specialising \lean{Casey.casey} to $r_1=\dots=r_4=0$ and simplifying with
+\lean{Casey.tangentCentre_zero} ($c_i=T_i$) and \lean{Casey.tangentLength_zero} ($t_{ij}=|T_iT_j|$).
+It is of course weaker than the Mathlib theorem used in the proof; its purpose is to show that the
+formal statement contains Ptolemy's theorem.
+
+\subsection{Proof}\label{sec:casey-proof}
+
+The proof follows the classical one and has three steps.
+
+\begin{lemma}[key identity]\label{lem:key}
+If $R\ne0$ and $|T_1O|=|T_2O|=R$, then for all real $r_1,r_2$, with $c_i=\lean{tangentCentre}\ O\ T_i\ R\ r_i$,
+\[
+|c_1c_2|^2-(r_1-r_2)^2=\frac{|T_1T_2|^2\,(R-r_1)(R-r_2)}{R^2}.
+\]
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+Put $u=T_1-O$, $v=T_2-O$, $a=1-r_1/R$ and $b=1-r_2/R$, so $c_1-c_2=au-bv$ and $\|u\|=\|v\|=R$.
+Expand $\|au-bv\|^2$ and $\|u-v\|^2$ with \lean{norm_sub_sq_real}, substitute the norms,
+clear denominators (\code{field\_simp}) and close with \code{ring}. No hypothesis on the signs of
+$r_i$ or on the dimension is used.
+\end{proof}
+
+\begin{lemma}[tangent length]\label{lem:tl}
+If $R>0$, $r_1,r_2\le R$ and $|T_1O|=|T_2O|=R$, then
+\[
+t_{12}=\lean{tangentLength}\ c_1\ c_2\ r_1\ r_2=\frac{|T_1T_2|\,\sqrt{R-r_1}\,\sqrt{R-r_2}}{R}.
+\]
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+By Lemma~\ref{lem:key} the argument of the square root is the square of the right-hand side, which
+is non-negative because $R-r_i\ge0$ and $R>0$; so \lean{Real.sqrt_sq} applies.
+\end{proof}
+
+The lemma is where the hypothesis $r_i\le R$ enters: it makes $R-r_i\ge0$, so that
+$\sqrt{R-r_1}\sqrt{R-r_2}=\sqrt{(R-r_1)(R-r_2)}$ and the argument of the outer square root is
+non-negative. It is also the only place where the truncation of \lean{Real.sqrt} could matter,
+and the lemma shows that it does not.
+
+\begin{proof}[Proof of Theorem~\ref{thm:casey-le}]
+The four points are cospherical (\lean{Casey.cospherical_of_dist_eq}, with centre $O$ and radius
+$R$), so Mathlib's Ptolemy theorem gives
+$|T_1T_2||T_3T_4|+|T_2T_3||T_4T_1|=|T_1T_3||T_2T_4|$. Rewrite each of the six tangent lengths
+with Lemma~\ref{lem:tl}. Writing $s_i=\sqrt{R-r_i}$, the left-hand side of \eqref{eq:casey}
+becomes $(|T_1T_2||T_3T_4|+|T_2T_3||T_4T_1|)\,s_1s_2s_3s_4/R^2$ (an auxiliary identity proved by
+\code{field\_simp}), and the right-hand side becomes $|T_1T_3||T_2T_4|\,s_1s_2s_3s_4/R^2$.
+Ptolemy's identity finishes the proof.
+\end{proof}
+
+The original Casey core is two files and 200 lines. The main work was choosing a representation in
+which Lemma~\ref{lem:key} is a polynomial identity: the circles are parametrised by their points of
+tangency and signed radii, not by arbitrary centres subject to a tangency hypothesis.
+
+\section{Fuss's theorem and Poncelet's porism for quadrilaterals}\label{sec:fuss}
+
+\subsection{Statements}
+
+\begin{theorem}[Fuss]\label{thm:fuss}
+Let $P$ be a Euclidean plane, $\Gamma,\omega$ circles with $r>0$ and $d\ne R$. If
+$\lean{IsBicentric}\ \Gamma\ \omega\ A\ B\ C\ D$, then $(R^2-d^2)^2=2r^2(R^2+d^2)$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem fuss_of_isBicentric [Fact (Module.finrank ℝ V = 2)] (Γ ω : Sphere P) {A B C D : P}
+    (hr : 0 < ω.radius) (hd : dist Γ.center ω.center ≠ Γ.radius)
+    (h : IsBicentric Γ ω A B C D) :
+    (Γ.radius ^ 2 - dist Γ.center ω.center ^ 2) ^ 2 =
+      2 * ω.radius ^ 2 * (Γ.radius ^ 2 + dist Γ.center ω.center ^ 2)
+\end{lstlisting}
+
+\begin{theorem}[closure]\label{thm:closes}
+Let $P$ be a Euclidean plane, $r>0$, $d\ne R$, and assume Fuss's relation~\eqref{eq:fuss}. Let
+$A_0,\dots,A_4\in\Gamma$ and $T_0,\dots,T_4\in\omega$ be such that $A_i$ lies on the tangents to
+$\omega$ at $T_i$ and $T_{i+1}$ ($i=0,\dots,3$) and $A_4$ lies on the tangent at $T_4$, with
+$T_i\ne T_{i+1}$ and $A_i\ne A_{i+1}$ for $i=0,\dots,3$. Then $A_4=A_0$ and $T_4=T_0$
+(\lean{Fuss.poncelet_chain_closes}).
+\end{theorem}
+
+In words: start at $A_0$ on the tangent at $T_0$; take the \emph{other} tangent from $A_0$ (touching at
+$T_1\ne T_0$) and its \emph{other} intersection $A_1\ne A_0$ with $\Gamma$; repeat. After four steps
+the construction is back where it started. ``$A$ lies on the tangent at $T$'' is written
+$A\in\omega.\lean{orthRadius}\ T$ with $T\in\omega$. The theorem quantifies over all such chains, so
+it is independent of how the choices in the construction are made.
+
+\begin{theorem}[existence, porism]\label{thm:exists}
+Let $P$ be a Euclidean plane, $r>0$ and $d+r<R$ (so $\omega$ lies strictly inside $\Gamma$), and
+assume~\eqref{eq:fuss}. Then for every $A\in\Gamma$ there are $B,C,D$ with
+$\lean{IsBicentric}\ \Gamma\ \omega\ A\ B\ C\ D$ (\lean{Fuss.exists_bicentric_of_fuss}).
+\end{theorem}
+
+\begin{corollary}[all or nothing]\label{cor:aon}
+Let $P$ be a Euclidean plane, $r>0$ and $d+r<R$. The following are equivalent:
+(i) some bicentric quadrilateral for $\Gamma,\omega$ exists;
+(ii) every point of $\Gamma$ is a vertex of one;
+(iii) Fuss's relation~\eqref{eq:fuss} holds.
+The three equivalences (i)$\Leftrightarrow$(iii), (ii)$\Leftrightarrow$(iii) and
+(i)$\Leftrightarrow$(ii) are \lean{Fuss.fuss_iff_exists}, \lean{Fuss.fuss_iff_forall} and
+\lean{Fuss.exists_iff_forall}.
+\end{corollary}
+
+\begin{proposition}\label{prop:recip}
+For $0\le d<R$ and $r\ne0$, $(R^2-d^2)^2=2r^2(R^2+d^2)$ if and only if
+$1/(R-d)^2+1/(R+d)^2=1/r^2$ (\lean{Fuss.fuss_iff_reciprocal}).
+\end{proposition}
+
+\subsection{Three facts about the plane}
+
+The vector proofs of the forward relation and of closure use dimension two through the following
+lemma and its consequences; the existence construction (\lean{Fuss.first_tangent}) and the affine
+tangency translation (\lean{Fuss.isTangent_of_mem_orthRadius}) also use dimension two directly.
+
+\begin{lemma}\label{lem:plane}
+Let $\dim V=2$.
+\begin{enumerate}
+\item[(a)] If $e\ne0$ and $\langle a,e\rangle=\langle b,e\rangle=0$, then $\|a\|^2b=\langle a,b\rangle a$
+(\lean{Fuss.parallel_of_inner_eq_zero}).
+\item[(b)] A line meets a circle in at most two points: if $\langle a-b,n\rangle=\langle a-d,n\rangle=0$ with $n\ne0$
+and $b,d$ are at the same distance from $c$ as $a$, then two of $a,b,d$ coincide
+(\lean{Fuss.eq_or_eq_or_eq_of_inner}).
+\item[(c)] If $\|x\|^2=\|y\|^2=r^2$, $x\ne y$ and $\langle v,x\rangle=\langle v,y\rangle=r^2$ (so $v$ is the
+intersection of the tangents to the circle $\|\cdot\|=r$ at $x$ and $y$), then
+$(r^2+\langle x,y\rangle)\,v=r^2(x+y)$ (\lean{Fuss.vertex_smul}), and $r^2+\langle x,y\rangle\ne0$ if
+$r\ne0$ (\lean{Fuss.vertex_denom_ne}).
+\end{enumerate}
+\end{lemma}
+
+Part (a) is proved with Mathlib's area form on an oriented two-dimensional space
+(\lean{Orientation.inner_mul_areaForm_sub}). Further consequences are that a point lies on at most
+two tangents of a circle (\lean{Fuss.tangent_points}) and that a tangent line meets a circle in at
+most two points (\lean{Fuss.line_points}).
+
+\subsection{The key identity}
+
+Place $I$ at the origin and put $o=O-I$ and $k=R^2-\|o\|^2=R^2-d^2$. For a tangency point $x$ of $\omega$
+define the \emph{shifted point} $y=kx+2r^2o$, and let
+\[
+F=k^2-2r^2(R^2+\|o\|^2),
+\]
+so that Fuss's relation is $F=0$.
+
+\begin{lemma}[shifted tangency points]\label{lem:vrel}
+Let $\dim V=2$ and $r\ne0$. If $\|x\|^2=\|y\|^2=r^2$, $x\ne y$, $\langle a,x\rangle=\langle a,y\rangle=r^2$
+and $\|a-o\|^2=R^2$ (the tangents at $x$ and $y$ meet at a point $a$ of $\Gamma$), then
+\[
+\bigl\langle kx+2r^2o,\ ky+2r^2o\bigr\rangle=-r^2F .
+\]
+\end{lemma}
+
+This is \lean{Fuss.vertex_rel}.
+
+\begin{proof}[Proof sketch]
+Write $s=r^2+\langle x,y\rangle$, which is nonzero by Lemma~\ref{lem:plane}(c). From $sa=r^2(x+y)$ one
+gets $s^2\|a\|^2=2r^4s$ (take the squared norm) and $s\langle a,o\rangle=r^2(\langle x,o\rangle+\langle y,o\rangle)$
+(take the inner product with $o$). Expanding the left-hand side of the claim and
+$\|a-o\|^2=R^2$, the product of $s$ with (left side $+\,r^2F$) is an explicit polynomial linear combination of these three
+equations, certified by \code{linear\_combination}; cancelling $s\ne0$ gives
+the claim.
+\end{proof}
+
+The certificate was also checked independently with SymPy (\path{code/verify_lc.py},
+Section~\ref{sec:numerics}). The point of the lemma is that the right-hand side depends only on
+$R,r,d$: the shifted tangency points of the two sides through any vertex have the same inner product
+$\mu=-r^2F$.
+
+\subsection{Fuss's theorem}\label{sec:fuss-forward}
+
+The affine statement is reduced to the vector statement \lean{Fuss.fuss_vec}: the tangency points
+$T_1,\dots,T_4$ are extracted from the four \lean{IsTangent} hypotheses, both endpoints of each side
+lie in the tangent space at its tangency point (the field \code{le\_orthRadius} of \lean{EuclideanGeometry.Sphere.IsTangentAt}),
+and $d\ne R$ becomes $k\ne0$ (using $R\ge0$, which follows from $A\in\Gamma$).
+
+\begin{proof}[Proof of \code{fuss\_vec}]
+Let the vertices be $a,b,c,e$ and the tangency points of $ab,bc,ce,ea$ be $x_1,\dots,x_4$.
+\emph{Distinctness.} Three distinct points of $\Gamma$ cannot lie on one tangent line
+(\lean{Fuss.not_three_on_line}, from Lemma~\ref{lem:plane}(b)). Since the vertices are pairwise
+distinct, this gives $x_i\ne x_{i+1}$ (indices mod~4) and also $x_1\ne x_3$, $x_2\ne x_4$.
+\emph{Equal inner products.} By Lemma~\ref{lem:vrel} at the four vertices, the shifted points
+$y_i=kx_i+2r^2o$ satisfy $\langle y_4,y_1\rangle=\langle y_1,y_2\rangle=\langle y_2,y_3\rangle=\langle y_3,y_4\rangle=\mu$.
+Since $k\ne0$, $x\mapsto kx+2r^2o$ is injective, so $y_1\ne y_3$ and $y_2\ne y_4$.
+\emph{Contradiction if $F\ne0$.} Suppose $F\ne0$, so $\mu\ne0$. Then $y_2$ and $y_4$ are both
+orthogonal to $y_1-y_3\ne0$, so by Lemma~\ref{lem:plane}(a), $\|y_4\|^2y_2=\langle y_4,y_2\rangle y_4$.
+Taking the inner product with $y_3$ gives $\|y_4\|^2\mu=\langle y_4,y_2\rangle\mu$, hence
+$\|y_4\|^2=\langle y_4,y_2\rangle$ and so $\|y_4\|^2(y_2-y_4)=0$. Also $y_4\ne0$ since
+$\langle y_3,y_4\rangle=\mu\ne0$. Hence $y_2=y_4$ and $x_2=x_4$, a contradiction. So $F=0$.
+\end{proof}
+
+No hypothesis places $\omega$ inside $\Gamma$ or $I$ inside the quadrilateral. This differs from the
+triangle case, where the analogous argument gives Euler's relation only when $\omega$ is the incircle
+and a different relation, $d^2=R(R+2r)$, when it is an excircle~\cite{BaldTriangles}; for
+quadrilaterals there is no second branch.
+
+\subsection{Closure}\label{sec:fuss-closure}
+
+\begin{proof}[Proof of Theorem~\ref{thm:closes} (via \code{closes\_vec})]
+Now $F=0$, so by Lemma~\ref{lem:vrel} consecutive shifted points are orthogonal:
+$\langle y_i,y_{i+1}\rangle=0$ for $i=0,\dots,3$. Each $y_i$ is nonzero: from $kx=-2r^2o$ and
+$\|x\|=r$ one gets $k^2=4r^2\|o\|^2$, and together with $F=0$ this forces $r^2k=0$, which is excluded.
+Also $\|y_i-2r^2o\|^2=k^2r^2$ for all $i$, so all $y_i$ lie on one circle centred at $2r^2o$.
+\emph{Step 1.} $y_1$ and $y_3$ are both orthogonal to $y_2\ne0$, so they are parallel
+(Lemma~\ref{lem:plane}(a)); since $y_0\perp y_1$ and $y_1\ne0$, also $y_0\perp y_3$.
+\emph{Step 2.} Now $y_0,y_2,y_4$ are all orthogonal to $y_3$, so they lie on one line; they also lie
+on the circle above. By Lemma~\ref{lem:plane}(b), two of them coincide. If $x_0=x_2$, then $a_0$ and $a_1$ would both lie on the two distinct tangents at $x_1$ and $x_2$,
+forcing $a_0=a_1$ by \lean{Fuss.vertex_unique}; so $x_0\ne x_2$, and similarly $x_2\ne x_4$. Hence $x_4=x_0$.
+\emph{Step 3.} The points $a_0,a_3,a_4$ of $\Gamma$ all lie on the tangent at $x_4=x_0$, which meets
+$\Gamma$ in at most two points (\lean{Fuss.line_points}). The case $a_3=a_4$ is excluded by hypothesis;
+the case $a_0=a_3$ would put $a_0$ on three distinct tangents (at $x_0$, $x_1$ and $x_3$), which leads
+to a contradiction with \lean{Fuss.tangent_points} and \lean{Fuss.vertex_unique}. Hence $a_4=a_0$.
+\end{proof}
+
+\subsection{Existence}\label{sec:fuss-exists}
+
+Theorem~\ref{thm:closes} assumes that a chain is given. To prove Theorem~\ref{thm:exists} one has to
+construct one, and this is where $d+r<R$ is used.
+\begin{itemize}
+\item Every point of $\Gamma$ lies strictly outside $\omega$, and every point of $\omega$ strictly inside
+$\Gamma$ (\lean{Fuss.outside_of_mem}, \lean{Fuss.inside_of_mem}).
+\item From a point outside $\omega$ there is a tangent (\lean{Fuss.first_tangent}); the tangency point is
+written down explicitly with Mathlib's right-angle rotation \lean{Orientation.rightAngleRotation}.
+\item Given one tangency point $x$ from $a$, its reflection in the line $0a$ is a second, different
+one (\lean{Fuss.other_tangent}).
+\item The line through $a\in\Gamma$ and a point $x$ strictly inside $\Gamma$ meets $\Gamma$ again at an
+explicit point $b\ne a$, which lies on the same tangent if $x$ is its tangency point
+(\lean{Fuss.second_point}).
+\end{itemize}
+\lean{Fuss.step} combines the last two items into one step of the construction.
+\lean{Fuss.exists_quad_vec} applies it four times from a first tangent at the given point $a$, closes
+the chain with \lean{Fuss.closes_vec}, and obtains the two diagonal inequalities $a_0\ne a_2$,
+$a_1\ne a_3$ from \lean{Fuss.chain_distinct}; these do not need Fuss's relation. Finally
+\lean{Fuss.exists_bicentric_of_fuss} translates back to $P$ and proves the four tangencies with
+\lean{Fuss.isTangent_of_mem_orthRadius}.
+
+Corollary~\ref{cor:aon} follows: for (i)$\Rightarrow$(iii) and (ii)$\Rightarrow$(iii) use
+Theorem~\ref{thm:fuss}, noting that $d+r<R$ and $r>0$ imply $d\ne R$; for (iii)$\Rightarrow$(ii) use
+Theorem~\ref{thm:exists}, and for (ii)$\Rightarrow$(i) the fact that $\Gamma$ has a point
+(\lean{Fuss.exists_mem_sphere}). Proposition~\ref{prop:recip} is a direct computation.
+
+\section{Correctness of the formal statements}\label{sec:correct}
+
+The Lean kernel checks the proofs, but not that the statements say what the informal theorems say.
+We explain each hypothesis and give lemmas that support the intended reading.
+
+\subsection{Casey}\label{sec:casey-correct}
+
+\begin{lemma}\label{lem:spec}
+Let $R>0$, $|TO|=R$ and $c=\lean{tangentCentre}\ O\ T\ R\ r$.
+\begin{enumerate}
+\item[(a)] If $0\le r<R$, then $|cO|=R-r$ and $|Tc|=r$ (\lean{Casey.tangentCentre_spec}).
+\item[(b)] If $r\le0$, then $|cO|=R+(-r)$ and $|Tc|=-r$ (\lean{Casey.tangentCentre_spec_external}).
+\end{enumerate}
+For all $r$, $|cO|=|R-r|$ (\lean{Casey.dist_tangentCentre_center}).
+\end{lemma}
+
+Two circles with centres at distance $R-r$ and radii $R>r$ are internally tangent, and $T$ is a common
+point; with distance $R+|r|$ they are externally tangent. So (a) and (b) say that \lean{tangentCentre}
+places the circle correctly. Conversely, every circle of radius $r<R$ internally tangent to $\Gamma$
+at $T$ has its centre on the segment $OT$ at distance $R-r$ from $O$, which is the point
+\lean{tangentCentre}. This uniqueness statement is formalised in the Layer-14 file for Mathlib's
+internal tangency \lean{EuclideanGeometry.Sphere.IsIntTangentAt} (\decl{Casey.l14_center_of_isIntTangentAt},
+Section~\ref{sec:l1415}).
+
+\paragraph{The hypotheses.}
+\code{hR : 0 < R} makes $\Gamma$ a genuine circle; \code{h$_i$} put $T_i$ on $\Gamma$; \code{hr$_i$}
+restrict to circles inside $\Gamma$, $r_i=0$ being allowed and meaning the point $T_i$; and the angle
+hypotheses encode cyclic order exactly as in Mathlib's Ptolemy theorem. Without cyclic order the
+statement is false: Ptolemy's identity fails for the order $(T_1,T_3,T_2,T_4)$, and so does Casey's
+(this is the negative control in Section~\ref{sec:numerics}). The strict inequality $r_i<R$ in
+Theorem~\ref{thm:casey} excludes the degenerate ``circle'' $\Gamma$ itself; Theorem~\ref{thm:casey-le}
+shows that it is not needed for the identity.
+
+\paragraph{Non-vacuity.}
+By Corollary~\ref{cor:ptolemy} the hypotheses of Theorem~\ref{thm:casey} are those of Ptolemy's
+theorem plus the radius bounds, and $r_i=0$ satisfies the bounds. Ptolemy's hypotheses are satisfied,
+for example, by the vertices of a square inscribed in $\Gamma$ with $p=O$. This point-circle instance
+is not a Lean theorem, but version~2 adds a non-degenerate witness with four distinct circles of
+positive radius (\decl{Casey.l14w_casey}, Section~\ref{sec:l1415}).
+
+\paragraph{Bridge lemmas.}
+The module \code{Casey/Bridge.lean} connects the two definitions to the classical notions.
+\decl{Casey.tangentCentre_mem_line} and \decl{Casey.collinear_tangentCentre} put $c$ on the line
+$OT$, so $O$, $c$ and $T$ are collinear; \decl{Casey.tangentCentre_tangent} gives, for every $r$,
+$|TO|=R$, $|Tc|=|r|$ and $|cO|=|R-r|$, the internal and external tangency distances.
+\decl{Casey.tangentLength_sq} is $t^2=d^2-(r_1-r_2)^2$ when the right side is nonnegative, and
+\decl{Casey.tangentLength_eq_dist_of_perp} shows that for a point and a circle the formula is the
+length $|pX|$ of a tangent segment whose radius $cX$ is perpendicular to $pX$, with
+$|pX|^2=|pc|^2-r^2$.
+
+\paragraph{What is not claimed.}
+The tangent length is defined by the formula, not as the length of a segment of a common tangent
+line; that the two agree is the Pythagorean theorem in the right trapezoid formed by the centres and
+the points of tangency, and is not formalised. The theorem is stated for four circles tangent to a
+circle, not to a line.
+
+\subsection{Fuss}
+
+\paragraph{The hypotheses of Theorem~\ref{thm:fuss}.}
+\code{hr : 0 < $\omega$.radius} excludes a point-circle. \code{hd : $d\ne R$} excludes the case where the
+centre $I$ of $\omega$ lies on $\Gamma$, and it is needed: with $d=R$ the relation reads
+$0=2r^2\cdot2R^2$, which is false for $r>0$, but bicentric quadrilaterals in the sense of
+Definition~\ref{def:bic} still exist. The script \path{code/check_fuss.py} constructs one with $R=d=2$,
+$r=1/2$, $O=(2,0)$ and $I=(0,0)$, with vertices in the order
+$A\approx(0.0645,0.5039)$, $B\approx(3.8755,0.6946)$, $C\approx(0.0645,-0.5039)$,
+$D\approx(3.8755,-0.6946)$. Exactly: with tangency vectors $x_1=(3/20,\sqrt{91}/20)$,
+$x_2=(-1/40,\sqrt{399}/40)$, $x_3=(3/20,-\sqrt{91}/20)$, $x_4=(-1/40,-\sqrt{399}/40)$, the vertices are
+$A_i=(x_i+x_{i+1})/\bigl(4(1/4+\langle x_i,x_{i+1}\rangle)\bigr)$ (indices mod 4). They are pairwise distinct, lie on $\Gamma$, and the four side lines are tangent to $\omega$.
+In this configuration $\omega$ is not inside $\Gamma$ and the quadrilateral is crossed.
+The theorem does \emph{not} assume that $\omega$ is inside $\Gamma$, that $I$ is inside the
+quadrilateral, or that the quadrilateral is convex; so it applies to crossed quadrilaterals whose
+side lines touch $\omega$, and Fuss's relation holds for these too. The distinctness conditions in
+Definition~\ref{def:bic}, including the diagonal ones $A\ne C$ and $B\ne D$, are all used in the
+proof (to get $x_1\ne x_3$ and $x_2\ne x_4$).
+
+\paragraph{The hypotheses of Theorems~\ref{thm:closes} and \ref{thm:exists}.}
+In Theorem~\ref{thm:closes} the conditions $T_i\ne T_{i+1}$ and $A_i\ne A_{i+1}$ express ``take the
+other tangent'' and ``take the other intersection''. Without them the chain could stall, for instance
+with $A_1=A_0$. The theorem does not require $\omega$ to be inside $\Gamma$, but outside that case a
+chain may fail to exist (from a point inside $\omega$ there is no tangent). Theorem~\ref{thm:exists}
+requires $d+r<R$ because the construction steps need it; this is also the classical setting of
+Poncelet's porism.
+
+\begin{proposition}[non-vacuity, \code{Fuss.nonvacuous}]\label{prop:nonvac}
+In \lean{EuclideanSpace}~\code{$\mathbb{R}$ (Fin 2)} there exist circles $\Gamma,\omega$ with $r>0$,
+$d+r<R$ and distinct centres such that Fuss's relation holds and every point of $\Gamma$ is a vertex of a
+bicentric quadrilateral. The proof uses the witnesses $\Gamma$ with centre $(1,0)$ and radius $7$, and
+$\omega$ with centre $(0,0)$ and radius $24/5$ (so $d+r=29/5<7$).
+\end{proposition}
+
+Here $d=1$ and $(49-1)^2=2304=2\cdot(24/5)^2\cdot50$; in reciprocal form,
+$1/6^2+1/8^2=25/576=1/(24/5)^2$. So the hypotheses of Theorem~\ref{thm:exists} are satisfiable with
+non-concentric circles, and \lean{IsBicentric} is not an empty notion.
+(In the concentric case $d=0$, Fuss's relation is $R=\sqrt2\,r$: the square.)
+
+\paragraph{What is not claimed.}
+Definition~\ref{def:bic} asserts tangency of the side \emph{lines}. It does not say that $\omega$ is
+the incircle of a convex quadrilateral $ABCD$. When $\omega$ is inside $\Gamma$ the quadrilateral
+produced by the construction is classically convex, with the tangency points on the sides, but we have
+not proved this, so Theorem~\ref{thm:exists} does not assert it. Accordingly, the Layer-15
+comparison (Section~\ref{sec:l1415}) covers the textbook converse of Fuss's theorem and the textbook
+Poncelet closure statements only with \lean{Fuss.IsBicentric} in place of a convex quadrilateral whose
+contact points lie on the side segments.
+
+\section{Numerical checks}\label{sec:numerics}
+
+Both repositories contain Python scripts in \path{code/} that use the same definitions as the Lean
+code. They are sanity checks of the statements, not part of the proofs.
+
+\paragraph{Casey (\texttt{code/check\_casey.py}).}
+Centres and tangent lengths are computed with the formulas of Definition~\ref{def:tc}, and four
+points in cyclic order are sampled on random circles, with a fixed seed.
+\begin{itemize}
+\item 20\,000 configurations with $0\le r_i\le0.999R$ (about 20\% with one radius set to $0$): worst relative residual
+of \eqref{eq:casey} $7.5\cdot10^{-12}$.
+\item 20\,000 configurations with signed radii $-2R\le r_i\le0.999R$: worst relative residual $5.2\cdot10^{-11}$.
+\item \emph{Negative control:} 20\,000 further configurations, relabelled in the non-cyclic order $(T_1,T_3,T_2,T_4)$,
+violate \eqref{eq:casey} by more than $10^{-6}$ in all 20\,000 cases (smallest relative
+residual $1.1\cdot10^{-5}$).
+\item All radii $0$ (Ptolemy): residual $0$.
+\end{itemize}
+
+\paragraph{Fuss (\texttt{code/check\_fuss.py}, \texttt{code/verify\_lc.py}).}
+\begin{itemize}
+\item For 2\,000 random $R$, $d<0.9R$ and $r$ chosen to satisfy \eqref{eq:fuss}, the tangent
+construction from a random point closes after four steps; maximum error $3.6\cdot10^{-13}$.
+\item \emph{Negative control:} for $R=3$, $d=1$ and $r$ perturbed by $\pm10\%$ from the Fuss value, the smallest closure gap is approximately $3.13$.
+\item A polynomial shift identity related to Lemma~\ref{lem:vrel} (with shift point $-2r^2o/k$) holds on
+100 random inputs,
+and the non-vacuity example gives $2304=2304$.
+\item Independently of the construction, 294 configurations were found by starting from four
+tangency points on $\omega$ and solving for concyclic vertices (not necessarily convex); all satisfy
+\eqref{eq:fuss}, with maximum relative defect $3.5\cdot10^{-13}$.
+\item The $d=R$ counterexample of Section~\ref{sec:correct}: four distinct vertices, all at distance
+$2$ from $O$, while \eqref{eq:fuss} reads $0=4$.
+\item \path{code/verify_lc.py} checks with SymPy the polynomial \code{linear\_combination}
+certificates in \lean{Fuss.vertex_rel}, in \lean{Fuss.first_tangent} and \lean{Fuss.other_tangent},
+and in \lean{Fuss.fuss_iff_reciprocal}; all seven residuals expand to $0$.
+\end{itemize}
+The outputs are stored in \path{code/check_fuss.out} and \path{code/verify_lc.out}. The Casey script
+and \path{check_fuss.py} were re-run while this paper was prepared and reproduced the stored figures
+(the current \path{check_fuss.py} additionally prints the vertices of the $d=R$ example).
+
+\section{Verification}\label{sec:verify}
+
+Both projects were built with prebuilt Mathlib on a separate build machine; the machine that
+prepared this paper did not run Lean. According to the development notes, each was rebuilt from an
+empty build directory (\code{rm -rf .lake/build; lake build}): Casey completed with 2\,454 jobs and
+Fuss with 8\,713 jobs, each with exit status $0$, no errors and no warnings.
+
+A grep of the library sources (\path{Casey/}, \path{Casey.lean}, \path{Fuss/}, \path{Fuss.lean}) for
+\code{sorry}, \code{admit}, \code{native\_decide}, \code{axiom}, \code{\#eval}, \code{run\_cmd},
+\code{set\_option}, \code{macro}, \code{elab}, \code{syntax}, \code{notation} and \code{import Lean}
+finds nothing; we repeated it on the copies of the sources used for this paper.
+
+{\lstset{basicstyle=\ttfamily\scriptsize}\code{\#print axioms} was run from a scratch file outside the library (\path{scratch/Ax.lean}); the
+output (\path{scratch/ax.out}) is, for Casey,
+\begin{lstlisting}
+'Casey.dist_tangentCentre_sq_sub_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Casey.tangentLength_tangentCentre' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Casey.casey_of_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Casey.casey' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Casey.casey_zero_radii_eq_ptolemy' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Casey.tangentCentre_spec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Casey.tangentCentre_spec_external' depends on axioms: [propext, Classical.choice, Quot.sound]
+\end{lstlisting}
+and for Fuss,
+\begin{lstlisting}
+'Fuss.fuss_of_isBicentric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.poncelet_chain_closes' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.exists_bicentric_of_fuss' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.fuss_iff_exists' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.fuss_iff_forall' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.exists_iff_forall' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.fuss_iff_reciprocal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.nonvacuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.fuss_vec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Fuss.closes_vec' depends on axioms: [propext, Classical.choice, Quot.sound]
+\end{lstlisting}}
+These are Lean's three standard axioms. Every theorem in Table~\ref{tab:thms} either has its own
+report or is used in the proof of a theorem that has one; the definitions do not need reports.
+
+The author's name gate \path{namecheck.py} (not included in the verification repository) checks that every Lean identifier cited
+in the text exists as a declaration in the two source trees or in the pinned Mathlib, and that every
+source link lands on a declaration line (for table rows, of the declaration named in that row).
+Each repository also has a \path{gate.sh} that rejects forbidden tokens, builds the library,
+generates its own \code{\#print axioms} queries for every declaration cited in this paper (18 for
+Casey, 34 for Fuss) and fails on any axiom beyond the standard three. On the published commits both
+print \code{PASS}. In the version-2 commit the gates also check the Layer-14 and Layer-15
+declarations (38 for Casey, 84 for Fuss) and again print \code{PASS}. \path{tests/tamper.sh} plants six kinds of defect in scratch copies (a
+\code{sorry}, a split \code{axiom}, a fake \code{\#eval} report, a macro, a weakened statement, a
+wrapped extra axiom); in both repositories the gate rejects all six, each with a nonzero exit status
+and the expected failure message.
+
+The step that matters most, comparing the formal statements with the informal theorems, cannot be
+automated; Section~\ref{sec:correct} is meant to help with it.
+The author has checked each statement in Table~\ref{tab:thms} against its informal counterpart by hand.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+Version~2 adds two further checks, in new files of the published repositories:
+\path{Casey/L14.lean}, \path{Casey/L15Classical.lean}, \path{Fuss/L14.lean} and
+\path{Fuss/L15Classical.lean}. The Layer-15 files use the namespaces \code{Casey.Classical} and
+\code{Fuss.Classical}. The earlier library files are byte-identical. The gates check 38 (Casey) and 84
+(Fuss) declarations, all with the standard axioms only. \path{tests/tamper.sh} rejects all six planted
+defects in both repositories.
+
+\paragraph{Layer 14: statements in Mathlib's language and non-vacuity.}
+Nine main results are restated with Mathlib-only types and proved from the library theorems.
+\decl{Casey.l14_casey} restates Theorem~\ref{thm:casey}. Its circles are Mathlib spheres
+$C_i$ with \code{$C_i$.IsIntTangentAt $\Gamma$ $T_i$}, and the tangent lengths are written out as
+$\sqrt{|c_ic_j|^2-(r_i-r_j)^2}$, because Mathlib has no tangent-length notion. No extra hypothesis is
+needed, and the statement also allows $r_i=R$. \decl{Casey.l14_casey_ptolemy} restates
+Corollary~\ref{cor:ptolemy}. The bridge \decl{Casey.l14_center_of_isIntTangentAt} identifies the centre
+with \lean{Casey.tangentCentre}. In the Fuss file, \decl{Fuss.l14_fuss}, \decl{Fuss.l14_poncelet_chain_closes},
+\decl{Fuss.l14_exists_bicentric}, \decl{Fuss.l14_fuss_iff_exists}, \decl{Fuss.l14_fuss_iff_forall},
+\decl{Fuss.l14_exists_iff_forall} and \decl{Fuss.l14_fuss_iff_reciprocal} restate
+Theorems~\ref{thm:fuss}--\ref{thm:exists}, Corollary~\ref{cor:aon} and Proposition~\ref{prop:recip},
+with \lean{Fuss.IsBicentric} unfolded. A mechanical check of the elaborated types found no constant of
+the two libraries.
+
+Witness theorems prove every hypothesis on an explicit non-degenerate configuration:
+\begin{itemize}
+\item \decl{Casey.l14w_casey}: $\Gamma$ of radius $5$ and four pairwise distinct circles of radii
+$1,2,3,4$ tangent at the pairwise distinct points $\pm5,\pm5i$. All six radicands are positive.
+\item \decl{Fuss.l14w_fuss}, \decl{Fuss.l14w_poncelet_chain_closes} and \decl{Fuss.l14w_exists_bicentric}:
+$\Gamma=((1,0),7)$, $\omega=((0,0),24/5)$ and an explicit kite with pairwise distinct vertices and
+non-concentric circles.
+\item \decl{Fuss.l14w_fuss_iff}: both sides of the equivalences hold for $(\Gamma,\omega)$. For a
+second inner circle of radius $1$, Fuss's relation fails and no bicentric quadrilateral exists.
+\item \decl{Fuss.l14w_fuss_iff_reciprocal}: $(R,d,r)=(7,1,24/5)$ satisfies both sides, and $r=1$ neither.
+\end{itemize}
+Proposition~\ref{prop:nonvac} is already a Mathlib-only statement and is not restated. The
+externally tangent (signed-radius) reading of Theorem~\ref{thm:casey-le} is not restated, because a
+Mathlib form would need mixed tangent lengths $\sqrt{\delta^2-(r_i\pm r_j)^2}$. No restatement turned
+out false or needed an extra hypothesis. The kite is convex, with its contact points on the sides, but
+this is not proved in Lean.
+
+\paragraph{Layer 15: comparison with textbook statements.}
+Another agent collected textbook statements of Casey's theorem (with the signed-radius form and the
+converse), of Fuss's theorem and its converse, and of Poncelet's closure theorem for quadrilaterals,
+with citations (Casey, Johnson, Dörrie, Yiu, Poncelet, Bos et al.). The classical sources take a
+bicentric quadrilateral to be convex. An AI model was given only these statements; it saw neither the
+code nor this paper, and its transcript was audited (a transcript audit in the verification repository; the
+collector's transcript passed the same audit, and the collector recorded editions and pages for each source). It wrote nine Lean statements, two of them
+radicand obligations, with its own definitions on \code{EuclideanSpace $\mathbb{R}$ (Fin 2)}. Among
+those definitions are a convex quadrilateral whose incircle touches every side segment, tangency as a
+unique common point, and cyclic order as crossing chords. A comparer then proved each statement,
+copied verbatim, from the libraries, or classified it. The result: 4 covered exactly, 4 narrower,
+1 false as written. No library file was changed.
+\begin{itemize}
+\item \emph{Covered}: Casey's theorem for disjoint internally tangent circles, the signed-radius form
+with $t_{ij}=|K_iK_j|\sqrt{(R-\rho_i)(R-\rho_j)}/R$, and both radicand obligations
+(\decl{Casey.Classical.cov_CaseyFuss1_a}, \decl{Casey.Classical.cov_CaseyFuss1_b} and the two
+\code{\_obligation} theorems). The disjointness hypothesis is not needed.
+\item \emph{Narrower}, Fuss's theorem (\decl{Fuss.Classical.cov_CaseyFuss2_a_part}): proved for the
+writer's convex quadrilaterals, with the reciprocal and solved forms and $\sqrt2\,r\le R$ with
+equality iff $d=0$. It needs the extra hypothesis $d<R$, which is classically automatic but not derived
+(the repository's notion allows $d=R$). The clause ``$d=0$ iff the quadrilateral is a square'' is not
+formalised.
+\item \emph{Narrower}, converse of Fuss (\decl{Fuss.Classical.cov_CaseyFuss2_b_part}): the quadrilateral
+produced is bicentric only in the sense of Definition~\ref{def:bic}. Convexity and contact points on
+the side segments are not proved.
+\item \emph{Narrower}, Poncelet closure (\decl{Fuss.Classical.cov_CaseyFuss3_a_part}): from one convex
+bicentric quadrilateral, a quadrilateral through every point of $\Gamma$ is obtained, the
+writer's tangent chain closes after exactly four steps, and there are infinitely many such
+quadrilaterals. All of these quadrilaterals are bicentric only in the weaker sense: convexity and
+contact on segments are not proved.
+\item \emph{Narrower}, ``existence iff Fuss's relation'' (\decl{Fuss.Classical.cov_CaseyFuss3_b_part}):
+the forward direction is proved as written. The converse direction and the ``through every point''
+clause hold only with \lean{Fuss.IsBicentric}.
+\item \emph{Writer statement false as written}: the converse of Casey's theorem
+(\decl{Casey.Classical.not_classical_CaseyFuss1_c}). With $C_0$ the unit circle, $C_1$ the point $(1,0)$
+and $C_2=C_3$ the point $(-1,0)$, all tangent lengths from $C_0$ vanish, so the relation holds, but no
+circle or line touches all four. The textbook converse tacitly assumes distinct, non-degenerate
+circles. The paper does not claim the converse.
+\end{itemize}
+New proofs in the Layer-15 files: for Casey, \decl{Casey.Classical.tc_eq} (a centre at the right
+distances is \lean{Casey.tangentCentre}), \decl{Casey.Classical.int_dist} and
+\decl{Casey.Classical.ext_dist} (the writer's internal and external tangency give the centre
+distances), \decl{Casey.Classical.signed_bridge}, \decl{Casey.Classical.no_mid},
+\decl{Casey.Classical.cyc_angles} (crossing chords give the angle-$\pi$ cyclic order),
+\decl{Casey.Classical.casey_signed}, \decl{Casey.Classical.radicand_nonneg} and the counterexample above.
+For Fuss: \decl{Fuss.Classical.tangentAt_of_side} (tangency to a side segment gives Mathlib tangency),
+\decl{Fuss.Classical.ne_of_not_collinear}, \decl{Fuss.Classical.isBicentric_of_with} (the writer's convex
+bicentric quadrilateral is \lean{Fuss.IsBicentric}), \decl{Fuss.Classical.fuss_of_with},
+\decl{Fuss.Classical.fuss_algebra}, \decl{Fuss.Classical.fuss_of_recip},
+\decl{Fuss.Classical.tangentAt_of_lineTangent}, \decl{Fuss.Classical.not_collinear_of_mem},
+\decl{Fuss.Classical.not_three}, and the infinitude of~$\Gamma$.
+
+\section{Related work}\label{sec:related}
+
+Our searches, on 30 September 2026, covered the pinned Mathlib source and its \path{docs/100.yaml}
+and \path{docs/1000.yaml}, the Lean community's list of formalised theorems, GitHub code,
+repository and pull-request search, the Isabelle Archive of Formal Proofs (through its GitHub
+mirror), HOL~Light, and web search. They are not exhaustive, and the claims below are ``as far as we
+could determine''. A search of the Lean Zulip chat for ``Casey'', ``Fuss'' and ``bicentric'' on
+30 September 2026 returned no relevant results.
+
+\paragraph{Casey's theorem.}
+Mathlib has no declaration mentioning Casey. \path{docs/1000.yaml} has an entry
+\texttt{Q1370316} (``Casey's theorem'') with no declaration or author recorded~\cite{Mathlib1000},
+and the theorem is not in \path{docs/100.yaml}; the Lean community's list of the 1000+ theorems shows no
+formalisation. GitHub code search for ``Casey'', ``Casey theorem'' and ``casey\_theorem'' in Lean
+files returned no hits; ``generalized Ptolemy'' returned only prose datasets and an unrelated notion
+in SnapPy; searches of Mathlib pull requests for ``Casey'' and of repositories for ``casey theorem''
+found nothing. The Isabelle AFP has an entry for Ptolemy's theorem~\cite{AFPPtolemy} but none for
+Casey's, and HOL~Light has \path{100/ptolemy.ml} but nothing on Casey~\cite{HOLLight}. Our proof
+reuses Mathlib's Ptolemy theorem~\cite{Mathlib} unchanged.
+
+\paragraph{Fuss's theorem and Poncelet's porism.}
+Mathlib has nothing on Fuss's theorem or bicentric polygons, and \path{docs/1000.yaml} lists
+``Poncelet's closure theorem'' (\texttt{Q1785610}) with no declaration~\cite{Mathlib1000}. GitHub code
+search for ``Fuss'' and ``bicentric'' in Lean files found only unrelated uses (comments, and
+Fuss--Catalan numbers), and Mathlib pull-request search for ``poncelet'' and ``bicentric'' found
+nothing. Web search found no formalisation of Fuss's theorem in the Isabelle AFP, HOL~Light, Coq/Rocq
+or Mizar.
+
+The closest prior work is Wang's Lean~4 repository \texttt{wwylele/Poncelet}~\cite{WangPoncelet}
+(Lean \texttt{v4.34.0}, September 2026). Its theorem \ext{EuclideanGeometry.poncelet} is the general
+Poncelet porism for $n$-gons and a circle inside a circle: if one proper $n$-gon is inscribed in the
+outer circle and circumscribed about the inner one, then one exists through every point of the outer
+circle. This is more general than our Theorem~\ref{thm:exists} in $n$, but it contains no metric
+closure condition, and in particular not Fuss's relation for $n=4$ (nor our
+Theorem~\ref{thm:fuss}). According to its README, its main theorem depends on
+\code{native\_decide}, and hence on an axiom beyond the standard three. We read the repository but did
+not build it. The companion paper~\cite{BaldTriangles} treats $n=3$, with the Euler--Chapple relation
+as closure criterion, by a different method (explicit tangent constructions and Euler's formula). The
+vector method used here, based on the shifted tangency points of Lemma~\ref{lem:vrel}, was not reused
+from it; only two general lemmas were copied (Section~\ref{sec:fuss-setting}).
+
+\section{Limitations and further work}\label{sec:limits}
+
+\begin{itemize}
+\item \emph{Casey: converse.} The converse (four circles whose tangent lengths satisfy a Casey
+relation are tangent to a common circle or line) is substantially harder and was not attempted.
+The Layer-15 writer's formalisation of it is false as written: it lacks non-degeneracy hypotheses
+(\decl{Casey.Classical.not_classical_CaseyFuss1_c}).
+\item \emph{Casey: degenerate and mixed cases.} Circles tangent to a line (the limit $R\to\infty$) are
+not treated. The signed radius covers circles externally tangent to $\Gamma$, with $t_{ij}$ the
+internal tangent between an internally and an externally tangent circle; variants that use the
+internal tangent between two circles on the same side of $\Gamma$ are not treated.
+\item \emph{Casey: cyclic order.} Cyclic order is expressed only through Mathlib's
+diagonal-intersection hypothesis; there is no version with oriented angles or with \lean{Sbtw}.
+\item \emph{Casey: representation.} In the main files circles are given by \lean{tangentCentre}, not
+as Mathlib spheres with a tangency hypothesis. The Layer-14 file restates Theorem~\ref{thm:casey} with
+Mathlib spheres and \lean{EuclideanGeometry.Sphere.IsIntTangentAt}, proves that every internally
+tangent circle has the \lean{tangentCentre} form, and gives a non-degenerate witness; the
+externally tangent (signed-radius) case of Theorem~\ref{thm:casey-le} is not restated there
+(Section~\ref{sec:l1415}). The identification of \lean{tangentLength} with the length of a tangent
+segment is not formalised (Section~\ref{sec:casey-correct}).
+\item \emph{Fuss: convexity.} Theorem~\ref{thm:exists} produces a quadrilateral in the sense of
+Definition~\ref{def:bic}; that it is convex, with $\omega$ as its incircle and the tangency points on
+the sides, is classically true when $\omega$ is inside $\Gamma$ but is not proved. For the same reason
+the textbook converse and Poncelet statements of Layer~15 are proved only in a narrower form, and the
+forward textbook statement needs the extra hypothesis $d<R$ (Section~\ref{sec:l1415}).
+\item \emph{Fuss: range of the converse.} Closure (Theorem~\ref{thm:closes}) needs only $d\ne R$, but
+existence needs $d+r<R$.
+\item \emph{Fuss: packaging.} The construction is stated with explicit tangency points
+(\lean{orthRadius}), not with Mathlib's \lean{EuclideanGeometry.Sphere.tangentsFrom} and
+\lean{EuclideanGeometry.Sphere.secondInter} as in the triangle development~\cite{BaldTriangles}.
+\item \emph{Fuss: $n$-gons.} Only $n=4$ is treated. The shifted-point argument is specific to
+quadrilaterals; closure conditions for larger $n$ (Fuss and Steiner gave several) would need new ideas.
+\item \emph{Duplication.} Two lemmas are copied from the triangle development; a shared library or
+upstreaming to Mathlib would remove this.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+The formal proofs, the numerical scripts and a draft of this paper were prepared with the help of a
+large-language-model AI assistant. The author compared each formal statement in
+Table~\ref{tab:thms} with its informal counterpart by hand. Every proof is checked by the Lean
+kernel, and the author takes responsibility for all content. The Layer-14 and Layer-15 files of
+version~2 (Section~\ref{sec:l1415}) were also written by AI agents, the Layer-15 textbook statements
+by a writer that saw neither the code nor this paper.
+
+\begin{thebibliography}{99}
+\bibitem{AFPPtolemy} L.~Bulwahn, Ptolemy's theorem, \emph{Archive of Formal Proofs}, 2016,
+\url{https://www.isa-afp.org/entries/Ptolemys_Theorem.html}.
+\bibitem{BaldTriangles} J.~Bald, Carnot, Viviani, De~Gua, the Japanese theorem and Poncelet's porism
+for triangles, formalised in Lean~4, preprint, 2026. Lean sources of the Poncelet part:
+\url{https://github.com/jpbald93/poncelet-triangles}.
+\bibitem{Casey1866} J.~Casey, On the equations and properties: (1) of the system of circles touching
+three circles in a plane; (2) of the system of spheres touching four spheres in space; (3) of the
+system of circles touching three circles on a sphere; (4) of the system of conics inscribed to a conic,
+and touching three inscribed conics in a plane, \emph{Proceedings of the Royal Irish Academy} 9
+(1864--1866), 396--423, JSTOR~20488927.
+\bibitem{CaseySequel} J.~Casey, \emph{A Sequel to the First Six Books of the Elements of Euclid},
+Hodges, Figgis \& Co., Dublin, 1881 and later editions.
+\bibitem{Flatto} L.~Flatto, \emph{Poncelet's Theorem}, American Mathematical Society, 2009.
+\bibitem{Fuss1797} N.~Fuss, De quadrilateris quibus circulum tam inscribere quam circumscribere licet,
+\emph{Nova Acta Academiae Scientiarum Imperialis Petropolitanae} 10 (for 1792, printed 1797),
+103--125.
+\bibitem{HOLLight} J.~Harrison, HOL~Light repository, \path{100/ptolemy.ml},
+\url{https://github.com/jrh13/hol-light}, read 30 September 2026.
+\bibitem{Mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proceedings of the
+9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020)}, 367--381.
+Ptolemy's theorem: \path{Mathlib/Geometry/Euclidean/Sphere/Ptolemy.lean} (M.~Candales and
+B.~Davidson), revision \texttt{0df444a3}.
+\bibitem{Mathlib1000} The mathlib Community, \path{docs/1000.yaml}, Mathlib repository,
+\url{https://github.com/leanprover-community/mathlib4}, revision \texttt{0df444a3}, accessed
+30 September 2026.
+\bibitem{Poncelet1822} J.-V.~Poncelet, \emph{Trait\'e des propri\'et\'es projectives des figures},
+Bachelier, Paris, 1822.
+\bibitem{WangPoncelet} W.~Wang, \emph{Poncelet}, \url{https://github.com/wwylele/Poncelet}, read
+30 September 2026.
+\end{thebibliography}
+
+\end{document}

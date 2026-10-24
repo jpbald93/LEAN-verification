@@ -1,0 +1,19 @@
+LAYER 13 — BLIND WRITER. Do all work inline; do NOT spawn background subagents or tasks. Time box: ~2 hours. Always finish by writing the file and the report.
+
+INPUT: read ONLY the file ./paperf_blind.txt in the current directory (a mathematics paper with all code names redacted). Do NOT read any other file on this machine or on any other machine, do NOT search the web, and do NOT look at any Lean repository (the paper's own Lean code exists elsewhere; you must not see it). At the end, self-report every file you read.
+
+TASK: write, from the prose ALONE, one Lean 4 + Mathlib statement for every theorem in the paper. There are 13 theorem environments: thm:refl, thm:off, thm:tangent, thm:tanpt, thm:vertex, thm:newton, thm:lambert, thm:ortho, thm:nine, thm:unique, thm:pedal, thm:diag, thm:s4. Where a theorem has several parts or several cases (e.g. "for each L in {L1..L4}", several conjuncts, several permutations), write one statement per part, or one statement with the conjunction exactly as the prose groups it — your choice, but cover every part. Expect roughly 15–25 statements.
+Rules:
+- Names blind_1, blind_2, ... in paper order. Each preceded by a comment with the paper label and the first sentence of the theorem.
+- Every statement ends with `:= by sorry`.
+- Every notion the prose defines (cr, line as a pair (p,d) with its carrier, meet, general position, circ, ortho, foot, the vertices A_ij, triangles T_k, diagonals, the power pw, the Miquel point M, ...) becomes a `def`/`structure` named `Blind...`, written from the prose's definition; formulas the prose gives must be used EXACTLY as given (the model section gives explicit formulas — use them, do not substitute Mathlib's circumcenter etc. for them).
+- State every hypothesis the prose states, and nothing it does not. Where the prose is genuinely ambiguous, pick one reading and add `-- AMBIGUOUS: <the other reading>`.
+- Use Mathlib's notions where the prose uses standard ones without defining them (Collinear ℝ, EuclideanGeometry.Cospherical, AffineSubspace.Parallel, affineSpan, line[ℝ, _, _], Metric.sphere, ...). The plane is ℂ.
+- One `section` per part (Part A: four lines / parabola; Part B: four points / Poncelet point).
+
+TYPE-CHECK on the x86 machine (allowed; this is only for compiling YOUR file; do not read anything there except your own file and the compiler output):
+  scp Blind.lean jack:reformal/PaperFBlind.lean
+  ssh jack 'cd ~/reformal && PATH=$HOME/.elan/bin:$PATH timeout 900 lake env lean PaperFBlind.lean'
+Iterate until the only messages are `declaration uses 'sorry'` warnings. Never run `lake update` or `lake exe cache get`.
+
+OUTPUT: ./Blind.lean (local) and ~/reformal/PaperFBlind.lean (jack) identical; ./WRITER_REPORT.md with: statement list (name → paper label → one-line gloss), all AMBIGUOUS choices, the compiler output summary (count of sorry warnings, 0 errors), and the list of files you read.

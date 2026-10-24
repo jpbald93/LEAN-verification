@@ -1,0 +1,75 @@
+RECEIPT jack Wed Oct 14 08:09:37 PM UTC 2026 host=x86-machine arch=x86_64
+lean: Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+===== clifford pin 209abaa5e638f37aee8ec374e29b74341297cc46
+HEAD 209abaa5e638f37aee8ec374e29b74341297cc46 status:0
+mathlib 
+52390602933bbdaaeda62dcb74d96d5eb30eeb77fe0d071298486ec009cf8ced  ./Clifford.lean
+af0870371913f1897146a2aa996649de580a98d4fa18f55fb11a572646048159  ./Clifford/Basic.lean
+8cc50f3de09a983a18809c0b9ae726b0b49445522dd818e587cce3d4ee3efa2c  ./Clifford/Third.lean
+build rc=0
+PASS (20 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== cliffordchain pin ba083b2158e1b96e2360b6e7d8fe04bd278ff5e2
+HEAD df7d65c85915a1da9ffd1ab8fa362f42609af8c1 status:0
+mathlib 
+c119b340423dff6c57bf007b7518dafccb8ebee374c7b091ad2dce7319ab3932  ./Clifford.lean
+d5c14edbf2da8ec8288484b4eeee54e30e85cf04e5c440c406b4c7144ca0cb16  ./Clifford/Basic.lean
+93eb80b639791dc7e271249a79e0439dd3fd08c831eb71e367129c52c8cecf5b  ./Clifford/Bridge.lean
+ba4fc1b3c567f5d69ca33ea2bcbab0dfaed3a54a779e3405efdb4241be65b83b  ./Clifford/Classify.lean
+2a7cf40b4c473e56c97db8b1485aa5ad468c9cbb5c9a56b5b7ac9adaf33cc463  ./Clifford/Clean.lean
+d6bf1cc913841fd487c539c61e4db62054e62d4b861af3a3cb9eaac8cf35d57a  ./Clifford/Counter6.lean
+90b42ad2f407f49b7ebc955573af3823727cef5403047ccd2467222afd36eeff  ./Clifford/General.lean
+build rc=0
+PASS (32 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== fivecircles pin f1fd9b7b2bd9f6b1e881425019f86fc49adba927
+HEAD f1fd9b7b2bd9f6b1e881425019f86fc49adba927 status:0
+mathlib 
+a69693caa0b31f7dc733b58e95919ce8c59ece24184d1ca5ef6aa30787603113  ./Fivecircles.lean
+edb1ef3c43d75539721b12d78eb2634e1bf0c03598063f84c194496b15bcb31c  ./Fivecircles/Basic.lean
+build rc=0
+PASS (6 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== lester pin 9f94754987cbb9ddb8bf14bef295f2bfedb077df
+HEAD 9f94754987cbb9ddb8bf14bef295f2bfedb077df status:0
+mathlib 
+43f0ce533496230048bad25da5df609a874b672afcdc6a1651e291536ecbde1c  ./Lester.lean
+bf6ada6147870f604e42fd6f4d672aecfec379c355fe6b9fd03dd095cc0337d8  ./Lester/Basic.lean
+0146ff68ccb97feb468dd52c4cd695524156fef19641d4e39c7f8aa07cd62d68  ./Lester/Bridge.lean
+927dbab69793a28cd57ecd5475c434c6cd9b3ba82020765079e5ba2427a0ef6d  ./Lester/Proof.lean
+build rc=0
+PASS (19 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== thebault pin c37f92e53c9ed790a2c90afdef95a7a35e6a7842
+HEAD c37f92e53c9ed790a2c90afdef95a7a35e6a7842 status:0
+mathlib 
+c573cb166c6288f99269786e2932068a24a74606d5ccc302c91d646c6449b728  ./Thebault3.lean
+4de2ef21bd68f4fb97613ada988c60d546bf20546fa293f6fd963aa873c2e778  ./Thebault3/Basic.lean
+build rc=0
+PASS (12 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== kosnita pin 702f0263a70136830aee7a9fd38ec7f4fc7d304d
+HEAD 702f0263a70136830aee7a9fd38ec7f4fc7d304d status:0
+mathlib 
+8e71f74002d1686f0db1cb80036978f2c2600097a3e1b8a8788244f70cd41e55  ./Kosnita.lean
+fd896c45dd7ca525f72d5092911f4993a672789e416c379e9bf6cec832337995  ./Kosnita/Basic.lean
+build rc=0
+PASS (11 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== blundon pin 118b4c9f3afd6d4120ea2c2d2e60c1e70d7dc8b8
+HEAD 118b4c9f3afd6d4120ea2c2d2e60c1e70d7dc8b8 status:0
+mathlib 
+1e39f6b38043d6e50191c748e00c7a7ac2f8b9e281939b4ae07358ab73baf577  ./Blundon.lean
+1c8c6e3dc5fec32c6f8b46505294ec2391075fec9a34e90f24ad4cc5f1d6b55b  ./Blundon/Basic.lean
+build rc=0
+PASS (5 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== steinerlehmus pin a3a3d26bee6c68eae6d564228355524c46fe546d
+HEAD a3a3d26bee6c68eae6d564228355524c46fe546d status:0
+mathlib 
+1669aa19e66ba804e0e127609991a08c61a602ed4c85293c652e42da52fb9fce  ./SteinerLehmus.lean
+41068d509f4ae50abb6241cab7fea3066b9327ba1167a3c53c63571f37b4b11b  ./SteinerLehmus/Basic.lean
+build rc=0
+PASS (3 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+DONE Wed Oct 14 08:22:44 PM UTC 2026

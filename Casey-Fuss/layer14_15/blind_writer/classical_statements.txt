@@ -1,0 +1,68 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Notation for CaseyFuss1: for two circles with centres P_i, P_j and radii r_i, r_j
+(r >= 0; radius 0 = a point), the length of the DIRECT (exterior) common tangent is
+  sqrt(|P_iP_j|^2 - (r_i - r_j)^2)
+and the length of the TRANSVERSE (interior) common tangent is
+  sqrt(|P_iP_j|^2 - (r_i + r_j)^2),
+whenever the quantity under the root is >= 0.
+
+CaseyFuss1 (Casey's theorem; generalised Ptolemy).
+ (a) [Most common textbook form] Let Gamma be a circle with centre O and radius R.
+     Let C_1, C_2, C_3, C_4 be four circles (radii r_i >= 0, point-circles allowed)
+     lying inside Gamma, each internally tangent to Gamma, at points K_1, K_2, K_3, K_4
+     which occur in this cyclic order around Gamma, and with no two of the C_i
+     intersecting (i.e. pairwise non-overlapping). Let t_ij be the length of the
+     direct common tangent of C_i and C_j. Then
+         t_12 * t_34 + t_14 * t_23 = t_13 * t_24.
+     (When all r_i = 0 this is Ptolemy's theorem for the cyclic quadrilateral
+     K_1K_2K_3K_4.)
+ (b) [General / signed-radii form] Let Gamma be a circle with centre O and radius R > 0.
+     Let C_1,...,C_4 be circles, each tangent to Gamma at K_i, with K_1,K_2,K_3,K_4 in
+     this cyclic order on Gamma (pairwise distinct). Give C_i the signed radius
+     rho_i = +r_i if C_i touches Gamma internally (lies inside Gamma) and
+     rho_i = -r_i if C_i touches Gamma externally (lies outside Gamma), so that
+     |O O_i| = R - rho_i. Define
+         t_ij = sqrt( |O_iO_j|^2 - (rho_i - rho_j)^2 ),
+     i.e. t_ij is the direct common tangent if C_i, C_j touch Gamma in the same way and
+     the transverse common tangent if they touch Gamma in opposite ways. Then
+         t_ij = |K_iK_j| * sqrt((R - rho_i)(R - rho_j)) / R,
+     and
+         t_12 * t_34 + t_14 * t_23 = t_13 * t_24.
+ (c) [Converse] Conversely, if four circles C_1,...,C_4 satisfy
+         t_12 * t_34 +- t_13 * t_24 +- t_14 * t_23 = 0
+     for a suitable choice of signs, where each t_ij is a direct or transverse
+     common tangent chosen consistently as in (b) (all direct; or the three
+     tangents from one circle transverse and the others direct; or direct within
+     two pairs and transverse between them), then the four circles are all
+     tangent to a fifth circle or to a straight line.
+
+CaseyFuss2 (Fuss's theorem for bicentric quadrilaterals).
+ (a) Let ABCD be a convex quadrilateral that is bicentric, i.e. it has a
+     circumcircle (centre O, radius R) and an incircle (centre I, radius r).
+     Let x = |OI|. Then
+         1/(R - x)^2 + 1/(R + x)^2 = 1/r^2,
+     equivalently
+         (R^2 - x^2)^2 = 2 r^2 (R^2 + x^2),
+     equivalently x^2 = R^2 + r^2 - r*sqrt(4R^2 + r^2).
+     Consequence: R >= sqrt(2) * r, with equality iff x = 0 (the square).
+ (b) [Converse] If two circles, of radii R and r with the circle of radius r
+     lying strictly inside the circle of radius R and with centre distance x,
+     satisfy 1/(R - x)^2 + 1/(R + x)^2 = 1/r^2, then there exists a convex
+     quadrilateral inscribed in the larger circle and circumscribed about the
+     smaller one.
+
+CaseyFuss3 (Poncelet closure for bicentric quadrilaterals).
+ (a) [Poncelet's porism, quadrilateral case] Let Gamma (radius R) and omega
+     (radius r) be two circles with omega lying strictly inside Gamma. If there
+     exists one quadrilateral inscribed in Gamma and circumscribed about omega
+     (a bicentric quadrilateral with these circles), then for EVERY point P on
+     Gamma there is a quadrilateral with P as a vertex that is inscribed in Gamma
+     and circumscribed about omega; it is obtained by drawing from P a tangent to
+     omega, meeting Gamma again at the next vertex, and repeating — the polygonal
+     path closes after exactly four steps. In particular there are infinitely many
+     such quadrilaterals.
+ (b) [Existence criterion, combining (a) with CaseyFuss2] For circles as in (a)
+     with centre distance x, a bicentric quadrilateral with circumcircle Gamma and
+     incircle omega exists (and then one through every point of Gamma) if and only
+     if 1/(R - x)^2 + 1/(R + x)^2 = 1/r^2.

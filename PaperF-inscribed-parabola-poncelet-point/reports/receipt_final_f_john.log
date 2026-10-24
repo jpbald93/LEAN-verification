@@ -1,0 +1,11 @@
+== quadparabola f85c7bbdbf527c37b940d2331e6d720f01d221db
+build rc=0
+PASS (240 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+3d75eb40774ca682
+== quadrangle 4153ce0b11533a95060eb4f1a25e54708fa13875
+build rc=0
+PASS (220 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+56cae1e22c43e295
+RCPTDONE

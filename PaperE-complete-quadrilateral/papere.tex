@@ -1,0 +1,627 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of our developments; every \decl{...} must be in that repository's gate.sh
+% REQUIRED list (checked by the name gate).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. Filled in when the repositories are published; until then \src prints file:line only.
+% ---------------------------------------------------------------------------------------------
+% version-2 commits: quadnewton=c3a4ce513eb8789f5f0de4ae02efe707a718466c quadmiquel=4089a974d5f56663be3daa5203ec856c28b793c3
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\expandafter\def\csname commitof:quadnewton\endcsname{48e94cf944b3dfbcca7358360a064e39b6336d98}
+\expandafter\def\csname commitof:quadmiquel\endcsname{011c9ecd5276b7abaf2b42a8f5ba463196df123d}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+
+\title{The complete quadrilateral in Lean~4:\\
+Newton--Gauss, Bodenmiller, the Miquel point, the Steiner circle and the Simson line}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
+\date{15 October 2026; version~2, 22 October 2026 (adds Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+Four lines in general position form a complete quadrilateral: six vertices, three diagonals, and
+four triangles, one for each line omitted. We give machine-checked proofs, in Lean~4 with Mathlib,
+of eight classical theorems about this configuration, all from the single hypothesis that the lines
+are in general position. On the side of the diagonals: the midpoints of the three diagonals are
+collinear (the Newton--Gauss line); the orthocentres of the four triangles are collinear; every
+orthocentre has equal power with respect to the three circles on the diagonals as diameters (the
+Gauss--Bodenmiller theorem); and the line of the orthocentres is perpendicular to the Newton--Gauss
+line. On the side of the circles: the circumcircles of the four triangles pass through a common point
+$M$, given by an explicit formula (the Miquel point); the four circumcentres and $M$ lie on one circle
+(the Steiner, or Miquel, circle); the feet of the perpendiculars from $M$ to the four lines are
+collinear (the Simson line of the quadrilateral); and that line is parallel to the line of the four
+orthocentres, as Mathlib affine subspaces (whose parallelism allows the two lines to coincide). The two halves are separate developments that share one file of definitions. We also
+show that two of the four orthocentres can coincide in general position (two of them coincide exactly
+when two of the lines are perpendicular), so the orthocentre line is determined only because the four
+are never all equal, which we prove. The local definitions (line, intersection, circumcentre,
+orthocentre, foot of a perpendicular, power of a point, general position) are proved equal to
+Mathlib's. All proofs use only Lean's
+three standard axioms. Version~2 adds two checks: every main theorem is restated with Mathlib-only
+types and shown non-vacuous on two explicit configurations, and all twelve Lean statements written by
+another model from textbook statements alone were proved from the developments, two of them with
+new proofs. In the sources we searched, the Newton--Gauss line and the four-line Miquel
+theorem already have formal proofs (in HOL~Light and Rocq); we found none of the other six in any
+system, and none of the eight in Lean.
+\end{abstract}
+
+\section{Introduction}
+
+A \emph{complete quadrilateral} is a set of four lines in the plane, no two parallel and no three
+through a point. Its six intersection points are its \emph{vertices}; the three segments joining the
+pairs of vertices that do not lie on a common line are its \emph{diagonals}; and omitting one line at a
+time leaves four triangles. The configuration carries a remarkable family of classical theorems,
+found between Gauss and Steiner in the first third of the nineteenth century
+\cite{steiner1828,coolidge1916,johnson1929}. Two of them concern points: the midpoints of the diagonals
+lie on a line, and so do the four orthocentres. Two concern circles: the circles on the diagonals as
+diameters are coaxal, and the four circumcircles pass through one point. The rest tie the two
+families together. We formalise eight of them (Table~\ref{tab:thms}).
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{llll}
+\toprule
+& theorem & Lean & source (pinned)\\
+\midrule
+\ref{thm:newton} & midpoints of the diagonals collinear & \decl{QuadNewton.newton_gauss} & \src{quadnewton}{QuadNewton}{Quad}{53}\\
+\ref{thm:ortho} & four orthocentres collinear (not all equal) & \decl{QuadNewton.orthocentres_collinear} & \src{quadnewton}{QuadNewton}{Quad}{79}\\
+\ref{thm:boden} & diagonal circles coaxal (equal power) & \decl{QuadNewton.bodenmiller} & \src{quadnewton}{QuadNewton}{Quad}{135}\\
+\ref{thm:perp} & orthocentre line $\perp$ Newton--Gauss line & \decl{QuadNewton.orthocentre_line_perp} & \src{quadnewton}{QuadNewton}{Quad}{155}\\
+\ref{thm:miquel} & four circumcircles concur at $M$ & \decl{QuadMiquel.miquel} & \src{quadmiquel}{QuadMiquel}{Miquel}{162}\\
+\ref{thm:steiner} & circumcentres and $M$ concyclic & \decl{QuadMiquel.steiner_circle} & \src{quadmiquel}{QuadMiquel}{Miquel}{200}\\
+\ref{thm:simson} & feet from $M$ to the four lines collinear & \decl{QuadMiquel.simson} & \src{quadmiquel}{QuadMiquel}{Simson}{155}\\
+\ref{thm:par} & that line $\parallel$ the orthocentre line & \decl{QuadMiquel.steiner_parallel_line} & \src{quadmiquel}{QuadMiquel}{Parallel}{241}\\
+\bottomrule
+\end{tabular}
+\caption{The eight theorems. Each assumes only that the four lines are in general position.}\label{tab:thms}
+\end{table}
+
+\subsection{Contributions}
+\begin{itemize}
+\item One model of the complete quadrilateral in $\CC$, with explicit formulas for the intersection
+point of two lines, the circumcentre, the orthocentre and the foot of a perpendicular
+(Section~\ref{sec:model}), shared by two independent developments.
+\item The eight theorems, each stated for arbitrary four lines with the single hypothesis
+$\lean{GenPos}$ (Sections~\ref{sec:diag} and~\ref{sec:circ}). The collinearity and concyclicity
+conclusions use Mathlib's \mdecl{Collinear} and \mdecl{EuclideanGeometry.Cospherical}.
+\item An explicit formula for the Miquel point, as the centre of a spiral similarity
+(Section~\ref{sec:circ}).
+\item A small finding about the statements themselves: in general position two of the four
+orthocentres can coincide; $H_3=H_4$ exactly when $L_1\perp L_2$ (\decl{QuadMiquel.ortho34_eq_iff}).
+So ``the line of the orthocentres'' needs the fact, which we prove, that they are not all equal
+(Section~\ref{sec:diag}), and Steiner's parallelism, stated for a fixed pair of orthocentres, needs
+that pair to be distinct (Section~\ref{sec:circ}).
+\item Bridges tying every local notion to Mathlib's (Section~\ref{sec:bridges}), and the uniqueness of
+the Miquel point: any point on the circumcircles of $T_4$, $T_3$ and $T_1$ is $M$
+(\decl{QuadMiquel.miquelPt_unique}); in particular the common point of all four is unique.
+\item In version~2 (Section~\ref{sec:l1415}): Mathlib-only restatements of all ten Lean statements of
+the eight theorems, each with two explicit witnesses, and proofs from the developments of twelve Lean
+statements written by another model from textbook statements.
+\end{itemize}
+
+\paragraph{What is not claimed.} We prove each theorem for one fixed labelling of the four lines; the
+statements are symmetric in content but we did not prove the symmetry. The diagonal circles are shown
+to be coaxal in the sense that the four orthocentres have equal power with respect to all three, which
+together with Theorem~\ref{thm:ortho} places the radical axis; we do not formalise coaxal pencils as
+such. (That the set of points of equal power with respect to two of the circles is exactly a line is
+not stated in the main files; it is proved in the Layer-15 file, Section~\ref{sec:l1415}.) Steiner's
+parallelism is proved in Mathlib's sense, which allows the Simson line and the orthocentre line to
+coincide; that they are distinct is not proved.
+
+\subsection{Availability}\label{sec:avail}
+The proofs are in two Lean~4 developments on Lean v4.33.1 with Mathlib pinned at revision
+\texttt{0df444a3}. File and line counts are of the library \lean{.lean} files, including the root
+import file and counting every physical line; in total 14 files and 2{,}980 lines.
+Supporting material (the verification battery reports, fresh-clone receipts, numerical scripts, blind re-formalisation files, reviews and hand-check sheet of version~1, and the Layer-14 and Layer-15 reports, the blind writer's statements, the transcript audit and the reviews of version~2) is in the folder \texttt{PaperE-complete-quadrilateral} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+\begin{center}\small
+\begin{tabular}{llrr}
+\toprule
+repository & content & files & lines\\
+\midrule
+\lean{quadnewton} & Theorems~\ref{thm:newton}--\ref{thm:perp} and bridges & 6 & 1{,}066\\
+\lean{quadmiquel} & Theorems~\ref{thm:miquel}--\ref{thm:par} and bridges & 8 & 1{,}914\\
+\bottomrule
+\end{tabular}
+\end{center}
+The repositories are \url{https://github.com/jpbald93/quadnewton} at commit
+\texttt{48e94cf944b3dfbcca7358360a064e39b6336d98} and \url{https://github.com/jpbald93/quadmiquel} at commit
+\texttt{011c9ecd5276b7abaf2b42a8f5ba463196df123d}; Lean v4.33.1, Mathlib revision \texttt{0df444a360eaa60ab8c11dca51a86af692955474}
+(pinned in \lean{lake-manifest.json}). Source links in this paper point to these commits.
+Version~2 of this paper adds, in a new commit of each repository (\lean{quadnewton} at commit
+\texttt{c3a4ce513eb8789f5f0de4ae02efe707a718466c}, \lean{quadmiquel} at commit \texttt{4089a974d5f56663be3daa5203ec856c28b793c3}), the Layer-14 and Layer-15 files
+\lean{QuadNewton/L14Newton.lean}, \lean{QuadNewton/L15Classical.lean},
+\lean{QuadMiquel/L14Miquel.lean} and \lean{QuadMiquel/L15Classical.lean} (Section~\ref{sec:l1415}),
+two import lines in each root file, and the extended gate lists and README. Apart from the two root
+import files, all earlier library files are unchanged (same SHA-256 hashes), and all earlier theorem
+statements are unchanged, so the source links above remain valid. With
+the new files the repositories have 8 files and 2{,}328 lines (\lean{quadnewton}) and 10 files and
+3{,}169 lines (\lean{quadmiquel}); the table above counts the first version.
+Each repository has a gate script (\lean{gate.sh}) that rejects forbidden tokens, builds the library
+and checks with \lean{\#print axioms} that every listed declaration depends only on
+\lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}, and a tampering suite
+(\lean{tests/tamper.sh}) that plants defects the gate must reject.
+
+\section{The model}\label{sec:model}
+
+Both developments start from the same file \lean{Basic.lean}, identical up to the name of its
+namespace. Points are complex numbers. For $a,b\in\CC$ let $\operatorname{cr}(a,b)=\operatorname{Im}(\bar a b)$,
+the cross product of $a$ and $b$ as plane vectors. A line $L$ is a pair $(p,d)$ of a point and a
+direction, with carrier $\{z:\operatorname{cr}(d,z-p)=0\}$. For lines $L=(p,d)$ and $M=(q,e)$,
+\[
+  \operatorname{meet}(L,M)=p+\frac{\operatorname{cr}(e,q-p)}{\operatorname{cr}(e,d)}\,d ,
+\]
+which is their intersection point when $\operatorname{cr}(e,d)\neq0$. Four lines $L_1,\dots,L_4$ are in
+\emph{general position} ($\lean{GenPos}$) if their directions are nonzero, no two are parallel
+($\operatorname{cr}(d_i,d_j)\ne0$), and no three pass through one point
+($\operatorname{meet}(L_i,L_j)\notin L_k$ for the four triples). We write $A_{ij}=\operatorname{meet}(L_i,L_j)$
+for the six vertices; the diagonals are $A_{12}A_{34}$, $A_{13}A_{24}$ and $A_{14}A_{23}$; and
+$T_k$ is the triangle of the three vertices not on $L_k$: $T_4=(A_{12},A_{13},A_{23})$,
+$T_3=(A_{12},A_{14},A_{24})$, $T_2=(A_{13},A_{14},A_{34})$, $T_1=(A_{23},A_{24},A_{34})$.
+
+The circumcentre, the orthocentre and the foot of a perpendicular are given by explicit formulas:
+\[
+  \operatorname{circ}(a,b,c)=a+\frac{|b-a|^2(c-a)-|c-a|^2(b-a)}{\overline{(b-a)}(c-a)-(b-a)\overline{(c-a)}},\qquad
+  \operatorname{ortho}(a,b,c)=a+b+c-2\operatorname{circ}(a,b,c),
+\]
+\[
+  \operatorname{foot}(z,L)=p+\frac{\operatorname{Re}\big(\bar d(z-p)\big)}{|d|^2}\,d .
+\]
+The orthocentre is defined through Euler's relation $H=A+B+C-2O$. Section~\ref{sec:bridges} proves
+that each of these is the corresponding Mathlib notion.
+
+\paragraph{Normal coordinates.} Both developments first prove that general position puts the
+configuration into a normal form. In \lean{quadnewton} (\decl{QuadNewton.normal_coords}): there are
+$O,u,w\in\CC$ and real $s,t$ with $A_{12}=O$, $A_{13}=O+u$, $A_{23}=O+w$, $A_{14}=O+su$,
+$A_{24}=O+tw$ and $A_{34}=O+\big(s(1-t)u+t(s-1)w\big)/(s-t)$, where $\operatorname{cr}(u,w)\neq0$,
+$s,t\notin\{0,1\}$ and $s\neq t$. \lean{quadmiquel} proves the same normal form independently, in its own
+notation. The central coordinate identities are then rational-function identities in
+$u,w,\bar u,\bar w,s,t$ with those non-vanishing conditions, discharged principally by
+\lean{field\_simp}, \lean{ring} and \lean{linear\_combination} with the conjugates treated as
+independent variables; incidence and non-degeneracy lemmas connect them to the geometric conclusions. The two developments were written separately, by different agents on different
+machines, from the shared definitions.
+
+\section{The diagonals and the orthocentres}\label{sec:diag}
+
+All four theorems of this section are in \lean{quadnewton}.
+
+\begin{theorem}[Newton--Gauss line; \decl{QuadNewton.newton_gauss}]\label{thm:newton}
+If $L_1,\dots,L_4$ are in general position, the midpoints of the three diagonals are collinear; and
+the midpoints of $A_{12}A_{34}$ and $A_{13}A_{24}$ are distinct (\decl{QuadNewton.diag_midpoints_ne}).
+\end{theorem}
+
+\begin{theorem}[Orthocentre line; \decl{QuadNewton.orthocentres_collinear}, \decl{QuadNewton.orthocentres_not_all_eq}]\label{thm:ortho}
+If $L_1,\dots,L_4$ are in general position, the orthocentres $H_1,\dots,H_4$ of $T_1,\dots,T_4$ are
+collinear, and they are not all equal: $H_3\neq H_4$ or $H_2\neq H_4$.
+\end{theorem}
+
+The second part is needed, and cannot be strengthened to a fixed pair. For $L_1$ the real axis, $L_2$
+the imaginary axis, $L_3$ the line through $1$ and $i$, and $L_4$ the line through $2$ and $-2i$, the
+lines are in general position and $H_1=H_2=\tfrac32-\tfrac12i$, $H_3=H_4=0$ (checked in exact rational
+arithmetic). So any one pair of orthocentres can coincide, and ``the line of the orthocentres'' is
+determined only because the four are never all equal.
+
+For points $P\neq Q$ let $\operatorname{pw}(z;P,Q)=|z-\tfrac{P+Q}2|^2-\tfrac14|P-Q|^2$, the power of $z$
+with respect to the circle on $PQ$ as diameter (it is Mathlib's \mdecl{EuclideanGeometry.Sphere.power}
+of that circle: \decl{QuadNewton.pw_eq_power}).
+
+\begin{theorem}[Gauss--Bodenmiller; \decl{QuadNewton.bodenmiller}]\label{thm:boden}
+If $L_1,\dots,L_4$ are in general position, each orthocentre $H_k$ has the same power with respect to
+the three circles having the diagonals as diameters.
+\end{theorem}
+
+Since the centres of these circles (the diagonal midpoints) are pairwise distinct
+(\decl{QuadNewton.bodenmiller_coaxal}, which also restates Theorem~\ref{thm:boden} with Mathlib's
+power), the points of equal power with respect to two of them form a line (an elementary fact not
+stated in the main files; it is proved in the Layer-15 file as \decl{QuadNewton.Classical.radical_eq_line},
+Section~\ref{sec:l1415}), and Theorem~\ref{thm:boden} says all four orthocentres
+lie on the radical axis of every pair; that is the classical statement that the three circles are
+coaxal, with the orthocentre line as their radical axis.
+
+\begin{theorem}[\decl{QuadNewton.orthocentre_line_perp}]\label{thm:perp}
+If $L_1,\dots,L_4$ are in general position, then for any two orthocentres $H,H'$,
+$\operatorname{Re}\big((m_2-m_1)\overline{(H'-H)}\big)=0$, where $m_1,m_2$ are the midpoints of
+$A_{12}A_{34}$ and $A_{13}A_{24}$.
+\end{theorem}
+With $m_1\neq m_2$ (Theorem~\ref{thm:newton}) and two distinct orthocentres (Theorem~\ref{thm:ortho}),
+this is the perpendicularity of the orthocentre line and the Newton--Gauss line. When $H=H'$ the
+statement holds trivially. The real part is Mathlib's inner product on $\CC$
+(\decl{QuadNewton.perp_iff_inner}; the inner-product form is \decl{QuadNewton.orthocentre_line_perp_inner}).
+
+\section{The circles}\label{sec:circ}
+
+All four theorems of this section are in \lean{quadmiquel}. The Miquel point is given explicitly:
+\[
+  M=A_{12}+\frac{(A_{13}-A_{12})(A_{24}-A_{12})-(A_{23}-A_{12})(A_{14}-A_{12})}{A_{13}+A_{24}-A_{23}-A_{14}}
+\]
+(\lean{QuadMiquel.miquelPt}), the centre of the spiral similarity taking $A_{13}\mapsto A_{14}$ and
+$A_{23}\mapsto A_{24}$. General position makes the denominator nonzero. $M$ is the reflection of $A_{12}$ in the line
+through the circumcentres of $T_4$ and $T_3$, so it is the second intersection point of those two
+circles; it is none of the six vertices; and it is the only point on the circumcircles of $T_4$,
+$T_3$ and $T_1$ (\decl{QuadMiquel.miquelPt_spec}, \decl{QuadMiquel.miquelPt_ne_vertices},
+\decl{QuadMiquel.miquelPt_unique}).
+
+\begin{theorem}[Miquel point; \decl{QuadMiquel.miquel}]\label{thm:miquel}
+If $L_1,\dots,L_4$ are in general position, $M$ lies on the circumcircle of each of $T_1,\dots,T_4$
+(the circle with centre $\operatorname{circ}(T_k)$ through the vertices of $T_k$).
+\end{theorem}
+
+\begin{theorem}[Steiner circle; \decl{QuadMiquel.steiner_circle}]\label{thm:steiner}
+If $L_1,\dots,L_4$ are in general position, the four circumcentres $\operatorname{circ}(T_1),\dots,
+\operatorname{circ}(T_4)$ and $M$ are cospherical (lie on one circle).
+\end{theorem}
+
+\begin{theorem}[Simson line of the quadrilateral; \decl{QuadMiquel.simson}]\label{thm:simson}
+If $L_1,\dots,L_4$ are in general position, the feet of the perpendiculars from $M$ to
+$L_1,\dots,L_4$ are collinear.
+\end{theorem}
+Classically this follows from the triangle Simson line: $M$ is on the circumcircle of each $T_k$, so
+the three feet on the sides of $T_k$ are collinear, and the four triples overlap. Our proof is direct. The four feet are pairwise distinct (\decl{QuadMiquel.simson_feet_ne}), so the
+line is determined.
+
+\begin{theorem}[Steiner; \decl{QuadMiquel.steiner_parallel_line}]\label{thm:par}
+If $L_1,\dots,L_4$ are in general position, with $F_k$ the foot of the perpendicular from $M$ to $L_k$,
+the line through $F_1$ and $F_2$ is parallel (\mdecl{AffineSubspace.Parallel}) to the affine span of
+the four orthocentres $H_1,\dots,H_4$.
+\end{theorem}
+The line through $F_1,F_2$ is the Simson line (Theorem~\ref{thm:simson}; $F_1\ne F_2$), and the affine
+span of the orthocentres is the orthocentre line: within this development we also prove that the four
+are collinear and not all equal (\decl{QuadMiquel.orthocentres_collinear'},
+\decl{QuadMiquel.orthocentres_not_all_eq'}). Mathlib's \mdecl{AffineSubspace.Parallel} includes the
+case of equal lines; we do not prove that the Simson line differs from the orthocentre line. The proof goes through the cross-product relations
+$\operatorname{cr}(F_2-F_1,\,H_i-H_4)=0$ for $i=1,2,3$ (\decl{QuadMiquel.steiner_parallel_all}).
+
+A fixed pair of orthocentres would not do. $H_3=H_4$ exactly when $L_1\perp L_2$
+(\decl{QuadMiquel.ortho34_eq_iff}): then both $T_3$ and $T_4$ have their right angle at $A_{12}$, and
+both orthocentres are $A_{12}$; the example after Theorem~\ref{thm:ortho} is of this kind. The first
+version of the theorem we proved, \decl{QuadMiquel.steiner_parallel_affine}, used the line through
+$H_4$ and $H_3$ and needed the extra hypothesis $L_1\not\perp L_2$. The theorem above needs none,
+because when $H_3=H_4$ both $H_1$ and $H_2$ differ from it (\decl{QuadMiquel.ortho12_ne_of_eq34});
+$H_1=H_2$ can still happen.
+
+\section{Bridges to Mathlib}\label{sec:bridges}
+Each local notion of Section~\ref{sec:model} is tied to the standard one, in both developments
+(file \lean{Bridge.lean}; the \lean{quadnewton} names are given, and \lean{quadmiquel} has
+equivalent statements under the same names, with two packaging differences: its
+\lean{genPos\_triangles} gives only the non-collinearity, the vertex distinctness being the separate
+\decl{QuadMiquel.genPos_vertices_ne}, and its \lean{genPos\_iff} states non-concurrence with the local
+carriers, which \lean{carrier\_eq\_line} identifies with Mathlib's lines):
+\begin{itemize}
+\item a line with nonzero direction is Mathlib's line through $p$ and $p+d$
+(\decl{QuadNewton.carrier_eq_line}), and $\operatorname{meet}(L,M)$ is the unique common point of two
+non-parallel lines (\decl{QuadNewton.meet_eq_iff});
+\item for non-collinear $a,b,c$, $\operatorname{circ}$ and $\operatorname{ortho}$ are Mathlib's
+\mdecl{Affine.Simplex.circumcenter} and \mdecl{Affine.Triangle.orthocenter} of the triangle
+(\decl{QuadNewton.circ_eq_circumcenter}, \decl{QuadNewton.ortho_eq_orthocenter});
+\item for a nonzero direction, $\operatorname{foot}(z,L)$ is Mathlib's orthogonal projection of $z$ onto
+the line (\decl{QuadNewton.foot_eq_orthogonalProjection});
+\item general position makes each of the four triangles non-degenerate
+and the six vertices pairwise distinct (\decl{QuadNewton.genPos_triangles}), so the previous bridges apply to every triangle the theorems
+use; and $\lean{GenPos}$ is equivalent to its intended meaning stated with Mathlib's notions (nonzero
+directions, no two of the lines \mdecl{AffineSubspace.Parallel}, no three with a common point:
+\decl{QuadNewton.genPos_iff}).
+\end{itemize}
+Each bridge was first checked numerically, including on forced degenerate inputs; the only statement
+that failed as first written was the fixed-pair parallel form \decl{QuadMiquel.steiner_parallel_affine}
+(Section~\ref{sec:circ}), which led to Theorem~\ref{thm:par}.
+
+\section{Related work}\label{sec:related}
+\paragraph{Classical.} The theorems are classical; standard accounts are Johnson \cite{johnson1929}
+(where the coaxality of the diagonal circles appears as the Gauss--Bodenmiller theorem, p.~172) and
+Coolidge \cite{coolidge1916}. Several of them, including the Miquel point and circle of the complete
+quadrilateral, go back to Steiner's 1828 note on the complete quadrilateral \cite{steiner1828}. We do
+not attempt finer historical attributions.
+
+\paragraph{Formal proofs.} On 14 October 2026 we searched for each of the eight theorems in Mathlib
+(code, \texttt{docs/100.yaml} and \texttt{docs/1000.yaml}, issues and pull requests, both at the pinned
+revision and at the current master), the Archive of Formal Proofs (a full-text search of a mirror of
+13 October 2026), all 1500 articles of the Mizar library, HOL4, HOL~Light, Metamath's \texttt{set.mm},
+Rocq's GeoCoq, HighSchoolGeometry, the area-method library and the projective-geometry library,
+ProofAtlas (partly: sitemap and search index), the public archive of the Lean Zulip, compfiles,
+\texttt{formal-conjectures}, FormalBook, the lean-genius repository, and GitHub code search. Two of the
+eight have complete formal proofs:
+\begin{itemize}
+\item the Newton--Gauss line, as \lean{GAUSS} in HOL~Light's \lean{Complex/grobner\_examples.ml}
+(Chou's example~15 \cite{chou1988}, proved by a Gr\"obner-basis procedure) \cite{hollight}, and as
+\lean{gauss\_line} in the Rocq area-method library \cite{areamethod};
+\item the four-line Miquel theorem, as \lean{Miquel} in Rocq's HighSchoolGeometry
+\cite{hsgeometry,guilhot2005}, in conditional form: under the library's incidence and
+non-collinearity hypotheses (which exclude, for instance, the shared vertex itself), a point on two
+specified circumcircles lies on the other two. It does not construct the common point; our
+Theorem~\ref{thm:miquel} gives it by an explicit formula.
+\end{itemize}
+We found no formal proof, in any system, of Theorems~\ref{thm:ortho}, \ref{thm:boden}, \ref{thm:perp},
+\ref{thm:steiner}, \ref{thm:simson} or~\ref{thm:par}, and none of the eight in Lean. The triangle
+versions of nearby theorems are formalised: the triangle Simson line (AFP, HOL~Light, HighSchoolGeometry,
+lean-genius), the triangle Miquel (pivot) theorem (AFP \cite{afpmiquel}, lean-genius), and the triangle
+Steiner line (AFP). A synthetic engine (Newclid/JGEX) also proves the four-line Miquel theorem, but its
+proofs are not checked by a proof assistant. The search was run by one agent; we re-read the three
+hits (\lean{GAUSS}, \lean{gauss\_line} and \lean{Miquel}) at their sources and confirmed that they state
+the theorems described. These are completed proofs relative to their libraries' own foundations
+(the area-method library works over an axiomatised field with the Chou--Gao--Zhang area axioms, and
+HighSchoolGeometry over an axiomatic plane); we inspected them but did not rebuild them, and the
+area-method library contains three \lean{Admitted} lemmas which the sweep judged to be outside the
+path of \lean{gauss\_line}, a judgement we could not confirm with \lean{Print Assumptions}.
+
+\paragraph{This series.} This is the fifth paper in a series of Lean formalisations of classical plane
+geometry by coordinate certificates \cite{paperA,paperB,paperC,paperD}. Paper~A proves the triangle
+Simson line; Paper~D Clifford's chain for four to six circles through a common point. Classically, inversion at
+that common point turns the four-circle case into the four-line Miquel theorem; we did not formalise
+this correspondence, and the two developments are independent.
+
+\section{Verification}\label{sec:verify}
+\paragraph{Gates and tampering.} After publishing, both repositories were cloned fresh from GitHub at
+the pinned commits on both machines (16 October 2026, UTC): an x86-64 Linux machine and an arm64 macOS
+machine, with Lean v4.33.1 and the Mathlib revision above. On each, the checkout was clean, the build
+succeeded, the gate passed (\lean{quadnewton}: 35 declarations; \lean{quadmiquel}: 62; standard axioms
+only) and every planted defect was rejected; the SHA-256 hashes of all 14 library files agree between
+the two machines and with the published trees. The receipt logs and script are in the verification repository.
+Before publishing, each development
+was gated and tamper-tested on both machines: an x86-64 Linux machine and an arm64 macOS machine.
+\lean{quadnewton}: 35 declarations, \lean{quadmiquel}: 62 declarations, all with standard axioms only;
+every planted defect rejected (six tests each: a hidden \lean{sorry}, an axiom split across two lines,
+a fake \lean{\#print axioms} report, a command-redefining macro, a wrapper axiom, and the removal of
+one needed hypothesis).
+
+\paragraph{Numerical re-check.} A script (in the verification repository) evaluates each conclusion at 60
+significant digits on 1000 random configurations (seed 20261014), each with all pairwise direction
+cross products and all vertex-to-other-line distances at least $10^{-2}$:
+\begin{center}\small
+\begin{tabular}{lr}
+\toprule
+theorem & worst residual\\
+\midrule
+\ref{thm:newton} Newton--Gauss & $4.7\times10^{-60}$\\
+\ref{thm:ortho} orthocentres collinear & $2.4\times10^{-59}$\\
+\ref{thm:boden} Bodenmiller (power differences) & $1.3\times10^{-54}$\\
+\ref{thm:perp} perpendicularity (normalised) & $8.9\times10^{-60}$\\
+\ref{thm:miquel} Miquel (relative) & $1.5\times10^{-57}$\\
+\ref{thm:steiner} Steiner circle (relative) & $6.3\times10^{-58}$\\
+\ref{thm:simson} Simson line & $1.2\times10^{-57}$\\
+\ref{thm:par} parallelism, all $H_i-H_4$ (normalised) & $1.5\times10^{-58}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+A separate run of 300 configurations with $L_1\perp L_2$ forced (same margins) checks the
+exceptional case: there $|H_3-H_4|\le7.5\times10^{-59}$, both $H_1$ and $H_2$ stay at distance at least
+$0.16$ from $H_3$, and the parallelism residual over all $H_i-H_4$ is at most $2.7\times10^{-59}$. Three
+negative controls failed in every trial, with smallest violations $2.7\times10^{-7}$ (Newton--Gauss
+with one midpoint of the configuration and two of a perturbed copy, $L_1$ shifted by $0.1$), $1.1\times10^{-8}$ (the unperturbed $M$ on the
+perturbed circumcircles) and $3.2\times10^{-3}$ (feet from a point other than $M$). Numerical checks are
+evidence, not proofs.
+
+\paragraph{Statement-level battery.} Both developments, with their bridge files, were run through the
+battery used in the earlier papers, on both machines (15 October 2026). The two machines agree in every
+category except satisfiability, where some declarations are certified on one machine and not the other.
+
+\begin{itemize}
+\item \emph{Conclusion mutations.} \lean{quadnewton} 149/149 and \lean{quadmiquel} 293/294 rejected (two
+by the heartbeat limit). The one survivor, on both machines, flips the middle equation inside
+\decl{QuadMiquel.orthocentres_not_all_eq'}, $\neg(H_1=H_4\wedge H_2=H_4\wedge H_3=H_4)$. It survives
+because the proof never uses that conjunct: it shows the stronger $\neg(H_1=H_4\wedge H_3=H_4)$, from
+\decl{QuadMiquel.ortho12_ne_of_eq34}. The survivor marks a statement weaker than its proof, not an
+error. The generator alters only conclusions of certain forms
+(equalities, numeric literals), so several main theorems produced no mutants:
+\decl{QuadNewton.orthocentres_collinear}, \decl{QuadMiquel.miquel}, \decl{QuadMiquel.steiner_circle},
+\decl{QuadMiquel.simson} and \decl{QuadMiquel.steiner_parallel_line}.
+\item \emph{Contradiction probe.} No contradiction derived from the hypotheses of any declaration (40 and
+108 probed). This does not show that the hypotheses are consistent.
+\item \emph{Satisfiability.} Certified for 48 (x86-64) or 51 (arm64) of 69 declarations of
+\lean{quadnewton} and 76 or 89 of 139 of \lean{quadmiquel}; every main theorem is among the unresolved.
+The numerical re-check exhibits configurations in general position for each.
+\item \emph{Hypothesis ablation.} Each hypothesis binder is removed in turn and the unchanged proof
+re-checked; a failure shows that this proof uses the binder, not that it is logically necessary. In
+\lean{quadnewton} removing any of the 51 tested binders broke the proof. In \lean{quadmiquel} 204 broke
+it and 17 did not: all 17 are non-vanishing conditions in auxiliary algebraic lemmas
+(\lean{circC\_T3}, \lean{circC\_T4}, \lean{circC\_scaled}, \lean{simF2}, \lean{simF3}, \lean{simF4}).
+Some are superfluous because the identity extends to the zero-denominator case under Lean's total
+division, the others because the term they protect cancels from the identity. No hypothesis of a main
+theorem is unused. We keep them, since they are harmless and removing them would change the line
+numbers this paper cites.
+\item \emph{Linter.} No unused-variable warnings in the library files.
+\end{itemize}
+
+\paragraph{Does the statement mean what it says?}\label{sec:blind} Layers 1--8 do not show that a formal
+statement means what the prose says. To test that, we gave a different language model from the one that
+wrote the proofs only the text of this paper with every code name, source link and the verification
+material removed. From the prose alone it wrote ten Lean statements, one for each part of
+Theorems~\ref{thm:newton}--\ref{thm:par}, with its own definitions taken from the formulas of
+Section~\ref{sec:model}. Two separate comparer runs, using the same model as the proof author (the blind
+writer was a different model), then proved in Lean, for each of the ten, that the blind statement
+implies ours and ours implies it, using only the premise, unfolding of definitions, and
+general Mathlib lemmas (no theorem of our developments in any proof body). All twenty implications were
+proved, with standard axioms only; no difference was found. The comparisons needed only definitional
+agreements between the two sets of definitions, plus one rewriting of the power of a point
+($\operatorname{normSq}$ versus the squared norm). This check is only as independent as the blind text
+allows: the model section gives the defining formulas, so it tests the statements of the theorems, not
+the choice of definitions, which Section~\ref{sec:bridges} addresses. The writer's claim to have read
+only the blind text was checked by the author against its full transcript; the complete arguments of
+all six tool calls it made (two reads of the blind text; shell commands that write and compile its own
+file) are in the verification repository, with machine names redacted.
+
+\paragraph{Statements checked by hand.} The author read each of the eight theorems as given in this
+paper against its ten Lean statements at the published commits (a sheet pairing the two, with links to
+the source lines, is in the verification repository) and found them to agree. This is a reading check, not a
+proof.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+These checks were added in version~2. The results of the earlier paragraphs refer to the first-version
+files.
+
+\paragraph{Layer 14: statements in Mathlib's language and non-vacuity.} A Layer-14 file in each
+repository (\lean{QuadNewton/L14Newton.lean}, \lean{QuadMiquel/L14Miquel.lean}) restates each of the ten
+Lean statements of Theorems~\ref{thm:newton}--\ref{thm:par} with Mathlib-only types and proves it from
+the library theorem through bridges (\decl{QuadNewton.l14_newton_gauss},
+\decl{QuadNewton.l14_diag_midpoints_ne}, \decl{QuadNewton.l14_orthocentres_collinear},
+\decl{QuadNewton.l14_orthocentres_not_all_eq}, \decl{QuadNewton.l14_bodenmiller},
+\decl{QuadNewton.l14_orthocentre_line_perp}, \decl{QuadMiquel.l14_miquel},
+\decl{QuadMiquel.l14_steiner_circle}, \decl{QuadMiquel.l14_simson},
+\decl{QuadMiquel.l14_steiner_parallel_line}); none was left out. Lines are \lean{line[$\RR$,p,q]},
+general position is stated with \mdecl{AffineSubspace.Parallel} and the absence of a common point of
+three lines, vertices are arbitrary common points, the triangles are arbitrary
+\mdecl{Affine.Triangle}s with the given vertices (\decl{QuadNewton.l14_triangles_exist},
+\decl{QuadMiquel.l14_triangles_exist} show that they exist), the Miquel point is \emph{any} point on the
+four Mathlib circumspheres (with an $\exists!$ statement), the power is
+\mdecl{EuclideanGeometry.Sphere.power} and the feet are \mdecl{EuclideanGeometry.orthogonalProjection}.
+The distinctness statement of Theorem~\ref{thm:newton} is restated for all three pairs of midpoints
+(the library states one pair; the other two follow from \decl{QuadNewton.bodenmiller_coaxal}). A
+mechanical check of the elaborated types of these statements, the two existence statements and the
+witnesses (32 declarations) found no constant of our namespaces. Each statement has two witness
+theorems that prove every hypothesis on an explicit configuration, one generic and one with
+$L_1\perp L_2$ (20 witnesses), and prove the conclusion non-degenerate: the three midpoints pairwise
+distinct; the four orthocentres pairwise distinct (in the perpendicular case $H_3=H_4$, with $H_1,H_2,H_3$
+pairwise distinct); explicit common powers and distinct circle centres; nonzero direction vectors for the
+perpendicularity; $M$ different from the six vertices, with the four circumcentres pairwise distinct;
+the five points of the Steiner circle pairwise distinct; the four feet pairwise distinct; and for
+Steiner's parallel two distinct feet and a genuine orthocentre line, also when $H_3=H_4$. No Mathlib-only
+statement turned out false or needed an extra hypothesis.
+
+\paragraph{Layer 15: comparison with the classical statements.} For this paper the classical
+statements E1--E8 were written from the standard literature by the orchestrating agent (not collected
+by a separate agent with page citations): the Newton--Gauss line with non-collapse, the orthocentre line
+with non-collapse, Gauss--Bodenmiller with the radical axis, the perpendicularity, Miquel, the Steiner
+circle, the Simson line and Steiner's parallel. A writer of a different model family (GPT-based), given
+only those statements and a list of Mathlib names, and no code or text of this paper, wrote them in
+Lean with Mathlib notions and its own definitions: 12 statements and 2 construction obligations (the
+six vertices exist uniquely; the triangles are affinely independent), all with \lean{sorry}, 0 errors.
+It marked two ambiguities ($\exists$ rather than $\exists!$ for the Miquel point; parallelism allowing
+coincidence) and no extra hypothesis. By its own report it read, besides its brief and its own files,
+one generic procedure file with no content of this paper; this departs from the brief-only rule and is
+disclosed. A comparer (an Opus model) copied the definitions and statements verbatim (checked
+mechanically) and proved each from the developments, with no added hypothesis and no change to the
+library; both construction obligations were proved. Of the 12: 10 covered outright, 2 narrower in
+the library but fully proved by new proofs, none different, none out of scope, and no writer statement
+false as written.
+\begin{itemize}
+\item \emph{New proof} E3(b), \decl{QuadNewton.Classical.cov_E3_b}: one line contains the orthocentres and
+is the entire equal-power locus of every pair of diagonal circles. The library gives equal powers and
+distinct centres, not that the locus is exactly a line; new lemma
+\decl{QuadNewton.Classical.radical_eq_line}.
+\item \emph{New proof} E7(b), \decl{QuadMiquel.Classical.cov_E7_b}: the four feet from \emph{any} point are
+not all equal. The library proves distinct feet only from $M$ (\decl{QuadMiquel.simson_feet_ne}, giving
+\decl{QuadMiquel.Classical.cov_E7_b_part}); a common foot would lie on three lines.
+\item \emph{Ambiguities.} The stronger $\exists!$ reading of E5 is also proved
+(\decl{QuadMiquel.Classical.cov_E5_a_unique}). For E8 only Mathlib's parallelism is proved
+(\decl{QuadMiquel.Classical.cov_E8_a}); strict parallelism (distinct lines) is not.
+\end{itemize}
+The other covered statements are \decl{QuadNewton.Classical.cov_E1_a}, \lean{\_E1\_b}, \lean{\_E2\_a},
+\lean{\_E2\_b}, \lean{\_E3\_a}, \lean{\_E4\_a} and \decl{QuadMiquel.Classical.cov_E5_a}, \lean{\_E6\_a},
+\lean{\_E7\_a}. They are collected in \lean{QuadNewton/L15Classical.lean} (E1--E4, namespace
+\lean{QuadNewton.Classical}) and \lean{QuadMiquel/L15Classical.lean} (E5--E8, namespace
+\lean{QuadMiquel.Classical}). With the Layer-14 and Layer-15 files the gates pass with 81
+(\lean{quadnewton}) and 104 (\lean{quadmiquel}) declarations, standard axioms only; the tampering suites
+rejected every planted defect, and the earlier library files other than the root import files are
+unchanged.
+
+\section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{One labelling.} Each theorem is proved for the given order of the lines; the symmetric
+versions are not stated.
+\item \textbf{Local notions.} The main theorems are stated with the local definitions; the bridges of
+Section~\ref{sec:bridges} make them statements about Mathlib's notions, and in version~2 the Layer-14
+files restate every one of them with Mathlib-only types (Section~\ref{sec:l1415}).
+\item \textbf{Coaxality} is stated through equal powers, not as a pencil of circles; that the radical
+locus of two diagonal circles is exactly a line is proved only in the Layer-15 file.
+\item \textbf{Parallel, not strictly parallel.} Theorem~\ref{thm:par} uses Mathlib's parallelism,
+which allows the two lines to coincide; their distinctness is not proved.
+\item \textbf{Prior art.} Two of the eight theorems have earlier formal proofs in other systems.
+\end{enumerate}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs, to run the prior-art searches
+and the verification battery, and to draft this paper. The author directed the work and reviewed the
+paper. Every proof is checked by the Lean kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}
+\bibitem{steiner1828}
+J.~Steiner,
+\emph{Questions propos\'ees. Th\'eor\`eme sur le quadrilat\`ere complet},
+Annales de Math\'ematiques Pures et Appliqu\'ees \textbf{18} (1827--1828), 302--304.
+
+\bibitem{coolidge1916}
+J.~L.~Coolidge,
+\emph{A Treatise on the Circle and the Sphere},
+Clarendon Press, Oxford, 1916.
+
+\bibitem{johnson1929}
+R.~A.~Johnson,
+\emph{Modern Geometry},
+Houghton Mifflin, Boston, 1929.
+
+\bibitem{chou1988}
+S.-C.~Chou,
+\emph{Mechanical Geometry Theorem Proving},
+D.~Reidel, Dordrecht, 1988.
+
+\bibitem{hollight}
+J.~Harrison, \emph{HOL Light}, file \texttt{Complex/grobner\_examples.ml}.
+\url{https://github.com/jrh13/hol-light}
+
+\bibitem{areamethod}
+P.~Jani\v{c}i\'c, J.~Narboux and P.~Quaresma,
+\emph{The area method: a recapitulation},
+Journal of Automated Reasoning \textbf{48} (2012), 489--532. Library: \url{https://github.com/rocq-archive/area-method}
+
+\bibitem{hsgeometry}
+\emph{HighSchoolGeometry} (Rocq library), file \texttt{applications\_cocyclicite.v}.
+\url{https://github.com/rocq-community/HighSchoolGeometry}
+
+\bibitem{guilhot2005}
+F.~Guilhot,
+\emph{Formalisation en Coq et visualisation d'un cours de g\'eom\'etrie pour le lyc\'ee},
+Technique et Science Informatiques \textbf{24} (2005), 1113--1138.
+
+\bibitem{afpmiquel}
+\emph{Miquel's theorem}, Archive of Formal Proofs, 2026.
+\url{https://www.isa-afp.org/entries/Miquel.html}
+
+\bibitem{paperA}
+J.~Bald,
+\emph{Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23239930}
+
+\bibitem{paperB}
+J.~Bald,
+\emph{The Malfatti circles in Lean~4, with independent certificate proofs of Feuerbach, Miquel and Brahmagupta},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23240500}
+
+\bibitem{paperC}
+J.~Bald,
+\emph{Barbier's theorem for the Reuleaux triangle and the convex four-vertex theorem in Lean~4, through support functions},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23323062}
+
+\bibitem{paperD}
+J.~Bald,
+\emph{Circle configurations in classical plane geometry, formalized in Lean~4: Clifford's chain, Miquel's five circles, Lester, Sawayama--Th\'ebault and Kosnita},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23378578}
+\end{thebibliography}
+\end{document}

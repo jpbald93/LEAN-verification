@@ -1,0 +1,88 @@
+CLASSICAL STATEMENTS (from the standard literature; this is your only mathematical input)
+
+Conventions. A "triangle" is non-degenerate (its three vertices are not collinear). For a triangle,
+R is the circumradius, r the inradius, O the circumcentre and I the incentre. Distance always means
+Euclidean perpendicular distance.
+
+----------------------------------------------------------------------
+TriSimplex1  (Carnot's theorem)
+----------------------------------------------------------------------
+TriSimplex1a. Let ABC be a triangle with circumcentre O, circumradius R and inradius r. Let
+d_a, d_b, d_c be the signed distances from O to the side lines BC, CA, AB. The sign of d_a is
+negative exactly when O and the interior of the triangle lie strictly on opposite sides of
+line BC (that is, when the segment from O to its foot on BC lies entirely outside the triangle).
+It is positive otherwise. d_b and d_c are signed the same way. Then
+        d_a + d_b + d_c = R + r.
+
+TriSimplex1b (equivalent trigonometric form). Since d_a = R cos A, d_b = R cos B, d_c = R cos C
+(as signed quantities), the statement is equivalent to
+        cos A + cos B + cos C = 1 + r/R.
+In particular, if ABC is acute (O inside the triangle) all three distances are positive and
+the plain unsigned distances sum to R + r.
+
+----------------------------------------------------------------------
+TriSimplex2  (De Gua's theorem)
+----------------------------------------------------------------------
+TriSimplex2a (trirectangular tetrahedron). Let OABC be a tetrahedron whose three edges at O,
+namely OA, OB, OC, are pairwise perpendicular (a right-angle corner at O). Then
+        Area(ABC)^2 = Area(OAB)^2 + Area(OBC)^2 + Area(OCA)^2.
+Equivalently, with O the origin and A=(a,0,0), B=(0,b,0), C=(0,0,c), a,b,c>0:
+        Area(ABC)^2 = (ab/2)^2 + (bc/2)^2 + (ca/2)^2.
+
+TriSimplex2b (n-dimensional simplex form). Let n >= 2 and let S be an n-simplex in R^n with a
+vertex O such that the n edges at O are pairwise orthogonal, for example O = 0 and the other
+vertices at a_i e_i with a_i > 0, i = 1..n. Let F_0 be the facet opposite O and F_1, ..., F_n
+the other facets (F_i is the facet not containing a_i e_i). Then
+        vol_{n-1}(F_0)^2 = vol_{n-1}(F_1)^2 + ... + vol_{n-1}(F_n)^2.
+(n = 2 is Pythagoras' theorem. n = 3 is TriSimplex2a.)
+
+----------------------------------------------------------------------
+TriSimplex3  (Viviani's theorem)
+----------------------------------------------------------------------
+TriSimplex3a. Let ABC be an equilateral triangle with altitude h, side s and h = (sqrt 3/2)s.
+For every point P in the interior of ABC, the sum of the perpendicular distances from P to the
+three sides equals h. In particular this sum does not depend on P.
+TriSimplex3b (common extension). The statement also holds for P on the boundary of the triangle.
+For an arbitrary point P of the plane it holds if the distances are signed: positive on the
+same side of a side line as the triangle, negative on the other side.
+
+----------------------------------------------------------------------
+TriSimplex4  (Japanese theorem for cyclic polygons)
+----------------------------------------------------------------------
+TriSimplex4a (general). Let P be a convex polygon inscribed in a circle, i.e. a convex cyclic
+polygon. Triangulate P by non-crossing diagonals into triangles whose vertices are vertices
+of P. Then the sum of the inradii of the triangles is the same for every such triangulation.
+TriSimplex4b (quadrilateral case). Let ABCD be a convex quadrilateral inscribed in a circle.
+Then
+        r(ABC) + r(ACD) = r(ABD) + r(BCD),
+where r(XYZ) denotes the inradius of triangle XYZ. (Companion statement, often called the
+Japanese theorem for cyclic quadrilaterals: the incentres of ABC, BCD, CDA and DAB are the
+vertices of a rectangle.)
+
+----------------------------------------------------------------------
+TriSimplex5  (Euler's triangle formula)
+----------------------------------------------------------------------
+TriSimplex5a. In any triangle with circumcentre O, incentre I, circumradius R and inradius r,
+        OI^2 = R(R - 2r) = R^2 - 2Rr.
+TriSimplex5b (Euler's inequality, corollary). R >= 2r, with equality if and only if the
+triangle is equilateral.
+
+----------------------------------------------------------------------
+TriSimplex6  (Poncelet's porism for triangles; Chapple-Euler closure)
+----------------------------------------------------------------------
+Setting. Let Gamma be a circle with centre O and radius R, and gamma a circle with centre I
+and radius r, where gamma lies in the interior of Gamma (so r < R and d = |OI| < R - r).
+A triangle "is interscribed" if it is inscribed in Gamma (all three vertices on Gamma) and
+circumscribed about gamma (all three side lines tangent to gamma, with gamma its incircle).
+
+TriSimplex6a (porism / closure). If there is one triangle inscribed in Gamma and circumscribed
+about gamma, then every point of Gamma is a vertex of such a triangle. Concretely: from any
+point X on Gamma draw the two tangents to gamma. Let them meet Gamma again at Y and Z. Then
+the line YZ is also tangent to gamma, so XYZ is inscribed in Gamma with incircle gamma.
+TriSimplex6b (closure criterion, with converse). A triangle inscribed in Gamma and
+circumscribed about gamma exists if and only if
+        d^2 = R^2 - 2Rr.
+("Only if" is Euler's formula TriSimplex5a. "If" is its converse, due to Chapple and Euler:
+if d^2 = R(R-2r), then for every X on Gamma the construction in 6a closes up.)
+Conversely to 6a: if d^2 != R^2 - 2Rr, then no point of Gamma is a vertex of such a triangle
+(the tangent construction never closes after three steps).

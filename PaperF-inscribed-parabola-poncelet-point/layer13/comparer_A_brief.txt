@@ -1,0 +1,32 @@
+LAYER 13 — COMPARER (statement-level equivalence check), Paper F. Do all work inline; do NOT spawn background subagents or tasks. Time box: ~3 hours. Whatever happens, finish by writing the report.
+
+CONTEXT. A paper formalizes theorems on (A) the inscribed parabola of a complete quadrilateral and (B) the Poncelet point of a complete quadrangle, in Lean 4 (namespace QuadMiquel). An independent "blind" writer, who saw only the paper's prose (no code), wrote 23 Lean statements `blind_1..blind_23` (with `:= by sorry`) plus `Blind...` definitions, in ~/reformal/PaperFBlind.lean on the x86 machine jack (jack; sha256 prefix 7f96c9e2fac5b630). Read that file there (ssh -o BatchMode=yes jack 'cat ~/reformal/PaperFBlind.lean'); copy it verbatim, do not edit it. Your job: for the blind statements assigned to you, decide whether each says the same thing as the REAL Lean statement, by proving implications in Lean.
+
+RULES (strict):
+ - For each pair write, in the scratch file, `def blindK_stmt : Prop := ∀ <the blind binders>, <blind hypotheses> → <conclusion>` copying the Blind definitions and statement VERBATIM (rename the namespace if needed; no sorry anywhere), and prove `theorem rb_K : (type_of% @<RealDecl>) → blindK_stmt` and `theorem br_K : blindK_stmt → (type_of% @<RealDecl>)` (or restate the real type verbatim as `def realK_stmt : Prop`).
+ - The Blind structure `BlindLine` is a different type from the real `Line`; translate between them with an explicit map (⟨L.p, L.d⟩) and prove the needed definitional agreements (BlindCr = cr, BlindMeet = meet, BlindGenPos ↔ GenPos, BlindCirc = circ, BlindOrtho = ortho, BlindFoot = foot, BlindRefl = reflPt, Blind Miquel point vs miquelPt (NB the blind writer built M differently, as a reflection; equality with miquelPt may need genuine algebra — if so that is a DIFFERENCE to report, classify it), BlindOnParabola = OnParabola, BlindTangent = Tangent, orthocentre line/directrix, tanPt, vertex, BlindQGen ↔ QGen, BlindPonDen/BlindPoncelet vs ponDen/poncelet, nine-point centre/circle vs npc / Mathlib ninePointCircle, BlindDiagPt vs diagPt, …) as small lemmas by unfolding — these are part of the comparison and must be reported (if one of them is NOT a definitional/unfolding fact, that is itself a DIFFERENCE).
+ - In the PROOF BODIES you may use: the premise, unfolding definitions, those agreement lemmas, and general Mathlib lemmas. You may NOT use the repository's own theorems (e.g. you may not prove the blind statement by applying, e.g., QuadMiquel.parabola_tangent to get a truth-level proof — the premise is the real statement as a hypothesis, use THAT). The repository's DEFINITIONS and its bridge lemmas about notions (Bridge.lean and the bridge lemmas of Parabola.lean/ParabolaPoints.lean/Quadrangle.lean: e.g. onParabola_line_iff, orthoLine_eq, directrix_carrier, npc_eq_ninePointCircle_center, ninePointCircle_radius_eq, mem_ninePointCircle_iff, …) may be used and must be reported.
+ - Statement-level: both sides are true theorems, so a truth-level proof is vacuous. If an implication needs genuine geometry or algebra beyond repackaging/specialising/unfolding, STOP on that direction and record a DIFFERENCE: what separates them, which side is stronger, classify REAL (the paper's prose and the Lean really differ — important!) or AMBIGUITY-ARTEFACT (traces to an `-- AMBIGUOUS` comment in the blind file or to redacted text). A concrete reason / counterexample is ideal.
+ - "Lean more general than the blind statement" (R→B easy, B→R impossible) is SAFE: report it as such.
+ - No sorry/admit/native_decide/axiom in any finished scratch file. A direction you could not do is omitted and reported.
+ - Do NOT edit any library file of the repository; work only in scratch/ (create it if missing; scratch/ is not built by lake build). Time-box each pair ~25 minutes.
+
+FINISH: compile each scratch file and record the exit code; grep each for sorry|admit|native_decide|axiom (must be empty except in comments); run `#print axioms` on every rb_/br_ theorem (in a separate scratch file is fine) and record; record the library hash before and after: `find . -name '*.lean' -not -path './.lake/*' -not -path './scratch/*' | LC_ALL=C sort | xargs <sha256sum or shasum -a 256> | <same>`.
+REPORT: write ~/reformal/PAPERF_COMPARE_A.md (on jack) on that machine and print it as your final answer: a table `pair | R→B | B→R | difference (none / SAFE-Lean-more-general / REAL / ARTEFACT) | note`, all agreement/bridge lemmas used, compile exit codes, forbidden-token grep, #print axioms results, library hash before/after, and the scratch file paths.
+
+MACHINE: jack, ssh -o BatchMode=yes jack. Repo ~/quadparabola_l13 (namespace QuadMiquel, built; Lean v4.33.1, Mathlib pinned). Scratch file: ~/quadparabola_l13/scratch/L13_compare.lean starting with `import QuadMiquel`. Compile: cd ~/quadparabola_l13 && PATH=$HOME/.elan/bin:$PATH lake env lean scratch/L13_compare.lean. NEVER run `lake update` or `lake exe cache get`. A battery is running on this machine in other directories: leave ~/leancheck, ~/quadparabola_ext, ~/quadrangle_ext alone. Kill only processes you started, by PID.
+
+PAIRING TABLE (fixed by the author; do not re-pair; if a pairing looks wrong, say so):
+| blind | paper label | real declaration |
+| blind_1 | thm:refl (R_k on orthocentre line) | QuadMiquel.reflPt_mem_orthoLine |
+| blind_2 | thm:refl (collinear) | QuadMiquel.reflections_collinear |
+| blind_3 | thm:refl (cr form) | QuadMiquel.reflections_collinear_orthos |
+| blind_4 | thm:off | QuadMiquel.miquel_cr_ne (and miquel_not_mem_orthoLine) |
+| blind_5 | thm:tangent | QuadMiquel.parabola_tangent |
+| blind_6 | thm:tanpt | QuadMiquel.tanPt_all |
+| blind_7 | thm:vertex (on parabola, half distance, closest) | QuadMiquel.vertex_onParabola ∧ dist_vertex ∧ vertex_closest |
+| blind_8 | thm:vertex (axis) | QuadMiquel.vertex_mem_axis ∧ axis_perp |
+| blind_9 | thm:newton (all x,y on the line) | QuadMiquel.newton_perp_orthoLine |
+| blind_10 | thm:newton (W form) | QuadMiquel.newton_perp_cr |
+| blind_11 | thm:lambert | QuadMiquel.lambert |
+Ignore blind_12..blind_23 (another comparer handles them).

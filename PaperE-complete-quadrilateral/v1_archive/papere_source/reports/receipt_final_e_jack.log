@@ -1,0 +1,29 @@
+RECEIPT jack Fri Oct 16 01:57:28 AM UTC 2026 host=x86 arch=x86_64
+lean: Lean (version 4.33.1, x86_64-unknown-linux-gnu, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)
+===== quadnewton pin 48e94cf944b3dfbcca7358360a064e39b6336d98
+HEAD 48e94cf944b3dfbcca7358360a064e39b6336d98 status:0
+mathlib 
+5cb4e2e86eefa5a8aad6f60461a9bba2dbc67654cc4e1bdfe377743380366bf4  ./QuadNewton.lean
+7514740705648ce85f70f0ad0c991a963baaa4b2ac8e5ae6c2b503e03d7040c3  ./QuadNewton/Basic.lean
+902c885b3fe53ae1ccccf11e3d9e2a436945257f0d8b2269937f27f379bc1974  ./QuadNewton/Bridge.lean
+b005e0198ac9477785862cf89ea5e1768cf66df900f9d4e5808cb6720c9f86fb  ./QuadNewton/Core.lean
+55d37f730c57fddb76b9744ece554b1dfa73a16b422453c1bcaa6274d5aba9d7  ./QuadNewton/Lines.lean
+06783cf3344b232b4d3e321821e978a03500862c8593fbb1ceb0b202f3736aaa  ./QuadNewton/Quad.lean
+build rc=0
+PASS (35 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== quadmiquel pin 011c9ecd5276b7abaf2b42a8f5ba463196df123d
+HEAD 011c9ecd5276b7abaf2b42a8f5ba463196df123d status:0
+mathlib 
+40e264fd0c8b0dd94ffdc95852d046541c22f480805c1d523fccdf6bc2bf67b8  ./QuadMiquel.lean
+95b548bc2ee7b7c87bbaa7ff03c74cf3722ce41ad2a26d634d9cf97101b47938  ./QuadMiquel/Algebra.lean
+f7b4da7d2abf6c1f66b987defd25bf99be4bf10a6cf081c97af51dd1f52dcf12  ./QuadMiquel/Basic.lean
+fb6f3e39230d5279dee671a62c70748ed1969d32df77815ba49f3145b68b29fa  ./QuadMiquel/Bridge.lean
+1e7cbfc90348e6884806654ff0c60085c6b3d807a6c2dec15aa7d3e126703fc8  ./QuadMiquel/Frame.lean
+5ce67f6891f4ec1c36c4ff6f1a789f076bef4fa567a579f63c03d7efa9f785a5  ./QuadMiquel/Miquel.lean
+ea33070625a616859d0ac8e145c1fe6224af0f2c9bbc28a84f1e4505f9d49e5f  ./QuadMiquel/Parallel.lean
+69b49c142ec7435ebfbea2fb2851f66a20c96fbdb9e48be3e67ecc0fae2936ce  ./QuadMiquel/Simson.lean
+build rc=0
+PASS (62 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+DONE Fri Oct 16 01:59:42 AM UTC 2026

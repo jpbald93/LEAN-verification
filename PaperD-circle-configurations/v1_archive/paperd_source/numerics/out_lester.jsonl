@@ -1,0 +1,3 @@
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "lester (O, N, F1, F2 concyclic, scalene)", "configs": 1000, "worst_residual": "1.58e-58", "control_violated": 1000, "control_trials": 1000}
+{"done": true, "seconds": 0.3}

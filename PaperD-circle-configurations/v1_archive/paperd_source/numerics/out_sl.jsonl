@@ -1,0 +1,3 @@
+{"script": "paperd_numerics.py", "seed": 20261014, "mp_dps": 60, "python": "3.14.4"}
+{"check": "steiner_lehmus (equal bisectors => AB = AC)", "configs": 200, "worst_residual": "7.78e-62", "note": "each configuration found by root-finding BE = CF"}
+{"done": true, "seconds": 0.2}

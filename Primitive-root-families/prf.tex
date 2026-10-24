@@ -1,0 +1,593 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\leg}[2]{\left(\frac{#1}{#2}\right)}
+\newcommand{\lean}[1]{\texttt{#1}}
+% version-2 commits: primitive-root-families=b4ae30a94f5bc5bcba7e0143c239565af261038a
+\newcommand{\repo}{https://github.com/jpbald93/primitive-root-families}
+\newcommand{\commit}{e30457a}
+\newcommand{\src}[2]{\href{\repo/blob/\commit/PrimitiveRootFamilies/#1\##2}{\texttt{#1}}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,example,by,fun,have,show,exact,intro,namespace,end,import,private,local,instance,alias},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={ℕ}{{$\mathbb{N}$}}1 {ℤ}{{$\mathbb{Z}$}}1 {≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2 {∃}{{$\exists$}}1
+           {∧}{{$\wedge$}}1 {→}{{$\to$}}1 {∣}{{$\mid$}}1 {≤}{{$\le$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1}
+
+\title{Primitive roots modulo primes $2^k\ell+1$, formalised in Lean~4:\\
+Chebyshev's base-10 criterion and the least primitive root of a safe prime}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{27 September 2026\\ \small Version~2 adds the Layer-14 and Layer-15 checks (Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formalise, in Lean~4 with Mathlib, two classical elementary results about primitive roots
+modulo primes of a special shape. The first is Chebyshev's criterion: if $p$ and $q=4p+1$ are
+prime and $p\equiv 2\pmod 5$, then $10$ is a primitive root modulo~$q$. We also formalise the
+converse, which follows from the same argument; we have not found it stated explicitly in the
+literature. The second is the theorem of Ramesh and Makeshwari (2022) that the least positive
+primitive root modulo a safe prime $p=2q+1$ is itself prime. Here the formal statement needs no separate existence hypothesis: we also prove that the least positive primitive root exists, using Mathlib's
+cyclicity of $(\mathbb{Z}/p\mathbb{Z})^\times$. Both proofs reduce to the same criterion for primes $p=2^k\ell+1$ with $\ell$ an odd prime: a
+nonzero residue is a primitive root exactly when it is a quadratic nonresidue and its $2^k$-th power
+is not~$1$. We formalise this criterion for all $k\geq 1$, show that the two criteria above are equivalent, via
+Euler's criterion, to its cases $k=2$ and $k=1$ (apart from the safe prime $5$), and derive three further classical families from it: $2$ is a primitive root
+modulo every prime $4\ell+1$; $3$ is a primitive root modulo every prime $16\ell+1$; and $3$ is a
+primitive root modulo every prime $8\ell+1$ except $41$. The development has seventeen main
+theorems in about 700 lines. We
+also describe a small checking script, stricter than a plain \texttt{lake build}, that rejects
+several ways of faking a successful build. We test it against deliberately tampered versions of
+the source. Version~2 adds two further checks. First, each of the seventeen theorems is restated with
+Mathlib-only types and proved, with an explicit non-degenerate witness. Second, an AI writer
+turned textbook statements of the results into Lean without seeing our code, and every one of its 26
+statements was compared with the development. One of them, the general form of Wertheim's criterion as
+transcribed, is false as written; a corrected form is proved.
+\end{abstract}
+
+\section{Introduction}
+
+An integer $a$ is a \emph{primitive root} modulo a prime $p$ if its multiplicative order modulo
+$p$ is exactly $p-1$. Artin's conjecture on primitive roots (see Moree's survey~\cite{Moree}) predicts
+that every $a\neq -1$ that is not a perfect square is a primitive root for infinitely many
+primes. Remarkably, this is not known for any single~$a$. Unconditional results come in two
+flavours: statements for sets of $a$ (Heath-Brown~\cite{HeathBrown}), and \emph{explicit
+families}, where a special shape of $p-1$ makes the multiplicative order easy to control.
+
+This paper concerns two explicit families of the second kind:
+\begin{enumerate}
+\item \textbf{Chebyshev's criterion.} If $p$ and $q=4p+1$ are both prime and $p\equiv 2\pmod 5$,
+then $10$ is a primitive root modulo~$q$. The statement is quoted in \cite[\S1]{Moree}. We
+formalise it together with its converse.
+\item \textbf{Ramesh--Makeshwari.} If $p=2q+1$ is a \emph{safe prime} (i.e.\ $q$ is also prime),
+then the least positive primitive root modulo~$p$ is prime~\cite{RM}.
+\end{enumerate}
+
+Neither result is deep. We formalise them because each depends on the same short
+piece of reasoning, and Mathlib now makes that reasoning inexpensive. There are three ingredients:
+the prime-divisor test for the order of a group element, Euler's criterion, and quadratic reciprocity.
+The formalisation also makes two small points explicit. One is the converse of Chebyshev's
+criterion. The other is that we package the standard existence theorem for primitive roots with
+the primality result, so the formal statement does not need a separate existence hypothesis.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item A Lean~4 formalisation of both results, with seventeen named theorems (Table~\ref{tab:thms}), in the
+namespace \lean{PrimitiveRootFamilies}.
+\item A general criterion for primitive roots modulo primes $2^k\ell+1$
+(Theorem~\ref{thm:gen}), stated once for all $k\geq1$, with the two families above as instances and
+three further families as corollaries (Section~\ref{sec:general}).
+\item A formal proof of the converse of Chebyshev's criterion
+(Theorem~\ref{thm:cheb-iff}). It is elementary and very probably folklore. We do not claim it as new.
+\item A formal form of the Ramesh--Makeshwari theorem with no separate existence hypothesis
+(Theorem~\ref{thm:rm-exists}), with ``least'' expressed through Mathlib's \lean{IsLeast}, so
+that the statement is about the least positive integer primitive root and not about a chosen
+representative.
+\item A proof-checking script (``gate'') and a set of tampering tests, described in
+Section~\ref{sec:gate}.
+\item (Version~2) A restatement of all seventeen theorems with Mathlib-only types, each with witnesses,
+and a comparison with independently written classical statements (Section~\ref{sec:l1415}).
+\end{itemize}
+
+\paragraph{Artifact.} The development uses Lean~4~\cite{Lean4} and Mathlib~\cite{Mathlib}. The code is at \url{\repo}, commit \texttt{\commit}. It uses Lean
+\texttt{v4.33.1} and Mathlib commit \texttt{0df444a3}, pinned in \texttt{lake-manifest.json}. Table~\ref{tab:thms} links each main declaration to that commit. The licence is Apache~2.0.
+Version~2 of this paper adds the files \lean{PrimitiveRootFamilies/L14.lean} and
+\lean{PrimitiveRootFamilies/L15Classical.lean} (Section~\ref{sec:l1415}) in a new commit,
+\texttt{b4ae30a94f5bc5bcba7e0143c239565af261038a}. The statements and contents of \lean{Chebyshev.lean}, \lean{General.lean} and
+\lean{SafePrime.lean} are unchanged; version~2 updates the root import file, the gate's
+required-declaration list and the README. The links in
+Table~\ref{tab:thms} still point to commit~\texttt{\commit}.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Primitive-root-families} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Lean name & Paper & File \\ \midrule
+\lean{isPrimitiveRoot\_iff\_of\_eq\_four\_mul\_add\_one} & Lemma~\ref{lem:crit4} & \src{Chebyshev.lean}{L122} \\
+\lean{legendreSym\_ten\_of\_eq\_four\_mul\_add\_one} & Lemma~\ref{lem:leg10} & \src{Chebyshev.lean}{L147} \\
+\lean{isPrimitiveRoot\_ten\_iff\_mod\_five\_eq\_two} & Theorem~\ref{thm:cheb-iff} & \src{Chebyshev.lean}{L165} \\
+\lean{isPrimitiveRoot\_ten\_of\_mod\_five\_eq\_two} & Corollary~\ref{cor:cheb} & \src{Chebyshev.lean}{L210} \\ \midrule
+\lean{isPrimitiveRoot\_iff\_of\_eq\_two\_mul\_add\_one} & Lemma~\ref{lem:crit2} & \src{SafePrime.lean}{L54} \\
+\lean{isPrimitiveRoot\_of\_legendreSym\_eq\_neg\_one} & Lemma~\ref{lem:nonres} & \src{SafePrime.lean}{L91} \\
+\lean{prime\_of\_isLeast\_isPrimitiveRoot} & Theorem~\ref{thm:rm} & \src{SafePrime.lean}{L116} \\
+\lean{exists\_isLeast\_isPrimitiveRoot} & Lemma~\ref{lem:exists} & \src{SafePrime.lean}{L181} \\
+\lean{exists\_isLeast\_isPrimitiveRoot\_and\_prime} & Theorem~\ref{thm:rm-exists} & \src{SafePrime.lean}{L193} \\
+\lean{isPrimitiveRoot\_two\_of\_mod\_four\_eq\_one} & Corollary~\ref{cor:two} & \src{SafePrime.lean}{L201} \\ \midrule
+\lean{isPrimitiveRoot\_iff\_of\_eq\_two\_pow\_mul\_add\_one} & Theorem~\ref{thm:gen} & \src{General.lean}{L71} \\
+\lean{isPrimitiveRoot\_of\_legendreSym\_eq\_neg\_one\_of\_not\_dvd} & Corollary~\ref{cor:gen-suff} & \src{General.lean}{L111} \\
+\lean{isPrimitiveRoot\_two\_of\_eq\_four\_mul\_add\_one} & Corollary~\ref{cor:fam}(a) & \src{General.lean}{L120} \\
+\lean{isPrimitiveRoot\_three\_of\_eq\_eight\_mul\_add\_one} & Corollary~\ref{cor:fam}(b) & \src{General.lean}{L167} \\
+\lean{isPrimitiveRoot\_three\_of\_eq\_sixteen\_mul\_add\_one} & Corollary~\ref{cor:fam}(c) & \src{General.lean}{L204} \\
+\lean{isPrimitiveRoot\_iff\_of\_eq\_two\_mul\_add\_one'} & Theorem~\ref{thm:gen}, $k=1$ & \src{General.lean}{L244} \\
+\lean{isPrimitiveRoot\_iff\_of\_eq\_four\_mul\_add\_one'} & Theorem~\ref{thm:gen}, $k=2$ & \src{General.lean}{L252} \\
+\bottomrule
+\end{tabular}
+\caption{The seventeen main theorems and where they are stated. Each depends only on Lean's standard
+axioms \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}.}
+\label{tab:thms}
+\end{table}
+
+\section{Conventions and the Mathlib interface}
+
+Throughout, ``$a$ is a primitive root modulo $n$'' is Mathlib's
+\lean{IsPrimitiveRoot (a : ZMod n) (n - 1)}. By definition, $a^{n-1}=1$, and $a^{k}=1$ implies
+$(n-1)\mid k$. Equivalently (\lean{IsPrimitiveRoot.iff\_orderOf}), $a$ has multiplicative
+order exactly $n-1$ in $\mathbb{Z}/n\mathbb{Z}$. For prime $n$ this is the standard notion.
+Legendre symbols are Mathlib's \lean{legendreSym p a}, for $p$ prime and $a\in\mathbb{Z}$.
+
+Everything rests on the following facts from Mathlib:
+\begin{itemize}
+\item \lean{orderOf\_eq\_of\_pow\_and\_pow\_div\_prime}:\\ if $n>0$, $x^n=1$ and $x^{n/r}\neq 1$ for every
+prime $r\mid n$, then $\operatorname{ord}(x)=n$;
+\item \lean{ZMod.pow\_card\_sub\_one\_eq\_one} (Fermat's little theorem);
+\item \lean{legendreSym.eq\_pow} (Euler's criterion, for odd prime $p$): $\leg{a}{p}\equiv a^{(p-1)/2}\pmod p$;
+\item \lean{legendreSym.at\_two} (the second supplementary law);
+\item \lean{legendreSym.quadratic\_reciprocity\_one\_mod\_four} (reciprocity when one prime is $1\bmod 4$);
+\item \lean{HasEnoughRootsOfUnity.exists\_primitiveRoot}, which provides a primitive $(p-1)$-th
+root of unity in $\mathbb{Z}/p\mathbb{Z}$, i.e.\ cyclicity of the unit group.
+\end{itemize}
+
+\section{Chebyshev's base-10 family}
+
+Let $p$ and $q=4p+1$ both be prime. Then $p\neq 2$, since $4\cdot 2+1=9$ is composite. So $p$ is
+odd and $q\equiv 5\pmod 8$.
+
+\begin{lemma}[Criterion for $q=4p+1$]\label{lem:crit4}
+Let $p$ and $q=4p+1$ be prime and $a\not\equiv 0\pmod q$. Then $a$ is a primitive root modulo
+$q$ if and only if $a^{2p}\not\equiv 1$ and $a^4\not\equiv 1\pmod q$.
+\end{lemma}
+\begin{proof}
+The order of $a$ divides $q-1=4p$, whose prime divisors are $2$ and $p$. Apply the prime-divisor
+test with $4p/2=2p$ and $4p/p=4$.
+\end{proof}
+
+\begin{lemma}\label{lem:leg10}
+For primes $p$ and $q=4p+1$, $\leg{10}{q}=-\leg{q}{5}$.
+\end{lemma}
+\begin{proof}
+Since $q\equiv 5\pmod 8$, $\leg{2}{q}=-1$. Since $5\equiv 1\pmod 4$, reciprocity gives
+$\leg{5}{q}=\leg{q}{5}$. Multiply.
+\end{proof}
+
+\begin{theorem}[Chebyshev's criterion and its converse]\label{thm:cheb-iff}
+Let $p$ and $q=4p+1$ be prime. Then $10$ is a primitive root modulo $q$ if and only if
+$p\equiv 2\pmod 5$.
+\end{theorem}
+\begin{proof}
+Note first that $10\not\equiv 0\pmod q$, because $q\geq 13$. Also $10^4\not\equiv 1\pmod q$:
+otherwise $q\mid 9999=3^2\cdot 11\cdot 101$. The primes $3$ and $11$ are not of the form $4p+1$,
+and $101=4\cdot 25+1$ with $25$ composite. By Euler's criterion, $10^{2p}\equiv\leg{10}{q}$.
+Lemmas~\ref{lem:crit4} and~\ref{lem:leg10} then show that $10$ is a primitive root if and only if
+$\leg{q}{5}=1$, i.e.\ $q\equiv 1$ or $4\pmod 5$. If $q\equiv 1\pmod 5$ then $5\mid p$, so
+$p=5$ and $q=21$, which is not prime. And $q=4p+1\equiv 4\pmod 5$ exactly when $p\equiv 2\pmod 5$.
+\end{proof}
+
+\begin{corollary}[Chebyshev]\label{cor:cheb}
+If $p$ and $q=4p+1$ are prime and $p\equiv 2\pmod 5$, then $10$ is a primitive root modulo $q$.
+\end{corollary}
+
+The formal statement of the corollary is
+\begin{lstlisting}
+theorem isPrimitiveRoot_ten_of_mod_five_eq_two {p q : ℕ} (hp : p.Prime) (hq : q.Prime)
+    (hqp : q = 4 * p + 1) (hp5 : p % 5 = 2) : IsPrimitiveRoot (10 : ZMod q) (q - 1)
+\end{lstlisting}
+An earlier public version of the repository called this theorem \lean{ten\_isPrimitiveRoot}.
+That name remains available as a deprecated alias.
+
+\begin{remark}[On the converse]
+The ``only if'' direction of Theorem~\ref{thm:cheb-iff} uses nothing beyond the argument for the
+``if'' direction. We searched for an explicit statement and found none. The underlying criterion
+is a standard textbook exercise: every quadratic nonresidue of a prime $4p+1$ is a primitive
+root or has order~$4$ (cf.\ Burton~\cite[\S9.2, Problem~11(a)]{Burton}). So we regard the converse as
+folklore and do not claim it as a new result.
+\end{remark}
+
+\paragraph{Formalisation notes.}
+The main source of friction is that Mathlib's reciprocity and supplementary laws are stated for
+natural-number primes cast to~$\mathbb{Z}$. Rewriting the goal into the form
+\lean{legendreSym q (5 : $\mathbb{N}$)} took more steps than the mathematics suggests. Mathlib deliberately
+provides no global instance \lean{Fact (Nat.Prime 5)}, so we declare one locally. The step
+$q\nmid 9999$ is a four-way case split on the prime factors of $9999$. Each case is closed by
+\lean{omega}, except for $101$, which needs the separate observation that $25$ is not prime. The
+file ends with two \lean{example}s: $p=7$, $q=29$, where $10$ is a primitive root, and $p=3$,
+$q=13$, where it is not.
+
+\section{Safe primes}
+
+Now let $p=2q+1$ with $p$ and $q$ both prime. The argument has the same structure, with the
+exponent $4$ replaced by~$2$.
+
+\begin{lemma}[Criterion for safe primes]\label{lem:crit2}
+If $a\not\equiv 0\pmod p$, then $a$ is a primitive root modulo $p$ if and only if
+$a^q\not\equiv 1$ and $a^2\not\equiv 1\pmod p$.
+\end{lemma}
+
+\begin{lemma}\label{lem:nonres}
+Every quadratic nonresidue $x$ with $1<x<p-1$ is a primitive root modulo $p$.
+\end{lemma}
+\begin{proof}
+By Euler's criterion $x^q\equiv\leg{x}{p}=-1\not\equiv 1$. And $x^2\equiv 1$ would force
+$x\equiv\pm1\pmod p$, which the range $1<x<p-1$ excludes.
+\end{proof}
+
+\begin{theorem}[Ramesh--Makeshwari~\cite{RM}]\label{thm:rm}
+Let $p=2q+1$ be a safe prime. If $g$ is the least element of
+$\{a\in\mathbb{N}: a>0,\ a \text{ is a primitive root modulo } p\}$, then $g$ is prime.
+\end{theorem}
+\begin{proof}
+First, $g<p$. Otherwise $g\bmod p$ would be a smaller positive primitive root. It is positive
+because $p\nmid g$. By Lemma~\ref{lem:crit2} and Euler's criterion, $\leg{g}{p}=-1$. Hence
+$g\neq 1$. Also $g\neq p-1$, since $(p-1)^2\equiv 1$. Suppose $g=mn$ with $1<m,n<g$. Then
+$\leg{m}{p}\leg{n}{p}=-1$, so one of $m$ and $n$ is a nonresidue in $(1,p-1)$. By
+Lemma~\ref{lem:nonres}, that factor is a primitive root smaller than $g$, a contradiction.
+\end{proof}
+
+Our proof is phrased with Legendre symbols. The published note~\cite{RM} argues with
+multiplicative orders instead. The mathematical content is the same.
+
+\paragraph{Existence.}
+Theorem~\ref{thm:rm} is a statement about ``the least $g$''. It would be vacuously true if no
+positive primitive root existed. We therefore also prove existence.
+
+\begin{lemma}\label{lem:exists}
+For every prime $p$, the set of positive integers that are primitive roots modulo $p$ has a least
+element.
+\end{lemma}
+\begin{proof}
+Mathlib provides a primitive $(p-1)$-th root of unity $\zeta\in\mathbb{Z}/p\mathbb{Z}$. Its
+canonical representative $\zeta.\mathrm{val}\in\{0,\dots,p-1\}$ is nonzero and is a primitive
+root. The least element then exists by well-ordering (\lean{Nat.find}).
+\end{proof}
+
+\begin{theorem}[With existence]\label{thm:rm-exists}
+For every safe prime $p$, the least positive primitive root modulo $p$ exists and is prime.
+\end{theorem}
+\begin{lstlisting}
+theorem exists_isLeast_isPrimitiveRoot_and_prime {p q : ℕ} [Fact p.Prime] (hq : q.Prime)
+    (hpq : p = 2 * q + 1) :
+    ∃ g, IsLeast {a : ℕ | 0 < a ∧ IsPrimitiveRoot (a : ZMod p) (p - 1)} g ∧ g.Prime
+\end{lstlisting}
+
+\begin{corollary}\label{cor:two}
+If $p=2q+1$ is a safe prime with $q\equiv 1\pmod 4$, then $2$ is a primitive root modulo $p$.
+\end{corollary}
+\begin{proof}
+Here $q\geq 5$ and $p\equiv 3\pmod 8$, so $\leg{2}{p}=-1$. Apply Lemma~\ref{lem:nonres}.
+\end{proof}
+
+\paragraph{Formalisation notes.}
+The only step that is not purely routine in the formal proof of Theorem~\ref{thm:rm} is the bound
+$g<p$. Informally, primitive roots are residues and nobody states it. In Lean the set is a set
+of natural numbers, and the bound must be derived from minimality. We use
+\lean{Nat.exists\_dvd\_of\_not\_prime2} to obtain a nontrivial factorisation $g=mn$, and
+\lean{legendreSym.mul} for multiplicativity. Existence (Lemma~\ref{lem:exists}) takes ten lines,
+because Mathlib already has the cyclicity of $(\mathbb{Z}/p\mathbb{Z})^\times$ in the form of
+\lean{HasEnoughRootsOfUnity}.
+
+\section{\texorpdfstring{The general criterion for primes $2^k\ell+1$}{The general criterion}}\label{sec:general}
+
+Lemmas~\ref{lem:crit4} and~\ref{lem:crit2} are, via Euler's criterion and apart from the safe prime
+$p=5$, equivalent to the cases $k=2$ and $k=1$ of a single criterion.
+Throughout this section, $\ell$ is an odd prime, $k\geq 1$, and $p=2^k\ell+1$ is prime. Then
+$p-1=2^k\ell$ has exactly the prime divisors $2$ and $\ell$.
+
+\begin{theorem}\label{thm:gen}
+Let $a\in\mathbb{Z}$ with $p\nmid a$. Then $a$ is a primitive root modulo $p$ if and only if
+$\leg{a}{p}=-1$ and $a^{2^k}\not\equiv 1\pmod p$.
+\end{theorem}
+\begin{proof}
+By the prime-divisor test, $a$ is a primitive root if and only if $a^{(p-1)/2}\not\equiv 1$ and
+$a^{(p-1)/\ell}=a^{2^k}\not\equiv 1$. By Euler's criterion, $a^{(p-1)/2}\equiv\leg{a}{p}$, and
+since $\leg{a}{p}=\pm1$ with $p>2$, the first condition is equivalent to $\leg{a}{p}=-1$.
+\end{proof}
+
+\begin{corollary}\label{cor:gen-suff}
+If $\leg{a}{p}=-1$ and $p\nmid a^{2^k}-1$, then $a$ is a primitive root modulo $p$.
+\end{corollary}
+The formal version also assumes $a\not\equiv 0\pmod p$ explicitly. This is redundant, since it
+follows from $\leg{a}{p}=-1$, but harmless.
+
+
+The formal statement of Theorem~\ref{thm:gen} takes $a$ in $\mathbb{Z}$ rather than in
+$\mathbb{Z}/p\mathbb{Z}$, so that the Legendre symbol can be stated directly:
+\begin{lstlisting}
+theorem isPrimitiveRoot_iff_of_eq_two_pow_mul_add_one {p l k : ℕ} [Fact p.Prime] (hl : l.Prime)
+    (hl2 : l ≠ 2) (hk : 1 ≤ k) (hpl : p = 2 ^ k * l + 1) {a : ℤ} (ha : (a : ZMod p) ≠ 0) :
+    IsPrimitiveRoot (a : ZMod p) (p - 1) ↔
+      legendreSym p a = -1 ∧ (a : ZMod p) ^ (2 ^ k) ≠ 1
+\end{lstlisting}
+Two short bridge theorems (Table~\ref{tab:thms}) restate its cases $k=1$ and $k=2$ in this form.
+The case $k=1$ needs the hypothesis $\ell\neq 2$, so it omits the safe prime $p=5$; the case
+$k=2$ does not, since $4\cdot2+1=9$ is composite. The Layer-15 file of version~2 covers $p=5$ and the
+textbook form with $a\not\equiv-1$ in place of $a^2\not\equiv1$ (Section~\ref{sec:l1415}). Lemmas~\ref{lem:crit4} and~\ref{lem:crit2}
+were formalised first and are kept, with their original statements, for the proofs in the
+preceding sections.
+
+Theorem~\ref{thm:gen} is the case $p-1=2^k\ell$ of a sufficient criterion that Dickson attributes to
+Wertheim~\cite[Vol.~I, p.~196]{Dickson}, together with its converse. As summarised there, the general
+form for $p-1=2^k\ell^j$ is false when $j\geq2$ (Section~\ref{sec:l1415}).
+
+The criterion turns a primitive-root question into two checks: a Legendre symbol, handled by
+reciprocity, and finitely many exceptional primes, namely the prime divisors of $a^{2^k}-1$.
+
+\begin{corollary}\label{cor:fam}
+Let $\ell$ be prime.
+\begin{enumerate}
+\item[(a)] If $p=4\ell+1$ is prime, then $2$ is a primitive root modulo $p$.
+\item[(b)] If $p=8\ell+1$ is prime and $\ell\neq 5$, then $3$ is a primitive root modulo $p$.
+\item[(c)] If $p=16\ell+1$ is prime, then $3$ is a primitive root modulo $p$.
+\end{enumerate}
+\end{corollary}
+\begin{proof}
+(a) Here $\ell\neq 2$, since $9$ is composite, so $p\equiv 5\pmod 8$ and $\leg{2}{p}=-1$. If
+$2^4\equiv1$ then $p\mid 15$, which is impossible since $p\geq 13$.
+
+(b) The case $\ell=2$, $p=17$, is checked directly. Otherwise $\ell$ is odd and
+$p\equiv 1\pmod 4$, so $\leg{3}{p}=\leg{p}{3}$. Now $p\equiv 2\ell+1\pmod 3$: $\ell\equiv1$
+gives $3\mid p$, and $\ell=3$ gives $p=25$. Hence $p\equiv 2\pmod 3$ and $\leg{3}{p}=-1$.
+If $3^8\equiv 1$, then $p\mid 6560=2^5\cdot5\cdot41$, so $p=41$ and $\ell=5$, which is excluded.
+
+(c) Here $\ell\neq 2$, since $33$ is composite, and $p\equiv \ell+1\pmod 3$: $\ell\equiv 2$ gives
+$3\mid p$, and $\ell=3$ gives $p=49$. So $\leg{3}{p}=-1$ as in (b). If $3^{16}\equiv1$ then
+$p\mid 3^{16}-1=2^6\cdot5\cdot17\cdot41\cdot193$, and none of $5,17,41,193$ is of the form
+$16\ell+1$ with $\ell$ prime.
+\end{proof}
+
+The exception in (b) is genuine: $3^8\equiv1\pmod{41}$, so $3$ is not a primitive root modulo
+$41=8\cdot5+1$. The formal file proves this as an \lean{example}. In fact its order is $8$,
+since $3^4\equiv-1\pmod{41}$. It illustrates the second of
+the two checks: a nonresidue can fail to be a primitive root only at a prime divisor of
+$a^{2^k}-1$. Corollary~\ref{cor:two} is a relative of part (a): it applies the general criterion with
+$a=2$, $k=1$ and $\ell\equiv1\pmod 4$. Part (a) is Burton's \S9.2, Problem~11(b)~\cite{Burton}.
+Parts (b) and (c) are elementary applications of the same method, and we make no novelty
+claim for any of the three.
+
+\section{Numerical cross-checks}
+
+The repository contains three short Python scripts. They are independent of the Lean development and
+serve as a sanity check that the formal statements say what we intend.
+\begin{itemize}
+\item \texttt{code/check\_family.py 200000}: there are $1916$ prime pairs $(p,4p+1)$ with
+$p\leq 2\cdot 10^5$. In every case, $10$ is a primitive root modulo $4p+1$ exactly when
+$p\equiv2\pmod5$. That happens for $628$ of the pairs. As a control, for $p=22$ (not prime) and
+$q=89$, the order of $10$ is $44$.
+\item \texttt{code/check\_safe\_primes.py 1000000}: there are $4324$ safe primes $p\leq 10^6$.
+For every one, the least primitive root is prime. For the $2133$ with $q\equiv1\pmod4$, $2$ is a
+primitive root. For the $72$ safe primes below $5000$, a brute-force computation of orders confirms
+that all $73514$ nonresidues in $(1,p-1)$ are primitive roots. As a control, the least primitive
+root of the prime $41$, which is not a safe prime, is the composite number~$6$.
+\item \texttt{code/check\_general.py}: for the $16563$ primes $p=2^k\ell+1\leq 2\cdot10^6$ with
+$\ell$ an odd prime, Theorem~\ref{thm:gen} agrees with SymPy's primitive-root test in all
+$182191$ cases $(p,a)$ tested, for the bases $a\in\{2,3,5,6,7,10,11,12,-1,-2,-3\}$. SymPy's test
+uses the same prime-divisor method, so as an independent control, orders are also computed by
+brute force in the $1219$ cases with $p<3000$. In the same range, $2$ is a primitive root modulo all $4109$ primes $4\ell+1$, and
+$3$ is a primitive root modulo all $1181$ primes $16\ell+1$. Among the $2158$ primes $8\ell+1$,
+the only failure for $3$ is $p=41$.
+\end{itemize}
+
+For interest, Table~\ref{tab:dist} gives the distribution of the least primitive root over the
+same $4324$ safe primes. The least primitive root is $2$ for the $2133$ primes with
+$p\equiv 3\pmod 8$ and also for $p=5$. The value $3$ occurs only for $p=7$. This agrees with a
+one-line computation, not formalised here. For a safe prime $p>7$, we have $p\equiv 3\pmod 4$
+and $p\equiv 2\pmod 3$, so reciprocity gives $\leg{3}{p}=-\leg{p}{3}=+1$. Hence $3$ is never a
+primitive root modulo such a~$p$.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}l*{13}{r}@{}}
+\toprule
+$g$ & 2 & 3 & 5 & 7 & 11 & 13 & 17 & 19 & 23 & 29 & 31 & 37 & 41\\
+count & 2134 & 1 & 1461 & 290 & 194 & 141 & 54 & 24 & 15 & 3 & 3 & 3 & 1\\
+\bottomrule
+\end{tabular}
+\caption{Least primitive root $g$ of the $4324$ safe primes $p\leq 10^6$.}
+\label{tab:dist}
+\end{table}
+
+\section{A tamper-resistant check}\label{sec:gate}
+
+A \texttt{lake build} that succeeds does not by itself show that a statement has been proved.
+The source may contain \lean{sorry}, a user-declared \lean{axiom}, or \lean{native\_decide}. It
+may also contain code that runs at elaboration time and prints misleading output. For example,
+\lean{\#eval} can print text that looks like a clean \lean{\#print axioms} report, and
+\lean{macro\_rules} can redefine what \lean{\#print axioms} does. The development was prepared with
+AI assistance (see Acknowledgements), so we treated these as real risks. The repository's
+\texttt{gate.sh} therefore does the following:
+\begin{enumerate}
+\item It rejects any source file that contains \lean{sorry}, \lean{admit}, \lean{native\_decide},
+the \lean{axiom} keyword, \lean{\#eval}, \lean{run\_cmd}, \lean{initialize}, \lean{IO},
+\lean{set\_option}, or syntax-extension commands (\lean{macro}, \lean{elab}, \lean{syntax},
+\lean{notation}, \lean{import Lean}, \ldots).
+\item It builds the library.
+\item It writes its own temporary file of \lean{\#print axioms} queries, one for each theorem in
+Table~\ref{tab:thms}, instead of trusting any report produced inside the repository.
+\item It flattens Lean's line-wrapped output, requires exactly one report per theorem and no
+others, and accepts only the axioms \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}.
+\end{enumerate}
+
+We tested the gate by planting each of the following in a copy of the repository and confirming
+that the gate fails: a \lean{sorry}; an \lean{axiom} whose keyword sits on a line of its own; a
+fake clean report printed with \lean{\#eval}; a \lean{macro\_rules} redefinition of
+\lean{\#print axioms}; an extra axiom hidden on a wrapped output line (with the source filter's \lean{axiom} check
+switched off, so that the output parser is tested alone); and a false hypothesis
+($p\bmod 5=3$ in place of $2$), which breaks the proof. The unmodified repository passes with
+\texttt{PASS (17 theorems, standard axioms only)}. The script \texttt{tests/tamper.sh} in the artifact reproduces all six tests: each one plants its
+defect in a scratch copy of the repository and checks that the gate fails at the expected stage.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+Version~2 of the artifact adds two more checks, called Layers~14 and~15. Both were carried out by AI
+agents. The library files \lean{Chebyshev.lean}, \lean{General.lean} and \lean{SafePrime.lean} are
+unchanged: their hashes were compared before and after. Version~2 updates the root import file
+and the gate's required-declaration list.
+
+\paragraph{Layer 14: Mathlib-only statements and witnesses.}
+\begin{sloppypar}The file \lean{PrimitiveRootFamilies/L14.lean} (376 lines) restates all seventeen theorems of
+Table~\ref{tab:thms}. No theorem is omitted. The published statements already mention only Mathlib
+constants, so each restatement goes further and uses textbook phrasings. Primality is an explicit
+hypothesis \lean{Nat.Prime p}, not an instance. ``Primitive root'' is \lean{orderOf a = p - 1}, via
+\lean{IsPrimitiveRoot.iff\_orderOf}. The Legendre symbol is \lean{jacobiSym a p}, via
+\lean{jacobiSym.legendreSym.to\_jacobiSym}. Each restatement \lean{l14\_$\ast$} is proved from the
+library theorem and these bridges, with the same hypotheses. A mechanical check of the elaborated
+types found no \lean{PrimitiveRootFamilies} constant in any of the 36 new declarations.\end{sloppypar}
+
+Each restatement also has a witness theorem \lean{l14w\_$\ast$}, which proves every hypothesis on an
+explicit instance together with a non-degenerate conclusion. For each equivalence, the witness
+exhibits both truth values. Two of them show that the condition $a^{2^k}\not\equiv1$ in
+Theorem~\ref{thm:gen} is needed: $a=3$ for $p=41$, and $a=5$ for $p=13$. In each case $a$ is a
+nonresidue but not a primitive root. For Theorem~\ref{thm:rm} the hypothesis \lean{IsLeast} is
+realised explicitly: the least primitive root of $23$ is~$5$. For Corollary~\ref{cor:fam}(b) the
+witness uses the generic case $p=89$, not just $p=17$, and also proves that $3$ is not a primitive
+root modulo~$41$. No Mathlib-only statement turned out to be false or to need an extra hypothesis.
+With Layer~14 the gate passes with \texttt{PASS (53 theorems, standard axioms only)}, and the
+tampering tests still reject every planted defect. One test (\texttt{wrap}) replaces a library
+theorem by \lean{True}, so a downstream file that used that theorem stopped building and the test
+failed at the wrong stage. The restatement of Corollary~\ref{cor:cheb} is therefore derived from
+Theorem~\ref{thm:cheb-iff}.
+
+\paragraph{Layer 15: comparison with classical statements.}
+A separate agent collected the classical statements from the literature, with citations: Burton,
+Hardy--Wright, Dickson's \emph{History}~\cite{Dickson}, the Ramesh--Makeshwari note~\cite{RM}, and
+encyclopaedic sources. They fall into six groups: Euler's criterion; the primitive-root test; the
+Fermat-prime, safe-prime and Wertheim characterisations; Chebyshev's theorems on $2$ and on $10$;
+and Ramesh--Makeshwari, with the lemma that the least nonresidue is prime. An AI writer received only
+these statements and saw no code and no paper. Its transcript was audited, and its
+report records that it opened no other file. It
+wrote 26 Lean statements with Mathlib notions, including two existence obligations, all
+with \lean{sorry}. A comparer preserved their hypotheses and conclusions, repackaging the theorem declarations as universally quantified proposition definitions, and proved each one from the development and
+Mathlib, or refuted it. No hypothesis was added and the library was not changed. All 28 resulting
+theorems depend only on the three standard axioms. The comparison was first checked as a scratch
+file; it was then integrated as \lean{PrimitiveRootFamilies/L15Classical.lean} (704 lines), in the
+namespace \lean{PrimitiveRootFamilies.Classical}, with the definitions and proposition statements
+byte-identical to the checked comparison file and every proof kept. With both layers the gate passes with
+\texttt{PASS (83 theorems, standard axioms only)}, and all six tampering tests are still rejected.
+The outcome for the 26 statements:
+\begin{itemize}
+\item \emph{Covered} (8): the statements on $2$ modulo $4q+1$ (the library version does not need
+$q\neq2$), the three forms of Chebyshev's base-10 criterion, its examples $29,149,269$, the
+note that $p$ is odd and $q\equiv5\pmod8$, and Ramesh--Makeshwari with its existence obligation.
+\item \emph{Narrower} (1): the safe-prime criterion ``primitive root $\iff\leg{a}{p}=-1$ and
+$a\not\equiv-1$''. The library has it only for $\ell\neq2$ and with $a^2\not\equiv1$, so the case
+$p=5$ and the translation to $a\not\equiv-1$ were missing. Both are supplied by a new proof, so the
+statement is now proved in full.
+\item \emph{Out of scope} (16): background results that the paper uses from Mathlib or does not claim.
+These are Euler's criterion (3 statements), the primitive-root test and its corollaries (4), Fermat
+primes, two remarks on $-1$ for safe primes, the decimal-period form of Chebyshev's criterion, the
+examples of least primitive roots, the lemma that the least nonresidue is prime and exists (2), and
+``least primitive root $=$ least nonresidue'' for safe primes with its bound (2). All 16 were proved.
+\item \emph{Writer statement false as written} (1): Wertheim's criterion for $p=2^k q^l+1$ with
+$k,l\geq1$. It is false for $l\geq2$: for $p=19=2\cdot3^2+1$ and $a=8$ we have $\leg{8}{19}=-1$ and
+$8^2\not\equiv1$, but $8$ has order~$6$. The writer transcribed the source statement faithfully, so
+the error lies in the source. Theorem~\ref{thm:gen} is its case $l=1$, which is correct and is
+derived from the library. A corrected criterion, with $a^{2^kq^{l-1}}\not\equiv1$, is proved.
+\end{itemize}
+These proofs were absent from the version-1 library and are now included in the Layer-15 file:
+\begin{itemize}
+\item \lean{cov\_Prime3\_b}: the safe-prime criterion including $p=5$, with the condition $a\not\equiv-1$.
+\item \lean{not\_classical\_Prime3\_c}: the counterexample $p=19$, $a=8$.
+\item \lean{new\_Prime3\_c\_corrected}: Wertheim's criterion for general $l$, corrected.
+\item \lean{cov\_Prime3\_a}: for a Fermat prime, the primitive roots are exactly the nonresidues.
+\item \lean{cov\_Prime5\_reptend}: for primes $p$ and $q=4p+1$, $10$ is a primitive root modulo $q$
+iff the decimal period of $1/q$ is $q-1$, using \lean{decimalPeriod\_eq\_orderOf}, which proves the
+period/order equality for prime $q$ with $q\nmid10$.
+\item \lean{cov\_Prime6\_a}, \lean{cov\_Prime6\_a\_obligation}: the least positive nonresidue exists and is prime.
+\item \lean{cov\_Prime6\_b\_aux}, \lean{cov\_Prime6\_b}: for a safe prime, the least nonresidue is
+below $p-1$ and equals the least primitive root.
+\item thin wrappers around Mathlib for Euler's criterion and the primitive-root test.
+\end{itemize}
+
+\paragraph{Limitations.}
+The token filter is a heuristic over the project's own sources, and it is deliberately
+over-strict. The gate trusts the pinned toolchain, Mathlib and lake configuration. At commit~\texttt{\commit} it
+audits only the seventeen named theorems; with Layer~14 it audits 53 declarations, and with
+Layers~14 and~15 together 83. It is not a sandbox. It also does not compare theorem statements against a trusted specification. Layer~15 compares
+them with independently written classical statements, but that comparison was done by AI agents. That
+the formal statements mean what the paper says still requires a human reading, which
+Sections~3--5 are intended to support. Environment replay with \texttt{leanchecker} (formerly
+\texttt{lean4checker}) rechecks compiled declarations using Lean's own kernel, and independently
+implemented external checkers provide a different trust boundary. Our gate is a lightweight
+complement to these tools, not a substitute.
+
+\section{Related work}
+
+Mathlib contains the general theory used here: primitive roots, the cyclicity of
+$(\mathbb{Z}/p\mathbb{Z})^\times$, Euler's criterion and quadratic reciprocity. We found neither family in the pinned Mathlib version. We found no prior formalisation of either
+result in Lean, Isabelle, Coq/Rocq or Mizar, but our search was not exhaustive. The broader
+context, Artin's conjecture and its partial results, is surveyed by Moree~\cite{Moree}. Other
+formalisations of elementary number theory include the Isabelle AFP and Mathlib's
+\texttt{NumberTheory} library.
+
+\section{Conclusion}
+
+Chebyshev's criterion, with its converse, and the Ramesh--Makeshwari theorem both follow from one
+prime-divisor criterion together with Euler's criterion. With current Mathlib, each can be
+formalised in about 220 lines, and the criterion itself holds uniformly for primes $2^k\ell+1$ (Section~\ref{sec:general}). Formalising them made two points explicit: the converse of Chebyshev's criterion, and the
+existence of the least root. Natural extensions are primes $p$ with $p-1=2^k\ell^j$ or with more prime factors, where the
+exponents change and each additional distinct prime factor adds a condition. The sufficient direction
+for $2^k\ell^j$, with the condition $a^{2^k\ell^{j-1}}\not\equiv1$, is proved in the Layer-15 file;
+the converse and further prime factors remain. Other extensions are criteria that also use cubic reciprocity (Fueter's
+results, surveyed in~\cite[\S9.7, item~33]{Moree}), and a formal proof of the observation in Table~\ref{tab:dist} about the least primitive root.
+
+\section*{Acknowledgements and use of AI}
+The formal proofs, the checking script and a draft of this paper were prepared with the help of
+large-language-model AI assistants. Two different models independently reviewed the
+formalisation. The author checked each formal statement in Table~\ref{tab:thms} against its
+informal counterpart by hand. The Layer-14 and Layer-15 checks of version~2
+(Section~\ref{sec:l1415}) were carried out entirely by AI agents. Every proof is checked by the Lean kernel, and the author takes responsibility
+for all content.
+
+\begin{thebibliography}{9}
+\bibitem{Burton} D.~M. Burton, \emph{Elementary Number Theory}, 7th ed., McGraw--Hill, 2011.
+\bibitem{Dickson} L.~E. Dickson, \emph{History of the Theory of Numbers}, Vol.~I, Carnegie
+Institution, Washington, 1919.
+\bibitem{HeathBrown} D.~R. Heath-Brown, Artin's conjecture for primitive roots,
+\emph{Quart.\ J. Math.\ Oxford} (2) \textbf{37} (1986), 27--38.
+\bibitem{Mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proc.\ 9th ACM
+SIGPLAN Int.\ Conf.\ on Certified Programs and Proofs (CPP 2020)}, 367--381.
+\bibitem{Lean4} L.~de Moura and S.~Ullrich, The Lean~4 theorem prover and programming language,
+in \emph{Automated Deduction -- CADE 28}, LNCS \textbf{12699}, Springer, 2021, 625--635.
+\bibitem{Moree} P.~Moree, Artin's primitive root conjecture -- a survey, \emph{Integers}
+\textbf{12} (2012), no.~6, 1305--1416. doi:10.1515/integers-2012-0043.
+\bibitem{RM} V.~P. Ramesh and M.~Makeshwari, Least primitive root of any safe prime is prime,
+\emph{Amer.\ Math.\ Monthly} \textbf{129} (2022), no.~10, 971. doi:10.1080/00029890.2022.2115816.
+\end{thebibliography}
+
+\end{document}

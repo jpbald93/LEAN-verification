@@ -1,0 +1,63 @@
+PAPERD GATES john Darwin arm64 Wed Oct 14 13:51:46 UTC 2026
+===== clifford (john dir clifford_jack)
+52390602933bbdaaeda62dcb74d96d5eb30eeb77fe0d071298486ec009cf8ced  ./Clifford.lean
+af0870371913f1897146a2aa996649de580a98d4fa18f55fb11a572646048159  ./Clifford/Basic.lean
+8cc50f3de09a983a18809c0b9ae726b0b49445522dd818e587cce3d4ee3efa2c  ./Clifford/Third.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (20 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== clifford_j (john dir clifford)
+d97d040f51de221f6ebb6d5c562657388fd6e2524ec1c244466718325099e5d4  ./Clifford.lean
+d5c14edbf2da8ec8288484b4eeee54e30e85cf04e5c440c406b4c7144ca0cb16  ./Clifford/Basic.lean
+93eb80b639791dc7e271249a79e0439dd3fd08c831eb71e367129c52c8cecf5b  ./Clifford/Bridge.lean
+2a7cf40b4c473e56c97db8b1485aa5ad468c9cbb5c9a56b5b7ac9adaf33cc463  ./Clifford/Clean.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (21 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== lester (john dir lester)
+43f0ce533496230048bad25da5df609a874b672afcdc6a1651e291536ecbde1c  ./Lester.lean
+bf6ada6147870f604e42fd6f4d672aecfec379c355fe6b9fd03dd095cc0337d8  ./Lester/Basic.lean
+0146ff68ccb97feb468dd52c4cd695524156fef19641d4e39c7f8aa07cd62d68  ./Lester/Bridge.lean
+927dbab69793a28cd57ecd5475c434c6cd9b3ba82020765079e5ba2427a0ef6d  ./Lester/Proof.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (19 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== thebault3_j (john dir thebault3)
+c573cb166c6288f99269786e2932068a24a74606d5ccc302c91d646c6449b728  ./Thebault3.lean
+4de2ef21bd68f4fb97613ada988c60d546bf20546fa293f6fd963aa873c2e778  ./Thebault3/Basic.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (12 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== Fivecircles (john dir Fivecircles)
+a69693caa0b31f7dc733b58e95919ce8c59ece24184d1ca5ef6aa30787603113  ./Fivecircles.lean
+edb1ef3c43d75539721b12d78eb2634e1bf0c03598063f84c194496b15bcb31c  ./Fivecircles/Basic.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (6 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== Kosnita (john dir Kosnita)
+8e71f74002d1686f0db1cb80036978f2c2600097a3e1b8a8788244f70cd41e55  ./Kosnita.lean
+2218c64a6338282dad539348d47d3702350fb66f34da9c34938bbe0094cec432  ./Kosnita/Basic.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (11 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== Blundon (john dir Blundon)
+1e39f6b38043d6e50191c748e00c7a7ac2f8b9e281939b4ae07358ab73baf577  ./Blundon.lean
+1c8c6e3dc5fec32c6f8b46505294ec2391075fec9a34e90f24ad4cc5f1d6b55b  ./Blundon/Basic.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (5 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+===== SteinerLehmus (john dir SteinerLehmus)
+1669aa19e66ba804e0e127609991a08c61a602ed4c85293c652e42da52fb9fce  ./SteinerLehmus.lean
+41068d509f4ae50abb6241cab7fea3066b9327ba1167a3c53c63571f37b4b11b  ./SteinerLehmus/Basic.lean
+toolchain leanprover/lean4:v4.33.1 mathlib 0df444a360eaa60ab8c11dca51a86af692955474
+build rc=0
+PASS (3 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+DONE Wed Oct 14 14:02:30 UTC 2026

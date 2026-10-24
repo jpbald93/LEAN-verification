@@ -1,0 +1,965 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Code-like text (not checked by the name gate).
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of this development. Every \decl{...} is checked by the name gate
+% (grep for a declaration of that name in CayleyBacharach/*.lean).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\PP}{\mathbb{P}}
+% version-2 commits: cayley-bacharach=d9c674c68c0a1b475a284f9bd33ec5f7e6d52689
+\newcommand{\repo}{https://github.com/jpbald93/cayley-bacharach}
+\newcommand{\commit}{9a4f11e82c291bc9428ad9b66bfaba388acf63de}
+\newcommand{\shortcommit}{9a4f11e}
+% \src{File}{n}: link to line n of CayleyBacharach/File.lean at \commit.
+\newcommand{\src}[2]{\href{\repo/blob/\commit/CayleyBacharach/#1.lean\#L#2}{\texttt{#1:#2}}}
+
+\lstdefinelanguage{lean}{
+  morekeywords={theorem,lemma,def,class,example,by,fun,have,show,exact,intro,namespace,end,import,private,variable},
+  sensitive=true, morecomment=[l]{--}, morecomment=[s]{/-}{-/}, morestring=[b]"}
+\lstset{language=lean, basicstyle=\ttfamily\small, keywordstyle=\bfseries,
+  columns=fullflexible, keepspaces=true, breaklines=true, frame=single, framerule=0.3pt,
+  literate={≠}{{$\neq$}}1 {↔}{{$\leftrightarrow$}}2 {→}{{$\to$}}1
+           {⨯₃}{{$\times_3$}}2 {⬝ᵥ}{{$\cdot_v$}}2 {₁}{{$_1$}}1 {₂}{{$_2$}}1 {₃}{{$_3$}}1
+           {₄}{{$_4$}}1 {₅}{{$_5$}}1 {₆}{{$_6$}}1 {ℓ}{{$\ell$}}1 {≤}{{$\le$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1
+           {¬}{{$\neg$}}1 {∈}{{$\in$}}1 {ι}{{$\iota$}}1 {'}{{$^{\prime}$}}1}
+
+\title{The Cayley--Bacharach theorem for plane cubics,\\ formalised in Lean~4,
+with finite-field thresholds}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}}
+\date{4 October 2026 (version 4)\\ \small Version~5, October 2026: adds Layers~14 and~15 (Section~\ref{sec:l1415})}
+
+\emergencystretch=3em
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We formalise the Cayley--Bacharach theorem for plane cubics in Lean~4 with Mathlib: under hypotheses made precise below, if two
+cubics meet in nine points, every cubic through eight of them passes through the ninth. We prove
+three versions. The first assumes that the eight points impose independent conditions on cubics;
+we prove the exact criterion for this, in both directions: no five of the points are collinear
+and the eight do not lie on a conic. The second assumes that the two cubics have no common line
+or conic component. The third is the textbook form, in which the two cubics have exactly nine
+common zeros. None of the three assumes an algebraically closed field. The first two hold over
+every field. The third holds over every infinite field, and a finite field $K$ exactly when
+$|K|\notin\{4,5,7\}$: we prove it for every other finite field, and it is false over $\F_4$,
+$\F_5$ and $\F_7$, for which we give explicit counterexamples, checked by computer but not
+formalised.
+The line lemma behind all three (a cubic vanishing on a line contains it) needs a field with at
+least three elements, and we formalise a counterexample over $\F_2$. As applications we derive
+Pascal's and Pappus's theorems from Cayley--Bacharach under their natural incidence and
+distinctness hypotheses, for fields with more than ten elements; version~5 adds direct proofs,
+not through Cayley--Bacharach, of Pascal's and Pappus's theorems and of the Braikenridge--Maclaurin
+converse over every field (Section~\ref{sec:l1415}). We also
+prove that a conic is a line pair if and only if its Gram determinant vanishes, over an
+algebraically closed field of characteristic different from two. The development has about
+4{,}150 lines (the Layer-14/15 check files added in version~5 have about 2{,}100 more) and uses no \lean{sorry} and no axioms beyond Lean's standard three. The
+mathematics is classical. We found no earlier formalisation of the theorem in the sources we
+searched (Section~\ref{sec:related}).
+\end{abstract}
+
+\section{Introduction}
+
+Let $K$ be a field. A \emph{cubic form} is a homogeneous polynomial of degree three in $x,y,z$ over $K$ (zero
+included, so that the cubic forms make a vector space); a nonzero one defines a plane cubic. The following statement goes back to Cayley~\cite{Cayley} and
+Bacharach~\cite{Bacharach}. Eisenbud, Green and Harris~\cite{EGH} survey its history and its
+many generalisations.
+
+\begin{theorem}[Cayley--Bacharach, textbook form]\label{thm:textbook}
+Let $K$ be algebraically closed and let $F,G$ be plane cubics that meet in exactly nine distinct points $P_1,\dots,P_9$. If a cubic
+$H$ passes through $P_1,\dots,P_8$, then it passes through $P_9$.
+\end{theorem}
+
+This is the classical statement, over an algebraically closed field; the versions we formalise are
+stated precisely in Sections~\ref{sec:criterion}--\ref{sec:apps}. Textbooks also count intersection points with
+multiplicity. Fulton~\cite[\S5.6]{Fulton}, for instance, works over an algebraically closed field
+and derives Pascal's and Pappus's theorems from Max Noether's fundamental theorem. We make no
+such assumption. Instead,
+we work with the $K$-rational points of $\PP^2(K)$ and ask exactly which hypotheses make the
+theorem true.
+
+The proof we formalise is the linear-algebra proof. The cubics form a vector space of
+dimension~10. Each point imposes one linear condition, so the cubics through eight points form a
+space of dimension at least~2. If the dimension is exactly~2, then this space is spanned by $F$
+and $G$, and every cubic in it vanishes at~$P_9$. Everything therefore depends on knowing when
+eight points impose independent conditions on cubics. We prove the exact criterion
+(Theorem~\ref{thm:criterion}): this happens if and only if no five of the points are collinear
+and the eight points do not lie on a conic. A commonly quoted condition is ``no four collinear
+and no seven on a nondegenerate conic'' (see e.g.~\cite{Wikipedia}). That condition is
+sufficient, but it is not necessary, as the formal theorem and the explicit configurations of
+Example~\ref{ex:criterion} show.
+
+\paragraph{Contributions.}
+\begin{itemize}
+\item Both directions of the eight-point criterion over every field
+(Theorem~\ref{thm:criterion}).
+\item Cayley--Bacharach in three forms: general position (Theorem~\ref{thm:gp}), no common
+component (Theorem~\ref{thm:ncf}), and exactly nine common zeros (Theorem~\ref{thm:classical}).
+The first two hold over every field. The third holds over every infinite field and every finite
+field with $|K|\notin\{4,5,7\}$.
+\item Sharp field-size results (Section~\ref{sec:finite}). The line lemma holds if and only if
+$|K|\ge3$, and the $\F_2$ counterexample is formalised. The textbook form holds over $\F_2$ (vacuously), $\F_3$ and every
+finite field with at least eight elements, all formalised, and fails over $\F_4$, $\F_5$ and
+$\F_7$. We give explicit counterexamples for these three, checked by computer but not formalised.
+\item Pascal's and Pappus's theorems derived from Cayley--Bacharach with only their natural
+incidence and distinctness hypotheses (for $|K|>10$), and the Gram-determinant criterion for line-pair conics (Section~\ref{sec:apps}).
+Version~5 adds direct proofs of Pascal, Pappus and Braikenridge--Maclaurin over every field
+(Section~\ref{sec:l1415}).
+\item Version~5: the main theorems restated with Mathlib-only types, each with an explicit
+non-degenerate witness, and a comparison with Lean statements written blind from textbook statements
+(Section~\ref{sec:l1415}).
+\item Lemmas that help a reader check that the formal statements say what they should
+(Section~\ref{sec:correct}).
+\end{itemize}
+
+\paragraph{Availability.}
+The code is at \url{\repo}. Line references in this paper are to commit \texttt{\shortcommit}.
+The toolchain is Lean \texttt{v4.33.1}~\cite{Lean4} with Mathlib~\cite{Mathlib} pinned in
+\texttt{lake-manifest.json}. Apart from the type abbreviation \decl{PlaneCubic}, all declarations of the main files are in the namespace \lean{PlaneCubic}; the version-5 files use the namespaces \lean{CBL14} and \lean{CayleyBacharach.Classical} (Section~\ref{sec:l1415}).
+Table~\ref{tab:thms} lists the main formal statements.
+Version~5 of this paper adds the Layer-14 and Layer-15 files of Section~\ref{sec:l1415} in a new
+commit, \texttt{d9c674c68c0a1b475a284f9bd33ec5f7e6d52689}. The earlier statements and library files are unchanged in that commit
+(only the root file gains two import lines, and \path{gate.sh}, \path{.gitignore} and the README are
+updated), so the line references above are valid at both commits.
+Supporting material (the Layer-14 and Layer-15 reports, the blind writer's statements and report, the transcript audit, and the reviews of this version with the fixes made in response) is in the folder \texttt{Cayley-Bacharach} of the repository \url{https://github.com/jpbald93/LEAN-verification}.
+
+{\small
+\setlength{\LTcapwidth}{\textwidth}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.40\textwidth}
+  >{\raggedright\arraybackslash}p{0.33\textwidth}l@{}}
+\caption{Informal statements and their formal counterparts. The field $K$ is arbitrary unless a
+hypothesis is shown. Line numbers refer to the first line of the declaration.}\label{tab:thms}\\
+\toprule
+Informal statement & Lean name & Source \\ \midrule
+\endfirsthead
+\toprule
+Informal statement & Lean name & Source \\ \midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{3}{@{}l}{\emph{Representation and meaning}}\\
+Cubics as coefficient vectors & \decl{PlaneCubic} & \src{Defs}{16} \\
+Vanishing does not depend on the representative & \decl{vanishesAt_smul_iff} & \src{Defs}{86} \\
+Evaluation of a product $\ell\cdot q$ & \decl{eval_mulLin} & \src{Line}{32} \\
+Evaluation of a line pair $\ell\cdot m$ & \decl{evalC_linMul} & \src{Conic}{40} \\
+Kernel of evaluation $=$ cubics through the points & \decl{ker_evalMap_eq} & \src{Through}{35} \\
+Common zero of $F$ and $G$ & \decl{CommonZero} & \src{Classical}{231} \\
+The common zeros are exactly the $P_i$ & \decl{ExactlyMeetIn} & \src{Classical}{235} \\
+\multicolumn{3}{@{}l}{\emph{Lines and conics}}\\
+Line lemma, $|K|\ge 3$ (Lemma~\ref{lem:line}) & \decl{line_lemma} & \src{Line}{247} \\
+Line lemma, finite $K$, $3\le|K|$ & \decl{line_lemma_fintype} & \src{FiniteField}{34} \\
+Line lemma fails over $\F_2$ & \decl{line_lemma_false_zmod_two} & \src{Line}{270} \\
+Conic line lemma, every field & \decl{conic_line_lemma} & \src{Conic}{167} \\
+Three collinear points on a conic & \decl{conic_three} & \src{LineRestrict}{105} \\
+Four collinear points on a cubic, $|K|\ge3$ & \decl{cubic_four} & \src{LineRestrict}{124} \\
+\multicolumn{3}{@{}l}{\emph{The eight-point criterion (Theorem~\ref{thm:criterion})}}\\
+General position $\Rightarrow$ dimension $\le 2$, $|K|\ge3$ & \decl{finrank_cubicsThrough_le_two} & \src{General}{185} \\
+General position $\Rightarrow$ dimension $=2$, $|K|\ge3$ & \decl{finrank_ker_evalMap_eq_two} & \src{General}{209} \\
+General position $\Rightarrow$ dimension $=2$, every field & \decl{finrank_ker_evalMap_eq_two_any} & \src{FiniteField}{92} \\
+Five collinear $\Rightarrow$ dimension $\ge 3$ & \decl{finrank_ker_ge_of_line} & \src{Criterion}{122} \\
+On a conic $\Rightarrow$ dimension $\ge 3$ & \decl{finrank_ker_ge_of_conic} & \src{Criterion}{102} \\
+The criterion as a single equivalence, every field & \decl{finrank_ker_evalMap_eq_two_iff} & \src{CriterionIff}{30} \\
+Over $\F_2$ at most seven distinct points & \decl{card_le_seven_of_not_atLeastThree} & \src{FiniteField}{55} \\
+\multicolumn{3}{@{}l}{\emph{Cayley--Bacharach}}\\
+Cubics through the eight $=\operatorname{span}\{F,G\}$, $|K|\ge3$ & \decl{mem_span_of_eight} & \src{Theorem}{19} \\
+General position, $|K|\ge3$ & \decl{cayley_bacharach} & \src{Theorem}{48} \\
+General position, every field (Thm.~\ref{thm:gp}) & \decl{cayley_bacharach_any} & \src{FiniteField}{103} \\
+No common factor $\Rightarrow$ general position, $|K|\ge3$ & \decl{general_position_of_no_common_factor} & \src{Factor}{98} \\
+No common factor, $|K|\ge3$ & \decl{cayley_bacharach_of_no_common_factor} & \src{Factor}{158} \\
+No common factor, every field (Thm.~\ref{thm:ncf}) & \decl{cayley_bacharach_of_no_common_factor_any} & \src{FiniteField}{117} \\
+Exactly nine, infinite $K$ (Thm.~\ref{thm:classical}) & \decl{cayley_bacharach_classical} & \src{Classical}{242} \\
+Exactly nine, finite $K$, $|K|\ge 11$ & \decl{cayley_bacharach_classical_fintype} & \src{ClassicalFinite}{203} \\
+Exactly nine, finite $K$, $|K|\ge 8$ (Thm.~\ref{thm:classical}) & \decl{cayley_bacharach_classical_card8} & \src{ClassicalSmall}{316} \\
+Nine common zeros, $|K|=3$ (Thm.~\ref{thm:f3}) & \decl{cayley_bacharach_card3} & \src{ClassicalF3}{231} \\
+Exactly nine, $|K|=3$ & \decl{cayley_bacharach_classical_card3} & \src{ClassicalF3}{243} \\
+Exactly nine, $K=\F_3$ & \decl{cayley_bacharach_classical_zmod3} & \src{ClassicalF3}{255} \\
+Exactly nine, finite $K$, $|K|\notin\{4,5,7\}$ (Thm.~\ref{thm:f3}) & \decl{cayley_bacharach_classical_finite} & \src{ClassicalF3}{266} \\
+$|K|=3$: no common line & \decl{no_common_line_card3} & \src{ClassicalF3}{125} \\
+$|K|=3$: no common conic & \decl{no_common_conic_card3} & \src{ClassicalF3}{188} \\
+Construction of $|K|+1$ distinct points on a line, finite $K$ & \decl{line_points} & \src{ClassicalSmall}{42} \\
+A conic with no line component and two zeros has $\ge|K|+1$ zeros & \decl{conic_points} & \src{ClassicalSmall}{157} \\
+\multicolumn{3}{@{}l}{\emph{Applications (Section~\ref{sec:apps}); Pascal and Pappus need $|K|>10$}}\\
+Pascal from Cayley--Bacharach, explicit genericity & \decl{pascal_of_cayley_bacharach} & \src{Pascal}{46} \\
+Pappus from Cayley--Bacharach, explicit genericity & \decl{pappus_of_cayley_bacharach} & \src{Pascal}{179} \\
+Pascal, natural hypotheses (Thm.~\ref{thm:pascal}) & \decl{pascal_clean} & \src{PascalClean}{331} \\
+Pappus, natural hypotheses (Thm.~\ref{thm:pappus}) & \decl{pappus_clean} & \src{PappusClean}{178} \\
+Line pair $\Rightarrow$ Gram determinant $0$, $2\ne0$ & \decl{det_gram_linMul} & \src{PappusClean}{223} \\
+$2\ne0$ is needed & \decl{det_gram_linMul_char_two} & \src{PappusClean}{252} \\
+Pascal with $\det M(q)\ne0$, $2\ne0$ & \decl{pascal_clean_det} & \src{PappusClean}{236} \\
+Gram determinant $0$ $\Leftrightarrow$ line pair, $K$ alg.\ closed, $2\ne0$ & \decl{det_gram_eq_zero_iff} & \src{PappusClean}{316} \\
+\end{longtable}
+}
+
+\section{Representation and conventions}\label{sec:conv}
+
+A cubic is its vector of ten coefficients, \decl{PlaneCubic}~\lean{K := Fin 10} $\to$ \lean{K}, in the
+monomial order $x^3,x^2y,x^2z,xy^2,xyz,xz^2,y^3,y^2z,yz^2,z^3$. The name avoids a clash with
+Mathlib's \lean{Cubic}. Because it is an abbreviation of a function type, the vector-space
+structure and \lean{Module.finrank K (PlaneCubic K) = 10} come directly from Mathlib. A conic is a
+vector \lean{Fin 6} $\to$ \lean{K} in the order $x^2,xy,xz,y^2,yz,z^2$, and a linear form or line is a
+vector $\ell$ \lean{: Fin 3} $\to$ \lean{K}. The functions \decl{eval} and \decl{evalC} evaluate cubics and
+conics at a vector $v\in K^3$. The function \decl{mulLin}~$\ell$~$q$ is the cubic $\ell\cdot q$
+and \decl{linMul}~$\ell$~$m$ is the conic $\ell\cdot m$; both are given by explicit coefficient
+formulas.
+
+A point of $\PP^2(K)$ is represented by a nonzero vector. We do not use Mathlib's
+\lean{Projectivization} here. Instead, a family of points \lean{P : Fin n} $\to$ \lean{Fin 3} $\to$ \lean{K} is
+required to be pairwise non-proportional:
+\begin{center}
+\lean{hP :} $\forall\, i\,j,\ i\ne j\to P_i\times P_j\neq 0$.
+\end{center}
+This says that the $P_i$ are distinct points of $\PP^2(K)$. It also forces each $P_i$ to be
+nonzero when $n\ge 2$ (\decl{ne_zero_of_pairwise}). A point $v$ lies on the line $\ell$ when
+$\ell\cdot v=0$, and the line through $u\ne v$ is $u\times v$. The two general-position
+hypotheses on eight points read as follows:
+\begin{align*}
+\text{\lean{h5}}&:\ \forall\,\ell\ne0,\ \forall\, s\subseteq\{0,\dots,7\},\
+  (\forall i\in s,\ \ell\cdot P_i=0)\to |s|\le4 &&\text{(no five collinear)},\\
+\text{\lean{hconic}}&:\ \forall\, q,\ (\forall i,\ q(P_i)=0)\to q=0 &&\text{(not all on a conic)}.
+\end{align*}
+Here ``conic'' includes line pairs and double lines. The hypothesis \lean{hconic} is therefore the
+same as saying that the eight evaluation functionals on conics span a space of dimension six.
+
+Two typeclasses express field size. \decl{AtLeastThree}~\lean{K} says that $K$ has an element
+other than $0$ and~$1$. There is an instance for every infinite field
+(\decl{AtLeastThree.of_infinite}), and for a finite field it is equivalent to $3\le|K|$
+(\decl{atLeastThree_iff_card}). \decl{CardGT}~\lean{K n} says that $K$ has a finite subset with
+more than $n$ elements. It supplies the older counting interface ($n=10$) used by the Pascal and Pappus files and by a variant of the classical theorem in \texttt{ClassicalFinite.lean}.
+
+\section{Lines, conics and the eight-point criterion}\label{sec:criterion}
+
+\subsection{Restricting to a line}
+
+\begin{lemma}[line lemma]\label{lem:line}
+Let $|K|\ge3$ and let $\ell\ne0$. If a cubic $F$ vanishes at every point of the line $\ell=0$,
+then $F=\ell\cdot q$ for a conic $q$. Over every field, a conic vanishing on the line
+$\ell=0$ is $\ell\cdot m$ for a linear form~$m$.
+\end{lemma}
+
+\begin{proof}
+Choose a coordinate $k$ with $\ell_k\ne0$ and parametrise the line with $x_k$ eliminated. The
+restriction of $F$ is a binary cubic $a s^3+b s^2t+c st^2+dt^3$. At $[1:0]$ we obtain $a=0$. On the chart $[s:t]=[r:1]$, evaluating $a r^3+b r^2+c r+d$ at
+$r=0,1,r_0$, with $r_0\notin\{0,1\}$, gives $b=c=d=0$. This is
+\decl{coeffs_eq_zero_of_forall_three}. The quotient $q$ is then given by an explicit
+formula, obtained by pseudo-division of $\ell_k^3F$ by $\ell$ in the variable~$x_k$, and each of
+the ten coefficient identities is closed by \lean{linear\_combination}. For conics, every line
+has the three points $[1:0]$, $r=0$ and $r=1$. These suffice for a binary quadratic, so no size
+hypothesis is needed.
+\end{proof}
+
+The first statement is false over $\F_2$. The cubic $x^2y+xy^2$ vanishes at the three points
+$(1:0:0)$, $(0:1:0)$, $(1:1:0)$ of $z=0$, but it is not divisible by~$z$. This is
+\decl{line_lemma_false_zmod_two}. Two consequences are used throughout: a conic that vanishes at
+three distinct points of a line contains the line (\decl{conic_three}, every field), and a cubic
+that vanishes at four distinct points of a line contains the line (\decl{cubic_four}, $|K|\ge3$).
+
+\subsection{When eight points impose independent conditions}
+
+For points $P_1,\dots,P_8$, let $V(P)$ be the space of cubics vanishing at all of them. It is the
+kernel of the evaluation map $K^{10}\to K^8$ (\decl{ker_evalMap_eq}), so $\dim V(P)\ge 2$.
+
+\begin{theorem}[eight-point criterion]\label{thm:criterion}
+Let $K$ be any field and let $P_1,\dots,P_8$ be distinct points of $\PP^2(K)$. Then
+$\dim V(P)=2$ if and only if no five of the points are collinear and the eight points do not all
+lie on a conic.
+\end{theorem}
+
+The formal version is stated both as three separate implications and as a single equivalence.
+\decl{finrank_ker_evalMap_eq_two_any} gives
+$\dim V(P)=2$ under \lean{hP}, \lean{h5} and \lean{hconic}. For the converse,
+\decl{finrank_ker_ge_of_line} gives $\dim V(P)\ge3$ if all but at most three of the points lie on
+a line, and \decl{finrank_ker_ge_of_conic} gives $\dim V(P)\ge 3$ if a nonzero conic passes
+through all of them. The ``if and only if'' itself is
+\decl{finrank_ker_evalMap_eq_two_iff}, which combines these three: $\dim V(P)=2$ if and only if
+no line carries five of the points and no nonzero conic passes through all eight.
+
+\begin{proof}[Proof of the hard direction]
+Suppose $\dim V(P)\ge 3$. We use four facts about conics. Four distinct points that are not all
+collinear lie on at most a $2$-dimensional space of conics (\decl{conics_le_two}). Five
+distinct points, no four collinear, lie on at most a $1$-dimensional space of conics
+(\decl{conics_le_one}). If $u\ne v$ are among the points, some nonzero conic vanishes at every
+point off the line $uv$ (\decl{exists_conic_off_line}). If moreover a third point $w$ lies on
+$uv$, the conics through the points off $uv$ form a space of dimension at least~$2$
+(\decl{conics_off_line_ge_two}). The last two facts come from adding one or two further points on
+$uv$ and applying \decl{cubic_four}. Choosing these points needs an element $t\notin\{0,1\}$,
+which is where $|K|\ge3$ enters. There are three cases.
+
+\emph{(A) Some line $\ell$ contains exactly four of the points.} Every cubic through the eight
+contains~$\ell$, so $\dim V(P)$ is at most the dimension of the space of conics through the other
+four (\decl{cubics_resid}). Those four are not collinear, since otherwise $\ell$ times their line
+would be a conic through all eight. Hence $\dim V(P)\le 2$.
+
+\emph{(B) No line contains four of the points, but three are collinear, on a line~$\ell$.} The
+five points off $\ell$ lie on a space of conics of dimension at least~$2$, but no four of them
+are collinear, so this dimension is at most~$1$.
+
+\emph{(C) No three of the points are collinear.} For each pair $\{0,1\}$, $\{0,2\}$, $\{1,2\}$
+take a nonzero conic through the six points off the line joining the pair. All three pass through
+$P_3,\dots,P_7$, whose conics form a space of dimension at most~$1$. So the three conics are
+proportional, and the first one vanishes at all eight points, a contradiction with \lean{hconic}.
+
+This proves the theorem for $|K|\ge3$ (\decl{finrank_cubicsThrough_le_two},
+\decl{finrank_ker_evalMap_eq_two}). Over $\F_2$ the plane has only seven points, so eight
+distinct points do not exist (\decl{card_le_seven_of_not_atLeastThree}), and the statement is
+vacuous.
+\end{proof}
+
+\begin{example}\label{ex:criterion}
+The hypotheses ``no four collinear'' and ``no seven on a conic'' are not necessary. We computed
+$\dim V(P)$ in exact rational arithmetic for the following configurations.
+% Script: code/criterion_examples.py in the repository.
+\begin{itemize}
+\item $(1:0:1),(2:0:1),(3:0:1),(5:0:1)$ on the line $y=0$, together with $(1:2:3)$, $(4:1:7)$,
+$(2:5:1)$, $(3:3:2)$: $\dim V(P)=2$.
+\item $(1:t:t^2)$ for $t=0,\dots,6$, on the conic $y^2=xz$, together with $(1:1:5)$:
+$\dim V(P)=2$.
+\item $(1:0:1),(2:0:1),(3:0:1),(5:0:1),(7:0:1)$ on $y=0$, together with $(1:2:3)$, $(4:1:7)$,
+$(2:5:1)$: $\dim V(P)=3$.
+\item $(1:t:t^2)$ for $t=0,\dots,7$: $\dim V(P)=3$.
+\end{itemize}
+The first two configurations satisfy the hypotheses of \decl{finrank_ker_evalMap_eq_two_any},
+which allows four points on a line and seven on a conic. The conditions ``no four collinear, no
+seven on a nondegenerate conic'' imply ours: eight points on a line pair put at least four on
+one of the lines. They are therefore sufficient, but they exclude valid configurations.
+\end{example}
+
+\section{Cayley--Bacharach}\label{sec:cb}
+
+\subsection{General position}
+
+\begin{theorem}\label{thm:gp}
+Let $K$ be any field and $P_1,\dots,P_9$ distinct points of $\PP^2(K)$. Suppose no five of
+$P_1,\dots,P_8$ are collinear and $P_1,\dots,P_8$ do not lie on a conic. Let $F,G$ be linearly
+independent cubics vanishing at all nine points. Then every cubic $H$ vanishing at
+$P_1,\dots,P_8$ vanishes at~$P_9$.
+\end{theorem}
+
+\begin{lstlisting}
+theorem cayley_bacharach_any (P : Fin 9 → Fin 3 → K)
+    (hP : ∀ i j, i ≠ j → P i ⨯₃ P j ≠ 0)
+    (h5 : ∀ ℓ : Fin 3 → K, ℓ ≠ 0 → ∀ s : Finset (Fin 8),
+      (∀ i ∈ s, ℓ ⬝ᵥ P (Fin.castSucc i) = 0) → s.card ≤ 4)
+    (hconic : ∀ q : Fin 6 → K, (∀ i : Fin 8, evalC q (P (Fin.castSucc i)) = 0) → q = 0)
+    (F G : PlaneCubic K) (hFG : LinearIndependent K ![F, G])
+    (hF : ∀ i, eval F (P i) = 0) (hG : ∀ i, eval G (P i) = 0)
+    (H : PlaneCubic K) (hH : ∀ i : Fin 8, eval H (P (Fin.castSucc i)) = 0) :
+    eval H (P 8) = 0
+\end{lstlisting}
+
+\begin{proof}
+$\operatorname{span}\{F,G\}$ has dimension~2 and lies in $V(P_1,\dots,P_8)$, which has dimension
+at most~2 by Theorem~\ref{thm:criterion}. So the two spaces are equal
+(\decl{mem_span_of_eight}), and $H$ is a combination of $F$ and~$G$.
+\end{proof}
+
+The indexing is zero-based: \lean{P 8} is the ninth point and \lean{Fin.castSucc} embeds the
+first eight. Linear independence of $F$ and $G$ is needed. If $G=cF$, the cubics through the eight
+points need not all pass through the ninth.
+
+\subsection{No common component}
+
+\begin{theorem}\label{thm:ncf}
+Let $K$ be any field and $P_1,\dots,P_9$ distinct points. Let $F,G$ be linearly independent
+cubics through all nine points with no common linear factor and no common conic factor. Then
+every cubic through $P_1,\dots,P_8$ passes through $P_9$.
+\end{theorem}
+
+The formal hypotheses are
+\begin{lstlisting}
+(hlin : ¬ ∃ ℓ q q', ℓ ≠ 0 ∧ F = mulLin ℓ q ∧ G = mulLin ℓ q')
+(hcon : ¬ ∃ q m m', q ≠ 0 ∧ F = mulLin m q ∧ G = mulLin m' q)
+\end{lstlisting}
+They are statements about factorisations over~$K$.
+
+\begin{proof}
+We show that $P_1,\dots,P_8$ are in general position (\decl{general_position_of_no_common_factor}).
+We in fact get the stronger conclusion that no four of them are collinear. If four were on a line
+$\ell$, both $F$ and $G$ would contain~$\ell$ by \decl{cubic_four}. Suppose the eight points lie
+on a nonzero conic~$q$. If three of them are collinear, $q$ contains their line
+(\decl{conic_three}), so $q$ is a line pair and one of the two lines carries at least four of the
+points, which was just excluded. If no three are collinear, the cubics through the eight form a
+space of dimension at most three (\decl{finrank_le_three_of_no3}). This space contains the
+three-dimensional space $\{m\cdot q\}$, so the two are equal, and then $q$ divides both $F$ and~$G$.
+Now apply Theorem~\ref{thm:gp}.
+\end{proof}
+
+\subsection{Exactly nine common zeros}
+
+The textbook hypothesis is that the common zeros of $F$ and $G$ are exactly the nine points. We
+formalise it literally, for $K$-rational points:
+\begin{lstlisting}
+def CommonZero (F G : PlaneCubic K) (v : Fin 3 → K) : Prop :=
+  v ≠ 0 ∧ eval F v = 0 ∧ eval G v = 0
+def ExactlyMeetIn {ι : Type*} (F G : PlaneCubic K) (P : ι → Fin 3 → K) : Prop :=
+  (∀ i, CommonZero F G (P i)) ∧ ∀ v, CommonZero F G v → ∃ i, v ⨯₃ P i = 0
+\end{lstlisting}
+
+\begin{theorem}\label{thm:classical}
+Let $K$ be an infinite field, or a finite field with $|K|\ge8$. Let $P_1,\dots,P_9$ be distinct
+points of $\PP^2(K)$ and let $F,G$ be linearly independent cubics whose common zeros in
+$\PP^2(K)$ are exactly $P_1,\dots,P_9$. Then every cubic through $P_1,\dots,P_8$ passes
+through~$P_9$.
+\end{theorem}
+
+The infinite case is \decl{cayley_bacharach_classical}; the finite case is
+\decl{cayley_bacharach_classical_card8}. Both have the same hypotheses as
+Theorem~\ref{thm:ncf}, with \lean{hex : ExactlyMeetIn F G P} in place of the factor hypotheses.
+
+\begin{proof}[Proof for infinite $K$]
+We show that exactness rules out a common factor, and then apply Theorem~\ref{thm:ncf}. A common
+line would contribute infinitely many common zeros (\decl{no_common_line_of_exact}). Suppose
+$F=m\,q$ and $G=m'q$. If $q$ vanishes at two of the $P_i$, it has infinitely many pairwise
+non-proportional zeros (\decl{false_of_conic}), and all of them are common zeros. Otherwise $q$
+vanishes at most at one of $P_1,P_2,P_3$. Then $m$ and $m'$ both vanish at two of these points,
+so both are multiples of the line through them, and that line consists of common zeros
+(\decl{no_common_conic_of_exact}).
+\end{proof}
+
+The step through \decl{false_of_conic} is where algebraic closure might seem necessary. Over
+$\mathbb{R}$ the conic $x^2+y^2+z^2$ has no zeros, so a common conic factor does not by itself
+produce infinitely many common zeros. The proof avoids the issue because the nine points are
+themselves common zeros: a conic with two non-proportional zeros $u,v$ over an infinite field has
+infinitely many. Projecting from~$u$, each $d$ gives the zero $q(d)\,u-B(u,d)\,d$, where $B$ is
+the polar form. This works in every characteristic. If $B(u,v)=0$, the whole line $uv$ lies on
+the conic instead.
+
+\begin{proof}[Proof for finite $K$ with $|K|\ge 8$]
+The same argument needs point counts. A line has exactly $|K|+1$ points; the proof needs only the lower bound, and \decl{line_points} constructs $|K|+1$ pairwise non-proportional points on it. A
+conic with two distinct zeros and no line component has at least $|K|+1$ zeros
+(\decl{conic_points}). For this, project from a zero $u$ onto all $|K|+1$ lines through~$u$.
+Each line through $u$ contains a zero other than~$u$, except the tangent line, where the
+construction returns $u$ itself. At most one line through $u$ is tangent, since two tangent
+directions would force a line component (\decl{line_comp_of_polar}). Now suppose $F$ and $G$ have a
+common line, or a common conic without line component through two of the~$P_i$. Every point of it
+is a common zero, hence one of the~$P_i$. It has at least $|K|+1\ge9$ distinct points, so all
+nine $P_i$ lie on it (\decl{card_add_one_le}). If they lie on a line, a cubic through eight of them
+contains the line (\decl{classical_line_case}). If they lie on such a conic, no three of the
+points are collinear, and a cubic through eight of them is a multiple of the conic
+(\decl{classical_conic_case}). In either case $H(P_9)=0$. A common line-pair factor contains a
+common line. If a common conic factor vanishes at at most one of $P_1,P_2,P_3$, then, as in the
+infinite case, $F$ and $G$ share the line through two of these points, and the line case applies.
+If there is no common factor, Theorem~\ref{thm:ncf} applies.
+\end{proof}
+
+An earlier, cruder count, $|K|-1$ zeros on the conic instead of $|K|+1$, gave the result only for
+$|K|\ge 11$ (\decl{cayley_bacharach_classical_card}, \decl{cayley_bacharach_classical_fintype}).
+These versions are kept; the Pascal and Pappus files use them.
+
+\begin{remark}[meaning over non-closed fields]
+\lean{ExactlyMeetIn} refers to $K$-rational points only. Over $\mathbb{R}$, a pencil some of
+whose nine complex base points are not real does not satisfy \lean{ExactlyMeetIn} for any nine
+real points, so Theorem~\ref{thm:classical} says nothing about it. Over an algebraically closed
+field, ``exactly nine distinct common zeros'' is the usual hypothesis. It excludes a common
+component, so every intersection multiplicity is~1 by B\'ezout, and
+Theorem~\ref{thm:classical} is then the textbook statement for distinct points. B\'ezout's theorem
+itself is not formalised here.
+\end{remark}
+
+\section{Finite fields}\label{sec:finite}
+
+Table~\ref{tab:finite} records where each statement starts to hold. Here $q=|K|$.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.40\textwidth}
+  >{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}@{}}
+\toprule
+Statement & Holds for & Fails for \\ \midrule
+Line lemma (cubics) & $q\ge3$ & $q=2$ (formal counterexample)\\
+Conic line lemma, \decl{conic_three} & all $q$ & --- \\
+Eight-point criterion, Theorems~\ref{thm:gp} and~\ref{thm:ncf} & all $q$ (vacuous for $q=2$) & --- \\
+Theorem~\ref{thm:classical} (exactly nine) & $q=2$ (vacuous), $q=3$, $q\ge8$; all formalised & $q=4,5,7$\\
+Pascal, Pappus via Cayley--Bacharach & $q\ge 11$ (\decl{CardGT}~\lean{K 10}) & not investigated \\
+Pascal, Pappus, direct proofs (Section~\ref{sec:l1415}) & all $q$ & --- \\
+\bottomrule
+\end{tabular}
+\caption{Field-size thresholds.}
+\label{tab:finite}
+\end{table}
+
+Theorem~\ref{thm:classical} does not simply start to hold at some threshold. It holds
+vacuously for $q=2$, holds for $q=3$, fails for $q=4,5,7$, and holds again from $q=8$ on. The
+reason is that every counterexample needs a common component, since otherwise
+Theorem~\ref{thm:ncf} applies. For small $q$ a line or conic has few points, and a pencil with a
+common component can then have exactly nine rational common zeros. For $q\ge8$ the line or conic
+alone has at least nine points, and the proof above goes through. For $q=2$ there are only seven
+points. For $q=3$ lines and conics are too small even for that:
+
+\begin{theorem}[$q=3$]\label{thm:f3}
+Let $|K|=3$. If $F,G$ are linearly independent cubic forms with nine pairwise non-proportional
+common zeros $P_1,\dots,P_9$ (not necessarily all their common zeros), then every cubic vanishing at
+$P_1,\dots,P_8$ vanishes at $P_9$ (\decl{cayley_bacharach_card3}). Consequently the textbook form
+holds over a finite field $K$ whenever $|K|\notin\{4,5,7\}$
+(\decl{cayley_bacharach_classical_finite}).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+We show that $F$ and $G$ have no common component, and then apply
+\decl{cayley_bacharach_of_no_common_factor}. \emph{Common line $\ell$}
+(\decl{no_common_line_card3}): at most $q+1=4$ of the nine points lie on $\ell$, so at least five
+lie off $\ell$ and are common zeros of the two residual conics. No four of these are collinear: a
+line through four of them also meets $\ell$, giving five points on a line in $\PP^2(\F_3)$, which has
+only four. Conics through five points with no four collinear form a space of dimension at most
+one, so the residual conics are proportional, and then so are $F$ and $G$. \emph{Common conic $q$
+without a line component} (\decl{no_common_conic_card3}): at most one of the nine points is off
+$q$, since two would force a common line. So $q$ has eight pairwise non-proportional zeros. But
+projecting from one zero, the others lie on distinct lines through it (three collinear zeros would
+give a line component), so $q$ has at most $q+2=5$ zeros. Both cases are contradictory.
+The consequence combines this with \decl{cayley_bacharach_classical_card8}, the vacuous case
+$q=2$, and the fact that no field has six elements.
+\end{proof}
+
+The proof is a counting argument; no case enumeration is done in Lean. Earlier versions of this
+paper reported the case $q=3$ only as the result of an exhaustive computer search, which agrees:
+pencils with a common line have at most eight common zeros over $\F_3$, and pencils with a common
+conic having no line component at most five. The theorem is not vacuous over $\F_3$: $x^3-xz^2$ and
+$y^3-yz^2$ have exactly the nine affine points as common zeros.
+
+\begin{example}[counterexamples]\label{ex:counter}
+In each case $F$ and $G$ are linearly independent, their common zeros in $\PP^2(\F_q)$ are
+exactly the nine listed points, and $H$ vanishes at eight of them but not at the remaining one
+(which plays the role of $P_9$). We write
+$\F_4=\F_2[w]/(w^2+w+1)$. The common zeros and the values of~$H$ were computed by exhaustive
+evaluation over $\PP^2(\F_q)$ with independent scripts.
+\begin{itemize}
+\item $q=4$: $F=z(x+wy+(w+1)z)(x+wy+wz)$ and $G=z(x+y+(w+1)z)(x+y)$. The common zeros are
+$(0:1:0)$, $(1:0:0)$, $(1:0:w)$, $(1:1:0)$, $(1:1:1)$, $(1:1:w)$, $(1:w:0)$, $(1:w:1)$ and
+$(1:w{+}1:0)$. The cubic $H=x^2z+w\,xyz+(w+1)\,y^2z$ vanishes at all of them except $(1:0:w)$.
+\item $q=5$: $F=z(x+2y+3z)(x+2z)$ and $G=z(x+3y+2z)(x+y)$. The common zeros are $(0:1:0)$,
+$(0:1:1)$, $(1:0:0)$, $(1:0:2)$, $(1:1:0)$, $(1:2:0)$, $(1:3:0)$, $(1:4:0)$ and $(1:4:2)$. The
+cubic $H=x^2z+z^3$ vanishes at all of them except $(0:1:1)$.
+\item $q=7$: $F=z(x+4y+4z)^2$ and $G=z(x+4y+z)(y+2z)$. The common zeros are the eight points of
+$z=0$ and $(1:3:2)$. The cubic $H=x^2z$ vanishes at all of them except $(1:3:2)$.
+\item $q=7$, common conic: $c=xz+y^2$, $F=z\,c$ and $G=x\,c$. The common zeros are the eight points
+of $c$ and $(0:1:0)$. The cubic $H=y\,c$ vanishes at all of them except $(0:1:0)$.
+\end{itemize}
+These examples do not contradict the formal theorems. In each of them five or more of the first
+eight points are collinear, or the first eight lie on a conic, and $F$ and $G$ share a component.
+% Script: code/counterexamples.py in the repository.
+\end{example}
+
+The counterexamples are not formalised in Lean. The finite-field criterion and the counts behind
+\decl{conic_points} were also checked by brute force for small $q$. The criterion was tested on
+all $8$-subsets of $\PP^2(\F_3)$ and $\PP^2(\F_4)$ and on $20{,}000$ random $8$-subsets for $q=5$
+and $q=7$, with no failures. Every conic over $\F_q$ with at least two zeros and no line
+component was found to have exactly $q+1$ zeros, exhaustively for $q=3,4,5,7$ and on $40{,}000$
+random conics for $q=8,9$.
+
+\section{Applications}\label{sec:apps}
+
+\subsection{Pascal and Pappus}
+
+Let $A_1,\dots,A_6$ be six points and $L_{ij}=A_i\times A_j$ the side lines. The cubics
+$F=L_{12}L_{34}L_{56}$ and $G=L_{23}L_{45}L_{61}$ both vanish at the six vertices and at
+$X=L_{12}\cap L_{45}$, $Y=L_{23}\cap L_{56}$ and $Z=L_{34}\cap L_{61}$. If the vertices lie on a
+conic~$q$, the cubic $H=(X\times Y)\cdot q$ vanishes at the six vertices and at $X$ and~$Y$. By
+Cayley--Bacharach it vanishes at~$Z$. If $q(Z)\ne0$, then $Z$ lies on the line $XY$.
+
+The basic formal statements \decl{pascal_of_cayley_bacharach} and
+\decl{pappus_of_cayley_bacharach} carry the hypotheses of Theorem~\ref{thm:classical}
+explicitly. These are that the nine points are distinct, that each side of $F$ differs from each
+side of~$G$, and that $Z$ is off the conic ($q(Z)\ne0$, or $l\cdot Z\ne0\ne m\cdot Z$ for Pappus). The proofs discharge \lean{ExactlyMeetIn} and linear
+independence of $F$ and $G$. We then derive all these hypotheses from the natural ones.
+
+\begin{theorem}[Pascal]\label{thm:pascal}
+Let $|K|\ge11$ or $K$ infinite. Let $A_1,\dots,A_6$ be distinct points on a conic $q$ that is not
+a product of two linear forms over~$K$ (in particular $q\ne0$). Then the points $L_{12}\times L_{45}$,
+$L_{23}\times L_{56}$ and $L_{34}\times L_{61}$ are collinear.
+\end{theorem}
+
+\begin{lstlisting}
+theorem pascal_clean [CardGT K 10] (A₁ A₂ A₃ A₄ A₅ A₆ : Fin 3 → K)
+    (hA : ∀ i j, i ≠ j → ![A₁, A₂, A₃, A₄, A₅, A₆] i ⨯₃ ![A₁, A₂, A₃, A₄, A₅, A₆] j ≠ 0)
+    (q : Fin 6 → K) (hirr : ∀ ℓ m : Fin 3 → K, q ≠ linMul ℓ m)
+    (hq₁ : evalC q A₁ = 0) (hq₂ : evalC q A₂ = 0) (hq₃ : evalC q A₃ = 0)
+    (hq₄ : evalC q A₄ = 0) (hq₅ : evalC q A₅ = 0) (hq₆ : evalC q A₆ = 0) :
+    Matrix.det ![A₁ ⨯₃ A₂ ⨯₃ (A₄ ⨯₃ A₅), A₂ ⨯₃ A₃ ⨯₃ (A₅ ⨯₃ A₆),
+      A₃ ⨯₃ A₄ ⨯₃ (A₆ ⨯₃ A₁)] = 0
+\end{lstlisting}
+
+The conclusion $\det(X,Y,Z)=0$ is the usual coordinate test for collinearity. The genericity
+conditions come from \decl{pascal_generic}. First, no three vertices are collinear
+(\decl{noncollinear_of_irreducible}, via \decl{conic_three}). From this we get the nine
+side-line conditions, $X,Y,Z\ne0$, that $X,Y,Z$ are distinct from each vertex and from each
+other, and that $X,Y,Z$ are off the conic (\decl{pascal_points_off_conic}). Irreducibility is used to establish the genericity this proof needs; it is not needed for the
+conclusion itself, and the determinant identity $\det(X,Y,Z)=0$ holds for degenerate conics too~\cite{PascalHexagon}. For the line pair $q=xy$, with $A_1,A_2,A_3$ on $x=0$ and
+$A_4,A_5,A_6$ on $y=0$, we get $L_{12}=L_{23}$ and $X=Y$. With $A_1,A_2,A_4,A_5$ on $x=0$ we get
+$L_{12}=L_{45}$ and $X=0$. In both cases $\det(X,Y,Z)=0$ still holds, but the nine points are no
+longer distinct, so Cayley--Bacharach does not apply. Pappus's theorem is the alternating-vertex
+specialisation to a line pair.
+
+\begin{theorem}[Pappus]\label{thm:pappus}
+Let $|K|\ge11$ or $K$ infinite. Let $A_1,A_3,A_5$ be distinct points on a line~$l$ and
+$A_2,A_4,A_6$ distinct points on a line~$m$, none of the six lying on both lines. Then the points
+$L_{12}\times L_{45}$, $L_{23}\times L_{56}$ and $L_{34}\times L_{61}$ are collinear.
+\end{theorem}
+
+This is \decl{pappus_clean}. The condition ``none on both lines'' is stated as
+$m\cdot A_1\ne 0$, $l\cdot A_2\ne0$, and so on. The hypotheses imply $l\ne m$
+(\decl{pappus_lines_distinct}), so this need not be assumed. \decl{pappus_generic} derives the
+genericity hypotheses. In the tested collisions and line-intersection degenerations (\texttt{check\_stage8.py}), the
+nine-point genericity fails, although $\det(X,Y,Z)=0$ still holds: two Pascal points coincide or
+vanish, or a Pascal point becomes a vertex. These are therefore
+limits of the proof method, not counterexamples to Pappus's theorem. A direct polynomial proof
+would not need them. A formalisation of Pascal's and Pappus's theorems over arbitrary fields by
+such a direct proof exists~\cite{PascalHexagon}, and version~5 of this development contains direct
+proofs over every field as well (Section~\ref{sec:l1415}). The point of the present section is that both theorems follow
+from Cayley--Bacharach.
+
+\subsection{Line pairs and the Gram determinant}
+
+Pascal's theorem is often stated for a nondegenerate conic, $\det M(q)\ne0$, where $M(q)$ is the
+symmetric matrix with $v^{\mathsf T}M(q)v=q(v)$. The formal \decl{gram}~$q$ has the off-diagonal
+coefficients halved, and \decl{gram_quadForm} shows $v^{\mathsf T}M(q)v=q(v)$ when $2\ne0$ in~$K$.
+
+\begin{proposition}\label{prop:gram}
+Let $2\ne0$ in $K$. If $q=\ell\cdot m$, then $\det M(q)=0$. Hence, for $|K|>10$, Pascal's theorem
+holds for conics with $\det M(q)\ne 0$. If $K$ is algebraically closed, then conversely $\det M(q)=0$
+implies that $q$ is a product of two linear forms.
+\end{proposition}
+
+The three statements are \decl{det_gram_linMul}, \decl{pascal_clean_det} and
+\decl{det_gram_eq_zero_iff}.
+
+For the converse, a kernel vector $v$ of $M(q)$ is a zero of $q$ at which the polar form
+$B(v,\cdot)$ vanishes. Over an algebraically closed field, $q$ has a further zero $w$ not
+proportional to~$v$. Then $q(sv+tw)=s^2q(v)+st\,B(v,w)+t^2q(w)=0$, with $B$ the unhalved polar form as above, so $q$ contains the line $vw$,
+and the conic line lemma splits it off. The hypothesis $2\ne0$ is needed in the forward
+direction. In Lean $2^{-1}=0$ in characteristic~2, so \decl{gram} is not the Gram matrix there.
+\decl{det_gram_linMul_char_two} records that the square $(x+y+z)^2$ over $\mathbb{Z}/2$ then gets
+determinant~1. As predicates on conics, $\det M(q)\ne0$ is strictly stronger than irreducibility over a field
+that is not algebraically closed: $x^2+y^2$ over $\mathbb{Q}$ is not a product of linear forms but
+has $\det M=0$. This does not give more six-point configurations, however: that conic has only the
+rational point $(0:0:1)$, and in characteristic $\ne2$ a singular conic with two distinct rational
+zeros splits. The genuine additional scope of \decl{pascal_clean} is characteristic two.
+
+\section{Does the statement mean what it says?}\label{sec:correct}
+
+The development uses its own coefficient-vector representation. A reader has to check that the
+basic operations mean what their names suggest. These lemmas are provided for that purpose.
+\begin{itemize}
+\item \decl{eval_expand} writes out \lean{eval F v} as the explicit cubic polynomial in
+$v_0,v_1,v_2$. \decl{evalC_expand} does the same for conics.
+\item \decl{eval_mulLin} and \decl{evalC_linMul} show that \lean{mulLin} and \lean{linMul} are
+the products they are meant to be: $(\ell q)(v)=(\ell\cdot v)\,q(v)$ and
+$(\ell m)(v)=(\ell\cdot v)(m\cdot v)$.
+\item \decl{eval_smul_vec} gives $F(cv)=c^3F(v)$ and \decl{vanishesAt_smul_iff} shows that
+vanishing at a point does not depend on the representative. \decl{evalC_smul_vec} gives
+$q(cv)=c^2q(v)$.
+\item \decl{ker_evalMap_eq} identifies the kernel of the evaluation map with the cubics
+vanishing at the points. The dimensions in Theorem~\ref{thm:criterion} are those of this kernel.
+\item The two easy directions of Theorem~\ref{thm:criterion} show that neither \lean{h5} nor
+\lean{hconic} can be dropped from the criterion: without either one the dimension can be~3. The
+general-position form of Cayley--Bacharach then fails: for five points on $y=0$ plus three more, our numerical check exhibits two cubics through
+the eight points and a ninth point~$R$, and a third cubic through the eight that misses~$R$.
+\item The hypothesis \lean{hP} (pairwise non-proportional) is exactly distinctness in
+$\PP^2(K)$. \decl{card_le_seven_of_not_atLeastThree} shows that it cannot hold for eight points
+over~$\F_2$, so the \lean{\_any} theorems are vacuous there. This is the expected behaviour,
+since $\PP^2(\F_2)$ has seven points.
+\item \lean{ExactlyMeetIn} is literally ``the common zeros are the $P_i$ up to scaling''. The
+hypothesis refers to rational points; see the remark after Theorem~\ref{thm:classical}.
+\item The three sharpness statements \decl{line_lemma_false_zmod_two}, \decl{det_gram_linMul_char_two}
+and the $\F_4,\F_5,\F_7$ counterexamples show that the size and characteristic hypotheses are
+not artefacts of the proofs. The first two are formal; the last is computational.
+\end{itemize}
+A further file, \texttt{Bridge.lean}, records that the local definitions are the standard
+notions. \decl{eval_smul_smul} and \decl{evalC_smul_smul} give $(aF)(cv)=ac^3F(v)$ and
+$(aq)(cv)=ac^2q(v)$, and \decl{vanishesAt_smul_smul_iff} shows that \decl{VanishesAt} is well defined
+on forms and points up to nonzero scalars; \decl{vanishesAt_iff}, \decl{commonZero_iff} and
+\decl{exactlyMeetIn_iff} (with \decl{cross_eq_zero_iff_eq_smul}) read \decl{VanishesAt},
+\decl{CommonZero} and \decl{ExactlyMeetIn} through \lean{eval}. \decl{mem_onLine_iff_mem_ker} says
+that \decl{onLine} is the kernel of the linear form~$\ell$. \decl{col4_iff_exists_mulVec},
+\decl{col4_iff_rank_le_two} and \decl{col4_iff_minors} show that \decl{Col4} holds iff the
+$4\times3$ coordinate matrix has rank at most~2, iff all its $3\times3$ minors vanish.
+\decl{polarC_eq}, \decl{polarC_self}, \decl{polarC_comm} and \decl{polarC_eq_bilin} show that
+\decl{polarC} is the symmetric bilinear form $q(x+y)-q(x)-q(y)$, with no division, in every
+characteristic. These lemmas are not used elsewhere and add no new results.
+
+The conclusions of Pascal and Pappus are stated as $\det(X,Y,Z)=0$. We do not connect this here
+with Mathlib's \lean{Projectivization.IsCollinear}. That connection is proved in the author's
+Pascal development~\cite{PascalHexagon}.
+
+\section{Related work}\label{sec:related}
+
+\paragraph{Mathematics.} The classical sources are Cayley's paper of 1843~\cite{Cayley} and
+Bacharach's paper of 1886~\cite{Bacharach}. Eisenbud, Green and Harris~\cite{EGH} trace the
+history of the theorem and its later generalisations. Fulton's textbook
+proves Pascal's and Pappus's theorems from Max Noether's fundamental theorem, over an
+algebraically closed field~\cite[\S5.6]{Fulton}. Our proof is the elementary linear-algebra
+argument. We have not found the finite-field thresholds of Section~\ref{sec:finite} stated in the
+literature, but we did not search the literature on curves over finite fields systematically,
+and we make no claim that they are new.
+
+\paragraph{Formalisations.} We searched for existing formalisations in the following places. For
+GitHub we used code and repository search and the list of open Mathlib pull requests. We also
+checked the Isabelle Archive of Formal Proofs (1{,}034 entries at the time)~\cite{AFP}, the HOL~Light
+repository~\cite{HOLLight}, and the list of famous theorems proved in Rocq~\cite{Rocq100}. The
+searches were made between 28 and 30 September 2026 and found no formalisation of the theorem.
+% TODO(Josh): Mizar MML not searched; search it or keep this sentence.
+We did not search the Mizar Mathematical Library.
+Mathlib's list of 1000 theorems has an entry ``Cayley--Bacharach theorem'' with no associated
+declaration~\cite{Mathlib1000}. The following nearby items exist.
+\begin{itemize}
+\item Google DeepMind's \emph{formal-conjectures} states the Eisenbud--Green--Harris conjecture,
+a much more general open problem motivated by Cayley--Bacharach. It does not prove
+Cayley--Bacharach~\cite{FormalConjectures}.
+\item In Meta's \emph{atlas-lean}, one file states B\'ezout's theorem and Pascal's theorem. The
+B\'ezout statements and a step of the Pascal construction are left as \lean{sorry}. A GitHub code search of
+that repository for ``Bacharach'' returned no results~\cite{AtlasLean}.
+\item The \emph{ShadowBench} autoformalisation benchmark includes an informal statement and proof of
+the theorem as a statement-formalisation task. No formal proof is public in that item; the benchmark's gold
+formalisations are private and we did not inspect them~\cite{ShadowBench}.
+\end{itemize}
+A search of the Lean Zulip chat for ``Bacharach'' on 30 September 2026 returned no results. As far as we could determine, this is the first
+formalisation of the Cayley--Bacharach theorem in a proof assistant, but the searches are not
+exhaustive.
+
+\section{Verification}\label{sec:gate}
+
+The library has 19 modules and a root file, about 4{,}150 lines, 216 theorems and 32
+definitions (at the published commit; version~5 adds the two modules of Section~\ref{sec:l1415}). At the published commit, a full \lean{lake build} finishes with 0 errors and 0 warnings. Lean reports every
+use of \lean{sorry} as a warning, so this rules it out. A grep of all sources finds no
+\lean{sorry}, \lean{admit}, \lean{native\_decide}, \lean{axiom}, \lean{set\_option},
+\lean{\#eval}, \lean{run\_cmd}, \lean{macro}, \lean{elab}, \lean{syntax}, \lean{notation} or
+\lean{import Lean}. On the published-commit sources, a single scratch file outside the library
+(\path{scratch/PaperAxioms.lean}, output \path{scratch/paper_axioms.out}) runs \lean{\#print axioms}
+on the 99 declarations cited in the paper before version~5 and one further supporting theorem. Every reported
+axiom is among \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}; the abbreviation
+\decl{PlaneCubic} uses none. The repository's \path{gate.sh} regenerates these queries itself for the same 100 fully qualified
+declarations, rejects forbidden tokens and fails on any other axiom; on a fresh clone of commit
+\texttt{\shortcommit} it prints \texttt{PASS (100 declarations, standard axioms only)} with GNU
+tools (on macOS the published script stops at a GNU-only \lean{mktemp} option; see
+Section~\ref{sec:l1415}).
+\path{tests/tamper.sh} plants six kinds of defect in scratch copies (a \lean{sorry}, a split
+\lean{axiom}, a fake \lean{\#eval} report, a macro, a weakened field-size hypothesis, a wrapped
+extra axiom) and requires each to be rejected with a nonzero exit status and the expected failure
+message; all six are rejected.
+
+Python scripts in \texttt{code/} check the mathematics independently of Lean.
+\begin{itemize}
+\item \texttt{check\_cb.py} (exact rationals, sympy). For five random configurations of eight
+points it verifies $\dim V(P)=2$, computes the ninth base point, and checks that an independently
+computed cubic through the eight vanishes there. It also checks the five-collinear negative
+example of Section~\ref{sec:correct}.
+\item \texttt{check\_stage5.py}. This checks the $\mathbb{R}$ example $x q, y q$ with
+$q=x^2+y^2+z^2$, which has the single real common zero $(0:0:1)$, and the projection construction
+of \decl{false_of_conic}.
+\item \texttt{check\_stage6.py}, \texttt{check\_stage7.py}, \texttt{check\_stage8.py},
+\texttt{examples\_stage8.py}. These test random Pascal and Pappus configurations and the
+degenerations of Section~\ref{sec:apps}. In a negative control, moving a vertex off the conic gave a
+nonzero determinant in 50 of 50 observed cases.
+\item \texttt{criterion\_examples.py}, \texttt{counterexamples.py}, and five search scripts
+(\texttt{brute9.py}, \texttt{classical9.py}, \texttt{classical9b.py}, \texttt{q8conic.py},
+\texttt{count10.py}). These contain the rank computations of Section~\ref{sec:correct}, the brute-force checks over $\F_q$ and
+the counterexamples of Example~\ref{ex:counter}; saved outputs of the long searches are in
+\texttt{code/outputs/}.
+\end{itemize}
+Automated checks cannot replace comparing the formal statements with their informal
+counterparts. Sections~\ref{sec:conv} and~\ref{sec:correct} are meant to make that comparison
+easier.
+The author has checked each statement in Table~\ref{tab:thms} against its informal counterpart by hand.
+The Layer-14 and Layer-15 statements of Section~\ref{sec:l1415} have not been checked by hand.
+
+\subsection{Layers 14 and 15}\label{sec:l1415}
+
+Version~5 adds two further checks, in the files \path{CayleyBacharach/L14.lean} (1{,}050 lines,
+namespace \lean{CBL14}) and \path{CayleyBacharach/L15Classical.lean} (1{,}040 lines, namespace
+\lean{CayleyBacharach.Classical}), at the new commit \texttt{d9c674c68c0a1b475a284f9bd33ec5f7e6d52689}. The gate explicitly lists 27 Layer-14
+declarations and 41 Layer-15 declarations in \path{gate.sh}, which prints \texttt{PASS (168 declarations, standard axioms only)}
+(100 earlier, 27 from Layer~14, 41 from Layer~15), and \path{tests/tamper.sh} still rejects all six
+planted defects. The earlier library files are byte-for-byte unchanged. The published \path{gate.sh}
+used GNU \lean{mktemp} options and failed on macOS (BSD tools) before checking anything. The new commit
+uses a portable temporary file name, and the gate passes with BSD tools. \path{tests/tamper.sh} still
+needs GNU \lean{sed}.
+
+\paragraph{Layer 14: statements in Mathlib's language, with witnesses.}
+In \path{CayleyBacharach/L14.lean} the main results are restated with Mathlib-only types: forms are
+homogeneous \lean{MvPolynomial (Fin 3) K}, points are vectors \lean{Fin 3} $\to$ \lean{K}, distinctness is
+\lean{LinearIndependent K ![u, v]}, vanishing is \lean{MvPolynomial.eval}, common components are
+factorisations in \lean{MvPolynomial}, the cubics through the points form
+\lean{homogeneousSubmodule} intersected with evaluation kernels, and collinearity is
+$\det(X,Y,Z)=0$. Each restatement is proved from the library theorem through bridge lemmas
+(\decl{l14b_eval3}, \decl{l14b_cubicsThrough}, \decl{l14b_lin}, \decl{l14b_con}, \decl{l14b_exact} and
+others). Twelve restatements cover nine results: Theorems~\ref{thm:gp} and~\ref{thm:ncf}
+(\decl{l14_cayley_bacharach_any}, \decl{l14_cayley_bacharach_of_no_common_factor_any});
+Theorem~\ref{thm:classical} (\decl{l14_cayley_bacharach_classical}, and
+\decl{l14_cayley_bacharach_classical_finite} for $|K|\notin\{4,5,7\}$, which subsumes the $|K|\ge8$ and
+$|K|=3$ cases); Theorem~\ref{thm:f3} (\decl{l14_cayley_bacharach_card3}); Theorem~\ref{thm:criterion}
+(\decl{l14_finrank_eq_two_iff}); Theorems~\ref{thm:pascal} and~\ref{thm:pappus} (\decl{l14_pascal},
+\decl{l14_pappus}, and \decl{l14_pascal_points}, \decl{l14_pappus_points}, in which $X,Y,Z$ are
+\emph{any} points satisfying their two incidences); the cubic part of Lemma~\ref{lem:line}
+(\decl{l14_line_lemma}); and \decl{line_lemma_false_zmod_two} (\decl{l14_line_lemma_false_zmod_two}).
+A mechanical check of the elaborated types found no constant of this library in any of them. No
+restatement turned out false or needed an extra hypothesis. Six witness theorems prove every hypothesis
+on an explicit configuration, together with non-degeneracy: the $3\times3$ grid over $\mathbb{Q}$, with
+the nine points pairwise distinct, $F,G$ independent, $H=F+G$ proportional to neither, exactness and the
+absence of common components proved (\decl{l14w_cayley_bacharach}); the same pencil over $\F_3$, whose
+common zeros are exactly the nine affine points (\decl{l14w_cayley_bacharach_zmod3}); both directions of
+the criterion, eight grid points with $\dim=2$ and eight points with five on $y=0$ with $\dim\ne2$
+(\decl{l14w_finrank_eq_two_iff}); six rational points on $x^2+y^2=z^2$, with the conic proved not a line
+pair and the three Pascal points pairwise distinct (\decl{l14w_pascal}); a Pappus configuration over
+$\mathbb{Q}$ with pairwise distinct Pappus points (\decl{l14w_pappus}); and $F=z(x^2+y^2+z^2)$ for the
+line lemma (\decl{l14w_line_lemma}). The $\F_2$ counterexample is itself concrete. Not restated, to stay
+within the time box: Proposition~\ref{prop:gram} (\decl{det_gram_eq_zero_iff}, \decl{det_gram_linMul},
+\decl{pascal_clean_det}), whose Gram matrix is a local definition, the conic part of
+Lemma~\ref{lem:line}, and the auxiliary lemmas (\decl{conic_three}, \decl{cubic_four} and others).
+
+\paragraph{Layer 15: comparison with the classical statements.}
+Another agent collected textbook statements of the four topics from the literature, with citations
+(Eisenbud--Green--Harris~\cite{EGH}, Fulton~\cite[\S5.6]{Fulton}, Reid's \emph{Undergraduate
+Algebraic Geometry}, Coxeter's \emph{Projective Geometry}, Wikipedia); page numbers were given as best
+known. An AI model given only these statements, with no access to our code or to this paper, wrote them
+in Lean with Mathlib notions (points of Mathlib's \lean{Projectivization}, forms in \lean{MvPolynomial},
+\lean{IsRelPrime} for ``no common component'') and definitions of its own, among them an intersection
+multiplicity defined as a module length over a localisation. It wrote 11 theorems and 4 well-formedness
+obligations, all with \lean{sorry}. Its transcript and self-reported file list were audited. A comparer
+preserved every binder and conclusion, mechanically rewriting each theorem with a placeholder proof
+as a Prop-valued definition. It proved coverage by library derivations or new proofs, or recorded a
+narrower or out-of-scope result, without changing the existing library files. Of the 15 statements, 9 are \emph{covered} (proved), 3 are covered only in a
+\emph{narrower} sense, 3 are \emph{out of scope} for this paper (2 of them nevertheless proved), and none
+was classified as \emph{false as written}. The proofs are collected, with the writer's definitions and mechanically
+rewritten statement definitions preserved from the comparison file, in \path{CayleyBacharach/L15Classical.lean}, namespace
+\lean{CayleyBacharach.Classical}. All of them depend only on the standard axioms. The covered statements
+are Cayley--Bacharach for coprime cubics with nine distinct common points, over every field, in both
+the ``passes through $P_9$'' and the ``$H=aF+bG$'' forms (\decl{cov_CB1_a}, \decl{cov_CB1_a_linear}); the
+criterion under ``no four collinear, no seven on a conic'' (\decl{cov_CB2_a}); Pascal, Pappus and
+Pappus in hexagon form; and the three corresponding obligations, that opposite sides meet in a unique
+point.
+
+\emph{New proofs} (not in the main files):
+\begin{itemize}
+\item \decl{cov_CB3_a}: Pascal's theorem over every field, for an irreducible conic and six distinct
+points, with $X,Y,Z$ given by their incidences (the library's \decl{pascal_clean} needs $|K|>10$). The
+explicit conic $Q(p)=[X,\,BC\cap Ep,\,CD\cap pA]$ passes through $A,\dots,E$ and is nonzero, so it is
+proportional to the given conic by \decl{conics_le_one}, and $Q(F)=0$ is the collinearity of $X,Y,Z$. This
+proof does not go through Cayley--Bacharach.
+\item \decl{cov_CB3_b}: the Braikenridge--Maclaurin converse over every field: if no three of six points
+are collinear and $X,Y,Z$ are collinear, the six points lie on a conic. The main files have no converse.
+\item \decl{cov_CB4_a}, \decl{cov_CB4_b}: Pappus's theorem over every field, in the three-point form and
+in hexagon form (the library's \decl{pappus_clean} needs $|K|>10$). The key step \decl{l15_papid} is a
+single polynomial identity.
+\item \decl{l15_intMult_ne_zero_iff}: the writer's intersection multiplicity of two forms at a point is
+nonzero if and only if both forms vanish there. The comparer did not verify that this definition
+agrees with Fulton's local intersection multiplicity; only its support equivalence was proved.
+\end{itemize}
+The comparer also proved Pascal and both Pappus forms through the library route, with the extra
+hypothesis $|K|>10$ (\decl{cov_CB3_a_part}, \decl{cov_CB4_a_part}, \decl{cov_CB4_b_part}).
+
+\emph{Narrower} (proved part, and what is missing):
+\begin{itemize}
+\item The writer's proposed encoding of Fulton's multiplicity version, with simple points or with $C_1$ irreducible (two statements):
+proved when $P_1,\dots,P_9$ are distinct, without algebraic closure (\decl{cov_CB1_b_part},
+\decl{cov_CB1_b_irreducible_part}); missing is the case of coincident points, that is genuine
+intersection multiplicities, which needs B\'ezout's theorem and local intersection numbers.
+\item The ninth base point of the pencil when two members meet in nine distinct points: existence over
+every field (\decl{cov_CB2_b_distinct_part}); missing is uniqueness, that two coprime cubics have at most
+nine common rational points (B\'ezout).
+\end{itemize}
+
+\emph{Out of scope}: the ninth base point over an algebraically closed field as the residual point of the
+intersection cycle (not proved; it needs B\'ezout and intersection cycles), and Braikenridge--Maclaurin
+with its obligation (proved, as above).
+
+\emph{Writer statements found false as written}: none; this does not establish the truth of the
+unproved statements.
+
+\section{Limitations and further work}
+
+\begin{itemize}
+\item \emph{Multiplicities.} The nine points are distinct. The version with intersection
+multiplicities, which covers tangencies and degenerate hexagons, needs B\'ezout's theorem and
+local intersection numbers. Neither is formalised here. The Layer-15 file proves only the case of
+distinct points of the writer's proposed encoding of Fulton's multiplicity version (Section~\ref{sec:l1415}).
+\item \emph{Rational points.} Theorem~\ref{thm:classical} is about $K$-rational common zeros.
+We do not prove that ``no common component'' implies ``exactly nine points over $\bar K$, counted
+with multiplicity'', nor that two coprime cubics have at most nine common rational points; the
+uniqueness half of the corresponding Layer-15 statement is therefore open.
+\item \emph{Counterexamples over $\F_4$, $\F_5$, $\F_7$.} These are verified by computer, not in
+Lean, so the ``only if'' half of the finite-field classification is not formalised.
+\item \emph{Pascal and Pappus over small fields.} The versions derived from Cayley--Bacharach carry
+\decl{CardGT}~\lean{K 10} because they go through the $|K|\ge11$ version of
+Theorem~\ref{thm:classical}. Routing them through \decl{cayley_bacharach_classical_card8} should lower
+this to $|K|\ge8$, and proving directly that the two triangle cubics have no common component might
+remove the size hypothesis from that route. Neither has been done. Pascal and Pappus themselves now
+hold over every field by the direct proofs of version~5 (Section~\ref{sec:l1415}).
+\item \emph{Representation.} Cubics and conics are coefficient vectors, not Mathlib's
+\lean{MvPolynomial}, and points are vectors, not elements of \lean{Projectivization}. This keeps
+the linear algebra simple. A contribution to Mathlib would need a bridge to the standard
+structures. The Layer-14 file bridges forms to \lean{MvPolynomial} for the restated theorems, and the
+Layer-15 file connects some of them to points of \lean{Projectivization}
+(Section~\ref{sec:l1415}); the main files are unchanged.
+\item \emph{Further applications.} Associativity of the group law on a plane cubic is the best-known
+application of Cayley--Bacharach. It needs the chord--tangent construction and multiplicities, and
+it is not attempted.
+\end{itemize}
+
+\section*{Acknowledgements and use of AI}
+A large-language-model AI assistant was used to write the Lean proofs and the Python checking
+scripts, to run the prior-art searches, and to draft this paper. The author directed the work and
+reviewed the paper, and checked each formal statement in Table~\ref{tab:thms} against its
+informal counterpart by hand.
+The Layer-14 and Layer-15 files, the collection of classical statements, the blind formalisation and
+the comparison (Section~\ref{sec:l1415}) were all done by AI agents and have not been checked by hand.
+Every proof is checked by the Lean kernel, and the author takes responsibility for all content.
+
+\begin{thebibliography}{99}\sloppy
+\bibitem{AFP} \emph{Archive of Formal Proofs}, \url{https://www.isa-afp.org/}, accessed 28
+September 2026.
+\bibitem{AtlasLean} Meta Platforms, Inc., \emph{atlas-lean}, file
+\path{v1/Atlas/AlgebraicGeometryI/code/Lec5BezoutPascal.lean},
+\url{https://github.com/facebookresearch/atlas-lean}, accessed 30 September 2026.
+\bibitem{Bacharach} I.~Bacharach, Ueber den Cayley'schen Schnittpunktsatz, \emph{Mathematische
+Annalen} 26 (1886), 275--299.
+\bibitem{PascalHexagon} J.~Bald, \emph{pascal-hexagon}: Pascal's hexagon theorem over an arbitrary
+field in Lean~4, \url{https://github.com/jpbald93/pascal-hexagon}, accessed 30 September 2026.
+\bibitem{Cayley} A.~Cayley, On the intersection of curves, \emph{Cambridge Mathematical Journal}
+3 (1843), 211--213.
+\bibitem{Lean4} L.~de Moura and S.~Ullrich, The Lean~4 theorem prover and programming language, in
+\emph{Automated Deduction -- CADE~28}, Lecture Notes in Computer Science 12699, Springer, 2021,
+625--635.
+\bibitem{EGH} D.~Eisenbud, M.~Green and J.~Harris, Cayley--Bacharach theorems and conjectures,
+\emph{Bulletin of the American Mathematical Society (N.S.)} 33 (1996), no.~3, 295--324.
+\bibitem{FormalConjectures} Google DeepMind, \emph{formal-conjectures}, file
+\path{FormalConjectures/Paper/EisenbudGreenHarris.lean},
+\url{https://github.com/google-deepmind/formal-conjectures}, accessed 30 September 2026.
+\bibitem{Fulton} W.~Fulton, \emph{Algebraic Curves: An Introduction to Algebraic Geometry},
+first published 1969; edition of January 2008, made freely available by the author.
+\bibitem{HOLLight} J.~Harrison, HOL~Light repository, \url{https://github.com/jrh13/hol-light},
+accessed 28 September 2026.
+\bibitem{Mathlib} The mathlib Community, The Lean mathematical library, in \emph{Proceedings of the
+9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020)}, ACM, 2020,
+367--381.
+\bibitem{Mathlib1000} The mathlib Community, \texttt{docs/1000.yaml}, Mathlib repository,
+\url{https://github.com/leanprover-community/mathlib4}, accessed 30 September 2026.
+\bibitem{Rocq100} \emph{Famous theorems proven in Rocq}, \url{https://madiot.fr/rocq100/}, accessed
+30 September 2026.
+\bibitem{ShadowBench} \emph{ShadowBench}, item
+\path{data/algebraic-geometry/L3/alg_gen_L3_001}, \url{https://github.com/ldilab/shadowbench},
+accessed 30 September 2026.
+\bibitem{Wikipedia} Wikipedia, \emph{Cayley--Bacharach theorem},
+\url{https://en.wikipedia.org/wiki/Cayley\%E2\%80\%93Bacharach_theorem}, accessed 30 September
+2026.
+\end{thebibliography}
+
+\end{document}

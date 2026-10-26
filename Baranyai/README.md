@@ -1,6 +1,6 @@
 # Supporting material — Baranyai's theorem on factorisations of complete uniform hypergraphs, formalised in Lean 4 with Mathlib
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653454 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23108968
 
 Paper key: Baranyai. Built 23 October 2026.
 

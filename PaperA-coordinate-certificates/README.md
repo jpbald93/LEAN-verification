@@ -1,6 +1,6 @@
 # Supporting material — Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean 4
 
-Zenodo DOI of the paper: https://doi.org/10.5281/zenodo.23239930
+Zenodo: this version https://doi.org/10.5281/zenodo.23653175 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23239930
 
 Paper key: A. Built 23 October 2026.
 

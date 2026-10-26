@@ -1,6 +1,6 @@
 # Supporting material — Dandelin spheres and Marden's theorem, formalised in Lean 4
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653340 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23065868
 
 Paper key: Conics. Built 23 October 2026.
 

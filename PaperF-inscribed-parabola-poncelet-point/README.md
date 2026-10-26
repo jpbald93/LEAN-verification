@@ -1,6 +1,6 @@
 # Supporting material — The inscribed parabola and the Poncelet point: the complete quadrilateral and the complete quadrangle in Lean 4
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653616 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23653615
 
 - `paperf.tex`, `paperf.pdf` — the paper.
 - Lean sources: https://github.com/jpbald93/quadparabola (commit f85c7bbdbf527c37b940d2331e6d720f01d221db) and

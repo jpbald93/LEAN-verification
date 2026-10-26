@@ -1,6 +1,6 @@
 # Supporting material — Pascal's hexagon theorem over an arbitrary field, formalised in Lean 4
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653512 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23020861
 
 Paper key: Pascal. Built 23 October 2026.
 

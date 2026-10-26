@@ -1,6 +1,6 @@
 # Supporting material — Circle configurations in classical plane geometry, formalized in Lean 4: Clifford's chain, Miquel's five circles, Lester, Sawayama–Thébault and Kosnita
 
-Zenodo DOI of the paper: https://doi.org/10.5281/zenodo.23378578
+Zenodo: this version https://doi.org/10.5281/zenodo.23653309 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23378578
 
 Paper key: D. Built 23 October 2026.
 

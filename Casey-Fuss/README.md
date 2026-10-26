@@ -1,6 +1,6 @@
 # Supporting material — Casey's theorem and Fuss's theorem, formalised in Lean 4 with Mathlib
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653408 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23071821
 
 Paper key: CaseyFuss. Built 23 October 2026.
 

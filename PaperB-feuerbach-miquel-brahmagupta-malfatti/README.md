@@ -1,6 +1,6 @@
 # Supporting material — The Malfatti circles in Lean 4, with independent certificate proofs of Feuerbach, Miquel and Brahmagupta
 
-Zenodo DOI of the paper: https://doi.org/10.5281/zenodo.23240500
+Zenodo: this version https://doi.org/10.5281/zenodo.23653239 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23240500
 
 Paper key: B. Built 23 October 2026.
 

@@ -1,6 +1,6 @@
 # Supporting material — Primitive roots modulo primes 2^kℓ+1, formalised in Lean 4: Chebyshev's base-10 criterion and the least primitive root of a safe prime
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653561 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23004937
 
 Paper key: Prime. Built 23 October 2026.
 

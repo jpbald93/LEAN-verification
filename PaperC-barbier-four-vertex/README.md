@@ -1,6 +1,6 @@
 # Supporting material — Barbier's theorem for the Reuleaux triangle and the convex four-vertex theorem in Lean 4, through support functions
 
-Zenodo DOI of the paper: https://doi.org/10.5281/zenodo.23323062
+Zenodo: this version https://doi.org/10.5281/zenodo.23653270 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23323062
 
 Paper key: C. Built 23 October 2026.
 

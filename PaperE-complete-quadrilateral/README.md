@@ -1,6 +1,6 @@
 # Supporting material — The complete quadrilateral in Lean 4: Newton–Gauss, Bodenmiller, the Miquel point, the Steiner circle and the Simson line
 
-Zenodo DOI of the paper: https://doi.org/10.5281/zenodo.23407551
+Zenodo: this version https://doi.org/10.5281/zenodo.23653326 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23407551
 
 Paper key: E. Built 23 October 2026.
 

@@ -1,4 +1,4 @@
-e90d5b2fffd9517f5139692e84a02cfc6c6c10a5eaaffbafa0ff33fc6ca9d565  ./README.md
+71d3850db042d369b8b4d55ca50d4e3a3d35a83c5affb81b6d62b3f779a093a3  ./README.md
 bd80aeedcd61bc13691abce907d5a29905669e7987da96cb0c336b3a2ef355b2  ./casey_fuss.pdf
 4ddaed5885eaefa0c055e66be53d3aae994bd46b9771ff4c02176494c3342c4e  ./casey_fuss.tex
 de8814ca20e1e7cd1e293e875d08c0a26e50d08ce31b1cc0ba3a8e991701efcf  ./layer14_15/BLIND_TRANSCRIPT_AUDIT.md

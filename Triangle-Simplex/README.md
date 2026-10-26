@@ -1,6 +1,6 @@
 # Supporting material — Five classical theorems on triangles and simplices, formalised in Lean 4 with Mathlib: Carnot, Viviani, De Gua, the Japanese theorem and Poncelet's porism
 
-Zenodo record: see the paper.
+Zenodo: this version https://doi.org/10.5281/zenodo.23653348 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23066062
 
 Paper key: TriSimplex. Built 23 October 2026.
 

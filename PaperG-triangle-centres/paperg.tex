@@ -72,7 +72,8 @@ points of Lemoine's first circle are concyclic, and the Droz-Farny line theorem.
 pedal-centroid converse and Droz-Farny, no numbered theorem assumes that the ambient space is a plane. All proofs
 use only Lean's three standard axioms. In the sources we searched, subject to stated gaps, we found
 no earlier formal proof of these statements; one earlier Lean file proves an algebraic form of the
-Nagel and Gergonne cevian statements.
+Nagel and Gergonne cevian statements, and an earlier Coq development verifies barycentric forms of
+the Nagel line, the Spieker centre's position and two related facts.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -530,12 +531,23 @@ in an abstract real module and proves that the defined point lies on the cevian 
 itself defined by a formula. It is a partial, algebraic form of the cevian statements of
 Theorems~\ref{thm:gergonne} and~\ref{thm:nagel}: the feet are not tied to incircle or excircle
 tangency and the incentre is not tied to Mathlib's, and there is no Nagel line or ratio statement. We
-cite it as partial prior art. We found no Lean formalisation of the other theorems of this paper.
+cite it as partial prior art. We found no Lean formalisation of the other theorems of this paper;
+for algebraic Coq forms of some of them see the next paragraph.
 
 \paragraph{Other systems.} In GeoCoq and the Coq high-school geometry library the Euler line is
 formalised; we found no Nagel, Gergonne, Spieker, symmedian, Brocard, Lemoine-circle or Droz-Farny
 results there, nor in the Archive of Formal Proofs, the HOL~Light distribution or the Mizar
-Mathematical Library. All Lean hits for ``brocard'' that we found concern Brocard's number-theoretic
+Mathematical Library. Closest to this paper is the certified version of Kimberling's encyclopedia
+by Narboux and Braun \cite{certifiedetc}, in Coq. There, triangle centres are defined by their
+barycentric or trilinear coordinates, and transformations such as the complement and the isogonal
+conjugate by formulas; facts are proved by field normalisation. Its tables list as Coq-verified that
+$X(1)$ is the complement of $X(8)$ and $X(10)$ the complement of $X(1)$ (the Nagel line with its
+ratio, and the Spieker centre on it), that $X(4)$ is the complement of $X(20)$, and that $X(6)$ is the
+isogonal conjugate of $X(2)$. These are algebraic forms of parts of Theorems~\ref{thm:nagelline},
+\ref{thm:spieker}, \ref{thm:delong} and~\ref{thm:symmedian}: the points are not tied to incircle or
+excircle contact, to an incentre defined by equal distances, or to Euclidean angles, which is what
+our statements add. We found no Brocard-point, Brocard-angle, Lemoine-circle or Droz-Farny results
+there. All Lean hits for ``brocard'' that we found concern Brocard's number-theoretic
 problem $n!+1=m^2$, not the Brocard points.
 
 \paragraph{How the search was done, and its gaps.} The sweep (2026-10-24) grepped a local Mathlib
@@ -545,10 +557,15 @@ FormalBook, Compfiles and other benchmark collections, and searched local copies
 high-school geometry library, HOL~Light and the Mizar library, and the Archive of Formal Proofs
 through a GitHub mirror. The query terms were the names of the centres and theorems
 (\lean{nagel}, \lean{gergonne}, \lean{symmedian}, \lean{lemoine}, \lean{brocard}, \lean{spieker},
-\lean{longchamps}, \lean{isogonal}, \lean{droz}, and others). Two gaps matter: general web search was
-unavailable during the sweep, so GitHub searches stand in for it; and ProofAtlas was checked only
-through its sitemap (752 URLs), not by reading its pages. Our statements of novelty are subject to
-these gaps. \PH{re-run of the prior-art search with web search before submission}
+\lean{longchamps}, \lean{isogonal}, \lean{droz}, and others). General web search was unavailable during
+that sweep. A second sweep on 2026-10-27 repeated the GitHub searches at the then-current heads of
+Mathlib, \lean{atlas-lean}, \lean{formal-conjectures}, Compfiles and \lean{lean-genius}, searched
+mathlib4 pull requests opened or merged since 2026-10-01, and added general web search, which found
+the Coq work \cite{certifiedetc}. Remaining gaps: ProofAtlas was checked only through its sitemap (752
+URLs), not by reading its pages; the certified encyclopedia's website was available only through
+archived copies, so its Coq sources and collinearity lists could not be inspected; and GitHub does not
+appear to index Mizar files, so the local Mizar search stands. Our statements of novelty are subject
+to these gaps.
 
 \paragraph{Classical sources.} The theorems are classical; we follow Johnson \cite{johnson1929},
 Coxeter and Greitzer \cite{coxetergreitzer} and Honsberger \cite{honsberger}, and Kimberling's
@@ -728,7 +745,9 @@ result already in Mathlib or in an open Mathlib pull request; we use Mathlib's E
 Theorem~\ref{thm:delong}(iii).
 \item We do not claim the first formal treatment of the Nagel and Gergonne cevians in every sense: an
 algebraic form with formula-defined feet was formalised earlier in \lean{lean-genius}
-(Section~\ref{sec:related}). Our claim is to the statements with Mathlib's contact points, incentre and
+(Section~\ref{sec:related}). Nor do we claim the first formal proof of the Nagel line or of the
+Spieker centre's position on it in barycentric form, which is among the Coq facts of
+\cite{certifiedetc}. Our claim is to the statements with Mathlib's contact points, incentre and
 centroid.
 \item In the numbered theorems the points are given by their weights, and the theorems prove that
 these points have the classical properties (Theorem~\ref{thm:symmedian} by angle equalities at each
@@ -839,6 +858,13 @@ University, Summer 2001; version 12.1224, December 2012.
 \bibitem{ayme}
 J.-L.~Ayme, A purely synthetic proof of the Droz-Farny line theorem, \emph{Forum Geometricorum}
 \textbf{4} (2004), 219--224.
+
+\bibitem{certifiedetc}
+J.~Narboux and D.~Braun, Towards a certified version of the Encyclopedia of Triangle Centers,
+\emph{Mathematics in Computer Science} \textbf{10} (2016), 57--73,
+\url{https://doi.org/10.1007/s11786-016-0254-4}; website
+\url{http://dpt-info.u-strasbg.fr/~narboux/CETC/} (consulted through the Internet Archive, snapshots of
+March 2019).
 
 \bibitem{honsberger}
 R.~Honsberger,

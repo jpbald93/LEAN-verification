@@ -1,0 +1,32 @@
+MAJOR
+
+Round 2; reviewed paperg.tex SHA-256 12fb6664991de142a7833d595222a7d3c3ebaca21e821cf7ae53d08b36a4678e. Line numbers below refer to that file. Known PH placeholders are excluded.
+
+Round-1 findings: closure checks
+1. NOT RESOLVED (partly fixed; remaining MAJOR) — lines 589–619, 685–687.
+   Resolved: the 180-theorem run is explicitly pre-Inradius; the 149/147 integration gates and subsequent Nagel 151 gate now have the correct chronology. The new completed reports support Nagel 180/448/440/8 (11 heartbeats) on both machines, Brocard 147/287/285/2 on the arm64 machine, and the nine geometric survivors plus one comment-only survivor.
+   Remaining problem: “identical summary figures” at 614 is not true of the supplied Nagel summaries: jack_paperg_nagel_20261026_152902.md has satisfiability 30 certified / 150 unresolved; john_paperg_nagel_20261026_133037.md has 32 / 148, at the same clean commit f39c6f4. Mutation and contradiction figures do agree. No completed the x86-64 machine L15 Brocard report is supplied: jack_paperg_brocard_20261026_014925.md is the earlier L14-only run (109 theorems, 220/221 rejected), not the 147-theorem run. The supplied reports also still do not substantiate all figures in the earlier 78-, 105- and 40-theorem rows; CROSSRUN.md does substantiate the 68-theorem row and its reported cross-machine agreement.
+   Exact fix: at 613–619 say “Before Inradius.lean, both Nagel runs at f39c6f4 tested 180 theorems: 440/448 mutations rejected (11 by heartbeat), 8 surviving, and no contradiction in 39 valid probes. Satisfiability was 30/180 on the x86-64 machine and 32/180 on the arm64 machine. The supplied the arm64 machine Brocard run at 016c5b9 tested 147 theorems: 285/287 mutations rejected, 2 surviving, and no contradiction in 73 valid probes (one probe invalid).” Claim Brocard cross-machine agreement only after attaching its matching the x86-64 machine report. Attach/cite the missing historical receipts or remove the unsupported historical figures. Label each run by revision/modules and report filename; do not substitute the L14-only reports for the earlier or L15 runs.
+2. NOT RESOLVED (partly fixed; remaining MINOR) — lines 70–71, 100–101, 483–490, 685, 702–708, 722.
+   Resolved: the nonclaim now distinguishes uniqueness among numbered theorems from the additional L15 uniqueness results, acknowledges reflected-line isogonality, and correctly disclaims only a conjugation map. L15 is explicitly planar at 685 and 705.
+   Remaining problem: 70–71 and 483–484 still assert, without restricting scope, that only two theorems require a plane. This conflicts with the now correctly described planar L15 developments.
+   Exact fix: write “Apart from the pedal-centroid converse and Droz-Farny, no numbered theorem assumes that the ambient space is a plane”; start 100 with “The numbered theorems”; start 483 with “Among the numbered theorems, apart from two results”; append to limitation 722 “The additional Layer-15 developments are also planar.” No mathematical proof change is needed.
+3. RESOLVED — lines 473–474. The AB foot is now A+t(B−A), t=(−a²+3b²+c²)/(2S). Independent computation on the acute witness gives t=7/22.
+4. RESOLVED — lines 339–341 explicitly specify relative interior within the triangle's plane. The informal “inside” at 63 does not assert ambient topological interior.
+5. RESOLVED — line 623 now says “principal assertions”; 648–650 explicitly identify strict betweenness and the common-power formulas as omitted from the L14 restatements.
+6. RESOLVED — line 224 now says “see text”; 396–403 correctly distinguish the unconditional iff from the equilateral collapse implication.
+7. NOT RESOLVED (partly fixed; remaining MINOR) — lines 525, 551–555, 793–796.
+   Resolved: lean-genius now has an actual citation with owner, repository, exact file path and commit/date. I fetched the named file at 470a7df successfully; it is real and contains the stated algebraic treatment.
+   Remaining problem: the classical source paragraph still supplies no chapter/page/theorem locators for the Spieker radical-centre identity, first Lemoine circle or Droz-Farny theorem.
+   Exact fix: add verified locators beside those three statements or in the classical-source paragraph, using sources that actually state them. For direct prior-art traceability the new entry can link to https://github.com/rjwalters/lean-genius/blob/470a7df/proofs/Proofs/CevasTheoremOQ04OQ04OQ02.lean . Do not invent page numbers.
+
+New issues
+8. None independently established beyond the remaining portions of round-1 findings above. The newly available battery discrepancy is recorded under the existing claim/evidence finding, not double-counted as a new issue.
+
+Checks completed
+- Read the stipulated paper and evidence reports, all five completed battery reports' relevant results, and the hand-check builder notes. The latter are builder evidence, not a completed human check. Current source avoids the earlier Unicode-subscript problem in the explicitly printed Brocard names; no new typesetting finding is based on the stale PDF.
+- All 18 numbered theorem bodies agree with the supplied formal statements, including the inradius addition; no false numbered theorem or missing geometric hypothesis was found. Nagel/Gergonne/symmedian/Brocard weights, anticomplementary homothety and de Longchamps definition check out. The equilateral angle convention is candidly explained.
+- Independently recomputed: on the 3–4–5 triangle I=(1,1), G=(4/3,1), N=(2,1), Ge=(8/11,9/11), Sp=(3/2,1). On (0,0),(4,0),(1,3), (a²,b²,c²)=(18,10,16), K=(14/11,12/11), Ω=(220/157,120/157), Ω′=(232/157,216/157); vertex cotangents 1/3,1,1/2 sum to cot ω=11/6. Both Brocard-circle dot products vanish. The three Droz-Farny midpoints recompute to (10/3,2/3), (−2/7,−6/7), (7/4,0).
+- Gate counts, L14 restatement/witness counts, L13 35/36 before FIX18 and clean repair, and L15 10+13 classical statements agree with the evidence. The raw gate/tamper receipts pass despite the battery report generator's erroneous summary-table parsing, already explained by CROSSRUN.md.
+- Prior-art gaps remain honestly disclosed. No invented reference identified; PR #44230 was independently rechecked and is open with the stated title. New DOI retrieval attempts returned HTTP 403, so the earlier review's successful A–E reference checks were not independently repeated this round.
+- No paper edits made. The MAJOR verdict is for the still-unclosed verification-evidence finding, not a demonstrated failure of the mathematics or Lean proofs.

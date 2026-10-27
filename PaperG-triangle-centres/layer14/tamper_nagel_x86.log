@@ -1,0 +1,8 @@
+ok    sorry     rejected (exit 1): FAIL: forbidden token
+ok    ax2line   rejected (exit 1): FAIL: forbidden token
+ok    evalfake  rejected (exit 1): FAIL: forbidden token
+ok    macro     rejected (exit 1): FAIL: forbidden token
+ok    wrap      rejected (exit 1): FAIL: nonstandard axioms: NagelLine.zz_extra_axiom_with_a_long_name_for_the_negative_gate_test
+ok    falsehyp  rejected (exit 1): FAIL: build
+ok    falsehyp_ext rejected (exit 1): FAIL: build
+ALL TAMPERING TESTS REJECTED

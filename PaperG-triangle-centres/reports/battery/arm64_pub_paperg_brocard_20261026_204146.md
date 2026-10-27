@@ -1,0 +1,200 @@
+# leancheck — paperg_brocard (2026-10-26 20:41 UTC)
+
+- path: ~/paperg_brocard
+- HEAD: ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d
+- uncommitted entries:        0
+
+## Layers 1-2 — gate and tamper
+```
+'Brocard.Classical.cov_S2b' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Brocard.Classical.cov_S7' depends on axioms: [propext, Classical.choice, Quot.sound]
+PASS (147 declarations, standard axioms only)
+ok    sorry     rejected (exit 1): FAIL: forbidden token
+ok    ax2line   rejected (exit 1): FAIL: forbidden token
+ok    evalfake  rejected (exit 1): FAIL: forbidden token
+ok    macro     rejected (exit 1): FAIL: forbidden token
+ok    wrap      rejected (exit 1): FAIL: nonstandard axioms: Brocard.zz_extra_axiom_with_a_long_name_for_the_negative_gate_test
+ok    falsehyp  rejected (exit 1): FAIL: build
+ok    falsehyp2 rejected (exit 1): FAIL: build
+ALL TAMPERING TESTS REJECTED
+```
+## Layers 4,5,8 — mutations, contradiction probe, satisfiability
+# Lean statement audit (the x86-64 machine)
+
+Generated 2026-10-26 15:04 PDT
+
+## TOTAL (per repo, duplicates counted in each repo)
+{"thm": 147, "mut": 287, "killed": 285, "surv": 2, "tout": 0, "contra": 0, "sat": 28, "unres": 119, "nohyp": 0, "invalid": 1}
+
+Baseline failures (files skipped): 0
+
+## paperg_brocard
+- theorems: 147
+- step 1 mutants: 287 | killed 285 | killed-timeout 0 | SURVIVED 2 | unattributed 0
+- step 2a contradiction probe: CONTRADICTORY 0 | ok 73 | no-hyp 73 | invalid 1 | timeout 0
+- step 2b satisfiable: CERTIFIED 28 | unresolved 119 | stmt-invalid 0 | llm-error 0
+- step 2b+ satisfiable by linked hand-written witness (separate from CERTIFIED): 0 [0 of them not certified by step 2b] | rejected claims 0
+  - SURVIVED detail: own proof compiled; downstream errors at lines [248]
+  - SURVIVOR `l14b_tri` [lit4->5@30]: `¬ Collinear ℝ ({!₂[0, 0], !₂[4, 0], !₂[1, 3]} : Set (EuclideanSpace ℝ (Fin 2)))` -> `¬ Collinear ℝ ({!₂[0, 0], !₂[5, 0], !₂[1, 3]} : Set (EuclideanSpace ℝ (Fin 2)))`
+  - SURVIVED detail: 
+  - SURVIVOR `cov_S7` [eq->ne@174]: `neither line is parallel to (or equal to) a side line, i.e. each meets
+    -- each side line in exactly one point. Without this, in a right triangle a line thro` -> `neither line is parallel to (or equal to) a side line, i.e. each meets
+    -- each side line in exactly one point. Without this, in a right triangle a line thro`
+  - needs manual satisfiability check: `dist_sq_coords` (unresolved)
+  - needs manual satisfiability check: `coords_eq` (unresolved)
+  - needs manual satisfiability check: `collinear_of_coords` (unresolved)
+  - needs manual satisfiability check: `lineMap_vsub_coords` (unresolved)
+  - needs manual satisfiability check: `circumcenter_vsub` (unresolved)
+  - needs manual satisfiability check: `orthocenter_vsub` (unresolved)
+  - needs manual satisfiability check: `circumcenter_coords` (unresolved)
+  - needs manual satisfiability check: `dist_eq_of_sq` (unresolved)
+  - needs manual satisfiability check: `orthocenter_coords` (unresolved)
+  - needs manual satisfiability check: `brocardPoint₁_coords` (unresolved)
+  - needs manual satisfiability check: `brocardPoint₂_coords` (unresolved)
+  - needs manual satisfiability check: `lemoinePoints_coords` (unresolved)
+  - needs manual satisfiability check: `lemoinePoints_mem` (unresolved)
+  - needs manual satisfiability check: `exists_coords` (unresolved)
+  - needs manual satisfiability check: `coords_ne_of_notMem` (unresolved)
+  - needs manual satisfiability check: `mem_line_coords` (unresolved)
+  - needs manual satisfiability check: `mem_mk'_coords` (unresolved)
+  - needs manual satisfiability check: `brocardPoints_isogonal` (unresolved)
+  - needs manual satisfiability check: `dist_circumcenter_brocardPoint` (unresolved)
+  - needs manual satisfiability check: `brocardCircle` (unresolved)
+  - needs manual satisfiability check: `cospherical_brocardCircle` (unresolved)
+  - needs manual satisfiability check: `brocardCircle_right_angles` (unresolved)
+  - needs manual satisfiability check: `brocardCircle_degenerate` (unresolved)
+  - needs manual satisfiability check: `brocard_eq_circumcenter_of_equilateral` (unresolved)
+  - needs manual satisfiability check: `lemoineCircle` (unresolved)
+  - needs manual satisfiability check: `cospherical_lemoinePoints` (unresolved)
+  - needs manual satisfiability check: `l14_symmedian_angles` (unresolved)
+  - needs manual satisfiability check: `drozFarny` (unresolved)
+  - needs manual satisfiability check: `l14_symmedianPoint_mem_interior` (unresolved)
+  - needs manual satisfiability check: `l14_symmedianPoint_eq_centroid_pedal` (unresolved)
+  - needs manual satisfiability check: `l14_eq_symmedianPoint_of_eq_centroid_pedal` (unresolved)
+  - needs manual satisfiability check: `l14_brocardPoint₁_angles` (unresolved)
+  - needs manual satisfiability check: `l14_brocardPoint₂_angles` (unresolved)
+  - needs manual satisfiability check: `l14_cot_brocardAngle_eq_sum_cot` (unresolved)
+  - needs manual satisfiability check: `l14_cot_brocardAngle_eq_div_area` (unresolved)
+  - needs manual satisfiability check: `l14_brocardAngle_pos_le` (unresolved)
+  - needs manual satisfiability check: `l14_brocardPoints_isogonal` (unresolved)
+  - needs manual satisfiability check: `l14_dist_circumcenter_brocardPoint` (unresolved)
+  - needs manual satisfiability check: `l14_brocardCircle` (unresolved)
+  - needs manual satisfiability check: `l14_brocardCircle_right_angles` (unresolved)
+  - needs manual satisfiability check: `l14_brocardCircle_degenerate` (unresolved)
+  - needs manual satisfiability check: `l14_lemoineCircle` (unresolved)
+  - needs manual satisfiability check: `l14_drozFarny` (unresolved)
+  - needs manual satisfiability check: `l14b_not_collinear` (unresolved)
+  - needs manual satisfiability check: `l14b_ne` (unresolved)
+  - needs manual satisfiability check: `l14b_ne'` (unresolved)
+  - needs manual satisfiability check: `l14b_mem_line` (unresolved)
+  - needs manual satisfiability check: `l14b_notMem_dir` (unresolved)
+  - needs manual satisfiability check: `refl_vec` (unresolved)
+  - needs manual satisfiability check: `span_top` (unresolved)
+  - needs manual satisfiability check: `interior_eq` (unresolved)
+  - needs manual satisfiability check: `coords_of_interior` (unresolved)
+  - needs manual satisfiability check: `interior_of_weights` (unresolved)
+  - needs manual satisfiability check: `symm_mem` (unresolved)
+  - needs manual satisfiability check: `symm_dir` (unresolved)
+  - needs manual satisfiability check: `ne01` (unresolved)
+  - needs manual satisfiability check: `ne02` (unresolved)
+  - needs manual satisfiability check: `ne12` (unresolved)
+  - needs manual satisfiability check: `K_vsub` (unresolved)
+  - needs manual satisfiability check: `cov_S1a` (unresolved)
+  - needs manual satisfiability check: `cov_S1b` (unresolved)
+  - needs manual satisfiability check: `tri_facts` (unresolved)
+  - needs manual satisfiability check: `brocard1_unique` (unresolved)
+  - needs manual satisfiability check: `brocard2_unique` (unresolved)
+  - needs manual satisfiability check: `brocard1_interior` (unresolved)
+  - needs manual satisfiability check: `brocard2_interior` (unresolved)
+  - needs manual satisfiability check: `brocard1_spec` (unresolved)
+  - needs manual satisfiability check: `brocard2_spec` (unresolved)
+  - needs manual satisfiability check: `cov_S3a` (unresolved)
+  - needs manual satisfiability check: `cov_S3b` (unresolved)
+  - needs manual satisfiability check: `cov_S3c` (unresolved)
+  - needs manual satisfiability check: `cov_S3d` (unresolved)
+  - needs manual satisfiability check: `cov_S3e` (unresolved)
+  - needs manual satisfiability check: `isog_vertex` (unresolved)
+  - needs manual satisfiability check: `indep_rot` (unresolved)
+  - needs manual satisfiability check: `cov_S4` (unresolved)
+  - needs manual satisfiability check: `cov_S5` (unresolved)
+  - needs manual satisfiability check: `meet_unique` (unresolved)
+  - needs manual satisfiability check: `lines_transverse` (unresolved)
+  - needs manual satisfiability check: `cov_S6` (unresolved)
+  - needs manual satisfiability check: `cov_S2a` (unresolved)
+  - needs manual satisfiability check: `cov_S2b` (unresolved)
+  - needs manual satisfiability check: `cov_S7` (unresolved)
+  - needs manual satisfiability check: `gram_pos` (unresolved)
+  - needs manual satisfiability check: `nonneg_of_eq` (unresolved)
+  - needs manual satisfiability check: `div_eq_div_of_sq` (unresolved)
+  - needs manual satisfiability check: `angle_eq_angle_of_inner` (unresolved)
+  - needs manual satisfiability check: `vsub_coords` (unresolved)
+  - needs manual satisfiability check: `angle_eq_of_coords` (unresolved)
+  - needs manual satisfiability check: `affineCombination_vsub` (unresolved)
+  - needs manual satisfiability check: `cot_angle_coords` (unresolved)
+  - needs manual satisfiability check: `points_eq` (unresolved)
+  - needs manual satisfiability check: `not_collinear_BAC` (unresolved)
+  - needs manual satisfiability check: `inner_uu` (unresolved)
+  - needs manual satisfiability check: `inner_vv` (unresolved)
+  - needs manual satisfiability check: `inner_uv` (unresolved)
+  - needs manual satisfiability check: `sin_mul_eq_sqrt` (unresolved)
+  - needs manual satisfiability check: `dist_sq_pos` (unresolved)
+  - needs manual satisfiability check: `gram_det_pos` (unresolved)
+  - needs manual satisfiability check: `area_eq_sqrt` (unresolved)
+  - needs manual satisfiability check: `area_eq_sqrt_dist` (unresolved)
+  - needs manual satisfiability check: `vertex0_vsub` (unresolved)
+  - needs manual satisfiability check: `vertex1_vsub` (unresolved)
+  - needs manual satisfiability check: `vertex2_vsub` (unresolved)
+  - needs manual satisfiability check: `sum_symmedianWeights` (unresolved)
+  - needs manual satisfiability check: `midpoint_vsub_coords` (unresolved)
+  - needs manual satisfiability check: `symmedianPoint_vsub` (unresolved)
+  - needs manual satisfiability check: `brocardPoint₁_vsub` (unresolved)
+  - needs manual satisfiability check: `brocardPoint₂_vsub` (unresolved)
+  - needs manual satisfiability check: `orthogonalProjection_vsub` (unresolved)
+  - needs manual satisfiability check: `symmedian_angles` (unresolved)
+  - needs manual satisfiability check: `symmedianPoint_mem_interior` (unresolved)
+  - needs manual satisfiability check: `symmedianPoint_eq_centroid_pedal` (unresolved)
+  - needs manual satisfiability check: `eq_symmedianPoint_of_eq_centroid_pedal` (unresolved)
+  - needs manual satisfiability check: `brocardPoint₁_angles` (unresolved)
+  - needs manual satisfiability check: `brocardPoint₂_angles` (unresolved)
+  - needs manual satisfiability check: `cot_brocardAngle_eq_sum_cot` (unresolved)
+  - needs manual satisfiability check: `cot_brocardAngle_eq_div_area` (unresolved)
+  - needs manual satisfiability check: `brocardAngle_pos_le` (unresolved)
+  - no mutants generated (manual look): K_vsub, brocard1_interior, brocard1_spec, brocard2_interior, brocard2_spec, brocardAngle_pos_le, brocardCircle, brocardCircle_degenerate, brocardCircle_right_angles, brocardPoints_isogonal, brocardPoint₁_angles, brocardPoint₂_angles, collinear_of_coords, cospherical_brocardCircle, cospherical_lemoinePoints, cot_brocardAngle_eq_div_area, cot_brocardAngle_eq_sum_cot, cov_S1a, cov_S5, cov_S6, drozFarny, eq_symmedianPoint_of_eq_centroid_pedal, indep_rot, interior_of_weights, isog_vertex, l14T_L, l14_brocardAngle_pos_le, l14_brocardCircle, l14_brocardCircle_degenerate, l14_brocardCircle_right_angles, l14_brocardPoints_isogonal, l14_brocardPoint₁_angles, l14_brocardPoint₂_angles, l14_cot_brocardAngle_eq_div_area, l14_cot_brocardAngle_eq_sum_cot, l14_dist_circumcenter_brocardPoint, l14_drozFarny, l14_eq_symmedianPoint_of_eq_centroid_pedal, l14_lemoineCircle, l14_symmedianPoint_eq_centroid_pedal
+
+## Layers 6,9 — hypothesis ablation and bridge inventory
+# gap checks (ablation + bridge inventory)
+
+## hypothesis ablation
+jobs 182 | UNUSED 4 | NEEDED 178 | SKIP 0 | timeout 0 | bad-control decls 0
+
+- UNUSED `symm_mem` : `(hS : 0 < S)`
+- UNUSED `cov_S1b` : `(hC : K ∈ ClassicalSymmedian C A B)`
+- UNUSED `cov_S7` : `(hu : u ≠ 0)`
+- UNUSED `cov_S7` : `(hv : v ≠ 0)`
+
+see inventory.md for the definition table
+## Layer 7 — unused-variable linter
+linter (library): 0 warnings in 6 files
+linter (scratch): 0 warnings in 0 files
+
+## Verdict
+| check | result |
+|---|---|
+| gate (layer 1) | no PASS/FAIL line found |
+| tamper (layer 2) | 0/0 planted defects rejected, **not all rejected** |
+| baseline build | 6 of 6 files ok |
+| conclusion mutations (layer 4) | **285/287 rejected** (285 by error, 0 by timeout/heartbeat); 2 SURVIVED, 0 unattributed |
+| contradiction probe (layer 5) | 0 contradictory, 73 probed ok — no-hyp 73 probe-invalid 1 |
+| satisfiability (layer 8) | 28/147 certified [4 with hypotheses, 9 hypothesis-free binders, 15 closed], 119 unresolved, 0 stmt-invalid |
+| satisfiability by linked hand-written witness (layer 8b, separate) | 0 theorems linked (0 not certified by layer 8); 0 rejected claims; layer 8 + 8b: 28/147 credited, 119 unresolved |
+| hypothesis ablation (layer 6) | 178 needed, **4 unused**, 0 skipped, 0 timeout; bad controls 0 |
+| linter, library (layer 7) | 0 warnings in 6 files |
+| linter, scratch (layer 7) | 0 warnings in 0 files |
+| bridge inventory (layer 9) | 23 notions, 1 has-bridge, 22 NO-BRIDGE (see inventory.md) |
+
+unused hypotheses (check each by hand): `symm_mem`: (hS : 0 < S), `cov_S1b`: (hC : K ∈ ClassicalSymmedian C A B), `cov_S7`: (hu : u ≠ 0), `cov_S7`: (hv : v ≠ 0)
+
+mutation survivors (classify by hand): `l14b_tri` [lit4->5@30] own proof compiled; downstream errors at lines [248]; `cov_S7` [eq->ne@174] 
+
+satisfiability not certified (recorded as unresolved, not success): `dist_sq_coords` (unresolved), `coords_eq` (unresolved), `collinear_of_coords` (unresolved), `lineMap_vsub_coords` (unresolved), `circumcenter_vsub` (unresolved), `orthocenter_vsub` (unresolved), `circumcenter_coords` (unresolved), `dist_eq_of_sq` (unresolved), `orthocenter_coords` (unresolved), `brocardPoint₁_coords` (unresolved), `brocardPoint₂_coords` (unresolved), `lemoinePoints_coords` (unresolved), `lemoinePoints_mem` (unresolved), `exists_coords` (unresolved), `coords_ne_of_notMem` (unresolved), `mem_line_coords` (unresolved), `mem_mk'_coords` (unresolved), `brocardPoints_isogonal` (unresolved), `dist_circumcenter_brocardPoint` (unresolved), `brocardCircle` (unresolved), `cospherical_brocardCircle` (unresolved), `brocardCircle_right_angles` (unresolved), `brocardCircle_degenerate` (unresolved), `brocard_eq_circumcenter_of_equilateral` (unresolved), `lemoineCircle` (unresolved), `cospherical_lemoinePoints` (unresolved), `l14_symmedian_angles` (unresolved), `drozFarny` (unresolved), `l14_symmedianPoint_mem_interior` (unresolved), `l14_symmedianPoint_eq_centroid_pedal` (unresolved)
+LEANCHECK DONE Mon Oct 26 22:28:00 UTC 2026

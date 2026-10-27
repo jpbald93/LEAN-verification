@@ -4,9 +4,9 @@
 
 **What to do:** for each theorem, read the paper's theorem (top) and the Lean statement(s) under it. For each Lean statement tick **☐ agrees** if it says the same thing as the paper: same objects, every hypothesis in the paper is in the Lean and the other way round, same conclusion. Tick **☐ differs** and write a note if anything looks different, even slightly. You do not need to read any proofs; they are replaced by `…`. Each Lean statement has a one-line plain-English gloss. The gloss is only there to help you read it: check the Lean itself, not the gloss.
 
-The Lean statements are copied verbatim, by script, from the sources at the published commits: `paperg_nagel` @ `e40ee54f20588f5181d348767f3f31be20406cc1` (files `Basic`, `Main`, `Extensions`, `Inradius`, `L14`, `L15Classical`) and `paperg_brocard` @ `ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d` (files `Basic`, `Lemmas`, `Main`, `Extensions`, `ExtLemmas`, `L14`, `L15Classical`). Both working trees were clean at those commits. The repositories are **not public yet**, so the links are placeholders: `https://github.com/jpbald93/paperg_nagel/blob/e40ee54f20588f5181d348767f3f31be20406cc1/NagelLine/Main.lean#L290` and `https://github.com/jpbald93/paperg_brocard/blob/ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d/Brocard/Main.lean#L22`. At publication, replace `https://github.com/jpbald93/paperg_nagel/blob/e40ee54f20588f5181d348767f3f31be20406cc1` with `https://github.com/jpbald93/paperg_nagel/blob/<commit>` and `https://github.com/jpbald93/paperg_brocard/blob/ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d` with `https://github.com/jpbald93/paperg_brocard/blob/<commit>`. Each linked line is the line holding the `theorem` keyword. If the published commits differ from the ones above, the line numbers must be checked again.
+The Lean statements are copied verbatim, by script, from the sources at the published commits: `paperg_nagel` @ `e40ee54f20588f5181d348767f3f31be20406cc1` (files `Basic`, `Main`, `Extensions`, `Inradius`, `L14`, `L15Classical`) and `paperg_brocard` @ `ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d` (files `Basic`, `Lemmas`, `Main`, `Extensions`, `ExtLemmas`, `L14`, `L15Classical`). Both working trees were clean at those commits. The repositories are public; every link below points to the exact line at those commits.
 
-Theorem numbers are the ones printed in the compiled paper (`paperg.pdf`): Theorems 3–20. Numbers 1 and 2 are Definitions 1 and 2. The main-theorem list is Table 1 of the paper. The paper's theorem texts were copied from the PDF with `pdftotext`; display formulas, which `pdftotext` garbles, were re-typed in LaTeX from the PDF.
+Theorem numbers are the ones printed in the compiled paper (`paperg.pdf`): Theorems 1–18 (definitions are numbered separately). The main-theorem list is Table 1 of the paper. The paper's theorem texts were copied from the PDF with `pdftotext`; display formulas, which `pdftotext` garbles, were re-typed in LaTeX from the PDF.
 
 **Counts:** 18 numbered theorems (Part 1 and Part 2), 67 Lean statements in total (numbered theorems plus ★ Layer-15 rows), 134 tick boxes (two per Lean statement).
 
@@ -14,17 +14,17 @@ Theorem numbers are the ones printed in the compiled paper (`paperg.pdf`): Theor
 
 The builder checked every row: does the Lean statement say what the paper's theorem says, with the same hypotheses and conclusion? **No Lean statement was found to contradict its paper theorem, and every file:line the paper cites is the line of the `theorem` keyword at the commits above** (the cited Main/Extensions/Inradius line numbers all agree). Nothing in the paper or the code was changed. Points found:
 
-1. **The compiled PDF is older than `paperg.tex`** (not a statement mismatch). In Theorem 11 the PDF prints the reference for `inradius_sq` / `spiekerCenter_power_exsphere_eq_inradius` as "(Inradius:1)". The current `paperg.tex` (line 321) says `Inradius:19, line 40`, and a fresh compile of the current tex prints "Inradius:19, line 40", which is correct (19 and 40 are the two theorem lines). The tex was saved 15 s after the PDF. Recompile before the hand check, so that you read the version that will be submitted. Theorem numbering is the same in both builds.
-2. **Mojibake in the PDF** (typesetting, not a mismatch). In Definition 2, Table 1 and the "Lean:" line after Theorem 14, the subscripts in `brocardPoint₁` and `brocardPoint₂` print as `brocardPointâĆĄ` / `brocardPointâĆĆ`; this is visible in the rendered page as well. The `\decl` macro (monospace font) does not handle the Unicode subscripts.
-3. **Theorem 12, "the three symmedians pass through K":** the library proves this only as the six angle equalities. The paper presents it as a consequence ("So …"), not as a separate Lean statement. The "interior" claim is proved as "K is an affine combination with positive weights" (`symmedianPoint_mem_interior`). The paper explicitly equates the two ("that is"), but the Lean does not mention `interior`. The literal versions (symmedians concurrent and K in `interior (convexHull …)`) are the ★ row `cov_S1a`.
-4. **Theorem 16, "isogonal":** the library proves only the three angle equalities, and the paper says so explicitly ("no isogonal-conjugation map is defined"). The classical form (isogonal conjugates by reflection in the bisectors) is ★ `cov_S4`. Consistent.
-5. **Statements whose triangle comes from a `section` variable:** `sbtw_touchpoint_singleton_zero/one/two` (Theorem 4) and `spiekerCenter_power_exsphere_eq` (Theorem 11) have no `(t : Triangle ℝ P)` in their first line. The triangle `t` comes from `variable (t : Triangle ℝ P)` earlier in the file (Main.lean:46, Extensions.lean:53), so it is still an explicit argument and still the only hypothesis.
-6. **Theorem 11:** the paper's $r_i$ is "the radius of `t.exsphere {i}`", but the Lean writes `t.exradius {i}`. In Mathlib, `exradius signs` is defined as `(exsphere signs).radius` (Incenter.lean:413 in the pinned Mathlib), so the two are the same by definition. The first form of the value is written with `semiperimeter t` and `sideA t` etc. (s and a, b, c). Not a mismatch.
-7. **Theorem 18:** the paper's "Ω = Ω′ = K = O" appears in Lean as three equalities with O (Ω = O, Ω′ = O, K = O); "equilateral" appears as `dist A B = dist B C ∧ dist B C = dist C A`. Equivalent.
+1. **The compiled PDF is older than `paperg.tex`** (not a statement mismatch). In Theorem 9 the PDF prints the reference for `inradius_sq` / `spiekerCenter_power_exsphere_eq_inradius` as "(Inradius:1)". The current `paperg.tex` (line 321) says `Inradius:19, line 40`, and a fresh compile of the current tex prints "Inradius:19, line 40", which is correct (19 and 40 are the two theorem lines). The tex was saved 15 s after the PDF. Recompile before the hand check, so that you read the version that will be submitted. Theorem numbering is the same in both builds.
+2. **Mojibake in the PDF** (typesetting, not a mismatch). In Definition 2, Table 1 and the "Lean:" line after Theorem 12, the subscripts in `brocardPoint₁` and `brocardPoint₂` print as `brocardPointâĆĄ` / `brocardPointâĆĆ`; this is visible in the rendered page as well. The `\decl` macro (monospace font) does not handle the Unicode subscripts.
+3. **Theorem 10, "the three symmedians pass through K":** the library proves this only as the six angle equalities. The paper presents it as a consequence ("So …"), not as a separate Lean statement. The "interior" claim is proved as "K is an affine combination with positive weights" (`symmedianPoint_mem_interior`). The paper explicitly equates the two ("that is"), but the Lean does not mention `interior`. The literal versions (symmedians concurrent and K in `interior (convexHull …)`) are the ★ row `cov_S1a`.
+4. **Theorem 14, "isogonal":** the library proves only the three angle equalities, and the paper says so explicitly ("no isogonal-conjugation map is defined"). The classical form (isogonal conjugates by reflection in the bisectors) is ★ `cov_S4`. Consistent.
+5. **Statements whose triangle comes from a `section` variable:** `sbtw_touchpoint_singleton_zero/one/two` (Theorem 2) and `spiekerCenter_power_exsphere_eq` (Theorem 9) have no `(t : Triangle ℝ P)` in their first line. The triangle `t` comes from `variable (t : Triangle ℝ P)` earlier in the file (Main.lean:46, Extensions.lean:53), so it is still an explicit argument and still the only hypothesis.
+6. **Theorem 9:** the paper's $r_i$ is "the radius of `t.exsphere {i}`", but the Lean writes `t.exradius {i}`. In Mathlib, `exradius signs` is defined as `(exsphere signs).radius` (Incenter.lean:413 in the pinned Mathlib), so the two are the same by definition. The first form of the value is written with `semiperimeter t` and `sideA t` etc. (s and a, b, c). Not a mismatch.
+7. **Theorem 16:** the paper's "Ω = Ω′ = K = O" appears in Lean as three equalities with O (Ω = O, Ω′ = O, K = O); "equilateral" appears as `dist A B = dist B C ∧ dist B C = dist C A`. Equivalent.
 8. **★ rows with an extra non-degeneracy hypothesis:** `cov_N4` and `cov_N8` (`hM`: the three midpoints are not collinear) and `cov_N6b` and `cov_N7` (`hT`: the anticomplementary vertices are not collinear). These hypotheses come from the classical writer's file. The `L15Classical.lean` header says they are redundant, with new proofs `medial_indep` and `anti_indep`, but the paper does not mention this. Not a mismatch, since the hypotheses are always true for a real triangle.
 9. **★ `cov_S3d`** writes angle B as `∠ C B A` while the paper and the library use `∠ A B C`. The two are the same angle (the unoriented angle is symmetric). **★ `cov_N5`** covers only side BC, as the classical file did; `cov_N5_all` (an addition in the library, not one of the 23 classical statements) gives all three sides.
 10. **★ counting:** the classical file gives 10 Nagel statements (N1, N2a, N2b, N3, N4, N5, N6a, N6b, N7, N8) and 13 Brocard statements (S1a, S1b, S2a, S2b, S3a–S3e, S4, S5, S6, S7) = 23, matching the paper's "23 Lean statements" and "All ten Nagel-family statements". `cov_N5_all` is the extra 24th row here.
-11. **Meaning of "starred" in Paper G:** in Table 1 a star marks a theorem from the *extension files* (`Extensions.lean`): Theorems 7–11 and 16–20. This is unlike Paper F, where starred rows were the Layer-15 statements. On this sheet the ★ section is the Layer-15 classical statements, as the task asked. The Table-1-starred theorems are ordinary numbered sections.
+11. **Meaning of "starred" in Paper G:** in Table 1 a star marks a theorem from the *extension files* (`Extensions.lean`): Theorems 5–9 and 16–20. This is unlike Paper F, where starred rows were the Layer-15 statements. On this sheet the ★ section is the Layer-15 classical statements, as the task asked. The Table-1-starred theorems are ordinary numbered sections.
 
 **Dictionary** (the paper's Section 2 defines most of these):
 
@@ -50,7 +50,7 @@ The builder checked every row: does the Lean statement say what the paper's theo
 
 *Nagel library (`NagelLine/Basic.lean`, `NagelLine/Extensions.lean`):*
 - `sideA t`, `sideB t`, `sideC t` = a = |BC|, b = |CA|, c = |AB|. `semiperimeter t` = s = (a+b+c)/2.
-- `t.nagelPoint` = N, weights (s−a, s−b, s−c)/s. `Triangle.nagelPoint t.medial` = the Nagel point of the medial triangle (same as `t.medial.nagelPoint`, see Theorem 8).
+- `t.nagelPoint` = N, weights (s−a, s−b, s−c)/s. `Triangle.nagelPoint t.medial` = the Nagel point of the medial triangle (same as `t.medial.nagelPoint`, see Theorem 6).
 - `t.gergonnePoint` = the Gergonne point, weights proportional to 1/(s−a), 1/(s−b), 1/(s−c).
 - `t.spiekerCenter` = S_p = the incentre of the medial triangle (by definition, `t.medial.incenter`).
 - `t.deLongchampsPoint` = L = H + 2(O − H), the reflection of H in O.
@@ -80,7 +80,7 @@ The builder checked every row: does the Lean statement say what the paper's theo
 
 ---
 
-## THEOREM 3: GERGONNE POINT (thm:gergonne) — paper says
+## THEOREM 1: GERGONNE POINT (thm:gergonne) — paper says
 
 For every triangle and every vertex $i$, the Gergonne point lies on the line through vertex $i$ and the contact point of the incircle with the opposite side (Mathlib's `t.touchpoint ∅ i`). Consequently the three cevians to the incircle contact points have a common point.
 
@@ -108,7 +108,7 @@ theorem gergonne_cevians_concurrent (t : Triangle ℝ P) :
 
 ---
 
-## THEOREM 4: NAGEL POINT (thm:nagel) — paper says
+## THEOREM 2: NAGEL POINT (thm:nagel) — paper says
 
 For every triangle and every vertex $i$, the Nagel point lies on the line through vertex $i$ and the contact point of the excircle opposite vertex $i$ with the side opposite vertex $i$ (Mathlib's `t.touchpoint {i} i`). Consequently the three cevians to the excircle contact points have a common point. Moreover each such contact point lies strictly between the two other vertices.
 
@@ -171,7 +171,7 @@ theorem sbtw_touchpoint_singleton_two :
 
 ---
 
-## THEOREM 5: NAGEL LINE (thm:nagelline) — paper says
+## THEOREM 3: NAGEL LINE (thm:nagelline) — paper says
 
 For every triangle, $N-G=2(G-I)$, where $I$ is Mathlib's incentre. In particular $I$, $G$, $N$ are collinear.
 
@@ -200,7 +200,7 @@ theorem collinear_incenter_centroid_nagelPoint (t : Triangle ℝ P) :
 
 ---
 
-## THEOREM 6: SPIEKER CENTRE (thm:spieker) — paper says
+## THEOREM 4: SPIEKER CENTRE (thm:spieker) — paper says
 
 For every triangle, the incentre of the medial triangle is the midpoint of $I$ and $N$. In particular the Spieker centre, $I$ and $N$ are collinear.
 
@@ -228,7 +228,7 @@ theorem collinear_spiekerCenter_incenter_nagelPoint (t : Triangle ℝ P) :
 
 ---
 
-## THEOREM 7: DE LONGCHAMPS POINT (thm:delong) — paper says
+## THEOREM 5: DE LONGCHAMPS POINT (thm:delong) — paper says
 
 For every triangle, with $L$ the de Longchamps point: (i) $O$ is the midpoint of $H$ and $L$; (ii) $L$, $O$, $H$ are collinear; (iii) $G$, $O$, $L$ are collinear; (iv) $L$ is the orthocentre of the anticomplementary triangle.
 
@@ -278,7 +278,7 @@ theorem anticomplementary_orthocenter (t : Triangle ℝ P) :
 
 ---
 
-## THEOREM 8: NAGEL POINT OF THE MEDIAL TRIANGLE (thm:medialnagel) — paper says
+## THEOREM 6: NAGEL POINT OF THE MEDIAL TRIANGLE (thm:medialnagel) — paper says
 
 For every triangle, the Nagel point of Mathlib's medial triangle is the incentre $I$ of the triangle.
 
@@ -296,7 +296,7 @@ theorem medial_nagelPoint (t : Triangle ℝ P) : Triangle.nagelPoint t.medial = 
 
 ---
 
-## THEOREM 9: ISOTOMIC CONTACT POINTS (thm:isotomic) — paper says
+## THEOREM 7: ISOTOMIC CONTACT POINTS (thm:isotomic) — paper says
 
 For every triangle and each side, the midpoint of the incircle contact point and the contact point of the opposite excircle on that side is the midpoint of the side; for the side $BC$, $\operatorname{mid}(\texttt{touchpoint}\ \emptyset\ 0,\ \texttt{touchpoint}\ \{0\}\ 0)=\operatorname{mid}(B,C)$, and likewise for $CA$ and $AB$.
 
@@ -335,7 +335,7 @@ theorem midpoint_touchpoint_two (t : Triangle ℝ P) :
 
 ---
 
-## THEOREM 10: ANTICOMPLEMENTARY TRIANGLE (thm:anti) — paper says
+## THEOREM 8: ANTICOMPLEMENTARY TRIANGLE (thm:anti) — paper says
 
 For every triangle, the Nagel point is the incentre of the anticomplementary triangle.
 
@@ -352,7 +352,7 @@ theorem nagelPoint_eq_anticomplementary_incenter (t : Triangle ℝ P) :
 
 ---
 
-## THEOREM 11: SPIEKER CENTRE AS RADICAL CENTRE (thm:radical) — paper says
+## THEOREM 9: SPIEKER CENTRE AS RADICAL CENTRE (thm:radical) — paper says
 
 For every triangle and all $i,j\in\{0,1,2\}$, the power of the Spieker centre $S_p$ with respect to the excircle opposite vertex $i$ equals its power with respect to the excircle opposite vertex $j$: $|S_pJ_i|^2-r_i^2=|S_pJ_j|^2-r_j^2$, where $J_i$ and $r_i$ are the centre and radius of Mathlib's `t.exsphere {i}`. The common value is
 
@@ -413,11 +413,11 @@ theorem spiekerCenter_power_exsphere_eq_inradius (t : Triangle ℝ P) (i : Fin 3
 
 # Part 2 — Symmedian and Brocard points (repository `paperg_brocard`, link prefix `https://github.com/jpbald93/paperg_brocard/blob/ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d`)
 
-*(Paper, start of Section 4: "The only hypothesis is the triangle t, except in Theorem 13(ii) and Theorem 20, where it is stated.")*
+*(Paper, start of Section 4: "The only hypothesis is the triangle t, except in Theorem 11(ii) and Theorem 18, where it is stated.")*
 
 ---
 
-## THEOREM 12: SYMMEDIANS (thm:symmedian) — paper says
+## THEOREM 10: SYMMEDIANS (thm:symmedian) — paper says
 
 For every triangle, with $K$ the symmedian point and $M_a,M_b,M_c$ the midpoints of $BC,CA,AB$:
 
@@ -456,7 +456,7 @@ theorem symmedianPoint_mem_interior (t : Affine.Triangle ℝ P) :
 
 ---
 
-## THEOREM 13: PEDAL TRIANGLE (thm:pedal) — paper says
+## THEOREM 11: PEDAL TRIANGLE (thm:pedal) — paper says
 
 (i) For every triangle, $K$ is the centroid of its pedal triangle: if $F_a,F_b,F_c$ are the orthogonal projections of $K$ onto the lines $BC$, $CA$, $AB$ (Mathlib's `EuclideanGeometry.orthogonalProjection` onto `line[ℝ, B, C]` etc.), then $\tfrac13(F_a+F_b+F_c)=K$. (ii) If moreover $\dim V=2$, then every point $X$ of the plane that is the centroid of its own pedal triangle is $K$.
 
@@ -493,7 +493,7 @@ theorem eq_symmedianPoint_of_eq_centroid_pedal [Fact (Module.finrank ℝ V = 2)]
 
 ---
 
-## THEOREM 14: BROCARD POINTS (thm:brocard) — paper says
+## THEOREM 12: BROCARD POINTS (thm:brocard) — paper says
 
 For every triangle, the first Brocard point satisfies $\angle\Omega AB=\angle\Omega BC=\angle\Omega CA$, and the second satisfies $\angle\Omega' BA=\angle\Omega' CB=\angle\Omega' AC$.
 
@@ -525,7 +525,7 @@ theorem brocardPoint₂_angles (t : Affine.Triangle ℝ P) :
 
 ---
 
-## THEOREM 15: BROCARD ANGLE (thm:cot) — paper says
+## THEOREM 13: BROCARD ANGLE (thm:cot) — paper says
 
 For every triangle, with $\omega=\angle\Omega AB$ and the vertex angles $\angle BAC$, $\angle ABC$, $\angle ACB$:
 
@@ -574,7 +574,7 @@ theorem brocardAngle_pos_le (t : Affine.Triangle ℝ P) :
 
 ---
 
-## THEOREM 16: ISOGONAL BROCARD POINTS (thm:isogonal) — paper says
+## THEOREM 14: ISOGONAL BROCARD POINTS (thm:isogonal) — paper says
 
 For every triangle, $\angle\Omega AB=\angle\Omega' AC$, $\angle\Omega BC=\angle\Omega' BA$ and $\angle\Omega CA=\angle\Omega' CB$; and $|O\Omega|=|O\Omega'|$.
 
@@ -604,7 +604,7 @@ theorem dist_circumcenter_brocardPoint (t : Affine.Triangle ℝ P) :
 
 ---
 
-## THEOREM 17: BROCARD CIRCLE (thm:brocardcircle) — paper says
+## THEOREM 15: BROCARD CIRCLE (thm:brocardcircle) — paper says
 
 For every triangle, each of $O$, $K$, $\Omega$, $\Omega'$ is at distance $\tfrac12|OK|$ from the midpoint of $OK$; so the four points are cospherical (Mathlib's `EuclideanGeometry.Cospherical`). Moreover $\langle O-\Omega,K-\Omega\rangle=0$ and $\langle O-\Omega',K-\Omega'\rangle=0$, and $\angle O\Omega K=\angle O\Omega' K=\pi/2$.
 
@@ -648,7 +648,7 @@ theorem brocardCircle_right_angles (t : Affine.Triangle ℝ P) :
 
 ---
 
-## THEOREM 18: DEGENERATE BROCARD CIRCLE (thm:degenerate) — paper says
+## THEOREM 16: DEGENERATE BROCARD CIRCLE (thm:degenerate) — paper says
 
 For every triangle, $\Omega=O$ or $\Omega=K$ or $\Omega'=O$ or $\Omega'=K$ or $K=O$ holds if and only if the triangle is equilateral; and if the triangle is equilateral then $\Omega=\Omega'=K=O$.
 
@@ -684,7 +684,7 @@ theorem brocard_eq_circumcenter_of_equilateral (t : Affine.Triangle ℝ P)
 
 ---
 
-## THEOREM 19: LEMOINE'S FIRST CIRCLE (thm:lemoine) — paper says
+## THEOREM 17: LEMOINE'S FIRST CIRCLE (thm:lemoine) — paper says
 
 For every triangle, the six Lemoine points (Definition 2) are all at the same distance from the midpoint of $OK$; in particular they are cospherical.
 
@@ -713,7 +713,7 @@ theorem cospherical_lemoinePoints (t : Affine.Triangle ℝ P) :
 
 ---
 
-## THEOREM 20: DROZ-FARNY (thm:droz) — paper says
+## THEOREM 18: DROZ-FARNY (thm:droz) — paper says
 
 Let $\dim V=2$, let $d_1,d_2\in V$ with $\langle d_1,d_2\rangle=0$, and suppose that neither $d_1$ nor $d_2$ lies in the direction of any of the three side lines. For $k=1,2,3$ let $X_k$ and $Y_k$ be points of the $k$-th side line ($BC$, $CA$, $AB$) lying on the line through $H$ with direction $d_1$ and $d_2$ respectively. Then the midpoints of $X_1Y_1$, $X_2Y_2$, $X_3Y_3$ are collinear.
 
@@ -752,7 +752,7 @@ These statements use the classical writer's own definitions (see the ★ part of
 
 ---
 
-## ★ N1 GERGONNE (cov_N1) — Theorem 3 — classical statement
+## ★ N1 GERGONNE (cov_N1) — Theorem 1 — classical statement
 
 The three lines joining each vertex to the incircle contact point on the opposite side meet in a point.
 
@@ -771,7 +771,7 @@ theorem cov_N1 (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent ℝ
 
 ---
 
-## ★ N2 NAGEL (cov_N2a, cov_N2b) — Theorem 4 — classical statement
+## ★ N2 NAGEL (cov_N2a, cov_N2b) — Theorem 2 — classical statement
 
 The three lines joining each vertex to the contact point of the opposite excircle with the opposite side meet in a point (N2a). The A-excircle touches BC at the point D′ with $BD'=s-c$ and $CD'=s-b$ (N2b).
 
@@ -802,7 +802,7 @@ theorem cov_N2b (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent �
 
 ---
 
-## ★ N3 NAGEL LINE (cov_N3) — Theorem 5 — classical statement
+## ★ N3 NAGEL LINE (cov_N3) — Theorem 1 — classical statement
 
 Any common point Na of the Nagel cevians lies on the line IG, with G between I and Na and $GN_a=2\,IG$.
 
@@ -825,7 +825,7 @@ theorem cov_N3 (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent ℝ
 
 ---
 
-## ★ N4 SPIEKER (cov_N4) — Theorem 6 — classical statement
+## ★ N4 SPIEKER (cov_N4) — Theorem 2 — classical statement
 
 The incentre of the medial triangle (Spieker centre) is the midpoint of $I$ and $N_a$; $I$, $G$, $N_a$, $S_p$ are collinear. (Paper Section 8: "the four-point collinearity of $I$, $G$, $S_p$, $N$".)
 
@@ -848,7 +848,7 @@ theorem cov_N4 (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent ℝ
 
 ---
 
-## ★ N5 ISOTOMIC CONTACT POINTS (cov_N5, cov_N5_all) — Theorem 9 — classical statement
+## ★ N5 ISOTOMIC CONTACT POINTS (cov_N5, cov_N5_all) — Theorem 5 — classical statement
 
 The incircle and the A-excircle touch BC at points symmetric about the midpoint of BC. (The classical file states only side BC; `cov_N5_all` adds the other two sides and is the extra, eleventh Nagel-file statement.)
 
@@ -878,7 +878,7 @@ theorem cov_N5_all (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent
 
 ---
 
-## ★ N6 MEDIAL AND ANTICOMPLEMENTARY TRIANGLES (cov_N6a, cov_N6b) — Theorems 8 and 10 — classical statement
+## ★ N6 MEDIAL AND ANTICOMPLEMENTARY TRIANGLES (cov_N6a, cov_N6b) — Theorems 6 and 8 — classical statement
 
 The Nagel point of the medial triangle is the incentre $I$ (N6a). The Nagel point is the incentre of the anticomplementary triangle (N6b).
 
@@ -918,7 +918,7 @@ theorem cov_N6b (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent �
 
 ---
 
-## ★ N7 DE LONGCHAMPS (cov_N7) — Theorem 7 — classical statement
+## ★ N7 DE LONGCHAMPS (cov_N7) — Theorem 3 — classical statement
 
 The reflection $L$ of $H$ in $O$ lies on the Euler line ($O$, $G$, $H$, $L$ collinear) and is the orthocentre of the anticomplementary triangle.
 
@@ -942,7 +942,7 @@ theorem cov_N7 (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent ℝ
 
 ---
 
-## ★ N8 SPIEKER RADICAL CENTRE (cov_N8) — Theorem 11 — classical statement
+## ★ N8 SPIEKER RADICAL CENTRE (cov_N8) — Theorem 7 — classical statement
 
 The Spieker centre has equal power with respect to the three excircles.
 
@@ -964,7 +964,7 @@ theorem cov_N8 (A B C : (EuclideanSpace ℝ (Fin 2))) (h : AffineIndependent ℝ
 
 ---
 
-## ★ S1 LEMOINE / SYMMEDIAN POINT (cov_S1a, cov_S1b) — Theorem 12 — classical statement
+## ★ S1 LEMOINE / SYMMEDIAN POINT (cov_S1a, cov_S1b) — Theorem 8 — classical statement
 
 The three symmedians (reflections of the medians in the angle bisectors) meet in a point inside the triangle (S1a), and that point is the point with barycentrics $a^2:b^2:c^2$ (S1b; paper: "uniqueness of the common point of the symmedians", a new proof).
 
@@ -995,7 +995,7 @@ theorem cov_S1b (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C]) (K : Pt)
 
 ---
 
-## ★ S2 PEDAL CENTROID (cov_S2a, cov_S2b) — Theorem 13 — classical statement
+## ★ S2 PEDAL CENTROID (cov_S2a, cov_S2b) — Theorem 9 — classical statement
 
 The symmedian point is the centroid of its pedal triangle (S2a), and it is the only point with this property (S2b).
 
@@ -1025,7 +1025,7 @@ theorem cov_S2b (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C]) (P : Pt)
 
 ---
 
-## ★ S3 BROCARD POINTS AND ANGLE (cov_S3a … cov_S3e) — Theorems 14, 15 and 16 — classical statement
+## ★ S3 BROCARD POINTS AND ANGLE (cov_S3a … cov_S3e) — Theorems 12, 13 and 14 — classical statement
 
 There is exactly one interior point Ω with ∠ΩAB = ∠ΩBC = ∠ΩCA (S3a) and exactly one interior Ω′ with ∠Ω′BA = ∠Ω′CB = ∠Ω′AC (S3b) (paper: "uniqueness of each Brocard point in the interior", a new proof); the two Brocard angles are equal (S3c); cot ω = cot A + cot B + cot C = (a²+b²+c²)/(4Δ) (S3d); 0 < ω ≤ π/6 (S3e).
 
@@ -1095,7 +1095,7 @@ theorem cov_S3e (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C]) (Ω : Pt)
 
 ---
 
-## ★ S4 ISOGONAL BROCARD POINTS (cov_S4) — Theorem 16 — classical statement
+## ★ S4 ISOGONAL BROCARD POINTS (cov_S4) — Theorem 12 — classical statement
 
 The two Brocard points are isogonal conjugates, and they are equidistant from the circumcentre $O$.
 
@@ -1116,7 +1116,7 @@ theorem cov_S4 (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C]) (Ω Ω' : Pt)
 
 ---
 
-## ★ S5 BROCARD CIRCLE (cov_S5) — Theorem 17 — classical statement
+## ★ S5 BROCARD CIRCLE (cov_S5) — Theorem 13 — classical statement
 
 The Brocard points lie on the circle with diameter $OK$.
 
@@ -1138,7 +1138,7 @@ theorem cov_S5 (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C]) (Ω Ω' : Pt)
 
 ---
 
-## ★ S6 FIRST LEMOINE CIRCLE (cov_S6) — Theorem 19 — classical statement
+## ★ S6 FIRST LEMOINE CIRCLE (cov_S6) — Theorem 15 — classical statement
 
 The lines through $K$ parallel to the sides meet the other two sides in six points, which lie on a circle centred at the midpoint of $OK$ (paper: "for any six points with the defining incidences", a new proof).
 
@@ -1164,7 +1164,7 @@ theorem cov_S6 (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C])
 
 ---
 
-## ★ S7 DROZ-FARNY (cov_S7) — Theorem 20 — classical statement
+## ★ S7 DROZ-FARNY (cov_S7) — Theorem 16 — classical statement
 
 Two perpendicular lines through $H$ cut off on each side line a segment; the three midpoints are collinear. (The classical writer added the non-parallel hypothesis, see the comment in the statement.)
 
@@ -1199,6 +1199,6 @@ theorem cov_S7 (A B C : Pt) (h : AffineIndependent ℝ ![A, B, C]) (u v : Pt)
 
 ## Overall
 
-- [ ] All 18 numbered theorems (Theorems 3–20) and all ★ Layer-15 rows agree (67 Lean statements). Hand check complete.
+- [ ] All 18 numbered theorems (Theorems 1–18) and all ★ Layer-15 rows agree (67 Lean statements). Hand check complete.
 
 Confirmed by: ______________________, date: ______________

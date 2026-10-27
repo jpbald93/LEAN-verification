@@ -18,6 +18,6 @@ Zenodo: to be added on publication.
 - `layer14/` — Mathlib-only restatements with explicit witnesses, fully-qualified type listings, gate and tamper logs.
 - `layer15/` — statements written from the classical literature (writer brief, report, Lean file) and the two comparison
   reports with their Lean files; the proofs are integrated as `NagelLine/L15Classical.lean` and `Brocard/L15Classical.lean`.
-- `reviews/` — the three rounds of independent review of the draft.
+- `reviews/` — the independent reviews of the draft (three rounds by one model family, one by another).
 
 Machine names, IP addresses and home-directory paths are redacted throughout.

@@ -46,7 +46,7 @@
 \author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
 \small ORCID: \texttt{0009-0002-1317-6489}
 \thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
-\date{\PH{date}}
+\date{27 October 2026}
 \emergencystretch=3em
 \begin{document}
 \sloppy
@@ -734,8 +734,10 @@ uniqueness results, were then moved into the libraries as \lean{NagelLine/L15Cla
 147 declarations, and adding \lean{NagelLine/Inradius.lean} after the Layer-13 comparison raised
 \lean{paperg\_nagel} to 151.
 
-\paragraph{Statements checked by hand.} \PH{hand check: the author reads each numbered theorem against
-its Lean statement at the published commits}
+\paragraph{Statements checked by hand.} The author read each of the eighteen numbered theorems, as
+given in this paper, and the starred Layer-15 classical statements against their Lean statements at
+the published commits (67 Lean statements in all; a sheet pairing the two, with links to the source lines,
+is in the verification repository) and found them to agree. This is a reading check, not a proof.
 
 \section{What is not claimed}\label{sec:notclaimed}
 \begin{itemize}
@@ -776,7 +778,10 @@ points coincide, which happens exactly for equilateral triangles (Section~\ref{s
 \item \textbf{Battery coverage.} Many declarations have no mutants or no hypotheses, and most
 satisfiability cases are unresolved by the automatic certifier (Section~\ref{sec:verify}).
 \item \textbf{All-AI checking.} The proofs, the numerical checks, the battery and the restatements
-were all done by AI agents. \PH{state human checks done before submission (hand check)}
+were all done by AI agents; the Layer-15 writer and the reviewer were of a different model family
+from the writers of the proofs. The only human check is the author's reading of the statements against
+the paper (Section~\ref{sec:verify}); no human has checked the proofs line by line, which is the
+kernel's job.
 \item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
 \end{enumerate}
 

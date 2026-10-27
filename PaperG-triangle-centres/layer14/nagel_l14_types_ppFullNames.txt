@@ -1,0 +1,185 @@
+@NagelLine.l14_gergonne : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have A : P := t.points 0;
+  have B : P := t.points 1;
+  have C : P := t.points 2;
+  have a : ℝ := Dist.dist B C;
+  have b : ℝ := Dist.dist C A;
+  have c : ℝ := Dist.dist A B;
+  have s : ℝ := (a + b + c) / 2;
+  have Ge : P :=
+    (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) =>
+      (s - ![a, b, c] i)⁻¹ / ∑ j : Fin (Nat.succ 0).succ.succ, (s - ![a, b, c] j)⁻¹;
+  (∀ (i : Fin (2 + 1)), Ge ∈ line[ℝ, t.points i, Affine.Simplex.touchpoint t ∅ i]) ∧
+    ∃ (X : P), ∀ (i : Fin (2 + 1)), X ∈ line[ℝ, t.points i, Affine.Simplex.touchpoint t ∅ i]
+@NagelLine.l14_nagel : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have A : P := t.points 0;
+  have B : P := t.points 1;
+  have C : P := t.points 2;
+  have a : ℝ := Dist.dist B C;
+  have b : ℝ := Dist.dist C A;
+  have c : ℝ := Dist.dist A B;
+  have s : ℝ := (a + b + c) / 2;
+  have N : P := (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s;
+  (∀ (i : Fin (2 + 1)), N ∈ line[ℝ, t.points i, Affine.Simplex.touchpoint t {i} i]) ∧
+    ∃ (X : P), ∀ (i : Fin (2 + 1)), X ∈ line[ℝ, t.points i, Affine.Simplex.touchpoint t {i} i]
+@NagelLine.l14_nagelLine : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have A : P := t.points 0;
+  have B : P := t.points 1;
+  have C : P := t.points 2;
+  have a : ℝ := Dist.dist B C;
+  have b : ℝ := Dist.dist C A;
+  have c : ℝ := Dist.dist A B;
+  have s : ℝ := (a + b + c) / 2;
+  have N : P := (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s;
+  have G : P := Finset.centroid ℝ Finset.univ t.points;
+  N -ᵥ G = 2 • (G -ᵥ Affine.Simplex.incenter t) ∧ Collinear ℝ {Affine.Simplex.incenter t, G, N}
+@NagelLine.l14_spieker : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have A : P := t.points 0;
+  have B : P := t.points 1;
+  have C : P := t.points 2;
+  have a : ℝ := Dist.dist B C;
+  have b : ℝ := Dist.dist C A;
+  have c : ℝ := Dist.dist A B;
+  have s : ℝ := (a + b + c) / 2;
+  have N : P := (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s;
+  (Affine.Simplex.medial t).incenter = midpoint ℝ (Affine.Simplex.incenter t) N ∧
+    Collinear ℝ {(Affine.Simplex.medial t).incenter, Affine.Simplex.incenter t, N}
+@NagelLine.l14_deLongchamps : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have O : P := Affine.Simplex.circumcenter t;
+  have H : P := t.orthocenter;
+  have G : P := Finset.centroid ℝ Finset.univ t.points;
+  have L : P := 2 • (O -ᵥ H) +ᵥ H;
+  midpoint ℝ H L = O ∧
+    Collinear ℝ {L, O, H} ∧
+      Collinear ℝ {G, O, L} ∧
+        ∀ (T : Affine.Triangle ℝ P),
+          (∀ (i : Fin (2 + 1)), T.points i = (AffineMap.homothety G (-2)) (t.points i)) → T.orthocenter = L
+@NagelLine.l14_medial_nagel : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have M : Affine.Simplex ℝ P 2 := Affine.Simplex.medial t;
+  have a : ℝ := Dist.dist (M.points 1) (M.points 2);
+  have b : ℝ := Dist.dist (M.points 2) (M.points 0);
+  have c : ℝ := Dist.dist (M.points 0) (M.points 1);
+  have s : ℝ := (a + b + c) / 2;
+  ((Finset.affineCombination ℝ Finset.univ M.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s) =
+    Affine.Simplex.incenter t
+@NagelLine.l14_isotomic : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  midpoint ℝ (Affine.Simplex.touchpoint t ∅ 0) (Affine.Simplex.touchpoint t {0} 0) =
+      midpoint ℝ (t.points 1) (t.points 2) ∧
+    midpoint ℝ (Affine.Simplex.touchpoint t ∅ 1) (Affine.Simplex.touchpoint t {1} 1) =
+        midpoint ℝ (t.points 2) (t.points 0) ∧
+      midpoint ℝ (Affine.Simplex.touchpoint t ∅ 2) (Affine.Simplex.touchpoint t {2} 2) =
+        midpoint ℝ (t.points 0) (t.points 1)
+@NagelLine.l14_nagel_anticomplementary : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  have A : P := t.points 0;
+  have B : P := t.points 1;
+  have C : P := t.points 2;
+  have a : ℝ := Dist.dist B C;
+  have b : ℝ := Dist.dist C A;
+  have c : ℝ := Dist.dist A B;
+  have s : ℝ := (a + b + c) / 2;
+  have N : P := (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s;
+  have G : P := Finset.centroid ℝ Finset.univ t.points;
+  ∀ (T : Affine.Triangle ℝ P),
+    (∀ (i : Fin (2 + 1)), T.points i = (AffineMap.homothety G (-2)) (t.points i)) → Affine.Simplex.incenter T = N
+@NagelLine.l14_spieker_radical : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P)
+  (i j : Fin 3),
+  Dist.dist (Affine.Simplex.medial t).incenter (Affine.Simplex.exsphere t {i}).center ^ 2 -
+      Affine.Simplex.exradius t {i} ^ 2 =
+    Dist.dist (Affine.Simplex.medial t).incenter (Affine.Simplex.exsphere t {j}).center ^ 2 -
+      Affine.Simplex.exradius t {j} ^ 2
+NagelLine.l14w_nagel : ∀ (t : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] →
+    have A : EuclideanSpace ℝ (Fin 2) := t.points 0;
+    have B : EuclideanSpace ℝ (Fin 2) := t.points 1;
+    have C : EuclideanSpace ℝ (Fin 2) := t.points 2;
+    have a : ℝ := Dist.dist B C;
+    have b : ℝ := Dist.dist C A;
+    have c : ℝ := Dist.dist A B;
+    have s : ℝ := (a + b + c) / 2;
+    have Ge : EuclideanSpace ℝ (Fin 2) :=
+      (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) =>
+        (s - ![a, b, c] i)⁻¹ / ∑ j : Fin (Nat.succ 0).succ.succ, (s - ![a, b, c] j)⁻¹;
+    have N : EuclideanSpace ℝ (Fin 2) :=
+      (Finset.affineCombination ℝ Finset.univ t.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s;
+    have G : EuclideanSpace ℝ (Fin 2) := Finset.centroid ℝ Finset.univ t.points;
+    a = 5 ∧
+      b = 3 ∧
+        c = 4 ∧
+          Ge = !₂[8 / 11, 9 / 11] ∧
+            N = !₂[2, 1] ∧
+              Affine.Simplex.incenter t = !₂[1, 1] ∧
+                G = !₂[4 / 3, 1] ∧
+                  (Affine.Simplex.medial t).incenter = !₂[3 / 2, 1] ∧
+                    Affine.Simplex.touchpoint t ∅ 0 = !₂[8 / 5, 9 / 5] ∧
+                      Affine.Simplex.touchpoint t ∅ 1 = !₂[0, 1] ∧
+                        Affine.Simplex.touchpoint t ∅ 2 = !₂[1, 0] ∧
+                          Affine.Simplex.touchpoint t {0} 0 = !₂[12 / 5, 6 / 5] ∧
+                            Affine.Simplex.touchpoint t {1} 1 = !₂[0, 2] ∧
+                              Affine.Simplex.touchpoint t {2} 2 = !₂[3, 0] ∧
+                                (∀ (i j : Fin (2 + 1)),
+                                    i ≠ j → ¬Collinear ℝ {t.points i, Affine.Simplex.touchpoint t ∅ i, t.points j}) ∧
+                                  (∀ (i j : Fin (2 + 1)),
+                                      i ≠ j →
+                                        ¬Collinear ℝ {t.points i, Affine.Simplex.touchpoint t {i} i, t.points j}) ∧
+                                    Affine.Simplex.incenter t ≠ G ∧
+                                      G ≠ N ∧
+                                        N ≠ Affine.Simplex.incenter t ∧
+                                          Ge ≠ N ∧
+                                            ∀ (i : Fin (2 + 1)),
+                                              Affine.Simplex.touchpoint t ∅ i ≠ Affine.Simplex.touchpoint t {i} i
+NagelLine.l14w_medial_nagel : ∀ (t : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] →
+    have M : Affine.Simplex ℝ (EuclideanSpace ℝ (Fin 2)) 2 := Affine.Simplex.medial t;
+    have a : ℝ := Dist.dist (M.points 1) (M.points 2);
+    have b : ℝ := Dist.dist (M.points 2) (M.points 0);
+    have c : ℝ := Dist.dist (M.points 0) (M.points 1);
+    have s : ℝ := (a + b + c) / 2;
+    ((Finset.affineCombination ℝ Finset.univ M.points) fun (i : Fin (2 + 1)) => (s - ![a, b, c] i) / s) = !₂[1, 1] ∧
+      M.incenter = !₂[3 / 2, 1] ∧ !₂[1, 1] ≠ !₂[3 / 2, 1]
+NagelLine.l14w_nagel_anticomplementary : ∀ (t : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] →
+    have G : EuclideanSpace ℝ (Fin 2) := Finset.centroid ℝ Finset.univ t.points;
+    ∃ (T : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+      T.points = ![!₂[4, 3], !₂[-4, 3], !₂[4, -3]] ∧
+        (∀ (i : Fin (2 + 1)), T.points i = (AffineMap.homothety G (-2)) (t.points i)) ∧
+          Affine.Simplex.incenter T = !₂[2, 1] ∧ Affine.Simplex.incenter T ≠ Affine.Simplex.incenter t
+NagelLine.l14w_spieker_radical : ∀ (t : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] →
+    (Affine.Simplex.medial t).incenter = !₂[3 / 2, 1] ∧
+      (Affine.Simplex.exsphere t {0}).center = !₂[6, 6] ∧
+        (Affine.Simplex.exsphere t {1}).center = !₂[-2, 2] ∧
+          (Affine.Simplex.exsphere t {2}).center = !₂[3, -3] ∧
+            Affine.Simplex.exradius t {0} = 6 ∧
+              Affine.Simplex.exradius t {1} = 2 ∧
+                Affine.Simplex.exradius t {2} = 3 ∧
+                  ∀ (i : Fin (2 + 1)),
+                    Dist.dist (Affine.Simplex.medial t).incenter (Affine.Simplex.exsphere t {i}).center ^ 2 -
+                        Affine.Simplex.exradius t {i} ^ 2 =
+                      37 / 4
+NagelLine.l14w_deLongchamps : ∀ (t : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[1, 3]] →
+    have O : EuclideanSpace ℝ (Fin 2) := Affine.Simplex.circumcenter t;
+    have H : EuclideanSpace ℝ (Fin 2) := t.orthocenter;
+    have G : EuclideanSpace ℝ (Fin 2) := Finset.centroid ℝ Finset.univ t.points;
+    have L : EuclideanSpace ℝ (Fin 2) := 2 • (O -ᵥ H) +ᵥ H;
+    O = !₂[2, 1] ∧
+      H = !₂[1, 1] ∧
+        G = !₂[5 / 3, 1] ∧
+          L = !₂[3, 1] ∧
+            L ≠ O ∧
+              L ≠ H ∧
+                O ≠ H ∧
+                  L ≠ G ∧
+                    ∃ (T : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))),
+                      T.points = ![!₂[5, 3], !₂[-3, 3], !₂[3, -3]] ∧
+                        (∀ (i : Fin (2 + 1)), T.points i = (AffineMap.homothety G (-2)) (t.points i)) ∧
+                          T.orthocenter = L

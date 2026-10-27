@@ -1,0 +1,878 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\usepackage{newunicodechar}
+\newunicodechar{∠}{\ensuremath{\angle}}
+\newunicodechar{₁}{\ensuremath{_1}}
+\newunicodechar{₂}{\ensuremath{_2}}
+\newunicodechar{Ω}{\ensuremath{\Omega}}
+\newunicodechar{∙}{\ensuremath{\cdot}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of our developments; every \decl{...} must be in that repository's gate.sh
+% REQUIRED list (checked by the name gate).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. Filled in when the repositories are published; until then \src prints file:line only.
+% No commit is pinned yet: define \csname commitof:paperg_nagel\endcsname etc. at publication.
+% ---------------------------------------------------------------------------------------------
+\expandafter\def\csname commitof:paperg_nagel\endcsname{e40ee54f20588f5181d348767f3f31be20406cc1}
+\expandafter\def\csname commitof:paperg_brocard\endcsname{ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+\title{Triangle centres in Lean~4:\\ the Nagel line family and the symmedian and Brocard points}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
+\date{\PH{date}}
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+We give machine-checked proofs, in Lean~4 with Mathlib, of classical theorems about two families of
+triangle centres. For the first family we define the Nagel and Gergonne points by their barycentric
+weights and prove that they are the common points of the cevians to the excircle and incircle contact
+points, where the contact points are Mathlib's \texttt{touchpoint}s. We prove the Nagel line
+relation $N-G=2(G-I)$ with Mathlib's incentre and centroid, that the Spieker centre (the incentre of
+Mathlib's medial triangle) is the midpoint of $I$ and $N$, that the Nagel point of the medial triangle
+is $I$, that the incircle and excircle contact points on each side are symmetric about its midpoint,
+that $N$ is the incentre of the anticomplementary triangle, that the de Longchamps point lies on the
+Euler line and is the orthocentre of the anticomplementary triangle, and that the Spieker centre has
+equal power with respect to the three excircles. For the second family we prove that the point with
+barycentrics $a^2:b^2:c^2$ lies on the three symmedians (six angle equalities) and inside the triangle,
+that it is the centroid of its pedal triangle and, in the plane, the only such point, that the two
+Brocard points satisfy their angle equalities, that the Brocard angle $\omega$ satisfies
+$\cot\omega=\cot A+\cot B+\cot C=(a^2+b^2+c^2)/(4\Delta)$ and $0<\omega\le\pi/6$, that the Brocard
+points are isogonal and equidistant from the circumcentre, that $O$, $K$ and both Brocard points lie
+on the circle with diameter $OK$ (which degenerates exactly for equilateral triangles), that the six
+points of Lemoine's first circle are concyclic, and the Droz-Farny line theorem. Apart from the
+pedal-centroid converse and Droz-Farny, no numbered theorem assumes that the ambient space is a plane. All proofs
+use only Lean's three standard axioms. In the sources we searched, subject to stated gaps, we found
+no earlier formal proof of these statements; one earlier Lean file proves an algebraic form of the
+Nagel and Gergonne cevian statements.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+Triangle centres are among the most studied objects of elementary geometry; Kimberling's
+\emph{Encyclopedia of Triangle Centers} \cite{etc} lists tens of thousands of them. A handful are
+classical, with theorems in every textbook \cite{johnson1929,coxetergreitzer,honsberger}: the
+Gergonne point $X(7)$ and the Nagel point $X(8)$, where the cevians to the incircle and excircle
+contact points meet; the Spieker centre $X(10)$; the de Longchamps point $X(20)$; the symmedian
+(Lemoine) point $X(6)$; and the two Brocard points. This paper formalises the basic theorems about
+these points in Lean~4 \cite{lean4} with Mathlib \cite{mathlib}.
+
+Mathlib already contains a good part of the surrounding theory, and we build on it rather than
+redoing it. The Euler line is there: the Monge point of a simplex is
+$O+\tfrac{n+1}{n-1}(G-O)$ (\mdecl{Affine.Simplex.mongePoint_eq_smul_vsub_vadd_circumcenter}),
+and for a triangle the orthocentre is $O+3(G-O)$
+(\mdecl{Affine.Triangle.orthocenter_eq_smul_vsub_vadd_circumcenter}). Mathlib also has the
+incentre and excentres of a simplex, their radii and spheres, and the contact points
+\mdecl{Affine.Simplex.touchpoint} (the orthogonal projections of the in- or excentre onto the faces),
+together with the medial simplex \mdecl{Affine.Simplex.medial}. Our definitions of the Nagel and
+Gergonne points are by weights, but every theorem about them is stated with Mathlib's
+\lean{incenter}, \lean{excenter}, \lean{touchpoint}, \lean{medial}, \lean{circumcenter} and
+\lean{orthocenter}, so that the bridges between the weights and Mathlib's notions are part of what is
+proved. Euler's relation $OI^2=R(R-2r)$ is the subject of an open Mathlib pull request
+(\#44230 \cite{pr44230}, by another author); it is related work, not part of this paper, and we do not use it.
+
+\subsection{Contributions}
+The numbered theorems are proved for an arbitrary \mdecl{Affine.Triangle} in a real inner product space of any
+dimension, with no hypothesis beyond the triangle itself, except where stated.
+\begin{itemize}
+\item \emph{Nagel line family} (Section~\ref{sec:nagel}). Gergonne and Nagel concurrence through
+Mathlib's contact points (Theorems~\ref{thm:gergonne} and~\ref{thm:nagel}); the Nagel line
+$N-G=2(G-I)$ (Theorem~\ref{thm:nagelline}); the Spieker centre as the midpoint of $IN$
+(Theorem~\ref{thm:spieker}); the de Longchamps point (Theorem~\ref{thm:delong}); the medial and
+anticomplementary triangles (Theorems~\ref{thm:medialnagel} and~\ref{thm:anti}); the isotomic
+contact points (Theorem~\ref{thm:isotomic}); and the Spieker centre as the radical centre of the
+excircles, with the value of the common power (Theorem~\ref{thm:radical}).
+\item \emph{Symmedian and Brocard points} (Section~\ref{sec:brocard}). The six symmedian angle
+equalities and interiority (Theorem~\ref{thm:symmedian}); the symmedian point as the centroid of its
+pedal triangle, and its uniqueness in the plane (Theorem~\ref{thm:pedal}); the two Brocard points
+(Theorem~\ref{thm:brocard}); the Brocard angle (Theorem~\ref{thm:cot}); isogonality and
+equidistance from $O$ (Theorem~\ref{thm:isogonal}); the Brocard circle and its degenerate case
+(Theorems~\ref{thm:brocardcircle} and~\ref{thm:degenerate}); Lemoine's first circle
+(Theorem~\ref{thm:lemoine}); and the Droz-Farny line (Theorem~\ref{thm:droz}).
+\end{itemize}
+The proofs are by coordinate certificates, as in our earlier papers
+\cite{paperA,paperB,paperC,paperD,paperE,paperF}: barycentric coordinates relative to the triangle,
+the Ravi substitution for the Nagel family, and inner products in the basis $B-A$, $C-A$ for the
+angle statements (Section~\ref{sec:method}). Table~\ref{tab:thms} lists the Lean name of every
+numbered theorem.
+
+\section{Setting and definitions}\label{sec:defs}
+Throughout, $V$ is a real inner product space, $P$ a metric space that is a normed torsor over $V$,
+and $t$ an \mdecl{Affine.Triangle} in $P$, that is, three affinely independent points
+$A=t_0$, $B=t_1$, $C=t_2$. The dimension of $V$ is arbitrary unless stated otherwise. We write
+\[
+a=|BC|,\quad b=|CA|,\quad c=|AB|,\quad s=\tfrac12(a+b+c),
+\]
+$G$ for the centroid (Mathlib's \mdecl{Finset.centroid} of the vertices), $I$ for
+\mdecl{Affine.Simplex.incenter}, $O$ for \lean{circumcenter} and $H$ for \lean{orthocenter}. For
+weights $w_0,w_1,w_2$ with $w_0+w_1+w_2=1$ we write $w_0A+w_1B+w_2C$ for Mathlib's
+\mdecl{Finset.affineCombination}; all the points below are defined this way, by normalised
+barycentric coordinates. Because $t$ is non-degenerate, $s-a$, $s-b$, $s-c$ and $a,b,c$ are positive
+(the library proves $s-a>0$ etc.\ from Mathlib's positivity of the heights, through Heron's
+formula), so none of the normalisations divides by zero.
+
+\paragraph{Mathlib's contact points.} For a set $S$ of vertex indices, Mathlib's
+\lean{t.touchpoint S i} is the orthogonal projection of the (ex)centre with sign pattern $S$ onto the
+face opposite vertex~$i$. With $S=\emptyset$ this is the incentre, and \lean{t.touchpoint \(\emptyset\) i}
+is the contact point of the incircle with the side opposite vertex~$i$. We prove that
+\lean{t.excenter \{i\}} is the excentre opposite vertex $i$ (its weights are
+$(-a,b,c)/(2(s-a))$ for $i=0$, and cyclically), so \lean{t.touchpoint \{i\} i} is the contact point of
+the excircle opposite vertex $i$ with the side opposite vertex $i$.
+
+\begin{definition}[Nagel family]\label{def:nagel}
+\begin{enumerate}
+\item The \emph{Nagel point} is $N=\dfrac{(s-a)A+(s-b)B+(s-c)C}{s}$
+(\decl{Affine.Triangle.nagelPoint}).
+\item The \emph{Gergonne point} is the point with weights proportional to
+$\dfrac1{s-a},\dfrac1{s-b},\dfrac1{s-c}$, normalised to sum~$1$
+(\decl{Affine.Triangle.gergonnePoint}).
+\item The \emph{Spieker centre} is the incentre of Mathlib's medial triangle
+\mdecl{Affine.Simplex.medial} (\decl{Affine.Triangle.spiekerCenter}).
+\item The \emph{de Longchamps point} is $L=H+2(O-H)$, the reflection of $H$ in $O$
+(\decl{Affine.Triangle.deLongchampsPoint}).
+\item The \emph{anticomplementary triangle} is the image of $t$ under the homothety with centre $G$
+and ratio $-2$ (\decl{Affine.Triangle.anticomplementary}). It is defined as a value of type
+\mdecl{Affine.Triangle} (via \lean{Simplex.map} and the injectivity of the homothety), so its
+non-degeneracy is part of the construction; its vertices are $B+C-A$, $C+A-B$, $A+B-C$
+(\decl{NagelLine.anticomplementary_points_zero} and its two companions), and its medial
+triangle is $t$ (\decl{NagelLine.anticomplementary_medial}).
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[symmedian and Brocard points]\label{def:brocard}
+\begin{enumerate}
+\item The \emph{symmedian point} is $K=\dfrac{a^2A+b^2B+c^2C}{a^2+b^2+c^2}$
+(\decl{Affine.Triangle.symmedianPoint}).
+\item The \emph{first Brocard point} $\Omega$ has weights proportional to
+$\dfrac1{b^2},\dfrac1{c^2},\dfrac1{a^2}$ on $A,B,C$, normalised by
+$\dfrac1{a^2}+\dfrac1{b^2}+\dfrac1{c^2}$ (\texttt{Affine.Triangle.brocardPoint\textsubscript{1}}).
+\item The \emph{second Brocard point} $\Omega'$ has weights proportional to
+$\dfrac1{c^2},\dfrac1{a^2},\dfrac1{b^2}$, with the same normalisation
+(\texttt{Affine.Triangle.brocardPoint\textsubscript{2}}).
+\item The \emph{area} is $\Delta=\tfrac12\,|AB|\,|AC|\sin\angle BAC$ (\decl{Affine.Triangle.area}),
+with Mathlib's unoriented angle \mdecl{EuclideanGeometry.angle}. The library also proves the Gram
+form $\Delta=\tfrac12\sqrt{|u|^2|v|^2-\langle u,v\rangle^2}$ with $u=B-A$, $v=C-A$
+(\decl{Brocard.area_eq_sqrt}) and Heron's form in $a^2,b^2,c^2$ (\decl{Brocard.area_eq_sqrt_dist}).
+\item The six \emph{Lemoine points} (\decl{Affine.Triangle.lemoinePoints}): with
+$S=a^2+b^2+c^2$, they are the points of the side lines with parameters
+$C+\tfrac{a^2}{S}(A-C)$, $A+\tfrac{b^2+c^2}{S}(B-A)$, $B+\tfrac{c^2+a^2}{S}(C-B)$,
+$A+\tfrac{b^2}{S}(B-A)$, $B+\tfrac{c^2}{S}(C-B)$, $C+\tfrac{a^2+b^2}{S}(A-C)$. The bridge
+\decl{Brocard.lemoinePoints_mem} proves that each lies on its side line and on the line through $K$
+parallel to another side (the parallel to $BC$ gives points 0 and 1, the parallel to $CA$ points 2
+and 3, the parallel to $AB$ points 4 and 5), so they are the classical six points.
+\end{enumerate}
+\end{definition}
+
+The Brocard weight order is easy to get wrong; the builders checked numerically (30 digits) that
+$(1/b^2,1/c^2,1/a^2)$ gives $\angle\Omega AB=\angle\Omega BC=\angle\Omega CA$ and the other cyclic
+order gives the mirror point, and Theorem~\ref{thm:brocard} proves it. In Lean, $\angle XYZ$ is
+\lean{∠ X Y Z}, the angle at $Y$, with values in $[0,\pi]$; by Mathlib's convention the angle is
+$\pi/2$ when $X=Y$ or $Z=Y$.
+
+\section{The Nagel line family}\label{sec:nagel}
+\begin{table}[t]
+\centering\footnotesize
+\caption{Main theorems and their Lean names. Namespaces: \lean{NagelLine} (development
+\lean{paperg\_nagel}) and \lean{Brocard} (development \lean{paperg\_brocard}). Starred rows are from the
+extension files (\lean{Extensions.lean}). The hypothesis column lists hypotheses beyond the triangle.}
+\label{tab:thms}
+\begin{tabular}{@{}l p{3.6cm} p{7.4cm} l@{}}
+\toprule
+Thm & content & Lean & hyp.\\
+\midrule
+\ref{thm:gergonne} & Gergonne cevians & \decl{gergonnePoint_mem_cevian}, \decl{gergonne_cevians_concurrent} & --\\
+\ref{thm:nagel} & Nagel cevians & \decl{nagelPoint_mem_cevian}, \decl{nagel_cevians_concurrent} & --\\
+\ref{thm:nagelline} & $N-G=2(G-I)$ & \decl{nagelPoint_vsub_centroid}, \decl{collinear_incenter_centroid_nagelPoint} & --\\
+\ref{thm:spieker} & Spieker $=\operatorname{mid}(I,N)$ & \decl{medial_incenter_eq_midpoint}, \decl{collinear_spiekerCenter_incenter_nagelPoint} & --\\
+\ref{thm:delong}* & de Longchamps & \decl{midpoint_orthocenter_deLongchampsPoint}, \decl{collinear_deLongchampsPoint_circumcenter_orthocenter}, \decl{collinear_centroid_circumcenter_deLongchampsPoint}, \decl{anticomplementary_orthocenter} & --\\
+\ref{thm:medialnagel}* & medial Nagel $=I$ & \decl{medial_nagelPoint} & --\\
+\ref{thm:isotomic}* & isotomic contacts & \decl{midpoint_touchpoint_zero}, \lean{\_one}, \lean{\_two} & --\\
+\ref{thm:anti}* & $N=$ anticompl.\ incentre & \decl{nagelPoint_eq_anticomplementary_incenter} & --\\
+\ref{thm:radical}* & Spieker radical centre & \decl{spiekerCenter_power_exsphere}, \decl{spiekerCenter_power_exsphere_eq}, \decl{spiekerCenter_power_exsphere_eq_inradius} & --\\
+\midrule
+\ref{thm:symmedian} & symmedians, interior & \decl{symmedian_angles}, \decl{symmedianPoint_mem_interior} & --\\
+\ref{thm:pedal} & pedal centroid; converse & \decl{symmedianPoint_eq_centroid_pedal}, \decl{eq_symmedianPoint_of_eq_centroid_pedal} & (ii) $\dim 2$\\
+\ref{thm:brocard} & Brocard points & \texttt{brocardPoint\textsubscript{1}\_angles}, \texttt{brocardPoint\textsubscript{2}\_angles} & --\\
+\ref{thm:cot} & Brocard angle & \decl{cot_brocardAngle_eq_sum_cot}, \decl{cot_brocardAngle_eq_div_area}, \decl{brocardAngle_pos_le} & --\\
+\ref{thm:isogonal}* & isogonal, $|O\Omega|=|O\Omega'|$ & \decl{brocardPoints_isogonal}, \decl{dist_circumcenter_brocardPoint} & --\\
+\ref{thm:brocardcircle}* & Brocard circle & \decl{brocardCircle}, \decl{cospherical_brocardCircle}, \decl{brocardCircle_right_angles} & --\\
+\ref{thm:degenerate}* & equilateral case & \decl{brocardCircle_degenerate}, \decl{brocard_eq_circumcenter_of_equilateral} & see text\\
+\ref{thm:lemoine}* & Lemoine's first circle & \decl{lemoineCircle}, \decl{cospherical_lemoinePoints} & --\\
+\ref{thm:droz}* & Droz-Farny & \decl{drozFarny} & see text\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The theorems of this section are in the development \lean{paperg\_nagel} (library
+\lean{NagelLine}); each has the triangle $t$ as its only hypothesis. File:line references are to
+the library files at the commit given in Section~\ref{sec:avail}.
+
+\begin{theorem}[Gergonne point]\label{thm:gergonne}
+For every triangle and every vertex $i$, the Gergonne point lies on the line through vertex $i$ and
+the contact point of the incircle with the opposite side (Mathlib's \lean{t.touchpoint \(\emptyset\) i}).
+Consequently the three cevians to the incircle contact points have a common point.
+\end{theorem}
+Lean: \decl{NagelLine.gergonnePoint_mem_cevian} (\src{paperg_nagel}{NagelLine}{Main}{290}) and
+\decl{NagelLine.gergonne_cevians_concurrent} (\src{paperg_nagel}{NagelLine}{Main}{328}).
+
+\begin{theorem}[Nagel point]\label{thm:nagel}
+For every triangle and every vertex $i$, the Nagel point lies on the line through vertex $i$ and
+the contact point of the excircle opposite vertex $i$ with the side opposite vertex $i$ (Mathlib's
+\lean{t.touchpoint \{i\} i}). Consequently the three cevians to the excircle contact points have a
+common point. Moreover each such contact point lies strictly between the two other vertices.
+\end{theorem}
+Lean: \decl{NagelLine.nagelPoint_mem_cevian} (\src{paperg_nagel}{NagelLine}{Main}{334}),
+\decl{NagelLine.nagel_cevians_concurrent} (\src{paperg_nagel}{NagelLine}{Main}{357}); the last
+sentence is \decl{NagelLine.sbtw_touchpoint_singleton_zero} and its two companions
+(\src{paperg_nagel}{NagelLine}{Main}{170}--188).
+
+\begin{theorem}[Nagel line]\label{thm:nagelline}
+For every triangle, $N-G=2(G-I)$, where $I$ is Mathlib's incentre. In particular $I$, $G$, $N$ are
+collinear.
+\end{theorem}
+Lean: \decl{NagelLine.nagelPoint_vsub_centroid} (\src{paperg_nagel}{NagelLine}{Main}{362}) and
+\decl{NagelLine.collinear_incenter_centroid_nagelPoint} (\src{paperg_nagel}{NagelLine}{Main}{373}).
+
+\begin{theorem}[Spieker centre]\label{thm:spieker}
+For every triangle, the incentre of the medial triangle is the midpoint of $I$ and $N$. In
+particular the Spieker centre, $I$ and $N$ are collinear.
+\end{theorem}
+Lean: \decl{NagelLine.medial_incenter_eq_midpoint} (\src{paperg_nagel}{NagelLine}{Main}{385}) and
+\decl{NagelLine.collinear_spiekerCenter_incenter_nagelPoint}
+(\src{paperg_nagel}{NagelLine}{Main}{408}).
+
+\begin{theorem}[de Longchamps point]\label{thm:delong}
+For every triangle, with $L$ the de Longchamps point:
+(i) $O$ is the midpoint of $H$ and $L$; (ii) $L$, $O$, $H$ are collinear; (iii) $G$, $O$, $L$ are
+collinear; (iv) $L$ is the orthocentre of the anticomplementary triangle.
+\end{theorem}
+Lean: \decl{NagelLine.midpoint_orthocenter_deLongchampsPoint},
+\decl{NagelLine.collinear_deLongchampsPoint_circumcenter_orthocenter},
+\decl{NagelLine.collinear_centroid_circumcenter_deLongchampsPoint},
+\decl{NagelLine.anticomplementary_orthocenter}
+(\src{paperg_nagel}{NagelLine}{Extensions}{228}, 237, 249, 261).
+Parts (i) and (ii) are immediate from the definition; (iii) uses Mathlib's Euler line, and (iv) uses
+that the circumcentre of the anticomplementary triangle is $H$
+(\decl{NagelLine.anticomplementary_circumcenter}).
+
+\begin{theorem}[Nagel point of the medial triangle]\label{thm:medialnagel}
+For every triangle, the Nagel point of Mathlib's medial triangle is the incentre $I$ of the triangle.
+\end{theorem}
+Lean: \decl{NagelLine.medial_nagelPoint} (\src{paperg_nagel}{NagelLine}{Extensions}{274}). (The
+statement is written \lean{Triangle.nagelPoint t.medial}, because \lean{Simplex.medial} returns a
+\lean{Simplex \(\mathbb{R}\) P 2} and field notation would look for a \lean{Simplex} constant; the term is
+the same.)
+
+\begin{theorem}[isotomic contact points]\label{thm:isotomic}
+For every triangle and each side, the midpoint of the incircle contact point and the contact point
+of the opposite excircle on that side is the midpoint of the side; for the side $BC$,
+$\operatorname{mid}(\lean{touchpoint}\ \emptyset\ 0,\ \lean{touchpoint}\ \{0\}\ 0)=\operatorname{mid}(B,C)$,
+and likewise for $CA$ and $AB$.
+\end{theorem}
+Lean: \decl{NagelLine.midpoint_touchpoint_zero}, \decl{NagelLine.midpoint_touchpoint_one},
+\decl{NagelLine.midpoint_touchpoint_two} (\src{paperg_nagel}{NagelLine}{Extensions}{297}, 308, 319).
+
+\begin{theorem}[anticomplementary triangle]\label{thm:anti}
+For every triangle, the Nagel point is the incentre of the anticomplementary triangle.
+\end{theorem}
+Lean: \decl{NagelLine.nagelPoint_eq_anticomplementary_incenter}
+(\src{paperg_nagel}{NagelLine}{Extensions}{332}).
+
+\begin{theorem}[Spieker centre as radical centre]\label{thm:radical}
+For every triangle and all $i,j\in\{0,1,2\}$, the power of the Spieker centre $S_p$ with respect to
+the excircle opposite vertex $i$ equals its power with respect to the excircle opposite vertex $j$:
+$|S_pJ_i|^2-r_i^2=|S_pJ_j|^2-r_j^2$, where $J_i$ and $r_i$ are the centre and radius of Mathlib's
+\lean{t.exsphere \{i\}}. The common value is
+\[
+\frac14\Bigl(s^2+\frac{(s-a)(s-b)(s-c)}{s}\Bigr)=\frac{s^2+r^2}{4},
+\]
+with $r$ the inradius.
+\end{theorem}
+Lean: \decl{NagelLine.spiekerCenter_power_exsphere} (\src{paperg_nagel}{NagelLine}{Extensions}{357})
+and, for the value, \decl{NagelLine.spiekerCenter_power_exsphere_eq}
+(\src{paperg_nagel}{NagelLine}{Extensions}{201}) for the left-hand form;
+\decl{NagelLine.inradius_sq} (Mathlib's \lean{t.inradius} satisfies $r^2=(s-a)(s-b)(s-c)/s$) and
+\decl{NagelLine.spiekerCenter_power_exsphere_eq_inradius} for the right-hand form
+(\src{paperg_nagel}{NagelLine}{Inradius}{19}, line 40). The last two were added after the Layer-13 comparison
+found the right-hand form missing from the library (Section~\ref{sec:verify}).
+
+\section{The symmedian point and the Brocard points}\label{sec:brocard}
+The theorems of this section are in the development \lean{paperg\_brocard} (library
+\lean{Brocard}). The only hypothesis is the triangle $t$, except in Theorem~\ref{thm:pedal}(ii) and
+Theorem~\ref{thm:droz}, where it is stated.
+
+\begin{theorem}[symmedians]\label{thm:symmedian}
+For every triangle, with $K$ the symmedian point and $M_a,M_b,M_c$ the midpoints of $BC,CA,AB$:
+\[
+\begin{aligned}
+&\angle BAK=\angle M_aAC,&& \angle CAK=\angle M_aAB,\\
+&\angle CBK=\angle M_bBA,&& \angle ABK=\angle M_bBC,\\
+&\angle ACK=\angle M_cCB,&& \angle BCK=\angle M_cCA.
+\end{aligned}
+\]
+So at each vertex the line to $K$ is the reflection of the median in the angle bisector, and the
+three symmedians pass through $K$. Moreover $K$ is an affine combination of $A,B,C$ with positive
+weights, that is, it lies in the relative interior of the triangle (its interior within the plane
+of the triangle).
+\end{theorem}
+Lean: \decl{Brocard.symmedian_angles} (\src{paperg_brocard}{Brocard}{Main}{22}) and
+\decl{Brocard.symmedianPoint_mem_interior} (\src{paperg_brocard}{Brocard}{Main}{100}).
+
+\begin{theorem}[pedal triangle]\label{thm:pedal}
+(i) For every triangle, $K$ is the centroid of its pedal triangle: if $F_a,F_b,F_c$ are the
+orthogonal projections of $K$ onto the lines $BC$, $CA$, $AB$ (Mathlib's
+\mdecl{EuclideanGeometry.orthogonalProjection} onto \lean{line[\(\mathbb{R}\), B, C]} etc.), then
+$\tfrac13(F_a+F_b+F_c)=K$.
+(ii) If moreover $\dim V=2$, then every point $X$ of the plane that is the centroid of its own pedal
+triangle is $K$.
+\end{theorem}
+Lean: \decl{Brocard.symmedianPoint_eq_centroid_pedal} (\src{paperg_brocard}{Brocard}{Main}{115}) and
+\decl{Brocard.eq_symmedianPoint_of_eq_centroid_pedal} (\src{paperg_brocard}{Brocard}{Main}{150}),
+the latter with the instance hypothesis \lean{[Fact (Module.finrank \(\mathbb{R}\) V = 2)]}.
+
+\begin{theorem}[Brocard points]\label{thm:brocard}
+For every triangle, the first Brocard point satisfies
+$\angle\Omega AB=\angle\Omega BC=\angle\Omega CA$, and the second satisfies
+$\angle\Omega' BA=\angle\Omega' CB=\angle\Omega' AC$.
+\end{theorem}
+Lean: \texttt{Brocard.brocardPoint\textsubscript{1}\_angles} (\src{paperg_brocard}{Brocard}{Main}{233}) and
+\texttt{Brocard.brocardPoint\textsubscript{2}\_angles} (\src{paperg_brocard}{Brocard}{Main}{280}).
+
+\begin{theorem}[Brocard angle]\label{thm:cot}
+For every triangle, with $\omega=\angle\Omega AB$ and the vertex angles $\angle BAC$, $\angle ABC$,
+$\angle ACB$:
+\[
+\cot\omega=\cot\angle BAC+\cot\angle ABC+\cot\angle ACB=\frac{a^2+b^2+c^2}{4\Delta},
+\qquad 0<\omega\le\frac\pi6.
+\]
+\end{theorem}
+Lean: \decl{Brocard.cot_brocardAngle_eq_sum_cot}, \decl{Brocard.cot_brocardAngle_eq_div_area},
+\decl{Brocard.brocardAngle_pos_le} (\src{paperg_brocard}{Brocard}{Main}{327}, 366, 402). Here
+$\cot$ is Mathlib's \mdecl{Real.cot}.
+
+\begin{theorem}[isogonal Brocard points]\label{thm:isogonal}
+For every triangle, $\angle\Omega AB=\angle\Omega' AC$, $\angle\Omega BC=\angle\Omega' BA$ and
+$\angle\Omega CA=\angle\Omega' CB$; and $|O\Omega|=|O\Omega'|$.
+\end{theorem}
+Lean: \decl{Brocard.brocardPoints_isogonal} (\src{paperg_brocard}{Brocard}{Extensions}{21}) and
+\decl{Brocard.dist_circumcenter_brocardPoint} (\src{paperg_brocard}{Brocard}{Extensions}{85}).
+``Isogonal'' here means exactly these three angle equalities; no isogonal-conjugation map is defined.
+Together with Theorem~\ref{thm:brocard} they say that the two Brocard angles are equal.
+
+\begin{theorem}[Brocard circle]\label{thm:brocardcircle}
+For every triangle, each of $O$, $K$, $\Omega$, $\Omega'$ is at distance $\tfrac12|OK|$ from the
+midpoint of $OK$; so the four points are cospherical (Mathlib's \mdecl{EuclideanGeometry.Cospherical}).
+Moreover $\langle O-\Omega,K-\Omega\rangle=0$ and $\langle O-\Omega',K-\Omega'\rangle=0$, and
+$\angle O\Omega K=\angle O\Omega' K=\pi/2$.
+\end{theorem}
+Lean: \decl{Brocard.brocardCircle}, \decl{Brocard.cospherical_brocardCircle},
+\decl{Brocard.brocardCircle_right_angles} (\src{paperg_brocard}{Brocard}{Extensions}{116}, 175, 183).
+
+\begin{theorem}[degenerate Brocard circle]\label{thm:degenerate}
+For every triangle, $\Omega=O$ or $\Omega=K$ or $\Omega'=O$ or $\Omega'=K$ or $K=O$ holds if and only
+if the triangle is equilateral; and if the triangle is equilateral then $\Omega=\Omega'=K=O$.
+\end{theorem}
+Lean: \decl{Brocard.brocardCircle_degenerate} (\src{paperg_brocard}{Brocard}{Extensions}{231}) and
+\decl{Brocard.brocard_eq_circumcenter_of_equilateral}
+(\src{paperg_brocard}{Brocard}{Extensions}{314}), the latter with the two hypotheses $|AB|=|BC|$ and
+$|BC|=|CA|$.
+
+\begin{theorem}[Lemoine's first circle]\label{thm:lemoine}
+For every triangle, the six Lemoine points (Definition~\ref{def:brocard}) are all at the same distance
+from the midpoint of $OK$; in particular they are cospherical.
+\end{theorem}
+Lean: \decl{Brocard.lemoineCircle} (\src{paperg_brocard}{Brocard}{Extensions}{353}) and
+\decl{Brocard.cospherical_lemoinePoints} (\src{paperg_brocard}{Brocard}{Extensions}{439}).
+
+\begin{theorem}[Droz-Farny]\label{thm:droz}
+Let $\dim V=2$, let $d_1,d_2\in V$ with $\langle d_1,d_2\rangle=0$, and suppose that neither $d_1$ nor
+$d_2$ lies in the direction of any of the three side lines. For $k=1,2,3$ let $X_k$ and $Y_k$ be
+points of the $k$-th side line ($BC$, $CA$, $AB$) lying on the line through $H$ with direction $d_1$
+and $d_2$ respectively. Then the midpoints of $X_1Y_1$, $X_2Y_2$, $X_3Y_3$ are collinear.
+\end{theorem}
+Lean: \decl{Brocard.drozFarny} (\src{paperg_brocard}{Brocard}{Extensions}{449}); the lines through $H$
+are \lean{AffineSubspace.mk' t.orthocenter (\(\mathbb{R}\) ∙ d\(_i\))}. The non-direction hypotheses
+exclude a line through $H$ that is parallel to a side; they also imply $d_1,d_2\neq0$.
+
+\section{Proof method and bridges to Mathlib}\label{sec:method}
+\paragraph{Barycentric certificates.} Every point in the statements is, or is proved equal to, an
+affine combination of $A,B,C$ with explicit weights that are rational functions of $a,b,c$ (Nagel
+family) or of $a^2,b^2,c^2$ (symmedian and Brocard family). Membership of a point in a line, equality
+of two points, a midpoint or a collinearity then reduces to an identity between weights, which is
+closed by \lean{field\_simp} and \lean{ring}, or by Mathlib's \lean{match\_scalars} where the two sides
+are combinations of the same vectors. As in our earlier papers \cite{paperA,paperE}, the identities
+and, where needed, their cofactors were found with SymPy and checked numerically (mpmath, 30 digits,
+random triangles) before the Lean proofs were written; the numerical checks are evidence, not part of
+the proofs.
+
+\paragraph{The Ravi substitution.} For the Nagel family the library proves that there are $x,y,z>0$
+with $a=y+z$, $b=z+x$, $c=x+y$ and $s=x+y+z$ (lemma \lean{ravi}, from $s-a,s-b,s-c>0$). After the
+substitution the weights $(s-a)/s$, $1/(s-a)$, $a/(2s)$, $(s-b)/a$ and so on become rational functions
+of $x,y,z$ with denominators that are visibly positive, so \lean{field\_simp} can clear them without
+case analysis. The positivity $s-a>0$ itself is derived from Mathlib's \mdecl{Affine.Simplex.height_pos}
+through the squared heights and a factorisation of Heron's polynomial
+(\decl{NagelLine.s_sub_a_pos} and its companions).
+
+\paragraph{The touchpoint bridges.} The connection with Mathlib's contact points is made in two steps.
+First, Mathlib defines the in- and excentres by weights (\lean{excenterWeights}); we compute them:
+the incentre has weights $(a,b,c)/(2s)$ (\decl{NagelLine.incenter_weights}) and
+\lean{excenter \{i\}} has weights $\pm a_j/(2(s-a_i))$ with the minus sign at $j=i$
+(\decl{NagelLine.excenter_weights}), which identifies it as the excentre opposite vertex $i$. Second,
+since \lean{touchpoint} is an orthogonal projection onto a face, a candidate point on the side line is
+the contact point exactly when the vector from the centre to it is orthogonal to the side (Mathlib's
+\mdecl{EuclideanGeometry.coe_orthogonalProjection_eq_iff_mem}). With the candidate
+$B+\frac{s-b}{a}(C-B)$ for the incircle on $BC$, and $B+\frac{s-c}{a}(C-B)$ for the $A$-excircle,
+the orthogonality is a polynomial identity in the Gram entries
+$|B-A|^2=c^2$, $|C-A|^2=b^2$, $\langle B-A,C-A\rangle=\tfrac12(b^2+c^2-a^2)$. This gives
+\decl{NagelLine.touchpoint_empty_zero}, \decl{NagelLine.touchpoint_singleton_zero} and their
+companions, after which Theorems~\ref{thm:gergonne}--\ref{thm:isotomic} are weight computations.
+The medial triangle's sides are half the original ones (\decl{NagelLine.medial_sideA} etc.), which
+transfers the weight formulas to \lean{t.medial}. The anticomplementary triangle is a homothetic image
+of $t$, so its centroid, its medial triangle and its circumcentre come from Mathlib's lemmas about
+\lean{map} and from \mdecl{EuclideanGeometry.eq_circumcenter_of_dist_eq}; the radical-centre identity
+uses Mathlib's formula for the exradius as the inverse of the sum of unnormalised weights.
+
+\paragraph{Angles through inner products.} For the second family all points are written in the
+basis $u=B-A$, $v=C-A$ (which need not span $V$; nothing beyond the plane of the triangle is used), so
+every inner product is a polynomial in the coordinates and the Gram entries above, whose determinant
+is positive (\decl{Brocard.gram_det_pos}). An equality of unoriented angles $\angle XYZ=\angle X'Y'Z'$
+is reduced to: the squared cosines are equal, and the two cosine numerators have the same sign
+(\decl{Brocard.angle_eq_angle_of_inner}, \decl{Brocard.angle_eq_of_coords}). The first is a rational
+identity; for the second the builders found, with SymPy, an expression of the product of the two
+numerators as a square times a manifestly positive factor. The cotangent of the angle between vectors $X,Y$ is
+$\langle X,Y\rangle/\sqrt{|X|^2|Y|^2-\langle X,Y\rangle^2}$, and for points in coordinates the
+square root becomes an absolute $2\times2$ determinant times $\sqrt{|u|^2|v|^2-\langle u,v\rangle^2}$
+(\decl{Brocard.cot_angle_eq_inner}, \decl{Brocard.cot_angle_coords}), which turns
+Theorem~\ref{thm:cot} into rational identities in $a^2,b^2,c^2$ and $\Delta$. The feet of the
+perpendiculars are explicit (\decl{Brocard.orthogonalProjection_vsub}: Mathlib's projection onto
+\lean{line[\(\mathbb{R}\), Y, Z]} is the explicit foot); for $K$ the foot on $AB$ is $A+t(B-A)$ with
+$t=(-a^2+3b^2+c^2)/(2S)$ with $S=a^2+b^2+c^2$. The converse in Theorem~\ref{thm:pedal} is a linear
+system closed with \lean{linear\_combination} and explicit cofactors. For the Brocard circle and the
+Lemoine circle the circumcentre and orthocentre are also written in coordinates
+(\decl{Brocard.circumcenter_coords}, \decl{Brocard.orthocenter_coords}). In Droz-Farny the
+hypothesis $\dim V=2$ is used to write $d_1,d_2$ in the basis $u,v$; the collinearity determinant
+factors as a non-vanishing rational factor times a polynomial $Q$, and $Q$ is a multiple of
+$\langle d_1,d_2\rangle$.
+
+\section{Degenerate cases and hypotheses}\label{sec:degenerate}
+\paragraph{No dimension hypothesis.} Among the numbered theorems, apart from two results, every theorem holds for a triangle in a
+real inner product space of any dimension, and carries no \lean{Module.finrank} hypothesis: all the
+points involved lie in the plane of the triangle, and the proofs use only coordinates in the basis
+$B-A$, $C-A$. The exceptions are Theorem~\ref{thm:pedal}(ii), where $X$ ranges over the whole space
+and the proof needs $X$ in the plane of the triangle to write it in coordinates (we have not
+formalised the higher-dimensional version); and Theorem~\ref{thm:droz}, where the
+directions $d_1,d_2$ must be written in the basis. Both state \lean{[Fact (Module.finrank \(\mathbb{R}\) V = 2)]}
+explicitly, and the tampering suite checks that removing it from the pedal converse breaks the build.
+Non-degeneracy of the triangle is never a separate hypothesis: it is part of
+\mdecl{Affine.Triangle}.
+
+\paragraph{The equilateral Brocard circle.} Theorem~\ref{thm:brocardcircle} has no hypothesis
+excluding coincidences. When $\Omega$ coincides with $O$ or $K$, the right-angle statement
+$\angle O\Omega K=\pi/2$ holds only because Mathlib defines the angle at a vertex coinciding with an
+endpoint to be $\pi/2$; the inner-product form $\langle O-\Omega,K-\Omega\rangle=0$ is then trivially
+true. Theorem~\ref{thm:degenerate} says exactly when this happens: for equilateral triangles only, and
+then all four points coincide and the ``circle'' has radius $0$. The factor behind both statements
+is $a^4+b^4+c^4-a^2b^2-b^2c^2-c^2a^2$, which appears in each of the squared distances. For
+non-equilateral triangles the right-angle statement is the classical one, and the Layer-14 witness of
+Section~\ref{sec:verify} exhibits a triangle in which $O$, $K$, $\Omega$, $\Omega'$ are pairwise
+distinct.
+
+\paragraph{Other edge cases.} The excircle contact points lie on the open sides
+(Theorem~\ref{thm:nagel}), so the Nagel cevians are genuine cevians. The Brocard angle bound
+$\omega\le\pi/6$ is attained only in the equilateral case; the library proves the non-strict bound,
+and a strict instance is checked only on the witness triangle. For right triangles $H$ is a vertex;
+the de Longchamps theorems need no exclusion, while in Droz-Farny a line through $H$ could coincide
+with a side, which the non-direction hypotheses exclude. Under Lean's convention $x/0=0$ some
+expressions would be defined even for degenerate data, but no theorem here relies on it: every
+denominator ($s$, $s-a$, $a^2+b^2+c^2$, $a$, $\Delta$, the Gram determinant) is proved positive.
+
+\section{Related work and prior art}\label{sec:related}
+\paragraph{Mathlib.} At the pinned revision Mathlib has the Euler line (through the Monge point), the
+nine-point circle and its centre on the Euler line, the in- and excentres of a simplex with their
+radii, spheres and contact points, the medial simplex, and Ceva's theorem in affine spaces. We found no
+Mathlib declaration and no Mathlib pull request mentioning the Nagel, Gergonne, Spieker, de Longchamps,
+symmedian (Lemoine) or Brocard points, isogonal conjugation, the Droz-Farny line or Lemoine's circle.
+Euler's $OI^2=R(R-2r)$, with excentre versions and $r\le R/2$, is in the open Mathlib pull request
+\#44230 \cite{pr44230} (opened 2026-09-26); a proof also appears in the repository \lean{facebookresearch/atlas-lean}. We neither
+use nor reprove it.
+
+\paragraph{Earlier Lean work on these centres.} The only related Lean file we found is in the
+\lean{lean-genius} repository \cite{leangenius} (file \lean{CevasTheoremOQ04OQ04OQ02.lean}, first committed
+2026-06-25, no \lean{sorry}). It defines the Nagel point and the incentre by Ravi-barycentric formulas
+in an abstract real module and proves that the defined point lies on the cevian to a foot that is
+itself defined by a formula. It is a partial, algebraic form of the cevian statements of
+Theorems~\ref{thm:gergonne} and~\ref{thm:nagel}: the feet are not tied to incircle or excircle
+tangency and the incentre is not tied to Mathlib's, and there is no Nagel line or ratio statement. We
+cite it as partial prior art. We found no Lean formalisation of the other theorems of this paper.
+
+\paragraph{Other systems.} In GeoCoq and the Coq high-school geometry library the Euler line is
+formalised; we found no Nagel, Gergonne, Spieker, symmedian, Brocard, Lemoine-circle or Droz-Farny
+results there, nor in the Archive of Formal Proofs, the HOL~Light distribution or the Mizar
+Mathematical Library. All Lean hits for ``brocard'' that we found concern Brocard's number-theoretic
+problem $n!+1=m^2$, not the Brocard points.
+
+\paragraph{How the search was done, and its gaps.} The sweep (2026-10-24) grepped a local Mathlib
+checkout at the pinned revision, searched mathlib4 pull requests and GitHub Lean code through the
+GitHub API, grepped clones of \lean{lean-genius} and \lean{atlas-lean}, ran per-repository searches of
+FormalBook, Compfiles and other benchmark collections, and searched local copies of GeoCoq, the Coq
+high-school geometry library, HOL~Light and the Mizar library, and the Archive of Formal Proofs
+through a GitHub mirror. The query terms were the names of the centres and theorems
+(\lean{nagel}, \lean{gergonne}, \lean{symmedian}, \lean{lemoine}, \lean{brocard}, \lean{spieker},
+\lean{longchamps}, \lean{isogonal}, \lean{droz}, and others). Two gaps matter: general web search was
+unavailable during the sweep, so GitHub searches stand in for it; and ProofAtlas was checked only
+through its sitemap (752 URLs), not by reading its pages. Our statements of novelty are subject to
+these gaps. \PH{re-run of the prior-art search with web search before submission}
+
+\paragraph{Classical sources.} The theorems are classical; we follow Johnson \cite{johnson1929},
+Coxeter and Greitzer \cite{coxetergreitzer} and Honsberger \cite{honsberger}, and Kimberling's
+encyclopedia \cite{etc} for the centre numbers and barycentric coordinates. For the three less
+familiar statements: the Spieker centre is the radical centre of the excircles in Yiu
+\cite[\S7.3.3, p.~94]{yiu}; the first Lemoine circle and its centre at the midpoint of $KO$ are in
+Honsberger \cite[Ch.~9, \S5, pp.~94--95]{honsberger}; the Droz-Farny theorem, stated by Droz-Farny in
+1899, is proved synthetically by Ayme \cite{ayme}. Our earlier papers
+\cite{paperA,paperB,paperC,paperD,paperE,paperF} use the same certificate method for other
+configurations of classical plane geometry.
+
+\section{Verification}\label{sec:verify}
+\paragraph{Gates and tampering.} As in our earlier papers, each development has a gate script
+(\lean{gate.sh}) that rejects forbidden tokens (\lean{sorry}, \lean{admit}, \lean{native\_decide},
+\lean{axiom} declarations and the like), builds the library, and checks with \lean{\#print axioms}
+that every declaration in its \lean{REQUIRED} list depends only on \lean{propext},
+\lean{Classical.choice} and \lean{Quot.sound}. The \lean{REQUIRED} lists contain every definition,
+main theorem and bridge lemma. \lean{paperg\_nagel} passed with 48 declarations (the files
+\lean{Basic.lean} and \lean{Main.lean}, Theorems~\ref{thm:gergonne}--\ref{thm:spieker}) and then with
+77 after \lean{Extensions.lean} (Theorems~\ref{thm:delong}--\ref{thm:radical}) was added;
+\lean{paperg\_brocard} passed with 38 (Theorems~\ref{thm:symmedian}--\ref{thm:cot}) and then 67
+after \lean{ExtLemmas.lean} and \lean{Extensions.lean}
+(Theorems~\ref{thm:isogonal}--\ref{thm:droz}). The extensions added files and import lines only and
+changed no earlier statement. The tampering suite (\lean{tests/tamper.sh}) plants a hidden
+\lean{sorry}, an axiom split over two lines, a fake \lean{\#print axioms} report, a
+command-redefining macro, a wrapper axiom, and the removal of a needed hypothesis (in
+\lean{paperg\_nagel} the triangle binder of \decl{NagelLine.nagelPoint_vsub_centroid} and of
+\decl{NagelLine.spiekerCenter_power_exsphere}; in \lean{paperg\_brocard} the dimension hypothesis of
+\decl{Brocard.eq_symmedianPoint_of_eq_centroid_pedal} and the orthogonality hypothesis of
+\decl{Brocard.drozFarny}); every planted defect was rejected at each stage (7 of 7 in each final
+suite). In an early version of \lean{paperg\_nagel} the removed triangle binder was silently
+re-supplied by a section \lean{variable}; the tampering suite caught this, and the main theorems were
+moved out of that section.
+
+\paragraph{Cross-machine reproduction.} \lean{paperg\_brocard} was built on an arm64 macOS machine from
+a copy of the x86-64 Linux repository at the same local commit; the build succeeded, the gate printed
+\lean{PASS (67 declarations, standard axioms only)} and the tampering suite rejected all 7 defects. The
+SHA-256 hashes of all library \lean{.lean} files of both developments agree between the two machines.
+\paragraph{Fresh-clone receipts.} Both repositories were cloned from GitHub at the published commits
+and built on both machines (x86-64 Linux and arm64 macOS, Lean v4.33.1, the pinned Mathlib). On each
+machine \lean{paperg\_nagel} printed \lean{PASS (151 declarations, standard axioms only)} and
+\lean{paperg\_brocard} printed \lean{PASS (147 declarations, standard axioms only)}; the tampering
+suites printed \lean{ALL TAMPERING TESTS REJECTED}; and the SHA-256 digest of the sorted library
+\lean{.lean} file hashes agreed between the machines (\texttt{201feb97\ldots} and
+\texttt{bd4e777b\ldots}). The four receipts are in the supporting material.
+
+\paragraph{Statement-level battery.} The battery of our earlier papers was run on each development
+at each stage. The figures are per development; every run's report is in the supporting material
+(\lean{reports/battery/}, file names give the machine and the start time).
+\begin{itemize}
+\item \emph{\lean{paperg\_nagel}, before the extensions} (78 theorems): conclusion mutations 210/210
+rejected (7 of them by the heartbeat limit), none surviving; contradiction probe: no contradiction in
+12 probed declarations (66 have no hypotheses and were not probed); satisfiability certified for 2 of
+78, 76 unresolved; hypothesis ablation: 29 binders needed, 1 unused; linter: no warnings in 2 library
+files.
+\item \emph{\lean{paperg\_nagel}, with the extensions} (105 theorems): mutations 282/282 rejected (7 by
+the heartbeat limit), none surviving; no contradiction in 14 probed declarations (91 without
+hypotheses); satisfiability certified for 4 of 105, 101 unresolved; ablation: 32 needed, 1 unused;
+linter: no warnings in 3 files (run on the arm64 machine). A run on the x86-64 machine gave the same
+mutation, contradiction and satisfiability figures; its ablation stage reported 41 binders needed and
+1 unused.
+\item \emph{\lean{paperg\_brocard}, before the extensions} (40 theorems): mutations 97/97 rejected, none
+by timeout; no contradiction in 13 probed declarations (27 without hypotheses); satisfiability
+certified for 8 of 40, 32 unresolved; ablation: 54 needed, 0 unused; linter: no warnings in 2 files.
+\item \emph{\lean{paperg\_brocard}, with the extensions} (68 theorems): mutations 152/152 rejected, none
+by timeout; no contradiction in 28 probed declarations (40 without hypotheses); satisfiability
+certified for 7 of 68, 61 unresolved; ablation: 111 needed, 0 unused; linter: no warnings in 4 files.
+The run on the other machine gave the same figures.
+\end{itemize}
+The single unused binder in \lean{paperg\_nagel} is the hypothesis $0<y+z$ of the auxiliary lemma
+\lean{sub\_pos\_aux}, a redundant positivity condition. These figures have limits. The mutation
+generator alters only conclusions of certain forms, so a declaration without mutants is not
+mutation-tested; most declarations have no hypotheses beyond the triangle and so are not probed for
+contradictions; and most satisfiability cases are unresolved by the automatic certifier. For the main
+theorems, satisfiability and non-degeneracy are supplied instead by the explicit witnesses of the next
+paragraph. Ablation shows which binders the existing proof uses, not which are logically necessary.
+With the Layer-14 and Layer-15 files the battery was run again on both machines. For
+\lean{paperg\_nagel} at the commit before \lean{Inradius.lean} was added (180 theorems), both runs
+rejected 440 of 448 mutations (11 by the heartbeat limit), with 8 surviving and no contradiction;
+satisfiability was certified for 30 of 180 on one machine and 32 of 180 on the other (the certifier's
+search is time-limited). With \lean{Inradius.lean} (182 theorems) 446 of 454 mutations were rejected,
+with the same 8 survivors and no contradiction. For \lean{paperg\_brocard} with the Layer-15 file (147
+theorems), two runs on the x86-64 machine and one on the arm64 machine each rejected 285 of 287
+mutations, with 2 surviving and no contradiction (one probe was reported invalid by the harness);
+satisfiability was certified for 26 to 28 of 147. Besides \lean{sub\_pos\_aux}, the ablation step reports eight unused binders, all in Layer-15 files.
+In five classical statements (N3, N4, N6a, N6b, S1b) the hypothesis that the point is on the third
+cevian or symmedian is not needed, because the other two already fix the point; the two
+nonzero-direction hypotheses of the classical Droz-Farny statement are not used by its proof; and in
+the auxiliary lemma \lean{symm\_mem} the hypothesis $0<S$ is redundant. The classical hypotheses are
+the classical writer's, kept verbatim. Nine of the ten survivors change a coordinate of a Layer-14
+witness triangle (for example $(4,0)\mapsto(5,0)$) inside a non-collinearity lemma; the mutated
+triangle is still non-degenerate, so the mutated lemma is true and its survival is expected. The tenth
+changes a comment in the Layer-15 Droz-Farny file and has no effect on any statement.
+Finally the battery was run on fresh clones of the published commits on both machines (reports
+\lean{*\_pub\_*} in the supporting material). \lean{paperg\_nagel} (182 theorems): 446 of 454
+mutations rejected (11 by the heartbeat limit), 8 surviving, no contradiction, satisfiability
+certified for 30 and 31 of 182; \lean{paperg\_brocard} (147 theorems): 285 of 287 rejected, 2
+surviving, no contradiction (one probe invalid), satisfiability certified for 26 and 28 of 147. On
+both machines the survivors are the same ten classified above, and the ablation stage reports the same
+unused binders.
+
+\paragraph{Statements in Mathlib's language and non-vacuity (Layer~14).} A Layer-14 file in each
+development (\lean{NagelLine/L14.lean}, \lean{Brocard/L14.lean}) restates the principal assertions of each main theorem with
+Mathlib-only types, the library's points being unfolded into Mathlib terms (explicit affine
+combinations with weights written in \lean{dist}, \lean{t.medial.incenter} for the Spieker centre,
+$H+2(O-H)$ for the de Longchamps point, and ``any \mdecl{Affine.Triangle} whose vertices are the
+images of $A,B,C$ under the homothety with centre $G$ and ratio $-2$'' for the anticomplementary
+triangle), and proves it from the library theorem. A check with fully qualified pretty-printing found
+no constant of either library in the elaborated types of these 16 + 9 restatements or of the 5 + 5
+witness theorems. Each witness theorem proves the hypotheses and the non-degeneracy of the conclusion
+on an explicit triangle in \lean{EuclideanSpace \(\mathbb{R}\) (Fin 2)}:
+\begin{itemize}
+\item For the Nagel family, mainly the 3-4-5 triangle $A=(0,0)$, $B=(4,0)$, $C=(0,3)$: $I=(1,1)$,
+$G=(4/3,1)$, $N=(2,1)$, Gergonne point $(8/11,9/11)$, Spieker centre $(3/2,1)$; the cevians are
+pairwise distinct lines, $I,G,N$ are pairwise distinct, the incircle and excircle contact points
+differ on every side, the anticomplementary triangle has incentre $(2,1)\neq I$, and the excentres
+$(6,6)$, $(-2,2)$, $(3,-3)$ with exradii $6,2,3$ give power $37/4$ for the Spieker centre. Since $H=A$ in
+this right triangle, the de Longchamps witness uses $(0,0)$, $(4,0)$, $(1,3)$ instead: $O=(2,1)$,
+$H=(1,1)$, $L=(3,1)$, pairwise distinct and distinct from $G$.
+\item For the symmedian and Brocard family, $A=(0,0)$, $B=(4,0)$, $C=(1,3)$ ($a^2=18$, $b^2=10$,
+$c^2=16$, $\Delta=6$): $K=(14/11,12/11)$, $\Omega=(220/157,120/157)$, $\Omega'=(232/157,216/157)$,
+$\cot\omega=11/6$ and $0<\omega<\pi/6$; $K$ differs from the vertices and from $G$, and $O,K,\Omega,\Omega'$
+are pairwise distinct, so Theorem~\ref{thm:brocardcircle} is non-vacuous; the centroid $G$ is not
+the centroid of its own pedal triangle; the six Lemoine points are pairwise distinct; and for
+Droz-Farny, with $d_1=(1,2)$, $d_2=(2,-1)$, all hypotheses hold and the three midpoints
+$(10/3,2/3)$, $(-2/7,-6/7)$, $(7/4,0)$ are pairwise distinct.
+\end{itemize}
+Two clauses are not restated there: the strict-betweenness clause of Theorem~\ref{thm:nagel} and the
+two forms of the common value in Theorem~\ref{thm:radical}, which are stated only in the library's own
+terms. No restatement turned out false or needed a hypothesis that the library theorem lacks. With the
+Layer-14 files the gates pass with 91 (\lean{paperg\_nagel}) and 88 (\lean{paperg\_brocard})
+declarations on the x86-64 machine, and \lean{paperg\_nagel} also on the arm64 machine; the tampering
+suites reject every planted defect.
+
+\paragraph{Blind restatement from this paper (Layer~13).} A version of this paper with every Lean
+name, listing, table of declarations and source link removed was given to a fresh AI writer that had
+no access to the code; from the prose alone it wrote 36 Lean statements for the 18 numbered theorems,
+with its own definitions, compiled with only \lean{sorry} warnings. Its session log shows that it read
+only that text and its own files. A comparer then proved, for each pair, the blind statement from the
+library statement and conversely, using only unfolding, agreement lemmas between the two sets of
+definitions and general Mathlib lemmas, never the library's own theorems. 35 of the 36 pairs are
+equivalent in both directions. The exception was Theorem~\ref{thm:radical}: the blind statement
+included the inradius form $(s^2+r^2)/4$ written in this paper, which the library did not state, so
+the blind statement was strictly stronger. We added the two theorems \decl{NagelLine.inradius_sq} and
+\decl{NagelLine.spiekerCenter_power_exsphere_eq_inradius}; with them the blind statement follows by
+repackaging. All comparison files compile with no \lean{sorry} and only the standard axioms, and the
+library hash was unchanged by the comparison.
+
+\paragraph{Comparison with the classical statements (Layer~15).} A second fresh writer, given only
+textbook statements of fifteen classical results (N1--N8: Gergonne, Nagel, Nagel line, Spieker,
+isotomic contacts, medial and anticomplementary triangles, de Longchamps, Spieker radical centre;
+S1--S7: Lemoine, pedal centroid, Brocard points and angle, isogonality, Brocard circle, first Lemoine
+circle, Droz-Farny) and neither this paper nor the code, wrote 23 Lean statements. Comparers then
+proved each classical statement from the libraries. All ten Nagel-family statements are covered. The
+classical statements are about \emph{any} common point of the cevians, while the library defines the
+points by weights and shows they lie on the cevians; the comparer closed this gap with a new
+uniqueness proof (two cevians from different vertices meet in at most one point), and also proved the
+four-point collinearity of $I$, $G$, $S_p$, $N$, which the library states as two three-point
+collinearities. In the symmedian and Brocard family, the pedal-centroid statements and Droz-Farny are
+covered directly; the rest were narrower in the library (it proves existence for its explicit points)
+and were completed by new proofs: uniqueness of the common point of the symmedians, uniqueness of each
+Brocard point in the interior, and the first Lemoine circle for any six points with the defining
+incidences. Four classical statements (N4, N6b, N7, N8) carry a non-degeneracy hypothesis on the medial or anticomplementary triangle written by the classical writer; the comparer proved these hypotheses redundant (the medial and anticomplementary triangles of a triangle are non-degenerate). No classical statement disagreed with the library. These proofs, including all new
+uniqueness results, were then moved into the libraries as \lean{NagelLine/L15Classical.lean} and
+\lean{Brocard/L15Classical.lean}, which work in the plane; with them the gates passed with 149 and
+147 declarations, and adding \lean{NagelLine/Inradius.lean} after the Layer-13 comparison raised
+\lean{paperg\_nagel} to 151.
+
+\paragraph{Statements checked by hand.} \PH{hand check: the author reads each numbered theorem against
+its Lean statement at the published commits}
+
+\section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}
+\item We do not claim new mathematics: all theorems are classical.
+\item We do not claim Euler's $OI^2=R(R-2r)$, the Euler line, the nine-point circle or any other
+result already in Mathlib or in an open Mathlib pull request; we use Mathlib's Euler line in
+Theorem~\ref{thm:delong}(iii).
+\item We do not claim the first formal treatment of the Nagel and Gergonne cevians in every sense: an
+algebraic form with formula-defined feet was formalised earlier in \lean{lean-genius}
+(Section~\ref{sec:related}). Our claim is to the statements with Mathlib's contact points, incentre and
+centroid.
+\item In the numbered theorems the points are given by their weights, and the theorems prove that
+these points have the classical properties (Theorem~\ref{thm:symmedian} by angle equalities at each
+vertex); the only uniqueness statement among them is Theorem~\ref{thm:pedal}(ii). The additional
+Layer-15 files (Section~\ref{sec:verify}), which work in the plane \lean{EuclideanSpace \(\mathbb{R}\) (Fin 2)},
+prove uniqueness of the Nagel point, of the common point of the symmedians and of each interior
+Brocard point, and express isogonality by reflected-line incidence. We define no isogonal-conjugation
+map.
+\item We do not claim novelty beyond the sources searched; see the gaps in Section~\ref{sec:related}.
+\end{itemize}
+
+\section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{Definitions by weights.} The Nagel, Gergonne, symmedian and Brocard points and the
+Lemoine points are defined by barycentric formulas. The theorems connect them to Mathlib's contact
+points, incentre, centroid, orthocentre, circumcentre and angles, but a reader must check that the
+weights are the intended ones; the Layer-14 restatements unfold them so that this check needs only
+Mathlib.
+\item \textbf{One labelling.} Statements are for the given order $A,B,C$; where a statement has three
+cyclic forms, all three are stated (contact points, cevians, symmedian angles), but no general
+relabelling lemma is proved.
+\item \textbf{Dimension.} The pedal converse and Droz-Farny assume a two-dimensional space. The
+additional Layer-15 developments are also planar.
+\item \textbf{The equilateral case.} The right-angle form of the Brocard circle is vacuous when the
+points coincide, which happens exactly for equilateral triangles (Section~\ref{sec:degenerate}).
+\item \textbf{Battery coverage.} Many declarations have no mutants or no hypotheses, and most
+satisfiability cases are unresolved by the automatic certifier (Section~\ref{sec:verify}).
+\item \textbf{All-AI checking.} The proofs, the numerical checks, the battery and the restatements
+were all done by AI agents. \PH{state human checks done before submission (hand check)}
+\item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
+\end{enumerate}
+
+\section{Availability}\label{sec:avail}
+The proofs are in two Lean~4 developments on Lean v4.33.1 with Mathlib pinned at revision
+\texttt{0df444a3} (in \lean{lake-manifest.json}). Line counts are of the library \lean{.lean} files,
+including the root import file, at the published commits.
+\begin{center}\small
+\begin{tabular}{lp{8.2cm}rr}
+\toprule
+repository & library files & files & lines\\
+\midrule
+\lean{paperg\_nagel} & \lean{Basic} (285), \lean{Main} (414), \lean{Extensions} (362), \lean{Inradius} (45), \lean{L14} (408), \lean{L15Classical} (741) & 7 & 2{,}261\\
+\lean{paperg\_brocard} & \lean{Basic} (57), \lean{Lemmas} (338), \lean{Main} (463), \lean{ExtLemmas} (384), \lean{Extensions} (546), \lean{L14} (522), \lean{L15Classical} (723) & 8 & 3{,}040\\
+\bottomrule
+\end{tabular}
+\end{center}
+The repositories are \url{https://github.com/jpbald93/paperg_nagel} at commit
+\texttt{e40ee54f20588f5181d348767f3f31be20406cc1} and
+\url{https://github.com/jpbald93/paperg_brocard} at commit
+\texttt{ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d}; each is published as a single commit (the
+development history is not included). Every \texttt{File:line} reference in this paper links to
+that commit. Supporting material (the prior-art sweep,
+the builders' reports, the battery and build reports, the Layer-14 files and reports, and the
+fresh-clone receipts) is in the folder \lean{PaperG-triangle-centres} of the repository
+\url{https://github.com/jpbald93/LEAN-verification}.
+Every name in \lean{\textbackslash decl} font in this paper is in the \lean{REQUIRED} list of the
+repository that contains it at the published commit; a script checked all 108 names against the
+published \lean{REQUIRED} lists, and all 31 \texttt{File:line} references (and the further line
+numbers listed with them) against the declarations at those lines.
+
+\section*{Acknowledgements and use of AI}
+Large-language-model AI assistants were used to write the Lean proofs, to run the prior-art search,
+the numerical checks and the verification battery, and to draft this paper; parts of the checking were
+done by a different model from the one that wrote the proofs. The author directed the work and
+reviewed the paper. Every proof is checked by the Lean kernel, and the author takes responsibility for
+all content.
+
+\begin{thebibliography}{99}
+\bibitem{lean4}
+L.~de Moura and S.~Ullrich,
+\emph{The Lean 4 theorem prover and programming language},
+in: Automated Deduction -- CADE-28, Lecture Notes in Computer Science \textbf{12699}, Springer, 2021, 625--635.
+
+\bibitem{mathlib}
+The mathlib Community,
+\emph{The Lean mathematical library},
+in: Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP '20), ACM, 2020, 367--381.
+
+\bibitem{pr44230}
+W.~Wang, \emph{feat(Geometry/Euclidean): prove Euler's theorem in geometry}, mathlib4 pull request \#44230, opened 26 September 2026 (open at the time of writing).
+\url{https://github.com/leanprover-community/mathlib4/pull/44230}
+
+\bibitem{etc}
+C.~Kimberling,
+\emph{Encyclopedia of Triangle Centers},
+\url{https://faculty.evansville.edu/ck6/encyclopedia/ETC.html}.
+
+\bibitem{johnson1929}
+R.~A.~Johnson,
+\emph{Advanced Euclidean Geometry},
+Dover, New York, 1960 (unabridged republication of \emph{Modern Geometry}, Houghton Mifflin, 1929).
+
+\bibitem{coxetergreitzer}
+H.~S.~M.~Coxeter and S.~L.~Greitzer,
+\emph{Geometry Revisited},
+Mathematical Association of America, 1967.
+
+\bibitem{leangenius}
+GitHub user \texttt{rjwalters}, \emph{lean-genius} (GitHub repository \url{https://github.com/rjwalters/lean-genius}),
+file \texttt{proofs/Proofs/CevasTheoremOQ04OQ04OQ02.lean}, first committed 25 June 2026; consulted at
+commit \texttt{470a7df}, 22 October 2026,
+\url{https://github.com/rjwalters/lean-genius/blob/470a7df/proofs/Proofs/CevasTheoremOQ04OQ04OQ02.lean}.
+
+\bibitem{yiu}
+P.~Yiu, \emph{Introduction to the Geometry of the Triangle}, lecture notes, Florida Atlantic
+University, Summer 2001; version 12.1224, December 2012.
+
+\bibitem{ayme}
+J.-L.~Ayme, A purely synthetic proof of the Droz-Farny line theorem, \emph{Forum Geometricorum}
+\textbf{4} (2004), 219--224.
+
+\bibitem{honsberger}
+R.~Honsberger,
+\emph{Episodes in Nineteenth and Twentieth Century Euclidean Geometry},
+New Mathematical Library \textbf{37}, Mathematical Association of America, 1995.
+
+\bibitem{paperA}
+J.~Bald,
+\emph{Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23239930}
+
+\bibitem{paperB}
+J.~Bald,
+\emph{The Malfatti circles in Lean~4, with independent certificate proofs of Feuerbach, Miquel and Brahmagupta},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23240500}
+
+\bibitem{paperC}
+J.~Bald,
+\emph{Barbier's theorem for the Reuleaux triangle and the convex four-vertex theorem in Lean~4, through support functions},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23323062}
+
+\bibitem{paperD}
+J.~Bald,
+\emph{Circle configurations in classical plane geometry, formalized in Lean~4: Clifford's chain, Miquel's five circles, Lester, Sawayama--Th\'ebault and Kosnita},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23378578}
+
+\bibitem{paperE}
+J.~Bald,
+\emph{The complete quadrilateral in Lean~4: Newton--Gauss, Bodenmiller, the Miquel point, the Steiner circle and the Simson line},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23407551}
+
+\bibitem{paperF}
+J.~Bald,
+\emph{The inscribed parabola and the Poncelet point: the complete quadrilateral and the complete quadrangle in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23653615}
+\end{thebibliography}
+\end{document}

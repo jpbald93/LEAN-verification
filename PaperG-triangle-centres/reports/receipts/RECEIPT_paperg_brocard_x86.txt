@@ -1,0 +1,6 @@
+repo paperg_brocard commit ebb35755a81aec2c7c0673fe93baf8cc5d6eb22d host=x86-machine Linux x86_64 2026-10-26T20:38:30Z
+lean leanprover/lean4:v4.33.1
+Build completed successfully (8714 jobs).
+PASS (147 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+lean-files-digest bd4e777b12dd04fdf9adf8d2d4c3b1aa4a37b1262bdd0ec050ffbff27865a6d3

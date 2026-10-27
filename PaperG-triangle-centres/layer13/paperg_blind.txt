@@ -1,0 +1,423 @@
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+  For the first family we define the Nagel and Gergonne points by their barycentric
+weights and prove that they are the common points of the cevians to the excircle and incircle contact
+  We prove the Nagel line
+  For the second family we prove that the point with
+barycentrics $a^2:b^2:c^2$ lies on the three symmedians (six angle equalities) and inside the triangle,
+that it is the centroid of its pedal triangle and, in the plane, the only such point, that the two
+Brocard points satisfy their angle equalities, that the Brocard angle $\omega$ satisfies
+$\cot\omega=\cot A+\cot B+\cot C=(a^2+b^2+c^2)/(4\Delta)$ and $0<\omega\le\pi/6$, that the Brocard
+points are isogonal and equidistant from the circumcentre, that $O$, $K$ and both Brocard points lie
+on the circle with diameter $OK$ (which degenerates exactly for equilateral triangles), that the six
+points of Lemoine's first circle are concyclic, and the Droz-Farny line theorem. Apart from the
+pedal-centroid converse and Droz-Farny, no theorem assumes that the ambient space is a plane. All proofs
+  In the sources we searched, subject to stated gaps, we found
+ 
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+Triangle centres are among the most studied objects of elementary geometry; Kimberling's
+\emph{Encyclopedia of Triangle Centers} \cite{etc} lists tens of thousands of them. A handful are
+classical, with theorems in every textbook \cite{johnson1929,coxetergreitzer,honsberger}: the
+Gergonne point $X(7)$ and the Nagel point $X(8)$, where the cevians to the incircle and excircle
+contact points meet; the Spieker centre $X(10)$; the de Longchamps point $X(20)$; the symmedian
+(Lemoine) point $X(6)$; and the two Brocard points. 
+
+  The Euler line is there: the Monge point of a simplex is
+$O+\tfrac{n+1}{n-1}(G-O)$ ([NAME]),
+and for a triangle the orthocentre is $O+3(G-O)$
+([NAME]).  Our definitions of the Nagel and
+  
+
+\subsection{Contributions}
+All theorems are proved for an arbitrary [NAME] in a real inner product space of any
+dimension, with no hypothesis beyond the triangle itself, except where stated.
+\begin{itemize}
+\item \emph{Nagel line family} (Section~\ref{sec:nagel}). Gergonne and Nagel concurrence through
+ 
+\item \emph{Symmedian and Brocard points} (Section~\ref{sec:brocard}). The six symmedian angle
+equalities and interiority (Theorem~\ref{thm:symmedian}); the symmedian point as the centroid of its
+pedal triangle, and its uniqueness in the plane (Theorem~\ref{thm:pedal}); the two Brocard points
+(Theorem~\ref{thm:brocard}); the Brocard angle (Theorem~\ref{thm:cot}); isogonality and
+equidistance from $O$ (Theorem~\ref{thm:isogonal}); the Brocard circle and its degenerate case
+(Theorems~\ref{thm:brocardcircle} and~\ref{thm:degenerate}); Lemoine's first circle
+(Theorem~\ref{thm:lemoine}); and the Droz-Farny line (Theorem~\ref{thm:droz}).
+\end{itemize}
+The proofs are by coordinate certificates, as in our earlier papers
+\cite{paperA,paperB,paperC,paperD,paperE,paperF}: barycentric coordinates relative to the triangle,
+the Ravi substitution for the Nagel family, and inner products in the basis $B-A$, $C-A$ for the
+angle statements (Section~\ref{sec:method}). 
+
+\section{Setting and definitions}\label{sec:defs}
+Throughout, $V$ is a real inner product space, $P$ a metric space that is a normed torsor over $V$,
+and $t$ an [NAME] in $P$, that is, three affinely independent points
+$A=t_0$, $B=t_1$, $C=t_2$. The dimension of $V$ is arbitrary unless stated otherwise. We write
+\[
+a=|BC|,\quad b=|CA|,\quad c=|AB|,\quad s=\tfrac12(a+b+c),
+\]
+  For
+  Because $t$ is non-degenerate, $s-a$, $s-b$, $s-c$ and $a,b,c$ are positive
+(the library proves $s-a>0$ etc. 
+
+   With $S=\emptyset$ this is the incentre, and [NAME]
+is the contact point of the incircle with the side opposite vertex~$i$. We prove that
+ excenter \{i\}} is the excentre opposite vertex $i$ (its weights are
+ touchpoint \{i\} i} is the contact point of
+the excircle opposite vertex $i$ with the side opposite vertex $i$.
+
+\begin{definition}[Nagel family]\label{def:nagel}
+\begin{enumerate}
+\item The \emph{Nagel point} is $N=\dfrac{(s-a)A+(s-b)B+(s-c)C}{s}$
+([NAME]).
+\item The \emph{Gergonne point} is the point with weights proportional to
+$\dfrac1{s-a},\dfrac1{s-b},\dfrac1{s-c}$, normalised to sum~$1$
+([NAME]).
+ 
+\item The \emph{de Longchamps point} is $L=H+2(O-H)$, the reflection of $H$ in $O$
+([NAME]).
+\item The \emph{anticomplementary triangle} is the image of $t$ under the homothety with centre $G$
+and ratio $-2$ ([NAME]). It is defined as a value of type
+[NAME] (via [NAME] and the injectivity of the homothety), so its
+non-degeneracy is part of the construction; its vertices are $B+C-A$, $C+A-B$, $A+B-C$
+([NAME] and its two companions), and its medial
+triangle is $t$ ([NAME]).
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[symmedian and Brocard points]\label{def:brocard}
+\begin{enumerate}
+\item The \emph{symmedian point} is $K=\dfrac{a^2A+b^2B+c^2C}{a^2+b^2+c^2}$
+([NAME]).
+\item The \emph{first Brocard point} $\Omega$ has weights proportional to
+$\dfrac1{b^2},\dfrac1{c^2},\dfrac1{a^2}$ on $A,B,C$, normalised by
+$\dfrac1{a^2}+\dfrac1{b^2}+\dfrac1{c^2}$ ([NAME]).
+\item The \emph{second Brocard point} $\Omega'$ has weights proportional to
+$\dfrac1{c^2},\dfrac1{a^2},\dfrac1{b^2}$, with the same normalisation
+([NAME]).
+\item The \emph{area} is $\Delta=\tfrac12\,|AB|\,|AC|\sin\angle BAC$ ([NAME]),
+  The library also proves the Gram
+form $\Delta=\tfrac12\sqrt{|u|^2|v|^2-\langle u,v\rangle^2}$ with $u=B-A$, $v=C-A$
+([NAME]) and Heron's form in $a^2,b^2,c^2$ ([NAME]).
+\item The six \emph{Lemoine points} ([NAME]): with
+$S=a^2+b^2+c^2$, they are the points of the side lines with parameters
+$C+\tfrac{a^2}{S}(A-C)$, $A+\tfrac{b^2+c^2}{S}(B-A)$, $B+\tfrac{c^2+a^2}{S}(C-B)$,
+$A+\tfrac{b^2}{S}(B-A)$, $B+\tfrac{c^2}{S}(C-B)$, $C+\tfrac{a^2+b^2}{S}(A-C)$. The bridge
+[NAME] proves that each lies on its side line and on the line through $K$
+parallel to another side (the parallel to $BC$ gives points 0 and 1, the parallel to $CA$ points 2
+and 3, the parallel to $AB$ points 4 and 5), so they are the classical six points.
+\end{enumerate}
+\end{definition}
+
+The Brocard weight order is easy to get wrong; the builders checked numerically (30 digits) that
+$(1/b^2,1/c^2,1/a^2)$ gives $\angle\Omega AB=\angle\Omega BC=\angle\Omega CA$ and the other cyclic
+order gives the mirror point, and Theorem~\ref{thm:brocard} proves it. 
+
+\section{The Nagel line family}\label{sec:nagel}
+ [omitted] 
+
+The theorems of this section are in the development [NAME] (library
+[NAME]); each has the triangle $t$ as its only hypothesis. File:line references are to
+ 
+
+\begin{theorem}[Gergonne point]\label{thm:gergonne}
+For every triangle and every vertex $i$, the Gergonne point lies on the line through vertex $i$ and
+ 
+Consequently the three cevians to the incircle contact points have a common point.
+\end{theorem}
+ 
+
+\begin{theorem}[Nagel point]\label{thm:nagel}
+For every triangle and every vertex $i$, the Nagel point lies on the line through vertex $i$ and
+ touchpoint \{i\} i}). Consequently the three cevians to the excircle contact points have a
+common point. Moreover each such contact point lies strictly between the two other vertices.
+\end{theorem}
+ 
+
+\begin{theorem}[Nagel line]\label{thm:nagelline}
+  In particular $I$, $G$, $N$ are
+collinear.
+\end{theorem}
+ 
+
+\begin{theorem}[Spieker centre]\label{thm:spieker}
+For every triangle, the incentre of the medial triangle is the midpoint of $I$ and $N$. In
+particular the Spieker centre, $I$ and $N$ are collinear.
+\end{theorem}
+ 
+
+\begin{theorem}[de Longchamps point]\label{thm:delong}
+For every triangle, with $L$ the de Longchamps point:
+(i) $O$ is the midpoint of $H$ and $L$; (ii) $L$, $O$, $H$ are collinear; (iii) $G$, $O$, $L$ are
+collinear; (iv) $L$ is the orthocentre of the anticomplementary triangle.
+\end{theorem}
+ 
+ 
+
+\begin{theorem}[Nagel point of the medial triangle]\label{thm:medialnagel}
+ 
+\end{theorem}
+  (The
+statement is written [NAME], because [NAME] returns a
+ )
+
+\begin{theorem}[isotomic contact points]\label{thm:isotomic}
+For every triangle and each side, the midpoint of the incircle contact point and the contact point
+of the opposite excircle on that side is the midpoint of the side; for the side $BC$,
+$\operatorname{mid}(\mathrm{touchpoint}\ \emptyset\ 0,\ \mathrm{touchpoint}\ \{0\}\ 0)=\operatorname{mid}(B,C)$,
+and likewise for $CA$ and $AB$.
+\end{theorem}
+ 
+
+\begin{theorem}[anticomplementary triangle]\label{thm:anti}
+For every triangle, the Nagel point is the incentre of the anticomplementary triangle.
+\end{theorem}
+ 
+
+\begin{theorem}[Spieker centre as radical centre]\label{thm:radical}
+For every triangle and all $i,j\in\{0,1,2\}$, the power of the Spieker centre $S_p$ with respect to
+the excircle opposite vertex $i$ equals its power with respect to the excircle opposite vertex $j$:
+ exsphere \{i\}}. The common value is
+\[
+\frac14\Bigl(s^2+\frac{(s-a)(s-b)(s-c)}{s}\Bigr)=\frac{s^2+r^2}{4},
+\]
+with $r$ the inradius.
+\end{theorem}
+  
+
+\section{The symmedian point and the Brocard points}\label{sec:brocard}
+The theorems of this section are in the development [NAME] (library
+[NAME]). The only hypothesis is the triangle $t$, except in Theorem~\ref{thm:pedal}(ii) and
+Theorem~\ref{thm:droz}, where it is stated.
+
+\begin{theorem}[symmedians]\label{thm:symmedian}
+For every triangle, with $K$ the symmedian point and $M_a,M_b,M_c$ the midpoints of $BC,CA,AB$:
+\[
+\begin{aligned}
+&\angle BAK=\angle M_aAC,&& \angle CAK=\angle M_aAB,\\
+&\angle CBK=\angle M_bBA,&& \angle ABK=\angle M_bBC,\\
+&\angle ACK=\angle M_cCB,&& \angle BCK=\angle M_cCA.
+\end{aligned}
+\]
+So at each vertex the line to $K$ is the reflection of the median in the angle bisector, and the
+three symmedians pass through $K$. Moreover $K$ is an affine combination of $A,B,C$ with positive
+weights, that is, it lies in the interior of the triangle.
+\end{theorem}
+ 
+
+\begin{theorem}[pedal triangle]\label{thm:pedal}
+(i) For every triangle, $K$ is the centroid of its pedal triangle: if $F_a,F_b,F_c$ are the
+ ), then
+$\tfrac13(F_a+F_b+F_c)=K$.
+(ii) If moreover $\dim V=2$, then every point $X$ of the plane that is the centroid of its own pedal
+triangle is $K$.
+\end{theorem}
+ 
+
+\begin{theorem}[Brocard points]\label{thm:brocard}
+For every triangle, the first Brocard point satisfies
+$\angle\Omega AB=\angle\Omega BC=\angle\Omega CA$, and the second satisfies
+$\angle\Omega' BA=\angle\Omega' CB=\angle\Omega' AC$.
+\end{theorem}
+ 
+
+\begin{theorem}[Brocard angle]\label{thm:cot}
+For every triangle, with $\omega=\angle\Omega AB$ and the vertex angles $\angle BAC$, $\angle ABC$,
+$\angle ACB$:
+\[
+\cot\omega=\cot\angle BAC+\cot\angle ABC+\cot\angle ACB=\frac{a^2+b^2+c^2}{4\Delta},
+\qquad 0<\omega\le\frac\pi6.
+\]
+\end{theorem}
+  Here
+ 
+
+\begin{theorem}[isogonal Brocard points]\label{thm:isogonal}
+For every triangle, $\angle\Omega AB=\angle\Omega' AC$, $\angle\Omega BC=\angle\Omega' BA$ and
+$\angle\Omega CA=\angle\Omega' CB$; and $|O\Omega|=|O\Omega'|$.
+\end{theorem}
+ 
+``Isogonal'' here means exactly these three angle equalities; no isogonal-conjugation map is defined.
+Together with Theorem~\ref{thm:brocard} they say that the two Brocard angles are equal.
+
+\begin{theorem}[Brocard circle]\label{thm:brocardcircle}
+For every triangle, each of $O$, $K$, $\Omega$, $\Omega'$ is at distance $\tfrac12|OK|$ from the
+ 
+Moreover $\langle O-\Omega,K-\Omega\rangle=0$ and $\langle O-\Omega',K-\Omega'\rangle=0$, and
+$\angle O\Omega K=\angle O\Omega' K=\pi/2$.
+\end{theorem}
+ 
+
+\begin{theorem}[degenerate Brocard circle]\label{thm:degenerate}
+For every triangle, $\Omega=O$ or $\Omega=K$ or $\Omega'=O$ or $\Omega'=K$ or $K=O$ holds if and only
+if the triangle is equilateral; and if the triangle is equilateral then $\Omega=\Omega'=K=O$.
+\end{theorem}
+ 
+
+\begin{theorem}[Lemoine's first circle]\label{thm:lemoine}
+For every triangle, the six Lemoine points (Definition~\ref{def:brocard}) are all at the same distance
+from the midpoint of $OK$; in particular they are cospherical.
+\end{theorem}
+ 
+
+\begin{theorem}[Droz-Farny]\label{thm:droz}
+Let $\dim V=2$, let $d_1,d_2\in V$ with $\langle d_1,d_2\rangle=0$, and suppose that neither $d_1$ nor
+$d_2$ lies in the direction of any of the three side lines. For $k=1,2,3$ let $X_k$ and $Y_k$ be
+points of the $k$-th side line ($BC$, $CA$, $AB$) lying on the line through $H$ with direction $d_1$
+and $d_2$ respectively. Then the midpoints of $X_1Y_1$, $X_2Y_2$, $X_3Y_3$ are collinear.
+\end{theorem}
+ orthocenter (\(\mathbb{R}\) ∙ d\(_i\))}. The non-direction hypotheses
+exclude a line through $H$ that is parallel to a side; they also imply $d_1,d_2\neq0$.
+
+ } Every point in the statements is, or is proved equal to, an
+affine combination of $A,B,C$ with explicit weights that are rational functions of $a,b,c$ (Nagel
+family) or of $a^2,b^2,c^2$ (symmedian and Brocard family). Membership of a point in a line, equality
+of two points, a midpoint or a collinearity then reduces to an identity between weights, which is
+  As in our earlier papers \cite{paperA,paperE}, the identities
+and, where needed, their cofactors were found with SymPy and checked numerically (mpmath, 30 digits,
+ 
+
+\paragraph{The Ravi substitution.} For the Nagel family the library proves that there are $x,y,z>0$
+with $a=y+z$, $b=z+x$, $c=x+y$ and $s=x+y+z$ (lemma [NAME], from $s-a,s-b,s-c>0$). After the
+substitution the weights $(s-a)/s$, $1/(s-a)$, $a/(2s)$, $(s-b)/a$ and so on become rational functions
+of $x,y,z$ with denominators that are visibly positive, so [NAME] can clear them without
+case analysis. 
+
+\paragraph{The touchpoint bridges. 
+  Second,
+since [NAME] is an orthogonal projection onto a face, a candidate point on the side line is
+  With the candidate
+$B+\frac{s-b}{a}(C-B)$ for the incircle on $BC$, and $B+\frac{s-c}{a}(C-B)$ for the $A$-excircle,
+the orthogonality is a polynomial identity in the Gram entries
+$|B-A|^2=c^2$, $|C-A|^2=b^2$, $\langle B-A,C-A\rangle=\tfrac12(b^2+c^2-a^2)$. This gives
+[NAME], [NAME] and their
+companions, after which Theorems~\ref{thm:gergonne}--\ref{thm:isotomic} are weight computations.
+The medial triangle's sides are half the original ones ([NAME] etc.), which
+transfers the weight formulas to [NAME]. The anticomplementary triangle is a homothetic image
+ 
+
+\paragraph{Angles through inner products.} For the second family all points are written in the
+basis $u=B-A$, $v=C-A$ (which need not span $V$; nothing beyond the plane of the triangle is used), so
+every inner product is a polynomial in the coordinates and the Gram entries above, whose determinant
+is positive ([NAME]). An equality of unoriented angles $\angle XYZ=\angle X'Y'Z'$
+is reduced to: the squared cosines are equal, and the two cosine numerators have the same sign
+([NAME], [NAME]). The first is a rational
+identity; for the second the builders found, with SymPy, an expression of the product of the two
+numerators as a square times a manifestly positive factor. The cotangent of the angle between vectors $X,Y$ is
+$\langle X,Y\rangle/\sqrt{|X|^2|Y|^2-\langle X,Y\rangle^2}$, and for points in coordinates the
+square root becomes an absolute $2\times2$ determinant times $\sqrt{|u|^2|v|^2-\langle u,v\rangle^2}$
+([NAME], [NAME]), which turns
+Theorem~\ref{thm:cot} into rational identities in $a^2,b^2,c^2$ and $\Delta$. The feet of the
+  The converse in Theorem~\ref{thm:pedal} is a linear
+system closed with [NAME] and explicit cofactors. For the Brocard circle and the
+Lemoine circle the circumcentre and orthocentre are also written in coordinates
+([NAME], [NAME]). In Droz-Farny the
+hypothesis $\dim V=2$ is used to write $d_1,d_2$ in the basis $u,v$; the collinearity determinant
+factors as a non-vanishing rational factor times a polynomial $Q$, and $Q$ is a multiple of
+$\langle d_1,d_2\rangle$.
+
+\section{Degenerate cases and hypotheses}\label{sec:degenerate}
+\paragraph{No dimension hypothesis.} Apart from two results, every theorem holds for a triangle in a
+real inner product space of any dimension, and carries no [NAME] hypothesis: all the
+points involved lie in the plane of the triangle, and the proofs use only coordinates in the basis
+$B-A$, $C-A$. The exceptions are Theorem~\ref{thm:pedal}(ii), where $X$ ranges over the whole space
+and the proof needs $X$ in the plane of the triangle to write it in coordinates (we have not
+  
+Non-degeneracy of the triangle is never a separate hypothesis: it is part of
+[NAME].
+
+\paragraph{The equilateral Brocard circle.} Theorem~\ref{thm:brocardcircle} has no hypothesis
+excluding coincidences. When $\Omega$ coincides with $O$ or $K$, the right-angle statement
+  Theorem~\ref{thm:degenerate} says exactly when this happens: for equilateral triangles only, and
+then all four points coincide and the ``circle'' has radius $0$. The factor behind both statements
+is $a^4+b^4+c^4-a^2b^2-b^2c^2-c^2a^2$, which appears in each of the squared distances. For
+non-equilateral triangles the right-angle statement is the classical one, and the Layer-14 witness of
+Section~\ref{sec:verify} exhibits a triangle in which $O$, $K$, $\Omega$, $\Omega'$ are pairwise
+distinct.
+
+\paragraph{Other edge cases.} The excircle contact points lie on the open sides
+(Theorem~\ref{thm:nagel}), so the Nagel cevians are genuine cevians. The Brocard angle bound
+$\omega\le\pi/6$ is attained only in the equilateral case; the library proves the non-strict bound,
+and a strict instance is checked only on the witness triangle. For right triangles $H$ is a vertex;
+the de Longchamps theorems need no exclusion, while in Droz-Farny a line through $H$ could coincide
+with a side, which the non-direction hypotheses exclude. 
+
+\section{Related work and prior art}\label{sec:related}
+   We found no
+ 
+  We neither
+use nor reprove it.
+
+   It defines the Nagel point and the incentre by Ravi-barycentric formulas
+in an abstract real module and proves that the defined point lies on the cevian to a foot that is
+itself defined by a formula. It is a partial, algebraic form of the cevian statements of
+Theorems~\ref{thm:gergonne} and~\ref{thm:nagel}: the feet are not tied to incircle or excircle
+  We
+cite it as partial prior art. 
+
+\paragraph{Other systems.} In GeoCoq and the Coq high-school geometry library the Euler line is
+  
+
+\paragraph{How the search was done, and its gaps.  The query terms were the names of the centres and theorems
+([NAME], [NAME], [NAME], [NAME], [NAME], [NAME],
+[NAME], [NAME], [NAME], and others). Two gaps matter: general web search was
+unavailable during the sweep, so GitHub searches stand in for it; and ProofAtlas was checked only
+through its sitemap (752 URLs), not by reading its pages. Our statements of novelty are subject to
+these gaps. \PH{re-run of the prior-art search with web search before submission}
+
+\paragraph{Classical sources.} The theorems are classical; we follow Johnson \cite{johnson1929},
+Coxeter and Greitzer \cite{coxetergreitzer} and Honsberger \cite{honsberger}, and Kimberling's
+encyclopedia \cite{etc} for the centre numbers and barycentric coordinates. Our earlier papers
+\cite{paperA,paperB,paperC,paperD,paperE,paperF} use the same certificate method for other
+configurations of classical plane geometry.
+
+ \section{What is not claimed}\label{sec:notclaimed}
+\begin{itemize}
+\item We do not claim new mathematics: all theorems are classical.
+\item We do not claim Euler's $OI^2=R(R-2r)$, the Euler line, the nine-point circle or any other
+ 
+\item We do not claim the first formal treatment of the Nagel and Gergonne cevians in every sense: an
+  
+\item We do not define isogonal conjugation, and we do not prove uniqueness: not that the Brocard
+points are the only points with their angle property, nor that $K$ is the only common point of the
+symmedians. The points are given by their weights, and the theorems prove that these points have the
+classical properties (Theorem~\ref{thm:symmedian} by angle equalities at each vertex). The only
+uniqueness statement is Theorem~\ref{thm:pedal}(ii).
+\item We do not claim novelty beyond the sources searched; see the gaps in Section~\ref{sec:related}.
+\end{itemize}
+
+\section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{Definitions by weights.} The Nagel, Gergonne, symmedian and Brocard points and the
+Lemoine points are defined by barycentric formulas. 
+\item \textbf{One labelling.} Statements are for the given order $A,B,C$; where a statement has three
+cyclic forms, all three are stated (contact points, cevians, symmedian angles), but no general
+relabelling lemma is proved.
+\item \textbf{Dimension.} The pedal converse and Droz-Farny assume a two-dimensional space.
+\item \textbf{The equilateral case.} The right-angle form of the Brocard circle is vacuous when the
+points coincide, which happens exactly for equilateral triangles (Section~\ref{sec:degenerate}).
+\item \textbf{Battery coverage.} Many declarations have no mutants or no hypotheses, and most
+satisfiability cases are unresolved by the automatic certifier (Section~\ref{sec:verify}).
+\item \textbf{All-AI checking.} The proofs, the numerical checks, the battery and the restatements
+were all done by AI agents. \PH{state human checks done before submission (hand check)}
+\item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
+\end{enumerate}
+
+\section{Availability}\label{sec:avail}
+ 33.  Line counts are of the library [NAME] files,
+including the root import file, before the Layer-14 files were added.
+\begin{center}\small
+ [omitted] 
+\end{center}
+The Layer-14 files add [NAME] (408 lines) and [NAME] (522 lines).
+\PH{final file and line counts of the published repositories, including Layer-14 and Layer-15 files}
+  Supporting material (the prior-art sweep,
+the builders' reports, the battery and build reports, the Layer-14 files and reports, and the
+ 
+Every name in [NAME] font in this paper is in the [NAME] list of the
+  \PH{name gate: check every [NAME] against the
+published [NAME] lists}
+
+ 

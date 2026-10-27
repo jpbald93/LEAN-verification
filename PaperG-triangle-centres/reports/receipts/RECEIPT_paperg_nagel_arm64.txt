@@ -1,0 +1,6 @@
+repo paperg_nagel commit e40ee54f20588f5181d348767f3f31be20406cc1 host=mac-machine Darwin arm64 2026-10-26T20:37:05Z
+lean leanprover/lean4:v4.33.1
+Build completed successfully (8713 jobs).
+PASS (151 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+lean-files-digest 201feb97668748e1b6b07e7bbd8356187a6967bbba7e7c0b4652f0508201a3d7

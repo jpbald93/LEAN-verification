@@ -1,0 +1,30 @@
+LAYER 15 — CLASSICAL-SOURCE BLIND WRITER (Paper G). Do all work inline with your own tools; do NOT spawn sub-agents. Time box ~2 hours. Always finish by writing the file and the report.
+
+You formalise CLASSICAL THEOREMS from their textbook statements. You have NOT seen any paper or code about them and must not look: do NOT read any file on this machine or on any other machine except your own output files, do NOT search the web, do NOT open any Lean repository other than compiling your own file as described below. Self-report every file you read.
+
+CLASSICAL STATEMENTS (standard literature: Johnson, Advanced Euclidean Geometry; Coxeter–Greitzer; Kimberling's Encyclopedia). Triangle ABC non-degenerate in the Euclidean plane, sides a = BC, b = CA, c = AB, semiperimeter s, incentre I, centroid G, circumcentre O, orthocentre H, circumradius R, inradius r, area Δ.
+Group N (Nagel line family)
+ N1 (Gergonne). The lines joining each vertex to the point where the incircle touches the opposite side are concurrent (Gergonne point Ge).
+ N2 (Nagel). The lines joining each vertex to the point where the excircle opposite that vertex touches the opposite side are concurrent (Nagel point Na). The excircle contact point on BC is at distance s−c from B and s−b from C.
+ N3 (Nagel line). I, G, Na are collinear, with G between I and Na and GNa = 2·IG.
+ N4 (Spieker). The incentre Sp of the medial triangle (Spieker centre) is the midpoint of I and Na; hence it lies on the Nagel line.
+ N5 (isotomic contacts). On each side, the incircle contact point and the excircle contact point are symmetric about the midpoint of that side.
+ N6 (medial / anticomplementary). The Nagel point of the medial triangle is the incentre I of ABC; the Nagel point of ABC is the incentre of the anticomplementary triangle (the triangle whose medial triangle is ABC).
+ N7 (de Longchamps). The de Longchamps point L, the reflection of H in O, lies on the Euler line, and is the orthocentre of the anticomplementary triangle.
+ N8 (Spieker radical centre). The Spieker centre is the radical centre of the three excircles (it has equal power with respect to all three).
+Group S (symmedian and Brocard)
+ S1 (Lemoine). The symmedians (reflections of the medians in the corresponding internal angle bisectors) are concurrent at the symmedian point K, which lies inside the triangle; its barycentric coordinates are a² : b² : c².
+ S2. K is the centroid of its own pedal triangle (the triangle of the feet of the perpendiculars from K to the side lines), and it is the only point with this property.
+ S3 (Brocard). There is a unique point Ω inside the triangle with ∠ΩAB = ∠ΩBC = ∠ΩCA = ω (the Brocard angle), and a second point Ω′ with ∠Ω′BA = ∠Ω′CB = ∠Ω′AC, with the same angle ω. cot ω = cot A + cot B + cot C = (a²+b²+c²)/(4Δ), and 0 < ω ≤ π/6.
+ S4. The two Brocard points are isogonal conjugates and are equidistant from O.
+ S5 (Brocard circle). O, K, Ω, Ω′ lie on the circle with diameter OK.
+ S6 (first Lemoine circle). The lines through K parallel to the sides meet the sides in six points that lie on one circle, whose centre is the midpoint of OK.
+ S7 (Droz-Farny). If two perpendicular lines through H meet the three side lines, the midpoints of the three segments they cut off on the side lines are collinear.
+
+TASK: write one Lean 4 + Mathlib statement per item (several where an item has several claims), named classical_N1, classical_N2a, …, each `:= by sorry`, with a comment quoting the item. Use Mathlib's notions where they exist (EuclideanGeometry.angle, Affine.Simplex.incenter/excenter/circumcenter, Affine.Triangle.orthocenter, Collinear, Cospherical, midpoint, EuclideanGeometry.orthogonalProjection, dist); define what Mathlib lacks yourself (Classical... names), from the textbook definition. State only the hypotheses the classical statement has; if you must add one to make the statement well-formed, mark it `-- EXTRA HYPOTHESIS:` with a reason. Mark ambiguous readings `-- AMBIGUOUS:`.
+WORKING STYLE: multi-step job; keep going until both outputs exist and the file compiles. Use exec with long yieldMs for compiles.
+TYPE-CHECK on the Mac (allowed only for compiling YOUR file; read nothing else there):
+  scp ./Classical.lean <arm64 host>:lean/reformalG/PaperGClassical.lean
+  ssh <arm64 host> 'cd ~/lean/reformalG && ~/lean/jl lake env lean PaperGClassical.lean'
+Iterate until the only messages are `declaration uses 'sorry'` warnings. Never run lake update / cache get.
+OUTPUT (in the current directory): ./Classical.lean (identical to the copy on the Mac) and ./CLASSICAL_REPORT.md: statement list (name → item → one-line gloss), every invented definition with justification, every AMBIGUOUS / EXTRA HYPOTHESIS mark, compiler summary (sorry warnings count, 0 errors), files read.

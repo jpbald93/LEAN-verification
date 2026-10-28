@@ -1,6 +1,6 @@
 # Supporting material — Triangle centres in Lean 4: the Nagel line family and the symmedian and Brocard points
 
-Zenodo: to be added on publication.
+Zenodo: this version https://doi.org/10.5281/zenodo.23741529 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23741528
 
 - `paperg.tex`, `paperg.pdf` — the paper.
 - Lean sources: https://github.com/jpbald93/paperg_nagel (commit e40ee54f20588f5181d348767f3f31be20406cc1) and

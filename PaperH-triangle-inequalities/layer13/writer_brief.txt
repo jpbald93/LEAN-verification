@@ -1,0 +1,18 @@
+LAYER 13 — BLIND WRITER. Do all work inline; do NOT spawn background subagents or tasks. Time box: ~2 hours. Always finish by writing the file and the report.
+
+INPUT: read ONLY the file ./paperh_blind.txt in the current directory (a mathematics paper with all code names redacted). Do NOT read any other file on this machine or on any other machine, do NOT search the web, and do NOT look at any Lean repository (the paper's own Lean code exists elsewhere; you must not see it). At the end, self-report every file you read.
+
+TASK: write, from the prose ALONE, one Lean 4 + Mathlib statement for every theorem in the paper. There are 21 theorem environments: thm:euler, thm:eulerineq, thm:eulerex, thm:ogh, thm:quartic, thm:gerretsen, thm:kooi, thm:weitz, thm:hf, thm:iso, thm:leibniz, thm:pedoe, thm:ptolemy, thm:ptolemyeq, thm:key, thm:em, thm:barrow, thm:fermatmin, thm:fermat, thm:fn, thm:napoleon. Where a theorem has several parts or cases (several conjuncts, equality cases, "for each vertex", items (i)-(iv)), write one statement per part. Expect roughly 35-50 statements.
+Rules:
+- Names blind_1, blind_2, ... in paper order. Each preceded by a comment with the paper label and the first sentence of the theorem.
+- Every statement ends with `:= by sorry`.
+- Every notion the prose defines (area, semiperimeter, distances to side lines, pedal/bisector feet, outward equilateral apexes, orientation, Fermat point, ...) becomes a `def` named `Blind...`, written from the prose's definition, using any formula the prose gives EXACTLY.
+- State every hypothesis the prose states (dimension, non-degeneracy, X in the closed triangle / strictly inside, angles < 2π/3, pairwise distinct points, orientation), and nothing it does not. Where the prose is genuinely ambiguous, pick one reading and add `-- AMBIGUOUS: <the other reading>`.
+- Use Mathlib's notions where the prose uses standard ones without defining them: Affine.Triangle ℝ P, Affine.Simplex.circumcenter/circumradius/incenter/inradius/excenter/exradius, Affine.Triangle.orthocenter, Finset.univ.centroid, EuclideanGeometry.angle, dist, Collinear, Cospherical, convexHull, interior, Module.finrank, etc.
+
+TYPE-CHECK on the arm64 machine (allowed only to compile YOUR file; read nothing else there):
+  scp Blind.lean arm64-machine:lean/reformalH/PaperHBlind.lean
+  ssh arm64-machine 'cd ~/lean/reformalH && PATH=~/.elan/bin:$PATH lake env lean PaperHBlind.lean'
+Iterate until the only messages are `declaration uses 'sorry'` warnings. Never run `lake update` or `lake exe cache get`.
+
+OUTPUT: ./Blind.lean (local) and ~/lean/reformalH/PaperHBlind.lean (arm64 machine) identical; ./WRITER_REPORT.md with: statement list (name → paper label → one-line gloss), all AMBIGUOUS choices, the compiler output summary (count of sorry warnings, 0 errors), and the list of files you read.

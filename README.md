@@ -15,6 +15,7 @@ Supporting material for the papers by Josh Bald (ORCID 0009-0002-1317-6489) on f
 | [`PaperE-complete-quadrilateral`](PaperE-complete-quadrilateral/) | The complete quadrilateral in Lean 4: Newton–Gauss, Bodenmiller, the Miquel point, the Steiner circle and the Simson line |
 | [`PaperF-inscribed-parabola-poncelet-point`](PaperF-inscribed-parabola-poncelet-point/) | The inscribed parabola and the Poncelet point: the complete quadrilateral and the complete quadrangle in Lean 4 |
 | [`PaperG-triangle-centres`](PaperG-triangle-centres/) | Triangle centres in Lean 4: the Nagel line family and the symmedian and Brocard points |
+| [`PaperH-triangle-inequalities`](PaperH-triangle-inequalities/) | Classical triangle inequalities and the Fermat–Napoleon configuration in Lean 4 |
 | [`Pascal-Brianchon`](Pascal-Brianchon/) | Pascal's hexagon theorem over an arbitrary field, formalised in Lean 4 |
 | [`Primitive-root-families`](Primitive-root-families/) | Primitive roots modulo primes 2^kℓ+1, formalised in Lean 4: Chebyshev's base-10 criterion and the least primitive root of a safe prime |
 | [`Triangle-Simplex`](Triangle-Simplex/) | Five classical theorems on triangles and simplices, formalised in Lean 4 with Mathlib: Carnot, Viviani, De Gua, the Japanese theorem and Poncelet's porism |

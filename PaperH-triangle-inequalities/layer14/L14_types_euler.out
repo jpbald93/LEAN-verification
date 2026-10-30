@@ -1,0 +1,331 @@
+@EulerIneq.l14_euler : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  Dist.dist (Affine.Simplex.incenter t) (Affine.Simplex.circumcenter t) ^ 2 =
+    Affine.Simplex.circumradius t ^ 2 - 2 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t
+@EulerIneq.l14_euler_inequality : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  2 * Affine.Simplex.inradius t ≤ Affine.Simplex.circumradius t
+@EulerIneq.l14_euler_inequality_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  2 * Affine.Simplex.inradius t = Affine.Simplex.circumradius t ↔
+    Dist.dist (t.points 0) (t.points 1) = Dist.dist (t.points 1) (t.points 2) ∧
+      Dist.dist (t.points 1) (t.points 2) = Dist.dist (t.points 2) (t.points 0)
+@EulerIneq.l14_euler_excenter : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P)
+  (i : Fin 3),
+  Dist.dist (Affine.Simplex.excenter t {i}) (Affine.Simplex.circumcenter t) ^ 2 =
+    Affine.Simplex.circumradius t ^ 2 + 2 * Affine.Simplex.circumradius t * Affine.Simplex.exradius t {i}
+@EulerIneq.l14_dist_circumcenter_centroid_sq : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  Dist.dist (Affine.Simplex.circumcenter t) (Affine.Simplex.centroid t) ^ 2 =
+    Affine.Simplex.circumradius t ^ 2 -
+      (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+          Dist.dist (t.points 0) (t.points 1) ^ 2) /
+        9
+@EulerIneq.l14_dist_circumcenter_orthocenter_sq : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  Dist.dist (Affine.Simplex.circumcenter t) t.orthocenter ^ 2 =
+    9 * Affine.Simplex.circumradius t ^ 2 -
+      (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+        Dist.dist (t.points 0) (t.points 1) ^ 2)
+@EulerIneq.l14_dist_incenter_centroid_sq : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  Dist.dist (Affine.Simplex.incenter t) (Affine.Simplex.centroid t) ^ 2 =
+    (((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                Dist.dist (t.points 0) (t.points 1)) /
+              2) ^
+            2 +
+          5 * Affine.Simplex.inradius t ^ 2 -
+        16 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t) /
+      9
+@EulerIneq.l14_fundamental_quartic : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) + Dist.dist (t.points 0) (t.points 1)) /
+            2) ^
+          4 -
+        2 *
+            (2 * Affine.Simplex.circumradius t ^ 2 + 10 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t -
+              Affine.Simplex.inradius t ^ 2) *
+          ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                Dist.dist (t.points 0) (t.points 1)) /
+              2) ^
+            2 +
+      Affine.Simplex.inradius t * (4 * Affine.Simplex.circumradius t + Affine.Simplex.inradius t) ^ 3 ≤
+    0
+@EulerIneq.l14_gerretsen : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  16 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t - 5 * Affine.Simplex.inradius t ^ 2 ≤
+      ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+            Dist.dist (t.points 0) (t.points 1)) /
+          2) ^
+        2 ∧
+    ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) + Dist.dist (t.points 0) (t.points 1)) /
+          2) ^
+        2 ≤
+      4 * Affine.Simplex.circumradius t ^ 2 + 4 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t +
+        3 * Affine.Simplex.inradius t ^ 2
+@EulerIneq.l14_kooi : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) + Dist.dist (t.points 0) (t.points 1)) /
+        2) ^
+      2 ≤
+    Affine.Simplex.circumradius t * (4 * Affine.Simplex.circumradius t + Affine.Simplex.inradius t) ^ 2 /
+      (2 * (2 * Affine.Simplex.circumradius t - Affine.Simplex.inradius t))
+@EulerIneq.l14_kooi_le_gerretsen : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  Affine.Simplex.circumradius t * (4 * Affine.Simplex.circumradius t + Affine.Simplex.inradius t) ^ 2 /
+      (2 * (2 * Affine.Simplex.circumradius t - Affine.Simplex.inradius t)) ≤
+    4 * Affine.Simplex.circumradius t ^ 2 + 4 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t +
+      3 * Affine.Simplex.inradius t ^ 2
+@EulerIneq.l14_weitzenboeck : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  4 * √3 *
+      (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+        Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) ≤
+    Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+      Dist.dist (t.points 0) (t.points 1) ^ 2
+@EulerIneq.l14_weitzenboeck_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  4 * √3 *
+        (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+          Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) =
+      Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+        Dist.dist (t.points 0) (t.points 1) ^ 2 ↔
+    Dist.dist (t.points 0) (t.points 1) = Dist.dist (t.points 1) (t.points 2) ∧
+      Dist.dist (t.points 1) (t.points 2) = Dist.dist (t.points 2) (t.points 0)
+@EulerIneq.l14_hadwiger_finsler : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  4 * √3 *
+            (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+              Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) +
+          (Dist.dist (t.points 1) (t.points 2) - Dist.dist (t.points 2) (t.points 0)) ^ 2 +
+        (Dist.dist (t.points 2) (t.points 0) - Dist.dist (t.points 0) (t.points 1)) ^ 2 +
+      (Dist.dist (t.points 0) (t.points 1) - Dist.dist (t.points 1) (t.points 2)) ^ 2 ≤
+    Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+      Dist.dist (t.points 0) (t.points 1) ^ 2
+@EulerIneq.l14_hadwiger_finsler_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  4 * √3 *
+              (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+                Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) +
+            (Dist.dist (t.points 1) (t.points 2) - Dist.dist (t.points 2) (t.points 0)) ^ 2 +
+          (Dist.dist (t.points 2) (t.points 0) - Dist.dist (t.points 0) (t.points 1)) ^ 2 +
+        (Dist.dist (t.points 0) (t.points 1) - Dist.dist (t.points 1) (t.points 2)) ^ 2 =
+      Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+        Dist.dist (t.points 0) (t.points 1) ^ 2 ↔
+    Dist.dist (t.points 0) (t.points 1) = Dist.dist (t.points 1) (t.points 2) ∧
+      Dist.dist (t.points 1) (t.points 2) = Dist.dist (t.points 2) (t.points 0)
+@EulerIneq.l14_isoperimetric : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  12 * √3 *
+      (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+        Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) ≤
+    (Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) + Dist.dist (t.points 0) (t.points 1)) ^
+      2
+@EulerIneq.l14_isoperimetric_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  12 * √3 *
+        (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+          Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) =
+      (Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+          Dist.dist (t.points 0) (t.points 1)) ^
+        2 ↔
+    Dist.dist (t.points 1) (t.points 2) = Dist.dist (t.points 2) (t.points 0) ∧
+      Dist.dist (t.points 2) (t.points 0) = Dist.dist (t.points 0) (t.points 1)
+@EulerIneq.l14_leibniz_relation : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P)
+  (X : P),
+  Dist.dist X (t.points 0) ^ 2 + Dist.dist X (t.points 1) ^ 2 + Dist.dist X (t.points 2) ^ 2 =
+    3 * Dist.dist X (Affine.Simplex.centroid t) ^ 2 +
+      (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+          Dist.dist (t.points 0) (t.points 1) ^ 2) /
+        3
+@EulerIneq.l14_leibniz_min : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P)
+  (X : P),
+  (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+        Dist.dist (t.points 0) (t.points 1) ^ 2) /
+      3 ≤
+    Dist.dist X (t.points 0) ^ 2 + Dist.dist X (t.points 1) ^ 2 + Dist.dist X (t.points 2) ^ 2
+@EulerIneq.l14_leibniz_min_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P)
+  (X : P),
+  Dist.dist X (t.points 0) ^ 2 + Dist.dist X (t.points 1) ^ 2 + Dist.dist X (t.points 2) ^ 2 =
+      (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+          Dist.dist (t.points 0) (t.points 1) ^ 2) /
+        3 ↔
+    X = Affine.Simplex.centroid t
+@EulerIneq.l14_pedoe : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V] [inst_1 : InnerProductSpace ℝ V]
+  [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {V' : Type u_3} {P' : Type u_4}
+  [inst_4 : NormedAddCommGroup V'] [inst_5 : InnerProductSpace ℝ V'] [inst_6 : MetricSpace P']
+  [inst_7 : NormedAddTorsor V' P'] (t : Affine.Triangle ℝ P) (t' : Affine.Triangle ℝ P'),
+  16 *
+        (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+          Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) *
+      (1 / 2 * Dist.dist (t'.points 0) (t'.points 1) * Dist.dist (t'.points 0) (t'.points 2) *
+        Real.sin (EuclideanGeometry.angle (t'.points 1) (t'.points 0) (t'.points 2))) ≤
+    Dist.dist (t'.points 1) (t'.points 2) ^ 2 *
+          (Dist.dist (t.points 2) (t.points 0) ^ 2 + Dist.dist (t.points 0) (t.points 1) ^ 2 -
+            Dist.dist (t.points 1) (t.points 2) ^ 2) +
+        Dist.dist (t'.points 2) (t'.points 0) ^ 2 *
+          (Dist.dist (t.points 0) (t.points 1) ^ 2 + Dist.dist (t.points 1) (t.points 2) ^ 2 -
+            Dist.dist (t.points 2) (t.points 0) ^ 2) +
+      Dist.dist (t'.points 0) (t'.points 1) ^ 2 *
+        (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 -
+          Dist.dist (t.points 0) (t.points 1) ^ 2)
+@EulerIneq.l14_pedoe_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {V' : Type u_3}
+  {P' : Type u_4} [inst_4 : NormedAddCommGroup V'] [inst_5 : InnerProductSpace ℝ V'] [inst_6 : MetricSpace P']
+  [inst_7 : NormedAddTorsor V' P'] (t : Affine.Triangle ℝ P) (t' : Affine.Triangle ℝ P'),
+  Dist.dist (t'.points 1) (t'.points 2) ^ 2 *
+            (Dist.dist (t.points 2) (t.points 0) ^ 2 + Dist.dist (t.points 0) (t.points 1) ^ 2 -
+              Dist.dist (t.points 1) (t.points 2) ^ 2) +
+          Dist.dist (t'.points 2) (t'.points 0) ^ 2 *
+            (Dist.dist (t.points 0) (t.points 1) ^ 2 + Dist.dist (t.points 1) (t.points 2) ^ 2 -
+              Dist.dist (t.points 2) (t.points 0) ^ 2) +
+        Dist.dist (t'.points 0) (t'.points 1) ^ 2 *
+          (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 -
+            Dist.dist (t.points 0) (t.points 1) ^ 2) =
+      16 *
+          (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+            Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) *
+        (1 / 2 * Dist.dist (t'.points 0) (t'.points 1) * Dist.dist (t'.points 0) (t'.points 2) *
+          Real.sin (EuclideanGeometry.angle (t'.points 1) (t'.points 0) (t'.points 2))) ↔
+    ∃ k,
+      0 < k ∧
+        Dist.dist (t'.points 1) (t'.points 2) = k * Dist.dist (t.points 1) (t.points 2) ∧
+          Dist.dist (t'.points 2) (t'.points 0) = k * Dist.dist (t.points 2) (t.points 0) ∧
+            Dist.dist (t'.points 0) (t'.points 1) = k * Dist.dist (t.points 0) (t.points 1)
+@EulerIneq.l14_ptolemy_inequality : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [NormedAddTorsor V P] (A B C D : P),
+  Dist.dist A C * Dist.dist B D ≤ Dist.dist A B * Dist.dist C D + Dist.dist B C * Dist.dist A D
+EulerIneq.l14_dist_sq : ∀ (x y : EuclideanSpace ℝ (Fin 2)),
+  Dist.dist x y ^ 2 = (x.ofLp 0 - y.ofLp 0) ^ 2 + (x.ofLp 1 - y.ofLp 1) ^ 2
+EulerIneq.l14_dist : ∀ (x y : EuclideanSpace ℝ (Fin 2)) (r : ℝ),
+  0 ≤ r → (x.ofLp 0 - y.ofLp 0) ^ 2 + (x.ofLp 1 - y.ofLp 1) ^ 2 = r ^ 2 → Dist.dist x y = r
+EulerIneq.l14_not_collinear : ∀ (X Y Z : EuclideanSpace ℝ (Fin 2)),
+  (Y.ofLp 0 - X.ofLp 0) * (Z.ofLp 1 - X.ofLp 1) - (Y.ofLp 1 - X.ofLp 1) * (Z.ofLp 0 - X.ofLp 0) ≠ 0 →
+    ¬Collinear ℝ {X, Y, Z}
+EulerIneq.l14_ne : ∀ (X Y : EuclideanSpace ℝ (Fin 2)), X.ofLp 0 ≠ Y.ofLp 0 ∨ X.ofLp 1 ≠ Y.ofLp 1 → X ≠ Y
+EulerIneq.l14_sqrt3_lt : √3 < 7 / 4
+EulerIneq.l14w_triangle : ∃ t,
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] ∧
+    Dist.dist (t.points 1) (t.points 2) = 5 ∧
+      Dist.dist (t.points 2) (t.points 0) = 3 ∧
+        Dist.dist (t.points 0) (t.points 1) = 4 ∧
+          1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+                Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2)) =
+              6 ∧
+            (Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                    Dist.dist (t.points 0) (t.points 1)) /
+                  2 =
+                6 ∧
+              Affine.Simplex.circumradius t = 5 / 2 ∧
+                Affine.Simplex.inradius t = 1 ∧
+                  Dist.dist (Affine.Simplex.incenter t) (Affine.Simplex.circumcenter t) ^ 2 = 5 / 4 ∧
+                    Dist.dist (Affine.Simplex.circumcenter t) (Affine.Simplex.centroid t) ^ 2 = 25 / 36 ∧
+                      Dist.dist (Affine.Simplex.circumcenter t) t.orthocenter ^ 2 = 25 / 4 ∧
+                        Dist.dist (Affine.Simplex.incenter t) (Affine.Simplex.centroid t) ^ 2 = 1 / 9 ∧
+                          2 * Affine.Simplex.inradius t < Affine.Simplex.circumradius t ∧
+                            ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                                          Dist.dist (t.points 0) (t.points 1)) /
+                                        2) ^
+                                      4 -
+                                    2 *
+                                        (2 * Affine.Simplex.circumradius t ^ 2 +
+                                            10 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t -
+                                          Affine.Simplex.inradius t ^ 2) *
+                                      ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                                            Dist.dist (t.points 0) (t.points 1)) /
+                                          2) ^
+                                        2 +
+                                  Affine.Simplex.inradius t *
+                                    (4 * Affine.Simplex.circumradius t + Affine.Simplex.inradius t) ^ 3 <
+                                0 ∧
+                              16 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t -
+                                    5 * Affine.Simplex.inradius t ^ 2 <
+                                  ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                                        Dist.dist (t.points 0) (t.points 1)) /
+                                      2) ^
+                                    2 ∧
+                                ((Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                                          Dist.dist (t.points 0) (t.points 1)) /
+                                        2) ^
+                                      2 <
+                                    Affine.Simplex.circumradius t *
+                                        (4 * Affine.Simplex.circumradius t + Affine.Simplex.inradius t) ^ 2 /
+                                      (2 * (2 * Affine.Simplex.circumradius t - Affine.Simplex.inradius t)) ∧
+                                  Affine.Simplex.circumradius t *
+                                          (4 * Affine.Simplex.circumradius t + Affine.Simplex.inradius t) ^ 2 /
+                                        (2 * (2 * Affine.Simplex.circumradius t - Affine.Simplex.inradius t)) <
+                                      4 * Affine.Simplex.circumradius t ^ 2 +
+                                          4 * Affine.Simplex.circumradius t * Affine.Simplex.inradius t +
+                                        3 * Affine.Simplex.inradius t ^ 2 ∧
+                                    4 * √3 *
+                                          (1 / 2 * Dist.dist (t.points 0) (t.points 1) *
+                                              Dist.dist (t.points 0) (t.points 2) *
+                                            Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) <
+                                        Dist.dist (t.points 1) (t.points 2) ^ 2 +
+                                            Dist.dist (t.points 2) (t.points 0) ^ 2 +
+                                          Dist.dist (t.points 0) (t.points 1) ^ 2 ∧
+                                      4 * √3 *
+                                                  (1 / 2 * Dist.dist (t.points 0) (t.points 1) *
+                                                      Dist.dist (t.points 0) (t.points 2) *
+                                                    Real.sin
+                                                      (EuclideanGeometry.angle (t.points 1) (t.points 0)
+                                                        (t.points 2))) +
+                                                (Dist.dist (t.points 1) (t.points 2) -
+                                                    Dist.dist (t.points 2) (t.points 0)) ^
+                                                  2 +
+                                              (Dist.dist (t.points 2) (t.points 0) -
+                                                  Dist.dist (t.points 0) (t.points 1)) ^
+                                                2 +
+                                            (Dist.dist (t.points 0) (t.points 1) -
+                                                Dist.dist (t.points 1) (t.points 2)) ^
+                                              2 <
+                                          Dist.dist (t.points 1) (t.points 2) ^ 2 +
+                                              Dist.dist (t.points 2) (t.points 0) ^ 2 +
+                                            Dist.dist (t.points 0) (t.points 1) ^ 2 ∧
+                                        12 * √3 *
+                                            (1 / 2 * Dist.dist (t.points 0) (t.points 1) *
+                                                Dist.dist (t.points 0) (t.points 2) *
+                                              Real.sin
+                                                (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) <
+                                          (Dist.dist (t.points 1) (t.points 2) + Dist.dist (t.points 2) (t.points 0) +
+                                              Dist.dist (t.points 0) (t.points 1)) ^
+                                            2
+EulerIneq.l14w_leibniz : ∃ t X,
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] ∧
+    X = !₂[0, 0] ∧
+      X ≠ Affine.Simplex.centroid t ∧
+        (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 +
+              Dist.dist (t.points 0) (t.points 1) ^ 2) /
+            3 <
+          Dist.dist X (t.points 0) ^ 2 + Dist.dist X (t.points 1) ^ 2 + Dist.dist X (t.points 2) ^ 2
+EulerIneq.l14w_pedoe : ∃ t t',
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] ∧
+    t'.points = ![!₂[0, 0], !₂[1, 0], !₂[0, 1]] ∧
+      (¬∃ k,
+            0 < k ∧
+              Dist.dist (t'.points 1) (t'.points 2) = k * Dist.dist (t.points 1) (t.points 2) ∧
+                Dist.dist (t'.points 2) (t'.points 0) = k * Dist.dist (t.points 2) (t.points 0) ∧
+                  Dist.dist (t'.points 0) (t'.points 1) = k * Dist.dist (t.points 0) (t.points 1)) ∧
+        16 *
+              (1 / 2 * Dist.dist (t.points 0) (t.points 1) * Dist.dist (t.points 0) (t.points 2) *
+                Real.sin (EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2))) *
+            (1 / 2 * Dist.dist (t'.points 0) (t'.points 1) * Dist.dist (t'.points 0) (t'.points 2) *
+              Real.sin (EuclideanGeometry.angle (t'.points 1) (t'.points 0) (t'.points 2))) <
+          Dist.dist (t'.points 1) (t'.points 2) ^ 2 *
+                (Dist.dist (t.points 2) (t.points 0) ^ 2 + Dist.dist (t.points 0) (t.points 1) ^ 2 -
+                  Dist.dist (t.points 1) (t.points 2) ^ 2) +
+              Dist.dist (t'.points 2) (t'.points 0) ^ 2 *
+                (Dist.dist (t.points 0) (t.points 1) ^ 2 + Dist.dist (t.points 1) (t.points 2) ^ 2 -
+                  Dist.dist (t.points 2) (t.points 0) ^ 2) +
+            Dist.dist (t'.points 0) (t'.points 1) ^ 2 *
+              (Dist.dist (t.points 1) (t.points 2) ^ 2 + Dist.dist (t.points 2) (t.points 0) ^ 2 -
+                Dist.dist (t.points 0) (t.points 1) ^ 2)
+EulerIneq.l14w_ptolemy_inequality : ∃ A B C D,
+  A = !₂[0, 0] ∧
+    B = !₂[4, 0] ∧
+      C = !₂[0, 3] ∧
+        D = !₂[4, 3] ∧ Dist.dist A C * Dist.dist B D < Dist.dist A B * Dist.dist C D + Dist.dist B C * Dist.dist A D

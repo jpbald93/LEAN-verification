@@ -1,5 +1,7 @@
 # Supporting material — Classical triangle inequalities and the Fermat–Napoleon configuration in Lean 4
 
+Zenodo: this version https://doi.org/10.5281/zenodo.23813098 · all versions (concept DOI) https://doi.org/10.5281/zenodo.23813097
+
 - `paperh.tex`, `paperh.pdf` — the paper.
 - Lean sources (Lean v4.33.1, Mathlib 0df444a3):
   - https://github.com/jpbald93/paperh_euler (commit 0c95102c792b8d47d2720f4e9fbc39aa5f21a424) — Euler family, Gerretsen, Kooi, Weitzenböck, Hadwiger–Finsler, isoperimetric, Leibniz, Neuberg–Pedoe, Ptolemy's inequality

@@ -1,0 +1,1227 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\usepackage{newunicodechar}
+\newunicodechar{∠}{\ensuremath{\angle}}
+\newunicodechar{₁}{\ensuremath{_1}}
+\newunicodechar{₂}{\ensuremath{_2}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\lean}[1]{\texttt{#1}}
+% A declaration of one of our developments; every \decl{...} must be in that repository's gate.sh
+% REQUIRED list (checked by the name gate).
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+% A Mathlib declaration (pinned revision 0df444a3); not one of ours.
+\DeclareUrlCommand\mdecl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+
+% ---------------------------------------------------------------------------------------------
+% PINS. The published commits of the three repositories; \src links each File:line to them.
+% ---------------------------------------------------------------------------------------------
+\expandafter\def\csname commitof:paperh_euler\endcsname{0c95102c792b8d47d2720f4e9fbc39aa5f21a424}
+\expandafter\def\csname commitof:paperh_mordell\endcsname{7b2270146195cf2a4c589e403143dba0abd0f6a7}
+\expandafter\def\csname commitof:paperh_fermat\endcsname{8f680c86b068196a4d27201209c856a5d038aaa4}
+\newcommand{\commitof}[1]{\csname commitof:#1\endcsname}
+\newcommand{\repo}[1]{https://github.com/jpbald93/#1}
+\newcommand{\src}[4]{\ifcsname commitof:#1\endcsname
+  \href{\repo{#1}/blob/\commitof{#1}/#2/#3.lean\#L#4}{\texttt{#3}:#4}\else\texttt{#3}:#4\fi}
+\title{Classical triangle inequalities and the Fermat--Napoleon configuration in Lean~4}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0 (\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under the Apache License 2.0.}}
+\date{30 October 2026}
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+We give machine-checked proofs, in Lean~4 with Mathlib, of a body of classical inequalities and
+extremal theorems for the triangle, together with the Fermat--Napoleon configuration. For an
+arbitrary \lean{Affine.Triangle} in a real inner product space of any dimension, using Mathlib's own
+circumcentre, circumradius, incentre, inradius, excentres, exradii, centroid and orthocentre, we
+prove Euler's relation $OI^2=R^2-2Rr$, Euler's inequality $R\ge 2r$ \emph{with its equality case}
+(equality exactly for equilateral triangles) and the excircle relation $OI_a^2=R^2+2Rr_a$; the
+formulas $OG^2=R^2-(a^2+b^2+c^2)/9$, $OH^2=9R^2-(a^2+b^2+c^2)$ and $IG^2=(s^2+5r^2-16Rr)/9$;
+Gerretsen's inequalities $16Rr-5r^2\le s^2\le 4R^2+4Rr+3r^2$ and Kooi's sharper upper bound;
+the Weitzenb\"ock, Hadwiger--Finsler and triangle isoperimetric inequalities with their equality
+cases; the Leibniz relation and the minimality of $\sum|XA_i|^2$ at the centroid; and the
+Neuberg--Pedoe inequality for two triangles with equality exactly for similar triangles. We
+characterise the equality case of Ptolemy's inequality in any real inner product space (concyclic
+points in separated order, or collinear points in one of eight orders). For a point $X$ of the
+\emph{closed} triangle we prove the Erdős--Mordell inequality, its key lemma and its equality case
+(equilateral triangle, $X$ the centre), and, for interior points, Barrow's inequality. If every
+angle is less than $2\pi/3$, the Fermat--Torricelli point exists and minimises $XA+XB+XC$ over the
+whole space. In the oriented plane we prove that the segments $AA'$, $BB'$, $CC'$ to the apexes of the
+outer equilateral triangles have equal lengths and lie on concurrent lines meeting pairwise at angle
+$\pi/3$, that if every angle is less than $2\pi/3$ the common point is the Fermat point $F$ and
+$AA'=FA+FB+FC$, and Napoleon's theorem with the centroid
+statement. All proofs use only Lean's three standard axioms. Several of these results were
+formalised before us, and we reprove them independently: Euler's relation, Euler's inequality and the excircle
+relation (two Lean developments, one of them an open Mathlib pull request), Ptolemy's inequality (in
+Mathlib since 2022), the Erdős--Mordell inequality and its key lemma (two Lean developments, for
+interior points in the plane), algebraic forms of Weitzenb\"ock and Hadwiger--Finsler, and Napoleon's
+theorem (Isabelle and several Lean developments, including our own earlier one). For the remaining
+statements we found no earlier formal proof in the sources we searched, subject to stated gaps.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+The inequalities between the circumradius $R$, the inradius $r$, the semiperimeter $s$, the area
+$\Delta$ and the sides $a,b,c$ of a triangle form a classical and well-catalogued subject; the
+monograph of Bottema, \DJ{}or\dj{}evi\'c, Jani\'c, Mitrinovi\'c and Vasi\'c \cite{bottema} collects
+several hundred of them. The best-known are Euler's inequality $R\ge 2r$, which follows from his
+relation $OI^2=R(R-2r)$ for the distance between the circumcentre and the incentre; Weitzenb\"ock's
+inequality $a^2+b^2+c^2\ge 4\sqrt3\,\Delta$ \cite{weitzenboeck} and its strengthening by Finsler
+and Hadwiger \cite{finslerhadwiger}; Gerretsen's two-sided bound on $s^2$ in terms of $R$ and $r$;
+and the Erdős--Mordell inequality, posed by Erdős in 1935 \cite{erdos1935} and proved by Mordell and
+Barrow \cite{mordellbarrow1937}. This paper formalises these and related results in Lean~4
+\cite{lean4} with Mathlib \cite{mathlib}, together with the classical configuration of the
+equilateral triangles erected on the sides, which links the Fermat--Torricelli point with Napoleon's
+theorem.
+
+\paragraph{Prior formal work, up front.} Several of our statements were formalised before us, and we
+claim them only as independent reproofs. Euler's relation $OI^2=R(R-2r)$, Euler's inequality
+$2r\le R$ and the excircle relation are proved in Lean by Weiyi Wang, with the same Mathlib objects
+as ours, in a public repository (January 2026) \cite{wwylele} and in the open Mathlib pull request
+\#44230 (opened 26 September 2026) \cite{pr44230}; the relation and the inequality are also in the
+\lean{atlas-lean} repository for the plane with explicitly given incircle data \cite{atlaseuler}.
+Ptolemy's inequality has been in Mathlib since 2022 \cite{mathlib} (declaration
+\mdecl{EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist}). The Erdős--Mordell inequality, for a
+point in the interior of a triangle in the plane, is proved in Lean in \lean{plby/lean-proofs}
+(May 2026) \cite{plby} and in \lean{lean-genius} (June 2026) \cite{lgmordell}, the latter with
+the key lemma; the equality case appears in \lean{lean-genius} only as an \lean{axiom}
+\cite{lg898}. Weitzenb\"ock's and the Hadwiger--Finsler inequalities with their equality cases are
+proved in algebraic form (real numbers $a,b,c,T$ satisfying Heron's relation) in Compfiles
+\cite{compfiles} and \lean{lean-genius} \cite{lgweitz,lghf}. Napoleon's theorem is formalised in
+Isabelle \cite{afpnapoleon}, in several Lean developments \cite{tanrikolu,shadowbench,atlasnapoleon}
+and in our own earlier paper \cite{paperA}. Section~\ref{sec:related} gives the details and dates.
+
+For the other statements we found no earlier formal proof in the sources searched
+(Section~\ref{sec:related} lists the gaps): the equality case of Euler's inequality; Gerretsen's
+and Kooi's inequalities; the formulas for $OG^2$, $OH^2$ and $IG^2$; the Neuberg--Pedoe
+inequality and its equality case; the Leibniz minimum and the triangle isoperimetric inequality
+with their equality cases; Weitzenb\"ock and Hadwiger--Finsler for the area of an actual triangle;
+the proof of the Erdős--Mordell equality case, and the inequality for the closed triangle in any
+dimension; Barrow's inequality; the existence and minimality of the Fermat--Torricelli point; the
+characterisation of equality in Ptolemy's inequality; and the Fermat--Napoleon lines. None of
+this is new mathematics.
+
+\subsection{Contributions}
+Unless stated otherwise, the theorems hold for an arbitrary \mdecl{Affine.Triangle} in a real inner
+product space of arbitrary dimension and have no hypothesis beyond the triangle.
+\begin{itemize}
+\item \emph{The Euler family} (Section~\ref{sec:euler}): Euler's relation, the inequality and its
+equality case, the excircle relation, and $OG^2$, $OH^2$, $IG^2$
+(Theorems~\ref{thm:euler}--\ref{thm:ogh}).
+\item \emph{Inequalities in $R$, $r$, $s$} (Section~\ref{sec:rrs}): the fundamental quartic,
+Gerretsen and Kooi (Theorems~\ref{thm:quartic}--\ref{thm:kooi}).
+\item \emph{Area inequalities and extremal problems} (Section~\ref{sec:area}): Weitzenb\"ock,
+Hadwiger--Finsler, the isoperimetric inequality and the Leibniz minimum, each with its equality case
+(Theorems~\ref{thm:weitz}--\ref{thm:leibniz}).
+\item \emph{Two triangles} (Section~\ref{sec:pedoe}): Neuberg--Pedoe with its equality case
+(Theorem~\ref{thm:pedoe}).
+\item \emph{Ptolemy} (Section~\ref{sec:ptolemy}): the inequality (a reproof) and the
+characterisation of its equality case (Theorems~\ref{thm:ptolemy} and~\ref{thm:ptolemyeq}).
+\item \emph{Erdős--Mordell and Barrow} (Section~\ref{sec:mordell}): key lemma, inequality and
+equality case for the closed triangle; Barrow for interior points
+(Theorems~\ref{thm:key}--\ref{thm:barrow}).
+\item \emph{Fermat and Napoleon} (Section~\ref{sec:fermat}): Fermat--Torricelli existence and
+minimality; in the oriented plane, the Fermat--Napoleon lines and Napoleon's theorem
+(Theorems~\ref{thm:fermatmin}--\ref{thm:napoleon}).
+\end{itemize}
+The work is in three Lean developments, \lean{paperh\_euler} (library \lean{EulerIneq}),
+\lean{paperh\_mordell} (library \lean{ErdosMordell}) and \lean{paperh\_fermat} (library
+\lean{FermatNapoleon}); Table~\ref{tab:thms} lists the Lean name and location of every numbered
+theorem. The proofs are by polynomial certificates, as in our earlier papers
+\cite{paperA,paperG}: sum-of-squares identities valid modulo Heron's relation, and one barycentric
+distance formula, used throughout (Section~\ref{sec:setting}).
+\section{Setting, conventions and the two basic tools}\label{sec:setting}
+\paragraph{Ambient space and triangle.} Throughout, $V$ is a real inner product space, $P$ a metric
+space that is a normed additive torsor over $V$, and $t$ a Mathlib \mdecl{Affine.Triangle} in $P$:
+three affinely independent points $A=t_0$, $B=t_1$, $C=t_2$. No finite-dimensionality or dimension
+hypothesis is made except in Section~\ref{sec:fermat}, where the Napoleon results assume
+$\dim V=2$ and fix an orientation. Non-degeneracy of the triangle is part of
+\mdecl{Affine.Triangle} and is never a separate hypothesis. We write
+\[
+a=|BC|,\quad b=|CA|,\quad c=|AB|,\quad s=\tfrac12(a+b+c)
+\]
+(\lean{dist (t.points 1) (t.points 2)} and so on; $s$ is \decl{EulerIneq.semiperimeter}), and
+$O$, $R$, $I$, $r$, $I_i$, $r_i$, $G$, $H$ for Mathlib's \lean{t.circumcenter},
+\lean{t.circumradius}, \lean{t.incenter}, \lean{t.inradius}, \lean{t.excenter \{i\}},
+\lean{t.exradius \{i\}}, \lean{t.centroid} and \lean{t.orthocenter}. In Mathlib the incentre and
+excentres of a simplex are defined by weights and the radii by the distances to the faces; nothing
+in our statements refers to our own versions of these objects. ``Equilateral'' is stated as
+$|AB|=|BC|\wedge|BC|=|CA|$.
+
+\paragraph{Area.} Besides $s$ and two auxiliary definitions (\lean{gram} and \lean{sideLen}), the only new definition in \lean{EulerIneq} is the area
+\[
+\Delta=\tfrac12\,|AB|\,|AC|\,\sin\angle BAC,
+\]
+with Mathlib's unoriented angle (\decl{EulerIneq.area}). Heron's formula is proved as the bridge
+\decl{EulerIneq.two_mul_area_sq}: $(2\Delta)^2=\Gamma(a,b,c)$ with
+\[
+\Gamma(a,b,c)=\tfrac14\bigl(2a^2b^2+2b^2c^2+2c^2a^2-a^4-b^4-c^4\bigr)
+\]
+(\decl{EulerIneq.gram}), from the law of cosines and $\sin^2+\cos^2=1$; and $\Delta>0$
+(\decl{EulerIneq.area_pos}). The other bridges tie Mathlib's objects to the side lengths:
+$h_ia_i=2\Delta$ for Mathlib's heights (\decl{EulerIneq.height_mul_sideLen}); $4R\Delta=abc$
+(\decl{EulerIneq.four_mul_circumradius_mul_area}, through $4R^2\Gamma=a^2b^2c^2$, adapted from our
+earlier Blundon development \cite{paperD}); Mathlib's excentre weights are proportional to
+$(\pm a,\pm b,\pm c)$ with the minus sign at the excentre's vertex
+(\decl{EulerIneq.excenterWeights_eq}), so that $I$ has weights $(a,b,c)/(2s)$
+(\decl{EulerIneq.incenter_weights}); $r=\Delta/s$ (\decl{EulerIneq.inradius_eq},
+\decl{EulerIneq.inradius_mul}) and Mathlib's exradius formula (\decl{EulerIneq.exradius_eq}); and
+the strict triangle inequalities $-a+b+c>0$ etc., obtained from Mathlib's positivity of the
+unnormalised excentre weight sums (\decl{EulerIneq.sum_signed_sideLen_pos},
+\decl{EulerIneq.triangle_pos}).
+
+\paragraph{Points in the closed triangle; feet of perpendiculars.} For weights $w_0,w_1,w_2$ with
+$w_0+w_1+w_2=1$ we write $w_0A+w_1B+w_2C$ for Mathlib's \mdecl{Finset.affineCombination}. A point
+$X$ is \emph{in the closed triangle} if $X=w_0A+w_1B+w_2C$ for some weights with all $w_i\ge0$, and
+\emph{strictly inside} if all $w_i>0$; these are the literal hypotheses of
+Section~\ref{sec:mordell}. The distance from $X$ to the line $YZ$ is $|X\,\pi_{YZ}(X)|$, where
+$\pi_{YZ}$ is Mathlib's \mdecl{EuclideanGeometry.orthogonalProjection} onto
+\lean{line[\(\mathbb{R}\), Y, Z]}; we write $d_A(X)$, $d_B(X)$, $d_C(X)$ for the distances to the
+lines $BC$, $CA$, $AB$. (The library abbreviates this as \decl{ErdosMordell.footDist}, but the
+main statements are written with the projection itself.)
+
+\paragraph{Tool 1: the barycentric distance formula.} The identity behind Euler's relation, the
+excircle relation, $OG^2$, $IG^2$ and the Leibniz minimum is the classical formula of Lagrange and
+Leibniz for an affine combination, proved once for three points in any inner product space
+(\decl{EulerIneq.dist_affineCombination_sq}):
+\begin{equation}\label{eq:leibniz}
+\Bigl|\sum_i w_iP_i-Q\Bigr|^2=\sum_i w_i|P_iQ|^2-\sum_{i<j}w_iw_j|P_iP_j|^2\qquad
+\Bigl(\sum_i w_i=1\Bigr).
+\end{equation}
+With $Q=O$ the first sum is $R^2$ (\decl{EulerIneq.dist_affineCombination_circumcenter_sq}); for two
+affine combinations with weight difference $d=w-v$ the distance squared is
+$-\sum_{i<j}d_id_j|P_iP_j|^2$ (\decl{EulerIneq.dist_affineCombination_affineCombination_sq}).
+Since Mathlib's $I$, $I_i$ and $G$ are affine combinations with explicit weights, every distance
+between these points and $O$ becomes a rational function of $a,b,c$, which is then rewritten in
+$R$, $r$, $s$, $\Delta$ by the bridges.
+
+\paragraph{Tool 2: certificates modulo Heron.} Every inequality between $R$, $r$, $s$, $\Delta$ and
+the sides is reduced to a polynomial statement in $a,b,c,\Delta$ subject to $(2\Delta)^2=\Gamma$,
+$\Delta>0$ and the strict triangle inequalities, and then closed by an explicit identity: a
+sum of squares with nonnegative weights, or a product of known-sign factors, found with SymPy and
+checked by \lean{linear\_combination}. The equality cases come out of the same identity: equality
+forces every square to vanish. As in our earlier papers, the identities were checked numerically
+(mpmath, 30 digits, thousands of random, obtuse and near-degenerate triangles) before the Lean
+proofs were written; this is evidence, not part of the proofs. We write $x=s-a$, $y=s-b$, $z=s-c$
+(the tangent lengths, all positive), so that $a=y+z$ etc.\ (the Ravi substitution).
+\section{The Euler family}\label{sec:euler}
+\begin{longtable}{@{}l p{3.7cm} p{6.3cm} l@{}}
+\caption{Numbered theorems, their Lean names and locations. Namespaces: \lean{EulerIneq}
+(development \lean{paperh\_euler}), \lean{ErdosMordell} (\lean{paperh\_mordell}) and
+\lean{FermatNapoleon} (\lean{paperh\_fermat}); the namespace is omitted in the table.
+``hyp.''\ lists hypotheses beyond the triangle $t$ (or beyond the four points for Ptolemy).
+Rows marked R are independent reproofs of results formalised earlier (Section~\ref{sec:related}).}
+\label{tab:thms}\\
+\toprule
+Thm & content & Lean name & File:line\\
+\midrule\endfirsthead
+\toprule Thm & content & Lean name & File:line\\ \midrule\endhead
+\bottomrule\endlastfoot
+\ref{thm:euler} R & $OI^2=R^2-2Rr$ & \decl{euler} & \src{paperh_euler}{EulerIneq}{Main}{22}\\
+\ref{thm:eulerineq} R & $2r\le R$ & \decl{euler_inequality} & \src{paperh_euler}{EulerIneq}{Main}{73}\\
+\ref{thm:eulerineq} & equality iff equilateral & \decl{euler_inequality_eq_iff} & \src{paperh_euler}{EulerIneq}{Main}{91}\\
+\ref{thm:eulerex} R & $OI_i^2=R^2+2Rr_i$ & \decl{euler_excenter} & \src{paperh_euler}{EulerIneq}{Main}{117}\\
+\ref{thm:ogh} & $OG^2$ & \decl{dist_circumcenter_centroid_sq} & \src{paperh_euler}{EulerIneq}{Main}{349}\\
+\ref{thm:ogh} & $OH^2$ & \decl{dist_circumcenter_orthocenter_sq} & \src{paperh_euler}{EulerIneq}{Main}{358}\\
+\ref{thm:ogh} & $IG^2$ & \decl{dist_incenter_centroid_sq} & \src{paperh_euler}{EulerIneq}{Main}{370}\\
+\midrule
+\ref{thm:quartic} & fundamental quartic & \decl{fundamental_quartic} & \src{paperh_euler}{EulerIneq}{Main}{280}\\
+\ref{thm:gerretsen} & Gerretsen & \decl{gerretsen} & \src{paperh_euler}{EulerIneq}{Main}{329}\\
+\ref{thm:gerretsen} & cross-check & \decl{gerretsen_cross_check} & \src{paperh_euler}{EulerIneq}{Extremal}{153}\\
+\ref{thm:kooi} & Kooi & \decl{kooi} & \src{paperh_euler}{EulerIneq}{Kooi}{46}\\
+\ref{thm:kooi} & Kooi $\le$ Gerretsen & \decl{kooi_le_gerretsen} & \src{paperh_euler}{EulerIneq}{Kooi}{54}\\
+\midrule
+\ref{thm:weitz} & Weitzenb\"ock & \decl{weitzenboeck}, \decl{weitzenboeck_eq_iff} & \src{paperh_euler}{EulerIneq}{Main}{236}, 246\\
+\ref{thm:hf} & Hadwiger--Finsler & \decl{hadwiger_finsler}, \decl{hadwiger_finsler_eq_iff} & \src{paperh_euler}{EulerIneq}{Main}{183}, 203\\
+\ref{thm:iso} & isoperimetric & \decl{isoperimetric}, \decl{isoperimetric_eq_iff} & \src{paperh_euler}{EulerIneq}{Extremal}{65}, 93\\
+\ref{thm:leibniz} & Leibniz relation & \decl{leibniz_relation} & \src{paperh_euler}{EulerIneq}{Extremal}{23}\\
+\ref{thm:leibniz} & minimum, equality & \decl{leibniz_min}, \decl{leibniz_min_eq_iff} & \src{paperh_euler}{EulerIneq}{Extremal}{35}, 42\\
+\midrule
+\ref{thm:pedoe} & Neuberg--Pedoe & \decl{pedoe}, \decl{pedoe_eq_iff} & \src{paperh_euler}{EulerIneq}{Pedoe}{43}, 75\\
+\midrule
+\ref{thm:ptolemy} R & Ptolemy's inequality & \decl{ptolemy_inequality} & \src{paperh_euler}{EulerIneq}{Ptolemy}{20}\\
+\ref{thm:ptolemyeq} & equality characterisation; four pairwise distinct points & \decl{ptolemy_eq_iff} & \src{paperh_fermat}{FermatNapoleon}{Ptolemy}{239}\\
+\ref{thm:ptolemyeq} & collinear case & \decl{ptolemy_collinear}, \decl{ptolemy_real} & \src{paperh_fermat}{FermatNapoleon}{Ptolemy}{72}, 52\\
+\midrule
+\ref{thm:key} R & key lemma, three vertices; $X$ in closed $t$ & \decl{key_lemma_zero}, \decl{key_lemma_one}, \decl{key_lemma_two} & \src{paperh_mordell}{ErdosMordell}{Mordell}{130}, 146, 162\\
+\ref{thm:em} R & Erdős--Mordell; $X$ in closed $t$ & \decl{erdos_mordell} & \src{paperh_mordell}{ErdosMordell}{Mordell}{179}\\
+\ref{thm:em} & equality case; $X$ in closed $t$ & \decl{erdos_mordell_eq_iff} & \src{paperh_mordell}{ErdosMordell}{Mordell}{386}\\
+\ref{thm:barrow} & Barrow; $X$ strictly inside, bisector feet & \decl{barrow} & \src{paperh_mordell}{ErdosMordell}{Barrow}{283}\\
+\midrule
+\ref{thm:fermatmin} & minimality; three $2\pi/3$ angles & \decl{fermat_min} & \src{paperh_mordell}{ErdosMordell}{Fermat}{44}\\
+\ref{thm:fermat} & existence; angles $<2\pi/3$ & \decl{fermat_exists}, \decl{fermat_torricelli} & \src{paperh_mordell}{ErdosMordell}{Fermat}{163}, 291\\
+\ref{thm:fn} & outward apexes; $\dim 2$, $o$ & \decl{apex_outward} & \src{paperh_fermat}{FermatNapoleon}{Main}{20}\\
+\ref{thm:fn} & $AA'=BB'=CC'$; $\dim 2$, $o$ & \decl{napoleon_dist_eq} & \src{paperh_fermat}{FermatNapoleon}{Main}{63}\\
+\ref{thm:fn} & concurrence; $\dim 2$, $o$ & \decl{napoleon_concurrent}, \decl{fermat_point_spec} & \src{paperh_fermat}{FermatNapoleon}{Main}{99}, 72\\
+\ref{thm:fn} & Fermat point on the lines; $\dim 2$, $o$, angles $<2\pi/3$ & \decl{napoleon_fermat} & \src{paperh_fermat}{FermatNapoleon}{Main}{111}\\
+\ref{thm:fn} & angles between the lines; $\dim 2$, $o$ & \decl{napoleon_angle} & \src{paperh_fermat}{FermatNapoleon}{Main}{258}\\
+\ref{thm:napoleon} R & Napoleon; $\dim 2$, $o$ & \decl{napoleon} & \src{paperh_fermat}{FermatNapoleon}{Main}{222}\\
+\end{longtable}
+
+The theorems of Sections~\ref{sec:euler}--\ref{sec:pedoe} are in \lean{paperh\_euler}; each has
+the triangle (or, for Pedoe, the two triangles) as its only hypothesis. File:line references are
+to the library files; the commits are given in Section~\ref{sec:avail}.
+
+\begin{theorem}[Euler's relation; reproof]\label{thm:euler}
+For every triangle, $|IO|^2=R^2-2Rr$.
+\end{theorem}
+\begin{theorem}[Euler's inequality and its equality case]\label{thm:eulerineq}
+For every triangle, $2r\le R$; and $2r=R$ if and only if the triangle is equilateral.
+\end{theorem}
+\begin{theorem}[Euler for the excircles; reproof]\label{thm:eulerex}
+For every triangle and every vertex $i$, $|I_iO|^2=R^2+2Rr_i$, where $I_i$ and $r_i$ are Mathlib's
+\lean{t.excenter \{i\}} and \lean{t.exradius \{i\}} (the excircle opposite vertex $i$).
+\end{theorem}
+\begin{theorem}[$OG$, $OH$, $IG$]\label{thm:ogh}
+For every triangle,
+\[
+|OG|^2=R^2-\tfrac19(a^2+b^2+c^2),\qquad |OH|^2=9R^2-(a^2+b^2+c^2),\qquad
+|IG|^2=\tfrac19\bigl(s^2+5r^2-16Rr\bigr).
+\]
+\end{theorem}
+
+\paragraph{Proofs.} By the incentre bridge, $I$ has weights $(a,b,c)/(a+b+c)$, so
+\eqref{eq:leibniz} with $Q=O$ gives $|IO|^2=R^2-abc/(a+b+c)$, and $abc/(a+b+c)=2Rr$ by $4R\Delta=abc$
+and $r(a+b+c)=2\Delta$. For the excentre opposite $A$ the weights are $(-a,b,c)/(-a+b+c)$ and the
+same computation gives $R^2+abc/(-a+b+c)=R^2+2Rr_a$; the other two excentres are analogous. For the
+inequality, the key identity (\decl{EulerIneq.four_mul_area_mul_circumradius_sub}) is
+\[
+4\Delta(R-2r)=\tfrac12\bigl[(-a+b+c)(b-c)^2+(a-b+c)(c-a)^2+(a+b-c)(a-b)^2\bigr],
+\]
+a polynomial identity once $R=abc/(4\Delta)$ and $r=2\Delta/(a+b+c)$ are substituted. Since
+$\Delta>0$ and the three linear factors are positive, the right side is nonnegative, and it vanishes
+exactly when $a=b=c$ (the auxiliary lemmas \decl{EulerIneq.sum_three_eq_zero} and
+\decl{EulerIneq.eq_zero_of_pos_mul_sq}). Note that Euler's relation does not give the equality case
+by itself: $|IO|=0$ means $I=O$, and one still has to show that this forces the triangle to be
+equilateral; the identity above does both at once. For $OG^2$ apply \eqref{eq:leibniz} with weights
+$\tfrac13$ and $Q=O$. For $OH^2$, Mathlib gives $H=O+3(G-O)$
+(\mdecl{Affine.Triangle.orthocenter_eq_smul_vsub_vadd_circumcenter}), so $|OH|^2=9|OG|^2$. For
+$IG^2$ use the distance between two affine combinations with $d=(a,b,c)/(2s)-(\tfrac13,\tfrac13,\tfrac13)$;
+the result is a symmetric rational function of $a,b,c$, which equals $(s^2+5r^2-16Rr)/9$ after substituting
+$r=2\Delta/(a+b+c)$ and $4R\Delta=abc$ and using Heron's relation (one \lean{linear\_combination}).
+\section{Inequalities in $R$, $r$ and $s$: the fundamental quartic, Gerretsen and Kooi}\label{sec:rrs}
+\begin{theorem}[The fundamental quartic]\label{thm:quartic}
+For every triangle,
+$s^4-2(2R^2+10Rr-r^2)\,s^2+r(4R+r)^3\le0$.
+\end{theorem}
+\begin{theorem}[Gerretsen's inequalities]\label{thm:gerretsen}
+For every triangle, $16Rr-5r^2\le s^2\le 4R^2+4Rr+3r^2$. Moreover
+$(R-r)(R-2r)\ge0$ (\decl{EulerIneq.gerretsen_cross_check}).
+\end{theorem}
+\begin{theorem}[Kooi's inequality]\label{thm:kooi}
+For every triangle,
+\[
+s^2\le\frac{R(4R+r)^2}{2(2R-r)}\qquad\text{and}\qquad \frac{R(4R+r)^2}{2(2R-r)}\le 4R^2+4Rr+3r^2,
+\]
+so Kooi's bound is at least as strong as the upper Gerretsen bound.
+\end{theorem}
+
+The denominator $2(2R-r)$ is positive by Theorem~\ref{thm:eulerineq}; the statement uses Lean's
+real division, but no case relies on the convention $x/0=0$.
+
+\paragraph{The quartic.} The quartic is the discriminant form of Blundon's fundamental inequality
+\cite{blundon1965}: in the Ravi variables $x,y,z$ (so $s=x+y+z$), the relations
+$r^2s=xyz$ and $4Rrs=(y+z)(z+x)(x+y)$ hold, and the certificate
+\decl{EulerIneq.core_identity},
+\[
+s^3\bigl(4r^2 f(s^2)+\bigl((y-x)(z-y)(x-z)\bigr)^2\bigr)=0,\qquad
+f(u)=u^2-2(2R^2+10Rr-r^2)u+r(4R+r)^3,
+\]
+holds modulo these two relations (the explicit cofactors are in the source). Since $s>0$ and
+$r>0$, $f(s^2)\le0$. The certificate and the quartic are copied, with attribution in the source,
+from our earlier Blundon development \cite{paperD}; here they are restated with Mathlib's $R$ and
+$r$ and our $s$.
+
+\paragraph{Gerretsen.} The roots of $f$ are $2R^2+10Rr-r^2\pm2(R-2r)\sqrt{R(R-2r)}$, and
+Gerretsen's bounds are the observation that this interval lies inside
+$[16Rr-5r^2,\,4R^2+4Rr+3r^2]$. In Lean this is done without square roots: from $f(s^2)\le 0$ and
+$R\ge 2r$ one gets
+\[
+\bigl(s^2-(2R^2+10Rr-r^2)\bigr)^2\le\bigl(2(R-r)(R-2r)\bigr)^2
+\]
+by \lean{nlinarith} with the hints $(R-2r)^2\ge0$ and $(R-2r)^2r^2\ge0$, and then
+$|s^2-(2R^2+10Rr-r^2)|\le 2(R-r)(R-2r)$, which unfolds to both bounds (equality in either bound holds only for the equilateral triangle, where $R=2r$, and is not formalised). The cross-check states what
+Gerretsen's two bounds give when combined: $(R-r)(R-2r)\ge0$. This does \emph{not} imply $R\ge2r$,
+so Euler's inequality is not a consequence of Gerretsen's bounds alone (we use it in their proof).
+
+\paragraph{Kooi.} Write $K=R(4R+r)^2/(2(2R-r))$. The algebraic lemma
+\decl{EulerIneq.kooi_of_quartic} shows: if $r>0$, $2r\le R$ and $f(u)\le0$, then $u\le K$. Its proof
+uses the identity
+\[
+M^2-\bigl(2(2R-r)(u-B)\bigr)^2=\bigl(r(R-2r)(4R+r)\bigr)^2-4(2R-r)^2f(u),
+\]
+with $B=2R^2+10Rr-r^2$ and $M=(R-2r)(8R^2-12Rr+r^2)$; here $M\ge0$ because $R\ge2r$ makes both
+factors nonnegative. Hence $2(2R-r)(u-B)\le M$, which is $u\le K$. Kooi's inequality is this lemma at
+$u=s^2$. The comparison with Gerretsen is
+$4R^2+4Rr+3r^2-K=3r^2(R-2r)/(2(2R-r))\ge0$, closed after clearing the denominator by
+\lean{nlinarith} with the hint $r^2(R-2r)\ge0$. Numerically, equality in Kooi's inequality holds only for
+the equilateral triangle; we have not formalised that equality case. In \lean{kooi\_of\_quartic}, since $(u-B)^2-f(u)=4R(R-2r)^3$, the hypotheses $r>0$ and $f(u)\le0$
+together with $R\ge0$ already force $2r\le R$ (the lemma states $2r\le R$ explicitly to avoid a separate
+positivity hypothesis on $R$); Theorem~\ref{thm:kooi} itself has no hypothesis beyond the triangle.
+\section{Area inequalities and two extremal problems}\label{sec:area}
+\begin{theorem}[Weitzenb\"ock]\label{thm:weitz}
+For every triangle, $4\sqrt3\,\Delta\le a^2+b^2+c^2$, with equality if and only if the triangle is
+equilateral.
+\end{theorem}
+\begin{theorem}[Hadwiger--Finsler]\label{thm:hf}
+For every triangle,
+$4\sqrt3\,\Delta+(a-b)^2+(b-c)^2+(c-a)^2\le a^2+b^2+c^2$, with equality if and only if the
+triangle is equilateral.
+\end{theorem}
+\begin{theorem}[Isoperimetric inequality for triangles]\label{thm:iso}
+For every triangle, $12\sqrt3\,\Delta\le(a+b+c)^2$, with equality if and only if the triangle is
+equilateral.
+\end{theorem}
+\begin{theorem}[Leibniz relation and minimum]\label{thm:leibniz}
+For every triangle and every point $X$ of the space,
+\[
+|XA|^2+|XB|^2+|XC|^2=3|XG|^2+\tfrac13(a^2+b^2+c^2);
+\]
+hence $|XA|^2+|XB|^2+|XC|^2\ge\tfrac13(a^2+b^2+c^2)$, with equality if and only if $X=G$.
+\end{theorem}
+Here $\Delta$ is the area of the triangle as defined in Section~\ref{sec:setting}, and in
+Theorem~\ref{thm:leibniz} $X$ ranges over all of $P$, not only the plane of the triangle.
+
+\paragraph{Proofs.} With $L=2(ab+bc+ca)-(a^2+b^2+c^2)$, the Hadwiger--Finsler inequality says
+$4\sqrt3\,\Delta\le L$. Heron's relation gives the identity (\decl{EulerIneq.hf_identity})
+\[
+L^2-(4\sqrt3\,\Delta)^2=2\bigl[\bigl((a-b+c)(c-a)\bigr)^2+\bigl((a+b-c)(a-b)\bigr)^2+\bigl((-a+b+c)(b-c)\bigr)^2\bigr],
+\]
+and $L=4(xy+yz+zx)>0$ in the Ravi variables (\decl{EulerIneq.hf_L_nonneg}); taking square roots of
+nonnegative quantities gives the inequality. Equality forces the three squares to vanish, and since
+the linear factors are positive, $a=b=c$. Weitzenb\"ock follows by adding
+$(a-b)^2+(b-c)^2+(c-a)^2\ge0$; its equality case uses both that sum and the Hadwiger--Finsler
+equality case. For the isoperimetric inequality, Heron gives
+$(12\sqrt3\,\Delta)^2=27\,p\,(-a+b+c)(a-b+c)(a+b-c)$ with $p=a+b+c$, while
+$p^4=p\,\bigl((-a+b+c)+(a-b+c)+(a+b-c)\bigr)^3$; three-term AM--GM in the explicit form
+(\decl{EulerIneq.amgm_three})
+\[
+(x+y+z)^3-27xyz=\tfrac12(x+y+z)\bigl[(x-y)^2+(y-z)^2+(z-x)^2\bigr]+3\bigl[x(y-z)^2+y(z-x)^2+z(x-y)^2\bigr]
+\]
+finishes the inequality, and the same identity gives the equality case. The Leibniz relation is
+\eqref{eq:leibniz} with weights $\tfrac13$ and $Q=X$; the minimum and its equality case follow
+because $|XG|^2\ge0$ with equality iff $X=G$.
+
+\section{Two triangles: the Neuberg--Pedoe inequality}\label{sec:pedoe}
+\begin{theorem}[Neuberg--Pedoe]\label{thm:pedoe}
+Let $t$ and $t'$ be triangles, possibly in different real inner product spaces, with sides
+$a,b,c$ and $a',b',c'$ (in the same vertex labelling) and areas $\Delta$, $\Delta'$. Then
+\[
+a'^2(b^2+c^2-a^2)+b'^2(c^2+a^2-b^2)+c'^2(a^2+b^2-c^2)\ \ge\ 16\,\Delta\Delta',
+\]
+with equality if and only if there is $k>0$ with $a'=ka$, $b'=kb$ and $c'=kc$.
+\end{theorem}
+The equality condition is similarity with the given correspondence of vertices; the statement is
+not symmetric under relabelling $t'$ alone.
+
+\paragraph{Proof.} Write $S=a^2+b^2+c^2$, $T=a'^2+b'^2+c'^2$ and $\Lambda$ for the left side. The
+certificate \decl{EulerIneq.pedoe_identity} is
+\[
+2ST\bigl(\Lambda-16\Delta\Delta'\bigr)=\bigl(4T\Delta-4S\Delta'\bigr)^2
++2\bigl[(Ta^2-Sa'^2)^2+(Tb^2-Sb'^2)^2+(Tc^2-Sc'^2)^2\bigr],
+\]
+valid for real numbers whenever $(2\Delta)^2=\Gamma(a,b,c)$ and $(2\Delta')^2=\Gamma(a',b',c')$.
+Since $S,T>0$, the inequality follows. If equality holds, all the squares vanish, so
+$a'^2=(T/S)a^2$ and so on, and $k=\sqrt{T/S}$; conversely, for similar triangles $\Delta'=k^2\Delta$ and
+both sides equal $16k^2\Delta^2$. No Lorentzian Cauchy--Schwarz step is needed. Pedoe's notes
+\cite{pedoe1941,pedoe1942} give the inequality and its equality case; the name Neuberg--Pedoe follows
+common usage, and we have not checked Neuberg's original nineteenth-century source.
+\section{Ptolemy's inequality and its equality case}\label{sec:ptolemy}
+\begin{theorem}[Ptolemy's inequality; reproof]\label{thm:ptolemy}
+For any four points $A,B,C,D$ of $P$, $|AC|\,|BD|\le|AB|\,|CD|+|BC|\,|AD|$.
+\end{theorem}
+\begin{theorem}[Equality in Ptolemy's inequality]\label{thm:ptolemyeq}
+Let $A,B,C,D$ be four pairwise distinct points of $P$ (six hypotheses $A\ne B,\dots,C\ne D$).
+Then $|AC|\,|BD|=|AB|\,|CD|+|BC|\,|AD|$ if and only if one of the following holds:
+\begin{enumerate}
+\item[(a)] $A,B,C,D$ are cospherical (Mathlib's \mdecl{EuclideanGeometry.Cospherical}: they lie on
+a common sphere of $P$) and there is a point $X$ strictly between $A$ and $C$ and strictly between
+$B$ and $D$ (the open diagonals meet); or
+\item[(b)] $A,B,C,D$ are collinear, $B$ or $D$ is strictly between $A$ and $C$, and $A$ or $C$ is
+strictly between $B$ and $D$.
+\end{enumerate}
+\end{theorem}
+Theorem~\ref{thm:ptolemy} is Mathlib's \mdecl{EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist}
+(Kudryashov, 2022), restated in our namespace and proved by that lemma; we list it only for
+completeness. In Theorem~\ref{thm:ptolemyeq}, ``strictly between'' is Mathlib's \lean{Sbtw}; case (b)
+is exactly the eight cyclic orders $ABCD$, $BCDA$, $CDAB$, $DABC$ and their reversals on the line,
+which the developers checked against all 24 orders before proving it. No dimension hypothesis is
+needed: in a space of dimension $>2$, ``cospherical'' for four non-collinear points with crossing
+diagonals means that they lie on a circle in their common plane. The distinctness hypotheses are
+needed: for $A=B$ and $C,D$ not collinear with $A$ the equality holds trivially but neither (a) nor (b)
+does, and the tampering suite checks that removing $A\ne B$ breaks the build.
+
+\paragraph{Proof.} The direction ``(a) $\Rightarrow$ equality'' is Mathlib's
+\mdecl{EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical}, applied with the angle
+$\angle AXC=\pi$ supplied by the strict betweenness. For (b) the points are transported to the real
+line along the line $AC$, where the statement becomes a statement about four distinct reals,
+$|a-c||b-d|=|a-b||c-d|+|b-c||a-d|$, decided by a case split on the $2^6$ order patterns
+(\decl{FermatNapoleon.ptolemy_real}, \decl{FermatNapoleon.ptolemy_collinear}). For the converse,
+put $b=B-A$, $c=C-A$, $d=D-A$ and invert about $A$: $x\mapsto x'=x/|x|^2$. Since
+$|x'-y'|=|x-y|/(|x||y|)$, the equality becomes $|b'-c'|+|c'-d'|=|b'-d'|$, so $c'=(1-\mu)b'+\mu d'$
+with $0\le\mu\le1$ (\lean{ptolemy\_vec}). If $b'$ and $d'$ are parallel, all four points are
+collinear and the real-line case applies. Otherwise there is a vector $m$ with
+$\langle m,b'\rangle=\langle m,d'\rangle=\tfrac12$, hence $\langle m,c'\rangle=\tfrac12$; the sphere
+with centre $A+m$ through $A$ then contains $B$, $C$ and $D$ (because $\langle m,x'\rangle=\tfrac12$
+is equivalent to $|x-m|=|m|$). Finally, with $\kappa=(1-\mu)|b'|^2+\mu|d'|^2$, the point
+$X=A+c'/\kappa$ lies on $AC$ with parameter $(|c|^2\kappa)^{-1}\in(0,1)$ and on $BD$ with parameter
+$\mu/(\kappa|d|^2)\in(0,1)$, which gives the crossing diagonals. The inversion is done by hand on vectors.
+\section{The Erdős--Mordell inequality, its equality case, and Barrow's inequality}\label{sec:mordell}
+The theorems of this section are in \lean{paperh\_mordell}. Recall (Section~\ref{sec:setting}) that
+``$X$ in the closed triangle'' is the hypothesis $\exists w,\ (\forall i,\ w_i\ge0)\wedge\sum_iw_i=1
+\wedge X=w_0A+w_1B+w_2C$, and that $d_A(X)$, $d_B(X)$, $d_C(X)$ are the distances from $X$ to its
+orthogonal projections onto the lines $BC$, $CA$, $AB$.
+
+\begin{theorem}[Key lemma; reproof, extended]\label{thm:key}
+For every triangle and every $X$ in the closed triangle,
+\[
+b\,d_C(X)+c\,d_B(X)\le a\,|XA|,\qquad c\,d_A(X)+a\,d_C(X)\le b\,|XB|,\qquad
+a\,d_B(X)+b\,d_A(X)\le c\,|XC|.
+\]
+\end{theorem}
+\begin{theorem}[Erdős--Mordell and its equality case]\label{thm:em}
+For every triangle and every $X$ in the closed triangle,
+\[
+2\bigl(d_A(X)+d_B(X)+d_C(X)\bigr)\le|XA|+|XB|+|XC|,
+\]
+with equality if and only if the triangle is equilateral and $X=G$ (Mathlib's
+\lean{Finset.univ.centroid \(\mathbb{R}\) t.points}).
+\end{theorem}
+\begin{theorem}[Barrow's inequality]\label{thm:barrow}
+Let $X$ be strictly inside the triangle (all three weights positive), and let $U$, $V'$, $W$ be points
+with $U$ weakly between $B$ and $C$, $V'$ weakly between $C$ and $A$, $W$ weakly between $A$ and $B$
+(Mathlib's \lean{Wbtw}), such that $\angle BXU=\angle UXC$, $\angle CXV'=\angle V'XA$ and
+$\angle AXW=\angle WXB$. Then
+\[
+2\bigl(|XU|+|XV'|+|XW|\bigr)\le|XA|+|XB|+|XC|.
+\]
+\end{theorem}
+The pairing in the key lemma matters for the proof: the unpaired form $b\,d_B+c\,d_C\le a|XA|$
+is also true (it is $|XA|+d_A\ge h_a$), but summing it does not give the Erdős--Mordell inequality;
+the reflected pairing $b\,d_C+c\,d_B\le a|XA|$ is the one needed.
+Compared with the earlier Lean proofs \cite{plby,lgmordell}, which assume a two-dimensional space and
+$X$ in the topological interior of the convex hull, Theorems~\ref{thm:key} and~\ref{thm:em} allow
+any dimension and the closed triangle, including the boundary and the vertices; this is a mild
+generalisation, not new mathematics. In Barrow's inequality, $U$ is the foot on $BC$ of the internal
+bisector of $\angle BXC$; we require $X$ strictly inside because on the boundary $X$ can coincide
+with a vertex and the bisector hypotheses degenerate. Barrow's inequality strengthens Erdős--Mordell,
+since $|XU|\ge d_A(X)$; we do not derive one from the other in Lean.
+
+\paragraph{Key lemma.} At vertex $A$ write $X-A=w_1(B-A)+w_2(C-A)$ with $w_1,w_2\ge0$, let
+$k=\langle B-A,C-A\rangle$ and $\Gamma=b^2c^2-k^2>0$ (the Gram determinant). Then
+$c\,d_C=w_2\sqrt\Gamma$ and $b\,d_B=w_1\sqrt\Gamma$ (from the explicit form of Mathlib's projection
+onto a line, \decl{ErdosMordell.proj_eq_lineMap}), and $|XA|^2=w_1^2c^2+2w_1w_2k+w_2^2b^2$. After
+multiplying by $bc$ and squaring, the key lemma is the identity (\lean{key\_scalar\_sq})
+\[
+\bigl(bc\cdot a|XA|\bigr)^2-\bigl(bc(b\,d_C+c\,d_B)\bigr)^2
+=\bigl(b^2c^2w_1+b^2kw_2-c^2kw_1-b^2c^2w_2\bigr)^2,
+\]
+which uses $a^2=b^2+c^2-2k$. The key lemma itself is classical (see Kazarinoff
+\cite{kazarinoff1957}); our proof of it is this coordinate identity. The other two vertices are relabellings.
+
+\paragraph{Erdős--Mordell.} Multiply the three key-lemma inequalities by $bc$, $ca$, $ab$, add, and
+divide by $abc$; what remains is
+$\sum_{\mathrm{cyc}}d_A(X)\bigl(\tfrac bc+\tfrac cb\bigr)\ge 2\sum d_A(X)$, which is
+$\sum d_A(X)\,(b-c)^2/(bc)\ge0$. In Lean this is one \lean{nlinarith} call with these products as
+hints.
+
+\paragraph{Equality.} Equality in the sum forces equality in each key lemma and
+$d_A(X)(b-c)^2=d_B(X)(c-a)^2=d_C(X)(a-b)^2=0$. The equality case of the key lemma is the vanishing
+of the square above (\lean{key\_scalar\_eq\_iff}), a linear relation between the weights for each
+vertex. A combinatorial lemma (\lean{eq\_pos}) shows that these relations, together with the side
+conditions (``if $w_1>0$ then \dots''), force the weights to be positive (\lean{eq\_pos} gives $w_0>0$; the
+other two weights by the cyclic relabelling), hence every $d_i(X)>0$ and so $a=b=c$; then the linear relations give $w_0=w_1=w_2=\tfrac13$. The converse is a direct
+computation for the equilateral triangle and its centroid. The scalar statement is
+\lean{em\_eq\_scalar}; the geometric theorem identifies the weights $\tfrac13$ with Mathlib's centroid.
+
+\paragraph{Barrow.} The proof avoids angles beyond the hypotheses. With
+$x=|XA|$, $y=|XB|$, $z=|XC|$, $p=\langle XB,XC\rangle$, $q=\langle XC,XA\rangle$,
+$\rho=\langle XA,XB\rangle$ (vectors from $X$):
+(i) the angle-bisector theorem in squared form gives $|XU|^2(y+z)^2=2yz(yz+p)$
+(\lean{bisector\_dist}), hence $|XU|\le\sqrt y\sqrt z\,\alpha$ with $\alpha^2=(yz+p)/(2yz)$, the
+squared cosine of half of $\angle BXC$; (ii) since $X$ is strictly inside,
+$w_0(A-X)+w_1(B-X)+w_2(C-X)=0$ with positive weights, which gives $xyz+xp+yq+z\rho\le0$ and the
+vanishing of the $3\times3$ Gram determinant of the three vectors, and together these give
+$\alpha^2+\beta^2+\gamma^2+2\alpha\beta\gamma=1$ for the three half-angle cosines; (iii) for
+nonnegative $\alpha,\beta,\gamma$ with this relation, Wolstenholme's inequality
+$\xi^2+\eta^2+\zeta^2\ge2(\alpha\eta\zeta+\beta\zeta\xi+\gamma\xi\eta)$ holds (a sum of squares), and with $\xi=\sqrt x$,
+$\eta=\sqrt y$, $\zeta=\sqrt z$ it gives the result. The positivity of the two-dimensional Gram determinants
+$\|B-X\|^2\|C-X\|^2-\langle B-X,C-X\rangle^2$ (needed for the bisector step) comes from the weight of
+$A$ being nonzero (\lean{gram\_frame}).
+\section{The Fermat--Torricelli point and the Napoleon configuration}\label{sec:fermat}
+\subsection{Fermat--Torricelli (any dimension)}
+These two theorems are in \lean{paperh\_mordell} and have no dimension hypothesis.
+\begin{theorem}[Minimality]\label{thm:fermatmin}
+Let $A,B,C,F$ be points of $P$ with $\angle AFB=\angle BFC=\angle CFA=2\pi/3$. Then for every
+$X\in P$, $|FA|+|FB|+|FC|\le|XA|+|XB|+|XC|$.
+\end{theorem}
+\begin{theorem}[Existence and minimality]\label{thm:fermat}
+Let $t$ be a triangle whose three angles $\angle BAC$, $\angle CBA$, $\angle ACB$ are all less than
+$2\pi/3$. Then there is a point $F\in P$ with $\angle AFB=\angle BFC=\angle CFA=2\pi/3$, and for every
+$X\in P$, $|FA|+|FB|+|FC|\le|XA|+|XB|+|XC|$.
+\end{theorem}
+In Theorem~\ref{thm:fermatmin} the points need not form a triangle: the angle hypotheses already
+force $A,B,C\ne F$ (Mathlib's angle at a vertex coinciding with an endpoint is $\pi/2$). The angle
+bound in Theorem~\ref{thm:fermat} is necessary for the existence of such an $F$; we do not formalise
+the case of an angle $\ge 2\pi/3$, where the minimiser is the obtuse vertex, nor uniqueness of
+the minimiser.
+
+\paragraph{Proofs.} For minimality let $u_A,u_B,u_C$ be the unit vectors from $F$ to $A,B,C$. The
+angle hypotheses give $\langle u_i,u_j\rangle=-\tfrac12$ for $i\ne j$, so $|u_A+u_B+u_C|^2=0$. By
+Cauchy--Schwarz, $|XA|\ge\langle u_A,A-X\rangle=|FA|+\langle u_A,F-X\rangle$; summing the three
+inequalities, the last terms cancel. For existence, the point is explicit
+(\decl{ErdosMordell.fermat_exists}): with $g$ twice the area, $x_A=g+\sqrt3\langle B-A,C-A\rangle$
+and cyclically, and $T=x_Bx_C+x_Ax_C+x_Ax_B$,
+\[
+F=A+\frac{x_Ax_C}{T}(B-A)+\frac{x_Ax_B}{T}(C-A),
+\]
+i.e.\ barycentric weights proportional to $1/x_A:1/x_B:1/x_C$. The angle condition $\angle A<2\pi/3$
+is exactly $x_A>0$ (\lean{x\_pos}, using \lean{inner\_gt\_of\_angle\_lt}: $\angle(u,v)<2\pi/3$ implies
+$\langle u,v\rangle>-\tfrac12|u||v|$), so the weights are positive ($F$ is interior; this is not stated in Lean), and the three angle
+equalities reduce to polynomial identities in $b^2$, $c^2$, $k=\langle B-A,C-A\rangle$, $g$ and
+$\sqrt3$ subject to $g^2=b^2c^2-k^2$ (\lean{fermat\_alg}, \lean{angle\_of\_alg}).
+
+\subsection{The Fermat--Napoleon lines and Napoleon's theorem (oriented plane)}
+The remaining theorems are in \lean{paperh\_fermat}, under the hypotheses
+\lean{[Fact (finrank \(\mathbb{R}\) V = 2)]} and an orientation $o$ of $V$
+(\lean{o : Orientation \(\mathbb{R}\) V (Fin 2)}). Let $\sigma\in\{1,-1\}$ be the orientation sign of
+$t$ (\decl{FermatNapoleon.triSign}: $\sigma=1$ iff $\omega(B-A,C-A)>0$ for the area form $\omega$
+of $o$). For points $X,Y$ the \emph{outer apex} on $XY$ is the image of $Y$ under the rotation about
+$X$ by $-\sigma\pi/3$ (\decl{FermatNapoleon.outerApex}, with Mathlib's \lean{o.rotation}). Let $A'$,
+$B'$, $C'$ be the outer apexes on $BC$, $CA$, $AB$ (\decl{FermatNapoleon.napoleonApex}) and $N_A$,
+$N_B$, $N_C$ the centroids of the triangles $BCA'$, $CAB'$, $ABC'$
+(\decl{FermatNapoleon.napoleonCenter}). The definitions use the orientation only to choose the
+rotation direction; Theorem~\ref{thm:fn}(o) checks that the result does not depend on it in the
+sense that matters.
+
+\begin{theorem}[Fermat--Napoleon lines]\label{thm:fn}
+In the setting above, for every triangle $t$:
+\begin{enumerate}
+\item[(o)] for each vertex $i$, the vertex $t_i$ and the apex on the opposite side lie strictly on
+opposite sides of that side's line (Mathlib's \lean{SOppSide}); so the equilateral triangles are
+erected outward;
+\item[(i)] $|AA'|=|BB'|=|CC'|$;
+\item[(ii)] there is a point lying on all three lines $AA'$, $BB'$, $CC'$;
+\item[(iii)] if moreover $\angle BAC$, $\angle CBA$, $\angle ACB$ are all $<2\pi/3$, then every point
+$F$ on the two lines $AA'$ and $BB'$ satisfies $\angle AFB=\angle BFC=\angle CFA=2\pi/3$ and
+$|AA'|=|FA|+|FB|+|FC|$;
+\item[(iv)] the (unoriented) angles between the vectors $A'-A$, $B'-B$, $C'-C$ are pairwise
+$2\pi/3$, and the angle between $A'-A$ and $B-B'$ is $\pi/3$.
+\end{enumerate}
+\end{theorem}
+\begin{theorem}[Napoleon; reproof]\label{thm:napoleon}
+In the setting above, $|N_AN_B|=|N_BN_C|=|N_CN_A|$, and the centroid of $N_A,N_B,N_C$ is the
+centroid $G$ of $t$.
+\end{theorem}
+Under the angle hypotheses of (iii), by (iii) and Theorem~\ref{thm:fermatmin} the common point of the lines is the Fermat point and
+$|AA'|$ is the minimal value of $|XA|+|XB|+|XC|$; we do not state this combination as a separate
+Lean theorem. Statement (iii) holds for any $F$ on the lines $AA'$ and $BB'$ (by symmetry for any two of the lines;
+only this pair is formalised), hence for the common point of (ii); it uses the hypothesis $F\in BB'$ (the tampering suite removes it and the build fails) and
+the angle hypothesis $\angle BAC<2\pi/3$ (likewise removed in a tampering test). In (iv), since lines
+are unoriented, the angle between the lines $AA'$ and $BB'$ is $\pi/3$.
+
+\paragraph{Proofs.} Let $J$ be Mathlib's right-angle rotation for $o$. The rotation by $-\sigma\pi/3$
+is $v\mapsto\tfrac12v-\sigma\tfrac{\sqrt3}2Jv$ (\decl{FermatNapoleon.outerApex_vsub}). Every point
+is written in the frame $p=B-A$, $q=C-A$ (\decl{FermatNapoleon.cramer}, using $\dim V=2$ and
+$\omega(p,q)\neq0$), and $Jp$, $Jq$ are expressed in this frame through a scalar $\alpha>0$ with
+$4\alpha^2(|p|^2|q|^2-\langle p,q\rangle^2)=3$ (\decl{FermatNapoleon.apex_frame}); this removes
+$\sigma$ and $\omega$ from all later computations. With these coordinates, (o) is a sign computation
+of $\omega$ (\decl{FermatNapoleon.sOppSide_of_areaForm}); (i) and (iv) follow from the Gram matrix of
+$u_A=A'-A$, $u_B=B'-B$, $u_C=C'-C$, which has equal diagonal entries $M$ and off-diagonal entries
+$-M/2$ (\decl{FermatNapoleon.apex_inner}). For (ii), with
+$y_A=1+2\alpha\langle p,q\rangle$, $y_B=1+2\alpha(|p|^2-\langle p,q\rangle)$,
+$y_C=1+2\alpha(|q|^2-\langle p,q\rangle)$ and $S=y_A+y_B+y_C>0$, the point $F$ with
+$F-A=(y_A/S)\,u_A$ also satisfies $F-B=(y_B/S)\,u_B$ and $F-C=(y_C/S)\,u_C$
+(\decl{FermatNapoleon.fermat_point_spec}; here $y_i=x_i/g$ in the notation of Section~\ref{sec:fermat}.1, and $u_A=A'-A$ already incorporates the factor $x_Bx_C$). For (iii), the angle conditions make
+$y_A,y_B,y_C>0$ (\lean{weight\_pos}); if $F=A+r\,u_A=B+r'u_B$, taking inner products with $u_A$ and $u_B$
+and using the Gram matrix gives $r=y_A/S$, so any $F$ on both lines is this point, and since $F-A$, $F-B$, $F-C$ are positive multiples of
+$u_A,u_B,u_C$ the angles are those of (iv), i.e.\ $2\pi/3$; finally
+$|FA|+|FB|+|FC|=\frac{y_A+y_B+y_C}{S}\,|u_A|=|AA'|$ because $|u_A|=|u_B|=|u_C|$. For Napoleon's theorem,
+$N_B-N_A=\tfrac13(u_B-u_A)$ and cyclically (\decl{FermatNapoleon.napoleonCenter_vsub},
+\decl{FermatNapoleon.apex_sum}), and the Gram matrix of the $u_i$ makes the three differences equal
+in length; the centroid statement is $u_A+u_B+u_C=0$.
+
+The argument for (ii)--(iii) is the classical one in coordinates; for the classical sources see
+\cite{coxetergreitzer}. Napoleon's theorem was proved earlier in Lean in complex coordinates by
+ourselves \cite{paperA}; the present proof is independent of that one and works in Mathlib's oriented
+inner product plane.
+\section{Verification}\label{sec:verify}
+The checks follow our earlier papers \cite{paperA,paperG}; for a self-contained reading, they are:
+\begin{center}\small
+\begin{tabular}{@{}l p{11.2cm}@{}}
+\toprule
+gate & script that rejects forbidden tokens, builds, and checks that every required declaration uses only
+the standard axioms\\
+tampering suite & planted defects (hidden \lean{sorry}, extra axiom, fake axiom report, removed
+hypothesis, false statement, \ldots) that the gate must reject\\
+battery & per-theorem mutation of conclusions (each mutant must fail to compile; a heartbeat limit
+counts as a rejection), a contradiction probe on the hypotheses, a satisfiability certificate,
+hypothesis ablation, and the unused-variable linter\\
+cross-machine build & the same sources built and gated on a second machine of a different
+architecture\\
+Layer 13 & blind restatement of the theorems from this paper's prose by a fresh writer, then a
+two-way comparison with the library statements\\
+Layer 14 & restatement of the main theorems in Mathlib-only terms, with explicit witness triangles\\
+Layer 15 & statements written from classical sources by a writer who saw neither paper nor code, then
+proved from the library\\
+\bottomrule
+\end{tabular}
+\end{center}
+The two machines are an x86-64 Linux machine and an arm64 machine. All builds use Lean v4.33.1 and
+Mathlib at revision \texttt{0df444a360eaa60ab8c11dca51a86af692955474}.
+
+\paragraph{Gates and tampering.} Each development has a gate script (\lean{gate.sh}) that rejects
+forbidden tokens (\lean{sorry}, \lean{admit}, \lean{native\_decide}, \lean{axiom} declarations,
+\lean{set\_option}, macros, notation, \lean{\#eval} and the like), builds the library, generates its
+own \lean{\#print axioms} report for every declaration in its \lean{REQUIRED} list, and checks that
+each depends only on \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}. The \lean{REQUIRED}
+lists contain every definition, main theorem, bridge and auxiliary lemma. The results:
+\begin{center}\small
+\begin{tabular}{@{}l r l p{6.6cm}@{}}
+\toprule
+development & gate & tampering & removed hypotheses / false statements\\
+\midrule
+\lean{paperh\_euler} & PASS (60) & 9 of 9 rejected & weight-sum hypothesis of the two barycentric
+distance lemmas; one Heron hypothesis of \lean{pedoe\_identity}; Euler's relation changed to
+$R^2-3Rr$\\
+\lean{paperh\_mordell} & PASS (48) & 7 of 7 rejected & ``$0\le w_i$'' weakened to a tautology in
+\lean{erdos\_mordell}; $\angle CFA=2\pi/3$ dropped from \lean{fermat\_min}\\
+\lean{paperh\_fermat} & PASS (47) & 9 of 9 rejected & $\angle BAC<2\pi/3$ and $F\in BB'$ dropped from
+\lean{napoleon\_fermat}; $A\ne B$ dropped from \lean{ptolemy\_eq\_iff}; $\pi/3\mapsto\pi/4$ in
+\lean{napoleon\_angle}\\
+\bottomrule
+\end{tabular}
+\end{center}
+In every suite the other five tests are a hidden \lean{sorry}, an axiom split over two lines, a fake
+\lean{\#print axioms} report, a command-redefining macro and a wrapper axiom; each was rejected at the
+expected stage (forbidden token, nonstandard axiom, or build failure). In \lean{paperh\_euler} the
+main theorems have no hypothesis beyond the triangle, so the removed-hypothesis tests target the
+lemmas through which they are proved. The gate counts in the table are those of the libraries
+before the Layer-13--15 files were added. At the published commits, which add those files
+(Section~\ref{sec:avail}), the gates print \lean{PASS (243 declarations, standard axioms only)}
+(\lean{paperh\_euler}), \lean{PASS (144 \ldots)} (\lean{paperh\_mordell}) and \lean{PASS (171 \ldots)}
+(\lean{paperh\_fermat}), and the three tampering suites again reject every planted defect.
+
+\paragraph{Cross-machine builds.} \lean{paperh\_euler} and \lean{paperh\_fermat} were developed on
+the x86-64 machine and rebuilt on the arm64 machine, \lean{paperh\_mordell} the other way round; the
+gate printed \lean{PASS (60 declarations, standard axioms only)}, \lean{PASS (47 \ldots)} and
+\lean{PASS (48 \ldots)} respectively on the second machine. For \lean{paperh\_mordell} the SHA-256
+digest of the library files agrees between the two copies.
+
+\paragraph{Fresh-clone receipts.} All three repositories were cloned from GitHub at the published
+commits and built on both machines (x86-64 Linux and arm64 macOS, Lean v4.33.1, the pinned
+Mathlib). On each machine the gates printed \lean{PASS (243 declarations, standard axioms only)},
+\lean{PASS (144 \ldots)} and \lean{PASS (171 \ldots)} for \lean{paperh\_euler},
+\lean{paperh\_mordell} and \lean{paperh\_fermat}; the tampering suites printed
+\lean{ALL TAMPERING TESTS REJECTED}; and the SHA-256 digest of the sorted library \lean{.lean} file
+hashes agreed between the machines (\texttt{66134350\ldots}, \texttt{922a0515\ldots} and
+\texttt{02ca3ed9\ldots}). The same check was made at the first public commits, before the Layer-13--15
+files (gates 60, 48 and 47; digests \texttt{d40a6efb\ldots}, \texttt{ca87ad23\ldots},
+\texttt{3a5bd3d4\ldots}). The receipts are in the supporting material.
+
+\paragraph{Statement-level battery.} The battery was run once on each development, on the machine
+indicated:
+\begin{center}\small
+\begin{tabular}{@{}l l r r r r r@{}}
+\toprule
+development & machine & thms & mutants & rejected & survived & ablation\\
+\midrule
+\lean{paperh\_euler} & x86-64 & 56 & 228 & 225 (2 by timeout) & 3 & 29/0\\
+\lean{paperh\_mordell} & arm64 & 47 & 162 & 161 & 1 & 211/0\\
+\lean{paperh\_fermat} & x86-64 & 43 & 165 & 163 & 2 & 60/0\\
+\bottomrule
+\end{tabular}\\[2pt]
+{\footnotesize ablation: hypotheses whose replacement by \lean{True} makes the existing proof fail/survive}
+\end{center}
+The ablation tests whether the supplied proof depends on a hypothesis, not whether the hypothesis is
+logically necessary. The contradiction probe found no contradictory hypotheses (11, 42 and 20 declarations probed; 45, 5
+and 23 have no hypotheses beyond the triangle or no hypotheses at all); the automatic satisfiability
+certifier certified 7 of 56, 11 of 47 and 17 of 43 declarations, the rest being unresolved (not failures;
+for \lean{paperh\_mordell} the satisfiability certifier rejected its own restatement of
+\lean{em\_eq\_scalar} as ill-formed); the
+unused-variable linter reported no warnings across the 14 theorem files (6, 4 and 4 files; the root import files and the definition-only \lean{Basic.lean} files have no theorems). All six survivors replace a statement by a
+\emph{weaker true} statement, so their survival is expected and is not a defect of the statements:
+\begin{itemize}
+\item in \decl{EulerIneq.kooi_of_quartic}, $(4R+r)^2\mapsto(5R+r)^2$, which enlarges the upper bound
+on $u$ (the mutant of the lemma compiles; the downstream proof of \lean{kooi}, which needs the exact
+constant, breaks);
+\item in \decl{EulerIneq.kooi_le_gerretsen}, the denominator $2(2R-r)\mapsto3(2R-r)$, which makes the
+left side smaller;
+\item in \decl{EulerIneq.hf_L_nonneg}, $2(ab+bc+ca)-(a^2+b^2+c^2)\ge0\mapsto
+3(ab+bc+ca)-(a^2+b^2+c^2)\ge0$, implied by the original since $ab+bc+ca>0$;
+\item in \lean{inner\_gt\_of\_angle\_lt} (present in both \lean{ErdosMordell} and
+\lean{FermatNapoleon}, so counted in both batteries), $-\tfrac12|u||v|<\langle u,v\rangle\mapsto
+-\tfrac22|u||v|<\langle u,v\rangle$, which is weaker and still true for nonzero $u,v$ with
+$\angle(u,v)<2\pi/3<\pi$;
+\item in \lean{weight\_pos}, $0<1+2\alpha m\mapsto0<2+2\alpha m$, which follows from the original.
+\end{itemize}
+Every audited theorem except \decl{FermatNapoleon.sOppSide_of_areaForm} (whose conclusion is an
+\lean{SOppSide} predicate) had at least one conclusion mutant tested; most main theorems have no
+hypotheses beyond the triangle and so are not probed for contradictions.
+
+Finally the battery was run on fresh clones of the published commits, which include the
+Layer-13--15 files, on both machines:
+\begin{center}\small
+\begin{tabular}{@{}l r r r r r r@{}}
+\toprule
+development & thms & mutants & rejected & survived & contradictions & sat.\ certified\\
+\midrule
+\lean{paperh\_euler} & 177 & 503 & 497 (2 by timeout) & 6 & 0 & 74 / 77\\
+\lean{paperh\_mordell} & 101 & 314 & 310 & 4 & 0 & 36 / 39\\
+\lean{paperh\_fermat} & 118 & 313 & 304 & 9 & 0 & 57 / 56\\
+\bottomrule
+\end{tabular}\\[2pt]
+{\footnotesize sat.\ certified: x86-64 / arm64 (the certifier is model-assisted and its counts vary
+slightly between runs; the other figures agree exactly between the machines)}
+\end{center}
+The hypothesis ablation found every tested hypothesis needed (33, 246 and 182 binders) and the
+linter reported no warnings in the library files (9, 7 and 7 files). The contradiction probe found
+no contradictory hypotheses; the satisfiability step marked 0, 4 and 2 of its own restatements as
+ill-formed. The survivors are, on both machines, the same nineteen, and none is a defect of a
+statement: six are the survivors classified above (\lean{kooi\_of\_quartic},
+\lean{kooi\_le\_gerretsen}, \lean{hf\_L\_nonneg}, \lean{inner\_gt\_of\_angle\_lt} in both
+\lean{ErdosMordell} and \lean{FermatNapoleon}, and \lean{weight\_pos}); the other thirteen are in the new
+Layer-14 and Layer-15 files and replace a statement by a weaker true one. They are: the numerical
+helper $\sqrt3<7/4\mapsto\sqrt3<8/4$; the conclusion $\angle ABC<2\pi/3\mapsto\angle ABC<\pi$ of
+the helper \lean{l14\_angle\_lt} (in both \lean{ErdosMordell} and \lean{FermatNapoleon}), which derives
+an angle bound from a nonnegative inner product and so also gives the weaker bound; a sign in the witness lemma \lean{l14T\_sign}, whose two branches
+both equal $1$ after the mutation; two mutants each of the witness theorems \lean{l14w\_pedoe} and
+\lean{l14w\_erdos\_mordell}, which change an equation fixing the witness data into a disequation or
+flip a comparison inside a negated clause, leaving an existential statement that the same witness or
+a different one still satisfies; and five mutants of \decl{FermatNapoleon.Classical.cov_F2d}, the
+classical Fermat--Napoleon angle statement, whose conclusion is a disjunction
+``angle $=\pi/3$ or angle $=2\pi/3$'' for each pair of lines: the library proves the second
+disjunct, so mutating the first disjunct (or its vertex indices) leaves a true statement.
+
+\paragraph{Statements in Mathlib's language and non-vacuity (Layer~14).} A file \lean{L14.lean} in
+each development restates every main theorem with a type that mentions only Mathlib notions, our
+definitions being unfolded: the area as $\tfrac12|AB|\,|AC|\sin A$, the semiperimeter as
+$(a+b+c)/2$, the distance to a side line as Mathlib's \lean{Metric.infDist} to
+\lean{line[\(\mathbb{R}\), Y, Z]}, the closed and open triangle as Mathlib's \lean{closedInterior} and
+\lean{interior}, and the outer apexes as explicit rotations by $\mp\pi/3$ with the orientation sign
+written out. Each restatement is proved from the library theorem. A check with fully qualified
+pretty-printing found no constant of the three libraries in the elaborated types of the restatements
+or witness theorems. Each witness theorem proves, on an explicit configuration in
+\lean{EuclideanSpace \(\mathbb{R}\) (Fin 2)} or in $\mathbb{C}$, that every hypothesis holds and that the
+conclusion is not degenerate:
+\begin{itemize}
+\item for the Euler family, the 3-4-5 triangle $A=(0,0)$, $B=(4,0)$, $C=(0,3)$ with $R=5/2$, $r=1$,
+$s=6$, $\Delta=6$: $2r<R$ strictly, $|OI|^2=5/4$, the quartic takes the value $-1<0$, and both
+Gerretsen bounds, Kooi's bound and the Weitzenb\"ock, Hadwiger--Finsler and isoperimetric
+inequalities are strict; the Neuberg--Pedoe witness pairs this triangle with the non-similar
+$(0,0),(1,0),(0,1)$ (strict, $48<50$), and Ptolemy's inequality is strict for the rectangle
+$(0,0),(4,0),(0,3),(4,3)$ taken in non-cyclic order;
+\item for Erdős--Mordell and the key lemma, the same triangle with $X=(1,1)$ in its interior (all
+inequalities strict), and the equilateral triangle $(0,0),(2,0),(1,\sqrt3)$ with $X$ its centre for
+the equality case; for Barrow, $A=(5,0)$, $B=(-3,4)$, $C=(-3,-4)$, $X=(0,0)$ with bisector feet
+$(-3,0)$, $(1,-2)$, $(1,2)$ (strict); for Fermat--Torricelli, the 3-4-5 triangle (all angles
+$<2\pi/3$, Fermat point distinct from the vertices) and, for minimality, $F=0$ with $A=(2,0)$,
+$B=(-1,\sqrt3)$, $C=(-1,-\sqrt3)$;
+\item for Ptolemy's equality, the rectangle $0,4,4+3i,3i$ (cyclic, diagonals crossing) and the
+collinear points $0,1,2,3$; for the Fermat--Napoleon lines and Napoleon's theorem, $A=0$, $B=4$,
+$C=3i$, with the apexes computed in $\mathbb{Q}(\sqrt3)$, pairwise distinct, the Fermat point on all
+three lines and distinct from the vertices, and the Napoleon triangle non-degenerate.
+\end{itemize}
+The equality cases with an equilateral triangle or exact angles $2\pi/3$ need coordinates in
+$\mathbb{Q}(\sqrt3)$; all other witnesses have integer coordinates. No restatement turned out false or
+needed a hypothesis that the library theorem lacks.
+
+\paragraph{Blind restatement from this paper (Layer~13).} A version of this paper with every Lean
+name, listing, table of declarations and source link removed was given to a fresh AI writer with no
+access to the code. From the prose alone it wrote 50 Lean statements for the 21 numbered theorems,
+with its own definitions, compiled with only \lean{sorry} warnings; its session log shows that it
+read only that text and its own files. For each pair, a comparison file proves the blind statement
+from the library statement and conversely, using only unfolding, agreement lemmas between the two
+sets of definitions and general Mathlib lemmas, never the library's own theorems. All 50 pairs agree.
+Where this paper groups several claims in one theorem and the library proves them as one statement
+(the three excentres, the two Gerretsen bounds, the three outward-apex claims, and the parts of
+Theorems~\ref{thm:fn} and~\ref{thm:napoleon}), each blind statement follows from the library
+statement and the blind statements of the group together imply it. The blind writer's eight
+explicit collinear orders in Theorem~\ref{thm:ptolemyeq}(b) were shown equivalent to the library's
+formulation for distinct collinear points. No difference between the prose and the Lean statements
+was found. The comparison files, \lean{L13Blind.lean} in each library, compile with no \lean{sorry}
+and only the standard axioms.
+
+\paragraph{Comparison with the classical statements (Layer~15).} A second fresh writer, given only
+textbook statements of twenty classical results (E1--E12: Euler, Euler's inequality, the excircle
+relation, $OG$, $OH$, $IG$, the fundamental inequality, Gerretsen, Kooi, Weitzenb\"ock,
+Hadwiger--Finsler, the isoperimetric inequality, Leibniz, Neuberg--Pedoe; P1--P2: Ptolemy's
+inequality and its equality case; M1--M2: Erdős--Mordell and Barrow; F1--F3: Fermat--Torricelli,
+the Fermat--Napoleon lines, Napoleon) and neither this paper nor the code, wrote 33 Lean statements
+with its own definitions. Comparison files prove 32 of them from the libraries. For the classical
+form of the Fermat--Napoleon statements, where the apexes are any points forming outward equilateral
+triangles, and for the classical Ptolemy equality (``in order on a circle or a line''), new bridge
+lemmas were proved: a point forming an outward equilateral triangle on a side is the library's apex,
+and a point seeing the sides at $2\pi/3$ is unique (so it is the common point of the lines). The
+remaining statement, P1, is Ptolemy's inequality as the writer typed it: because the statement does
+not mention the vector space, Lean bound it to an arbitrary metric space, where it is false (the
+comparison file proves a counterexample in the plane with the maximum metric). Its intended
+Euclidean form is exactly Theorem~\ref{thm:ptolemy}. These files are \lean{L15Classical.lean} in each
+library.
+
+\paragraph{Hand check and external review.} The author checked the numbered theorems against the
+Lean statements by hand. The draft was reviewed by three AI models other than the one that wrote it,
+and all their findings were addressed before publication; one of them, an independent referee
+review, asked that the three developments be committed and their copies synchronised across the two
+machines before the final figures were taken, which the published commits and the receipts above
+now record.
+\section{Related work and prior art}\label{sec:related}
+\paragraph{Euler's relation and inequality.} Weiyi Wang (\lean{wwylele}) proved, in a public Lean~4
+repository on Mathlib's \lean{Affine.Triangle} API (file first committed 27 January 2026)
+\cite{wwylele}, $|IO|^2=R(R-2r)$ (\lean{dist\_incenter\_circumcenter}), a signed excentre version,
+and $2r\le R$ (\lean{two\_mul\_inradius\_le\_circumradius}). The same author's Mathlib pull request
+\#44230 \cite{pr44230} (opened 26 September 2026; open, labelled as blocked and with merge conflicts
+when we checked) contains \lean{dist\_incenter\_circumcenter\_sq},
+\lean{two\_mul\_inradius\_le\_circumradius} and
+\lean{dist\_excenter\_singleton\_circumcenter\_sq}, which are, up to ring normalisation, our
+Theorems~\ref{thm:euler} and~\ref{thm:eulerex} and the inequality of Theorem~\ref{thm:eulerineq}.
+The repository \lean{facebookresearch/atlas-lean} \cite{atlaseuler} (5 October 2026) proves
+$|OI|^2=R(R-2r)\wedge R\ge2r$ in \lean{EuclideanSpace \(\mathbb{R}\) (Fin 2)}, with the circumcircle
+and incircle given by explicit data (feet of perpendiculars and positive weights). We found no
+formal proof of the equality case of Euler's inequality in any of these (no \lean{equilateral} or
+\lean{eq\_iff} statement). Our proofs were written without using these developments; they share the
+barycentric route through Mathlib's excentre weights, which is the natural one in this API. If
+\#44230 is merged, Theorems~\ref{thm:euler}, \ref{thm:eulerex} and the inequality of
+Theorem~\ref{thm:eulerineq} become Mathlib lemmas.
+
+\paragraph{Ptolemy.} Ptolemy's inequality in any real inner product space,
+\mdecl{EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist}, was added to Lean~3 mathlib by
+Kudryashov in June 2022 and ported to Mathlib; it is identical to our Theorem~\ref{thm:ptolemy},
+which merely restates it. \lean{lean-genius} has another proof (24 June 2026) \cite{lgptolemy}. The
+equality for concyclic points (Ptolemy's theorem) is in Mathlib
+(\mdecl{EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical}), HOL~Light, Isabelle,
+Rocq, Metamath and Mizar (Wiedijk's list, theorem~95 \cite{wiedijk100}). We found no formal proof of
+the converse, i.e.\ of the characterisation in Theorem~\ref{thm:ptolemyeq}.
+
+\paragraph{Erdős--Mordell.} Two sorry-free Lean~4 proofs of the inequality predate ours, both for a
+point in the topological interior of a non-degenerate triangle in the plane: \lean{erdos\_898} in
+\lean{plby/lean-proofs} (earliest copy 7 May 2026; any two-dimensional inner product space, with
+distances to lines through \lean{orthogonalProjection}) \cite{plby}, produced with AI assistance and
+linked as the formal proof of Erdős problem~898 from Google DeepMind's \lean{formal-conjectures}
+\cite{formalconj}; and \lean{erdos\_mordell} in \lean{lean-genius} (completed 19 June 2026;
+\lean{EuclideanSpace \(\mathbb{R}\) (Fin 2)}), with the key lemma
+\lean{key\_inequality\_A/B/C} in the same weighted form as our Theorem~\ref{thm:key}
+\cite{lgmordell}. The equality case appears in \lean{lean-genius} as an \lean{axiom}
+(\lean{erdos\_mordell\_equality}, January 2026), in a file that also contains \lean{sorry}
+\cite{lg898}; we found no proof of it. A variant with constant $3/2$ in arbitrary normed planes is in
+the Principia \lean{math-solutions} collection (26 October 2026) \cite{principia}; it is a different
+statement. We found no formal proof of Barrow's inequality.
+
+\paragraph{Weitzenb\"ock, Hadwiger--Finsler, isoperimetric, Leibniz.} Weitzenb\"ock's inequality
+with its equality case (IMO 1961 Problem 2) is proved in Compfiles (\lean{Imo1961P2}, December 2025)
+\cite{compfiles} and in \lean{lean-genius} (June 2026) \cite{lgweitz}, and Hadwiger--Finsler with
+its equality case in \lean{lean-genius} (June 2026) \cite{lghf}. All three are algebraic: the
+``area'' is a real number $T$ assumed to satisfy Heron's relation $16T^2=(a+b+c)(-a+b+c)\cdots$
+(with the triangle inequalities as further hypotheses for Hadwiger--Finsler). Our
+Theorems~\ref{thm:weitz} and~\ref{thm:hf} are about the area of an actual \lean{Affine.Triangle},
+which requires the Heron bridge; the algebraic core is the same, so the novelty here is limited to
+the geometric statement. (The ``Finsler--Hadwiger theorem'' in \lean{atlas-lean} is a different
+result about squares erected on two sides.) For the triangle isoperimetric inequality and the
+Leibniz minimum we found only the general isoperimetric theorem (HOL~Light) and unrelated
+variance-type identities; we did not exhaustively search Mathlib's analysis files for a Leibniz-type
+identity.
+
+\paragraph{Gerretsen, Kooi, $OG$, $OH$, $IG$, Neuberg--Pedoe, Fermat--Torricelli.} We found no formal
+proof of any of these. Mathlib has the distance from a vertex to a point of the Euler line
+(\lean{dist\_lineMap\_circumcenter\_centroid\_sq}, merged in October 2026 after our pinned revision)
+and the nine-point-circle centre, from which $OH^2$ follows quickly, but not $OG^2$, $OH^2$ or
+$IG^2$ themselves. The only Lean hit for the Fermat point is a computable bound in a Steiner-ratio
+certificate project, not a theorem. Our earlier Blundon development \cite{paperD} proves Blundon's
+inequalities, from which the fundamental quartic is taken.
+
+\paragraph{Napoleon.} Napoleon's theorem is formalised in Isabelle (AFP entry by Ramos, Hulak and de
+Queiroz, August 2026, in complex coordinates with both orientations) \cite{afpnapoleon}; in Lean by
+Tanr\i{}kolu (complex coordinates, the algebraic equilateral criterion) \cite{tanrikolu}, in the
+\lean{icml-26-lean-challenges} benchmark (June 2026, distance equalities for both Napoleon triangles)
+\cite{shadowbench}, in \lean{atlas-lean} (October 2026, \lean{EuclideanSpace \(\mathbb{R}\) (Fin 2)},
+apexes given by distance equalities and signed areas) \cite{atlasnapoleon}; and in our own Paper~A
+\cite{paperA} (complex coordinates, both Napoleon triangles). Our Theorem~\ref{thm:napoleon} is a
+further independent proof, in Mathlib's oriented plane with apexes defined by \lean{o.rotation},
+which adds the centroid statement. Guilhot's Coq development of oriented angles includes a file on
+Napoleon's theorem \cite{guilhot}. We found no formal proof of the Fermat--Napoleon statements of
+Theorem~\ref{thm:fn}(i)--(iv) (the equal lengths $AA'=BB'=CC'$, the concurrence, the Fermat point on
+the lines with $AA'=FA+FB+FC$, and the angles between the lines); the \lean{atlas-lean} Napoleon file
+does not contain them. This claim rests on a narrower search than the rest of this section: only the
+AFP entry page, the \lean{atlas-lean} file and a GitHub code search were checked for it, and the
+GeoCoq, HOL~Light and AFP theory sources were not searched for the concurrence.
+
+\paragraph{Automated reasoning.} Many of these inequalities have been proved by automated methods
+outside interactive provers, for instance by quantifier elimination and with dynamic-geometry tools
+(see \cite{kovacs2017} for Euler's inequality in GeoGebra). These are not kernel-checked proofs about
+library objects; we did not survey this literature systematically.
+
+\paragraph{How the search was done, and its gaps.} The sweep (28 October 2026) used the GitHub API
+(code, pull-request and repository search in \lean{leanprover-community/mathlib4} and globally, all
+214 pull requests labelled \lean{t-euclidean-geometry}), full tree listings of \lean{lean-genius},
+\lean{atlas-lean}, Compfiles, \lean{formal-conjectures}, \lean{plby/lean-proofs} and
+\lean{wwylele/Feuerbach}, the Lean~3 mathlib and miniF2F trees, HOL~Light, GeoCoq, Metamath
+(\lean{set.mm}), the Mizar EUCLID articles, the AFP geometry topic (33 entries), Wiedijk's list and the
+arXiv API. Every file classified as prior art was downloaded and read; none was compiled, so
+``sorry-free'' means that a text search found no \lean{sorry}, \lean{admit} or \lean{axiom}. The
+Napoleon prior art comes from the search for our Paper~A \cite{paperA}, re-checked on 28 October 2026
+by fetching the AFP entry page and the \lean{atlas-lean} file. Gaps: general web search was not
+usable during the sweep, so Google Scholar, the Lean Zulip, mailing lists and conference proceedings
+(ITP, CICM, ADG, ThEdu) were not searched; GitHub code search covers only default branches and caps
+its results, and two rate-limited queries were not re-run; AFP theory sources outside the geometry
+topic, the full HOL~Light \lean{Multivariate} tree, Mizar articles other than EUCLID, and
+fast-growing AI-proof collections were covered only partially. Our statements of novelty are
+subject to these gaps.
+
+\paragraph{Classical sources.} For the inequalities we follow Bottema et al.\ \cite{bottema}; the
+original sources are Weitzenb\"ock \cite{weitzenboeck}, Finsler and Hadwiger \cite{finslerhadwiger},
+Pedoe \cite{pedoe1941,pedoe1942}, Blundon \cite{blundon1965}, Erdős's problem \cite{erdos1935} with
+the solution by Mordell and Barrow \cite{mordellbarrow1937}, and Kazarinoff's proof of the key lemma
+\cite{kazarinoff1957}. Gerretsen's and Kooi's inequalities are cited, as is usual, through
+\cite{bottema}; we did not obtain the original papers. For the Fermat point and Napoleon's theorem
+see Coxeter and Greitzer \cite{coxetergreitzer}.
+
+\section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{Reproofs.} Theorems~\ref{thm:euler}, \ref{thm:eulerex}, the inequality of
+\ref{thm:eulerineq}, \ref{thm:ptolemy}, \ref{thm:key}, the inequality of \ref{thm:em} and
+\ref{thm:napoleon} were formalised before us (Section~\ref{sec:related}); we claim only independent
+proofs, and for Erdős--Mordell the mild extension to the closed triangle in any dimension.
+\item \textbf{Equality cases not formalised.} Kooi's and Gerretsen's inequalities, Barrow's
+inequality and the Fermat--Torricelli minimality are stated without equality cases; uniqueness of the
+Fermat point and the case of an angle $\ge2\pi/3$ are not formalised.
+\item \textbf{Dimension and orientation.} Theorems~\ref{thm:fn} and~\ref{thm:napoleon} assume
+$\dim V=2$ and an orientation; all other theorems hold in any dimension.
+\item \textbf{One labelling, one statement form.} Where a statement has three cyclic forms (key lemma,
+excircles) all are stated; otherwise no relabelling lemmas are proved. Barrow's bisector feet are
+given by hypotheses (betweenness and equal angles), not constructed.
+\item \textbf{Our own definitions.} The area, the semiperimeter, the orientation sign, the outer apexes
+and the Napoleon centres are our definitions; the area is linked to Mathlib by the Heron bridge, and
+\ref{thm:fn}(o) checks that the apexes are outward. Gerretsen and Kooi are stated with our $s$.
+\item \textbf{All-AI checking.} The proofs, numerical checks, battery and prior-art search were done by
+AI agents; no human has checked the proofs line by line, which is the kernel's job.
+\item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
+\end{enumerate}
+\section{Data availability}\label{sec:avail}
+The proofs are in three Lean~4 developments on Lean v4.33.1 with Mathlib pinned at revision
+\texttt{0df444a3} (in \lean{lake-manifest.json}). Line counts are of the library \lean{.lean} files,
+including the root import file, at the published commits.
+\begin{center}\small
+\begin{tabular}{lp{8.4cm}rr}
+\toprule
+repository & library files & files & lines\\
+\midrule
+\lean{paperh\_euler} & \lean{Basic} (32), \lean{Bridges} (330), \lean{Main} (402), \lean{Pedoe} (143), \lean{Ptolemy} (24), \lean{Kooi} (63), \lean{Extremal} (158), \lean{L14} (330), \lean{L13Blind} (606), \lean{L15Classical} (328) & 11 & 2{,}426\\
+\lean{paperh\_mordell} & \lean{Basic} (116), \lean{Mordell} (431), \lean{Fermat} (306), \lean{Barrow} (328), \lean{L14} (381), \lean{L13Blind} (305), \lean{L15Classical} (167) & 8 & 2{,}041\\
+\lean{paperh\_fermat} & \lean{Basic} (44), \lean{Lemmas} (81), \lean{Bridges} (346), \lean{Ptolemy} (352), \lean{Main} (274), \lean{L14} (381), \lean{L13Blind} (461), \lean{L15Classical} (472) & 9 & 2{,}419\\
+\bottomrule
+\end{tabular}
+\end{center}
+The repositories are \url{https://github.com/jpbald93/paperh_euler} at commit
+\texttt{0c95102c792b8d47d2720f4e9fbc39aa5f21a424},
+\url{https://github.com/jpbald93/paperh_mordell} at commit
+\texttt{7b2270146195cf2a4c589e403143dba0abd0f6a7} and
+\url{https://github.com/jpbald93/paperh_fermat} at commit
+\texttt{8f680c86b068196a4d27201209c856a5d038aaa4}. In each, the first commit is the library as
+described in Sections~\ref{sec:euler}--\ref{sec:fermat}, published as a single commit (the
+development history is not included); the next two add the Layer-14 and the Layer-13/15 files,
+without changing any earlier file. Every \texttt{File:line} reference in this paper links to the
+published commit. Supporting material (the prior-art sweep, the builders' reports, the battery, gate,
+tampering, cross-build and fresh-clone reports, and the Layer-13--15 reports) is in the folder
+\lean{PaperH-triangle-inequalities} of the repository
+\url{https://github.com/jpbald93/LEAN-verification}. Every name in \lean{\textbackslash decl} font
+(qualified by its library namespace in Table~\ref{tab:thms}) is in the \lean{REQUIRED} list of the
+repository that contains it at the published commit; a script checked all 88 distinct names (91
+occurrences) against the published \lean{REQUIRED} lists, and all 33 \texttt{File:line} references
+(and the further line numbers listed with them) against the declarations at those lines.
+
+\section*{Acknowledgements and use of AI}
+Large-language-model AI assistants were used to write the Lean proofs, to run the prior-art search,
+the numerical checks and the verification battery, and to draft this paper; parts of the checking were
+done by a different model from the one that wrote the proofs. The author directed the work and
+reviewed the paper. Every proof is checked by the Lean kernel, and the author takes responsibility for
+all content.
+\begin{thebibliography}{99}
+\bibitem{lean4}
+L.~de Moura and S.~Ullrich,
+\emph{The Lean 4 theorem prover and programming language},
+in: Automated Deduction -- CADE-28, Lecture Notes in Computer Science \textbf{12699}, Springer, 2021, 625--635,
+\url{https://doi.org/10.1007/978-3-030-79876-5_37}.
+
+\bibitem{mathlib}
+The mathlib Community,
+\emph{The Lean mathematical library},
+in: Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP '20), ACM, 2020, 367--381,
+\url{https://doi.org/10.1145/3372885.3373824}.
+
+\bibitem{bottema}
+O.~Bottema, R.~\v{Z}.~\DJ{}or\dj{}evi\'c, R.~R.~Jani\'c, D.~S.~Mitrinovi\'c and P.~M.~Vasi\'c,
+\emph{Geometric Inequalities}, Wolters-Noordhoff, Groningen, 1969.
+
+\bibitem{weitzenboeck}
+R.~Weitzenb\"ock, \"Uber eine Ungleichung in der Dreiecksgeometrie, \emph{Mathematische Zeitschrift}
+\textbf{5} (1919), 137--146, \url{https://doi.org/10.1007/BF01203160}.
+
+\bibitem{finslerhadwiger}
+P.~Finsler and H.~Hadwiger, Einige Relationen im Dreieck, \emph{Commentarii Mathematici Helvetici}
+\textbf{10} (1937), 316--326, \url{https://doi.org/10.1007/BF01214300}.
+
+\bibitem{erdos1935}
+P.~Erd\H{o}s, Problem 3740, in: Problems for Solution: 3739--3743, \emph{The American Mathematical
+Monthly} \textbf{42} (1935), 396, \url{https://doi.org/10.2307/2301373}.
+
+\bibitem{mordellbarrow1937}
+P.~Erd\H{o}s, L.~J.~Mordell and D.~F.~Barrow, Solution of Problem 3740, \emph{The American
+Mathematical Monthly} \textbf{44} (1937), 252, \url{https://doi.org/10.2307/2300713}.
+
+\bibitem{kazarinoff1957}
+D.~K.~Kazarinoff, A simple proof of the Erd\H{o}s--Mordell inequality for triangles,
+\emph{Michigan Mathematical Journal} \textbf{4} (1957), 97--98,
+\url{https://doi.org/10.1307/mmj/1028988998}.
+
+\bibitem{pedoe1941}
+D.~Pedoe, An inequality connecting any two triangles (Note 1562), \emph{The Mathematical Gazette}
+\textbf{25} (1941), 310--311, \url{https://doi.org/10.2307/3606570}.
+
+\bibitem{pedoe1942}
+D.~Pedoe, An inequality for two triangles, \emph{Mathematical Proceedings of the Cambridge
+Philosophical Society} \textbf{38} (1942), 397--398, \url{https://doi.org/10.1017/S030500410002209X}.
+
+\bibitem{blundon1965}
+W.~J.~Blundon, Inequalities associated with the triangle, \emph{Canadian Mathematical Bulletin}
+\textbf{8} (1965), 615--626, \url{https://doi.org/10.4153/CMB-1965-044-9}.
+
+\bibitem{coxetergreitzer}
+H.~S.~M.~Coxeter and S.~L.~Greitzer,
+\emph{Geometry Revisited},
+Mathematical Association of America, 1967.
+
+\bibitem{wwylele}
+W.~Wang (GitHub user \texttt{wwylele}), \emph{Feuerbach}, GitHub repository, file
+\path{Feuerbach/Basic.lean} (first committed 27 January 2026),
+\url{https://github.com/wwylele/Feuerbach}, accessed 28 October 2026.
+
+\bibitem{pr44230}
+W.~Wang, \emph{feat(Geometry/Euclidean): prove Euler's theorem in geometry}, mathlib4 pull request \#44230, opened 26 September 2026 (open at the time of writing),
+\url{https://github.com/leanprover-community/mathlib4/pull/44230}, accessed 28 October 2026.
+
+\bibitem{atlaseuler}
+\emph{atlas-lean} (Meta / facebookresearch), file \path{MathlibExt/Geometry/Euclidean/EulerOI.lean}
+(5 October 2026),
+\url{https://github.com/facebookresearch/atlas-lean/blob/main/MathlibExt/Geometry/Euclidean/EulerOI.lean},
+accessed 28 October 2026.
+
+\bibitem{plby}
+GitHub user \texttt{plby}, \emph{lean-proofs}, file \path{src/latest/ErdosProblems/Erdos898.lean}
+(earliest copy 7 May 2026),
+\url{https://github.com/plby/lean-proofs/blob/main/src/latest/ErdosProblems/Erdos898.lean},
+accessed 28 October 2026.
+
+\bibitem{formalconj}
+Google DeepMind, \emph{formal-conjectures}, file \path{FormalConjectures/ErdosProblems/898.lean}
+(4 August 2026),
+\url{https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/898.lean},
+accessed 28 October 2026.
+
+\bibitem{lgmordell}
+GitHub user \texttt{rjwalters}, \emph{lean-genius}, file
+\path{proofs/Proofs/ErdosMordellInequalityOQ01.lean} (completed 19 June 2026),
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/ErdosMordellInequalityOQ01.lean},
+accessed 28 October 2026.
+
+\bibitem{lg898}
+GitHub user \texttt{rjwalters}, \emph{lean-genius}, file \path{proofs/Proofs/Erdos898Problem.lean}
+(15 January 2026),
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/Erdos898Problem.lean},
+accessed 28 October 2026.
+
+\bibitem{lgweitz}
+GitHub user \texttt{rjwalters}, \emph{lean-genius}, file
+\path{proofs/Proofs/WeitzenbockInequalityOQ01.lean} (16 June 2026),
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/WeitzenbockInequalityOQ01.lean},
+accessed 28 October 2026.
+
+\bibitem{lghf}
+GitHub user \texttt{rjwalters}, \emph{lean-genius}, file
+\path{proofs/Proofs/WeitzenbockInequalityOQ01OQ01.lean} (23 June 2026),
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/WeitzenbockInequalityOQ01OQ01.lean},
+accessed 28 October 2026.
+
+\bibitem{lgptolemy}
+GitHub user \texttt{rjwalters}, \emph{lean-genius}, file
+\path{proofs/Proofs/PtolemyInequalityInnerProduct.lean} (24 June 2026),
+\url{https://github.com/rjwalters/lean-genius/blob/main/proofs/Proofs/PtolemyInequalityInnerProduct.lean},
+accessed 28 October 2026.
+
+\bibitem{compfiles}
+D.~Renshaw et al., \emph{Compfiles}, file \path{Compfiles/Imo1961P2.lean} (30 December 2025),
+\url{https://github.com/dwrensha/compfiles/blob/main/Compfiles/Imo1961P2.lean}, accessed 28 October 2026.
+
+\bibitem{principia}
+Principia, \emph{math-solutions}, file \path{mathdb/Principia/MathDB/Problem341671.lean}
+(26 October 2026),
+\url{https://github.com/PrincipiaMathOrg/math-solutions/blob/main/mathdb/Principia/MathDB/Problem341671.lean},
+accessed 28 October 2026.
+
+\bibitem{wiedijk100}
+F.~Wiedijk, \emph{Formalizing 100 Theorems}, \url{https://www.cs.ru.nl/~freek/100/}, accessed 28 October 2026.
+
+\bibitem{afpnapoleon}
+A.~F.~Ramos, D.~B.~Hulak and R.~J.~G.~B.~de Queiroz, Napoleon's Theorem, \emph{Archive of Formal
+Proofs}, August 2026, \url{https://isa-afp.org/entries/Napoleon.html}, accessed 28 October 2026.
+
+\bibitem{tanrikolu}
+I.~Tanr\i{}kolu, \emph{Napoleon-s-Theorem-in-Lean4}, file \path{napoleantheorem.lean}, commit
+\texttt{0e6eb11}, \url{https://github.com/imran-tanrikolu/Napoleon-s-Theorem-in-Lean4}, accessed
+28 October 2026.
+
+\bibitem{shadowbench}
+\emph{icml-26-lean-challenges} (ShadowBench), file
+\path{autformalization/problems/geometry/L2/geo_gen_L2_006/ShadowBench/Source/Main.lean}, commit
+\texttt{7541fcec} (12 June 2026), \url{https://github.com/epfl-lara/icml-26-lean-challenges}, accessed
+28 October 2026.
+
+\bibitem{atlasnapoleon}
+\emph{atlas-lean} (Meta / facebookresearch), file
+\path{MathlibExt/Geometry/Euclidean/NapoleonTheorem.lean}, pull request \#63, commit
+\texttt{27a38cfd} (5 October 2026),
+\url{https://github.com/facebookresearch/atlas-lean/blob/main/MathlibExt/Geometry/Euclidean/NapoleonTheorem.lean},
+accessed 28 October 2026.
+
+\bibitem{guilhot}
+F.~Guilhot, \emph{Formalization of the oriented angles theory} (Coq contribution \texttt{Angles}, 2002;
+file \path{point_napoleon.v}), \url{https://github.com/rocq-archive/angles}, accessed 28 October 2026.
+
+\bibitem{kovacs2017}
+Z.~Kov\'acs, R.~Vajda and A.~Montag, On Euler's inequality and automated reasoning with dynamic
+geometry, arXiv:1708.02993, 2017, \url{https://arxiv.org/abs/1708.02993}.
+
+\bibitem{paperA}
+J.~Bald,
+\emph{Classical plane geometry by coordinate certificates: Desargues, Monge, Simson, Napoleon and Lami in Lean~4},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23239930}
+
+\bibitem{paperD}
+J.~Bald,
+\emph{Circle configurations in classical plane geometry, formalized in Lean~4: Clifford's chain, Miquel's five circles, Lester, Sawayama--Th\'ebault and Kosnita},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23378578}
+
+\bibitem{paperG}
+J.~Bald,
+\emph{Triangle centres in Lean~4: the Nagel line family and the symmedian and Brocard points},
+Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23741528}
+\end{thebibliography}
+\end{document}

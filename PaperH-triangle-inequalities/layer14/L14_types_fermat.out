@@ -1,0 +1,276 @@
+@FermatNapoleon.l14b_outerApex_eq : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (X Y : P),
+  FermatNapoleon.outerApex o t X Y =
+    ((1 / 2) • (Y -ᵥ X) -
+        ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+          o.rightAngleRotation (Y -ᵥ X)) +ᵥ
+      X
+@FermatNapoleon.l14b_apexes : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (A' B' C' : P),
+  A' =
+      ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+        t.points 1 →
+    B' =
+        ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+            ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+              o.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+          t.points 2 →
+      C' =
+          ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+              ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+                o.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+            t.points 0 →
+        FermatNapoleon.napoleonApex o t 0 = A' ∧
+          FermatNapoleon.napoleonApex o t 1 = B' ∧ FermatNapoleon.napoleonApex o t 2 = C'
+@FermatNapoleon.l14_apex_outward : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (i : Fin 3) (A' : P),
+  A' =
+      ((1 / 2) • (t.points (i + 2) -ᵥ t.points (i + 1)) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points (i + 2) -ᵥ t.points (i + 1))) +ᵥ
+        t.points (i + 1) →
+    line[ℝ, t.points (i + 1), t.points (i + 2)].SOppSide (t.points i) A'
+@FermatNapoleon.l14_napoleon_dist_eq : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (A' B' C' : P),
+  A' =
+      ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+        t.points 1 →
+    B' =
+        ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+            ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+              o.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+          t.points 2 →
+      C' =
+          ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+              ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+                o.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+            t.points 0 →
+        Dist.dist (t.points 0) A' = Dist.dist (t.points 1) B' ∧ Dist.dist (t.points 1) B' = Dist.dist (t.points 2) C'
+@FermatNapoleon.l14_napoleon_concurrent : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (A' B' C' : P),
+  A' =
+      ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+        t.points 1 →
+    B' =
+        ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+            ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+              o.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+          t.points 2 →
+      C' =
+          ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+              ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+                o.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+            t.points 0 →
+        ∃ F ∈ line[ℝ, t.points 0, A'], F ∈ line[ℝ, t.points 1, B'] ∧ F ∈ line[ℝ, t.points 2, C']
+@FermatNapoleon.l14_napoleon_fermat : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (A' B' C' : P),
+  A' =
+      ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+        t.points 1 →
+    B' =
+        ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+            ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+              o.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+          t.points 2 →
+      C' =
+          ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+              ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+                o.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+            t.points 0 →
+        EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2) < 2 * Real.pi / 3 →
+          EuclideanGeometry.angle (t.points 2) (t.points 1) (t.points 0) < 2 * Real.pi / 3 →
+            EuclideanGeometry.angle (t.points 0) (t.points 2) (t.points 1) < 2 * Real.pi / 3 →
+              ∀ F ∈ line[ℝ, t.points 0, A'],
+                F ∈ line[ℝ, t.points 1, B'] →
+                  EuclideanGeometry.angle (t.points 0) F (t.points 1) = 2 * Real.pi / 3 ∧
+                    EuclideanGeometry.angle (t.points 1) F (t.points 2) = 2 * Real.pi / 3 ∧
+                      EuclideanGeometry.angle (t.points 2) F (t.points 0) = 2 * Real.pi / 3 ∧
+                        Dist.dist (t.points 0) A' =
+                          Dist.dist F (t.points 0) + Dist.dist F (t.points 1) + Dist.dist F (t.points 2)
+@FermatNapoleon.l14_napoleon : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P)
+  (A' B' C' N₀ N₁ N₂ : P),
+  A' =
+      ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+        t.points 1 →
+    B' =
+        ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+            ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+              o.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+          t.points 2 →
+      C' =
+          ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+              ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+                o.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+            t.points 0 →
+        N₀ = Finset.centroid ℝ Finset.univ ![t.points 1, t.points 2, A'] →
+          N₁ = Finset.centroid ℝ Finset.univ ![t.points 2, t.points 0, B'] →
+            N₂ = Finset.centroid ℝ Finset.univ ![t.points 0, t.points 1, C'] →
+              Dist.dist N₀ N₁ = Dist.dist N₁ N₂ ∧
+                Dist.dist N₁ N₂ = Dist.dist N₂ N₀ ∧
+                  Finset.centroid ℝ Finset.univ ![N₀, N₁, N₂] = Affine.Simplex.centroid t
+@FermatNapoleon.l14_napoleon_angle : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P]
+  [inst_4 : Fact (Module.finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2)) (t : Affine.Triangle ℝ P) (A' B' C' : P),
+  A' =
+      ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+          ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+            o.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+        t.points 1 →
+    B' =
+        ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+            ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+              o.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+          t.points 2 →
+      C' =
+          ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+              ((if 0 < (o.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1 else -1) * (√3 / 2)) •
+                o.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+            t.points 0 →
+        InnerProductGeometry.angle (A' -ᵥ t.points 0) (B' -ᵥ t.points 1) = 2 * Real.pi / 3 ∧
+          InnerProductGeometry.angle (B' -ᵥ t.points 1) (C' -ᵥ t.points 2) = 2 * Real.pi / 3 ∧
+            InnerProductGeometry.angle (C' -ᵥ t.points 2) (A' -ᵥ t.points 0) = 2 * Real.pi / 3 ∧
+              InnerProductGeometry.angle (A' -ᵥ t.points 0) (t.points 1 -ᵥ B') = Real.pi / 3
+@FermatNapoleon.l14_ptolemy_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {A B C D : P},
+  A ≠ B →
+    A ≠ C →
+      A ≠ D →
+        B ≠ C →
+          B ≠ D →
+            C ≠ D →
+              (Dist.dist A C * Dist.dist B D = Dist.dist A B * Dist.dist C D + Dist.dist B C * Dist.dist A D ↔
+                (EuclideanGeometry.Cospherical {A, B, C, D} ∧ ∃ X, Sbtw ℝ A X C ∧ Sbtw ℝ B X D) ∨
+                  Collinear ℝ {A, B, C, D} ∧ (Sbtw ℝ A B C ∨ Sbtw ℝ A D C) ∧ (Sbtw ℝ B A D ∨ Sbtw ℝ B C D))
+@FermatNapoleon.l14_ptolemy_collinear : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {A B C D : P},
+  A ≠ B →
+    A ≠ C →
+      A ≠ D →
+        B ≠ C →
+          B ≠ D →
+            C ≠ D →
+              Collinear ℝ {A, B, C, D} →
+                (Dist.dist A C * Dist.dist B D = Dist.dist A B * Dist.dist C D + Dist.dist B C * Dist.dist A D ↔
+                  (Sbtw ℝ A B C ∨ Sbtw ℝ A D C) ∧ (Sbtw ℝ B A D ∨ Sbtw ℝ B C D))
+@FermatNapoleon.l14_ptolemy_real : ∀ {a b c d : ℝ},
+  a ≠ b →
+    a ≠ c →
+      a ≠ d →
+        b ≠ c →
+          b ≠ d →
+            c ≠ d →
+              (|a - c| * |b - d| = |a - b| * |c - d| + |b - c| * |a - d| ↔
+                (Sbtw ℝ a b c ∨ Sbtw ℝ a d c) ∧ (Sbtw ℝ b a d ∨ Sbtw ℝ b c d))
+@FermatNapoleon.l14_angle_lt : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {A B C : P},
+  0 ≤ Inner.inner ℝ (A -ᵥ B) (C -ᵥ B) → EuclideanGeometry.angle A B C < 2 * Real.pi / 3
+@FermatNapoleon.l14_ne_of_angle : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {A F B : P},
+  EuclideanGeometry.angle A F B = 2 * Real.pi / 3 → F ≠ A
+FermatNapoleon.l14_dist_sq : ∀ (z w : ℂ), Dist.dist z w ^ 2 = (z.re - w.re) ^ 2 + (z.im - w.im) ^ 2
+FermatNapoleon.l14_dist : ∀ (z w : ℂ) (r : ℝ), 0 ≤ r → (z.re - w.re) ^ 2 + (z.im - w.im) ^ 2 = r ^ 2 → Dist.dist z w = r
+FermatNapoleon.l14_ne : ∀ (z w : ℂ), z.re ≠ w.re ∨ z.im ≠ w.im → z ≠ w
+FermatNapoleon.l14_not_collinear : ∀ (X Y Z : ℂ),
+  (Y.re - X.re) * (Z.im - X.im) - (Y.im - X.im) * (Z.re - X.re) ≠ 0 → ¬Collinear ℝ {X, Y, Z}
+FermatNapoleon.l14_sbtw : ∀ (X M Z : ℂ), X ≠ Z → M.re = (X.re + Z.re) / 2 → M.im = (X.im + Z.im) / 2 → Sbtw ℝ X M Z
+FermatNapoleon.l14_centroid : ∀ (a b c : ℂ),
+  Finset.centroid ℝ Finset.univ ![a, b, c] = (1 / 3) • a + (1 / 3) • b + (1 / 3) • c
+FermatNapoleon.l14w_napoleon : ∃ t A' B' C',
+  t.points = ![0, 4, 3 * Complex.I] ∧
+    A' = ↑(2 + 3 * √3 / 2) + ↑(3 / 2 + 2 * √3) * Complex.I ∧
+      B' = ↑(-(3 * √3 / 2)) + ↑(3 / 2) * Complex.I ∧
+        C' = ↑2 + ↑(-(2 * √3)) * Complex.I ∧
+          A' =
+              ((1 / 2) • (t.points 2 -ᵥ t.points 1) -
+                  ((if 0 < (Complex.orientation.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1
+                      else -1) *
+                      (√3 / 2)) •
+                    Complex.orientation.rightAngleRotation (t.points 2 -ᵥ t.points 1)) +ᵥ
+                t.points 1 ∧
+            B' =
+                ((1 / 2) • (t.points 0 -ᵥ t.points 2) -
+                    ((if 0 < (Complex.orientation.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then 1
+                        else -1) *
+                        (√3 / 2)) •
+                      Complex.orientation.rightAngleRotation (t.points 0 -ᵥ t.points 2)) +ᵥ
+                  t.points 2 ∧
+              C' =
+                  ((1 / 2) • (t.points 1 -ᵥ t.points 0) -
+                      ((if 0 < (Complex.orientation.areaForm (t.points 1 -ᵥ t.points 0)) (t.points 2 -ᵥ t.points 0) then
+                            1
+                          else -1) *
+                          (√3 / 2)) •
+                        Complex.orientation.rightAngleRotation (t.points 1 -ᵥ t.points 0)) +ᵥ
+                    t.points 0 ∧
+                A' ≠ B' ∧
+                  B' ≠ C' ∧
+                    C' ≠ A' ∧
+                      A' ≠ t.points 0 ∧
+                        B' ≠ t.points 1 ∧
+                          C' ≠ t.points 2 ∧
+                            EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2) < 2 * Real.pi / 3 ∧
+                              EuclideanGeometry.angle (t.points 2) (t.points 1) (t.points 0) < 2 * Real.pi / 3 ∧
+                                EuclideanGeometry.angle (t.points 0) (t.points 2) (t.points 1) < 2 * Real.pi / 3 ∧
+                                  Finset.centroid ℝ Finset.univ ![t.points 1, t.points 2, A'] ≠
+                                      Finset.centroid ℝ Finset.univ ![t.points 2, t.points 0, B'] ∧
+                                    ∃ F ∈ line[ℝ, t.points 0, A'],
+                                      F ∈ line[ℝ, t.points 1, B'] ∧
+                                        F ∈ line[ℝ, t.points 2, C'] ∧
+                                          EuclideanGeometry.angle (t.points 0) F (t.points 1) = 2 * Real.pi / 3 ∧
+                                            EuclideanGeometry.angle (t.points 1) F (t.points 2) = 2 * Real.pi / 3 ∧
+                                              EuclideanGeometry.angle (t.points 2) F (t.points 0) = 2 * Real.pi / 3 ∧
+                                                F ≠ t.points 0 ∧ F ≠ t.points 1 ∧ F ≠ t.points 2
+FermatNapoleon.l14w_ptolemy_cyclic : ∃ A B C D,
+  A = 0 ∧
+    B = 4 ∧
+      C = 4 + 3 * Complex.I ∧
+        D = 3 * Complex.I ∧
+          A ≠ B ∧
+            A ≠ C ∧
+              A ≠ D ∧
+                B ≠ C ∧
+                  B ≠ D ∧
+                    C ≠ D ∧
+                      EuclideanGeometry.Cospherical {A, B, C, D} ∧
+                        (∃ X, Sbtw ℝ A X C ∧ Sbtw ℝ B X D) ∧
+                          ¬Collinear ℝ {A, B, C, D} ∧
+                            Dist.dist A C * Dist.dist B D =
+                              Dist.dist A B * Dist.dist C D + Dist.dist B C * Dist.dist A D
+FermatNapoleon.l14w_ptolemy_collinear : ∃ A B C D,
+  A = 0 ∧
+    B = 1 ∧
+      C = 2 ∧
+        D = 3 ∧
+          A ≠ B ∧
+            A ≠ C ∧
+              A ≠ D ∧
+                B ≠ C ∧
+                  B ≠ D ∧
+                    C ≠ D ∧
+                      Collinear ℝ {A, B, C, D} ∧
+                        Sbtw ℝ A B C ∧
+                          Sbtw ℝ B C D ∧
+                            Dist.dist A C * Dist.dist B D =
+                              Dist.dist A B * Dist.dist C D + Dist.dist B C * Dist.dist A D
+FermatNapoleon.l14w_ptolemy_real : ((Sbtw ℝ 0 1 2 ∨ Sbtw ℝ 0 3 2) ∧ (Sbtw ℝ 1 0 3 ∨ Sbtw ℝ 1 2 3)) ∧
+  |0 - 2| * |1 - 3| = |0 - 1| * |2 - 3| + |1 - 2| * |0 - 3| ∧
+    ¬((Sbtw ℝ 0 1 3 ∨ Sbtw ℝ 0 2 3) ∧ (Sbtw ℝ 1 0 2 ∨ Sbtw ℝ 1 3 2)) ∧
+      |0 - 3| * |1 - 2| ≠ |0 - 1| * |3 - 2| + |1 - 3| * |0 - 2|

@@ -1,0 +1,32 @@
+LAYER 15 — CLASSICAL-SOURCE BLIND WRITER (Paper H). Do all work inline with your own tools; do NOT spawn sub-agents. Time box ~2 hours. Always finish by writing the file and the report.
+
+You formalise CLASSICAL THEOREMS from their textbook statements. You have NOT seen any paper or code about them and must not look: do NOT read any file on this machine or on any other machine except your own output files; do NOT search the web; do NOT open any Lean repository other than compiling your own file as described below. Self-report every file you read.
+
+CLASSICAL STATEMENTS (standard literature: Bottema et al., Geometric Inequalities; Johnson, Advanced Euclidean Geometry; Coxeter–Greitzer; Mitrinović–Pečarić–Volenec). Triangle ABC non-degenerate in a real Euclidean space; sides a = BC, b = CA, c = AB; semiperimeter s; area Δ; circumcentre O, circumradius R; incentre I, inradius r; excentre I_A and exradius r_A opposite A; centroid G; orthocentre H.
+ E1 (Euler). OI² = R² − 2Rr.
+ E2 (Euler's inequality). R ≥ 2r, with equality iff the triangle is equilateral.
+ E3 (Feuerbach–Euler for excircles). OI_A² = R² + 2R r_A (and similarly for B, C).
+ E4. OG² = R² − (a²+b²+c²)/9; OH² = 9R² − (a²+b²+c²); IG² = (s² + 5r² − 16Rr)/9.
+ E5 (Fundamental inequality / Blundon's quartic). s⁴ − 2(2R² + 10Rr − r²)s² + r(4R+r)³ ≤ 0.
+ E6 (Gerretsen). 16Rr − 5r² ≤ s² ≤ 4R² + 4Rr + 3r².
+ E7 (Kooi). s² ≤ R(4R+r)² / (2(2R−r)).
+ E8 (Weitzenböck). a²+b²+c² ≥ 4√3 Δ, equality iff equilateral.
+ E9 (Hadwiger–Finsler). a²+b²+c² ≥ 4√3 Δ + (a−b)² + (b−c)² + (c−a)², equality iff equilateral.
+ E10 (Isoperimetric inequality for triangles). (a+b+c)² ≥ 12√3 Δ, equality iff equilateral.
+ E11 (Leibniz). For every point X: XA² + XB² + XC² = 3XG² + (a²+b²+c²)/3; so the sum is minimised exactly at X = G.
+ E12 (Neuberg–Pedoe). For triangles with sides a,b,c, area Δ and a′,b′,c′, area Δ′: a′²(b²+c²−a²) + b′²(c²+a²−b²) + c′²(a²+b²−c²) ≥ 16ΔΔ′, equality iff the triangles are similar (a′:b′:c′ = a:b:c).
+ P1 (Ptolemy's inequality). For any four points A,B,C,D: AC·BD ≤ AB·CD + BC·AD.
+ P2 (Ptolemy's theorem and converse). For four distinct points, equality holds iff A,B,C,D lie in this order on a circle or a line.
+ M1 (Erdős–Mordell). For a point X inside or on triangle ABC with distances p, q, r to the side lines BC, CA, AB: XA + XB + XC ≥ 2(p + q + r), equality iff the triangle is equilateral and X is its centre.
+ M2 (Barrow). For X inside ABC, if the internal bisectors of angles BXC, CXA, AXB meet BC, CA, AB at U, V, W, then XA + XB + XC ≥ 2(XU + XV + XW).
+ F1 (Fermat–Torricelli). If every angle of ABC is less than 120°, there is a point F seeing each side under 120°, and F minimises XA + XB + XC over all points X.
+ F2 (Fermat–Napoleon). In the plane, erect equilateral triangles BCA′, CAB′, ABC′ outward on the sides. Then AA′ = BB′ = CC′; the lines AA′, BB′, CC′ are concurrent; if all angles are < 120° they meet at the Fermat point F and AA′ = FA + FB + FC; and the lines meet at 60° angles.
+ F3 (Napoleon). The centres of these three equilateral triangles form an equilateral triangle whose centre is the centroid of ABC.
+
+TASK: write one Lean 4 + Mathlib statement per claim (several where an item has several claims), named classical_E1, classical_E2a, classical_E2b, …, each `:= by sorry`, with a comment quoting the item. Use Mathlib's notions where they exist (Affine.Triangle ℝ P, Affine.Simplex.circumcenter/circumradius/incenter/inradius/excenter/exradius, Affine.Triangle.orthocenter, Finset.univ.centroid, EuclideanGeometry.angle, dist, Collinear, Cospherical, Sbtw/Wbtw, SOppSide, Module.finrank); define what Mathlib lacks yourself (Classical... names) from the textbook definition. State only the hypotheses the classical statement has; if you must add one to make the statement well-formed, mark it `-- EXTRA HYPOTHESIS:` with a reason. Mark ambiguous readings `-- AMBIGUOUS:`.
+WORKING STYLE: multi-step job; keep going until both outputs exist and the file compiles.
+TYPE-CHECK on the arm64 machine (allowed only for compiling YOUR file; read nothing else there):
+  scp ./Classical.lean arm64-machine:lean/reformalH/PaperHClassical.lean
+  ssh arm64-machine 'cd ~/lean/reformalH && PATH=~/.elan/bin:$PATH lake env lean PaperHClassical.lean'
+Iterate until the only messages are `declaration uses 'sorry'` warnings. Never run lake update / cache get.
+OUTPUT (in the current directory): ./Classical.lean (identical to the copy on the arm64 machine) and ./CLASSICAL_REPORT.md: statement list (name → item → one-line gloss), every invented definition with justification, every AMBIGUOUS / EXTRA HYPOTHESIS mark, compiler summary (sorry warnings count, 0 errors), files read.

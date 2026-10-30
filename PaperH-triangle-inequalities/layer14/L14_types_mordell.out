@@ -1,0 +1,186 @@
+@ErdosMordell.l14_of_mem_closedInterior : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {t : Affine.Triangle ℝ P}
+  {X : P},
+  X ∈ Affine.Simplex.closedInterior t →
+    ∃ w, (∀ (i : Fin 3), 0 ≤ w i) ∧ ∑ i, w i = 1 ∧ X = (Finset.affineCombination ℝ Finset.univ t.points) w
+@ErdosMordell.l14_of_mem_interior : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {t : Affine.Triangle ℝ P}
+  {X : P},
+  X ∈ Affine.Simplex.interior t →
+    ∃ w, (∀ (i : Fin 3), 0 < w i) ∧ ∑ i, w i = 1 ∧ X = (Finset.affineCombination ℝ Finset.univ t.points) w
+@ErdosMordell.l14_key_lemma_zero : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ∀ X ∈ Affine.Simplex.closedInterior t,
+    Dist.dist (t.points 2) (t.points 0) * Metric.infDist X ↑line[ℝ, t.points 0, t.points 1] +
+        Dist.dist (t.points 0) (t.points 1) * Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] ≤
+      Dist.dist (t.points 1) (t.points 2) * Dist.dist X (t.points 0)
+@ErdosMordell.l14_key_lemma_one : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ∀ X ∈ Affine.Simplex.closedInterior t,
+    Dist.dist (t.points 0) (t.points 1) * Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] +
+        Dist.dist (t.points 1) (t.points 2) * Metric.infDist X ↑line[ℝ, t.points 0, t.points 1] ≤
+      Dist.dist (t.points 2) (t.points 0) * Dist.dist X (t.points 1)
+@ErdosMordell.l14_key_lemma_two : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ∀ X ∈ Affine.Simplex.closedInterior t,
+    Dist.dist (t.points 1) (t.points 2) * Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] +
+        Dist.dist (t.points 2) (t.points 0) * Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] ≤
+      Dist.dist (t.points 0) (t.points 1) * Dist.dist X (t.points 2)
+@ErdosMordell.l14_erdos_mordell : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ∀ X ∈ Affine.Simplex.closedInterior t,
+    2 *
+        (Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] + Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] +
+          Metric.infDist X ↑line[ℝ, t.points 0, t.points 1]) ≤
+      Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2)
+@ErdosMordell.l14_erdos_mordell_eq_iff : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  ∀ X ∈ Affine.Simplex.closedInterior t,
+    2 *
+          (Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] + Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] +
+            Metric.infDist X ↑line[ℝ, t.points 0, t.points 1]) =
+        Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2) ↔
+      (Dist.dist (t.points 0) (t.points 1) = Dist.dist (t.points 1) (t.points 2) ∧
+          Dist.dist (t.points 1) (t.points 2) = Dist.dist (t.points 2) (t.points 0)) ∧
+        X = Finset.centroid ℝ Finset.univ t.points
+@ErdosMordell.l14_barrow : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P)
+  (X U V' W : P),
+  X ∈ Affine.Simplex.interior t →
+    Wbtw ℝ (t.points 1) U (t.points 2) →
+      Wbtw ℝ (t.points 2) V' (t.points 0) →
+        Wbtw ℝ (t.points 0) W (t.points 1) →
+          EuclideanGeometry.angle (t.points 1) X U = EuclideanGeometry.angle U X (t.points 2) →
+            EuclideanGeometry.angle (t.points 2) X V' = EuclideanGeometry.angle V' X (t.points 0) →
+              EuclideanGeometry.angle (t.points 0) X W = EuclideanGeometry.angle W X (t.points 1) →
+                2 * (Dist.dist X U + Dist.dist X V' + Dist.dist X W) ≤
+                  Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2)
+@ErdosMordell.l14_fermat_min : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (A B C F : P),
+  EuclideanGeometry.angle A F B = 2 * Real.pi / 3 →
+    EuclideanGeometry.angle B F C = 2 * Real.pi / 3 →
+      EuclideanGeometry.angle C F A = 2 * Real.pi / 3 →
+        ∀ (X : P), Dist.dist F A + Dist.dist F B + Dist.dist F C ≤ Dist.dist X A + Dist.dist X B + Dist.dist X C
+@ErdosMordell.l14_fermat_exists : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2) < 2 * Real.pi / 3 →
+    EuclideanGeometry.angle (t.points 2) (t.points 1) (t.points 0) < 2 * Real.pi / 3 →
+      EuclideanGeometry.angle (t.points 0) (t.points 2) (t.points 1) < 2 * Real.pi / 3 →
+        ∃ F,
+          EuclideanGeometry.angle (t.points 0) F (t.points 1) = 2 * Real.pi / 3 ∧
+            EuclideanGeometry.angle (t.points 1) F (t.points 2) = 2 * Real.pi / 3 ∧
+              EuclideanGeometry.angle (t.points 2) F (t.points 0) = 2 * Real.pi / 3
+@ErdosMordell.l14_fermat_torricelli : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] (t : Affine.Triangle ℝ P),
+  EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2) < 2 * Real.pi / 3 →
+    EuclideanGeometry.angle (t.points 2) (t.points 1) (t.points 0) < 2 * Real.pi / 3 →
+      EuclideanGeometry.angle (t.points 0) (t.points 2) (t.points 1) < 2 * Real.pi / 3 →
+        ∃ F,
+          EuclideanGeometry.angle (t.points 0) F (t.points 1) = 2 * Real.pi / 3 ∧
+            EuclideanGeometry.angle (t.points 1) F (t.points 2) = 2 * Real.pi / 3 ∧
+              EuclideanGeometry.angle (t.points 2) F (t.points 0) = 2 * Real.pi / 3 ∧
+                ∀ (X : P),
+                  Dist.dist F (t.points 0) + Dist.dist F (t.points 1) + Dist.dist F (t.points 2) ≤
+                    Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2)
+ErdosMordell.l14_dist_sq : ∀ (x y : EuclideanSpace ℝ (Fin 2)),
+  Dist.dist x y ^ 2 = (x.ofLp 0 - y.ofLp 0) ^ 2 + (x.ofLp 1 - y.ofLp 1) ^ 2
+ErdosMordell.l14_dist : ∀ (x y : EuclideanSpace ℝ (Fin 2)) (r : ℝ),
+  0 ≤ r → (x.ofLp 0 - y.ofLp 0) ^ 2 + (x.ofLp 1 - y.ofLp 1) ^ 2 = r ^ 2 → Dist.dist x y = r
+ErdosMordell.l14_not_collinear : ∀ (X Y Z : EuclideanSpace ℝ (Fin 2)),
+  (Y.ofLp 0 - X.ofLp 0) * (Z.ofLp 1 - X.ofLp 1) - (Y.ofLp 1 - X.ofLp 1) * (Z.ofLp 0 - X.ofLp 0) ≠ 0 →
+    ¬Collinear ℝ {X, Y, Z}
+ErdosMordell.l14_ne : ∀ (X Y : EuclideanSpace ℝ (Fin 2)), X.ofLp 0 ≠ Y.ofLp 0 ∨ X.ofLp 1 ≠ Y.ofLp 1 → X ≠ Y
+ErdosMordell.l14_inner : ∀ (x y : EuclideanSpace ℝ (Fin 2)),
+  Inner.inner ℝ x y = x.ofLp 0 * y.ofLp 0 + x.ofLp 1 * y.ofLp 1
+ErdosMordell.l14_mem_line : ∀ (Y Z Q : EuclideanSpace ℝ (Fin 2)) (r : ℝ),
+  Q.ofLp 0 = Y.ofLp 0 + r * (Z.ofLp 0 - Y.ofLp 0) → Q.ofLp 1 = Y.ofLp 1 + r * (Z.ofLp 1 - Y.ofLp 1) → Q ∈ line[ℝ, Y, Z]
+ErdosMordell.l14_ac : ∀ (t : Affine.Triangle ℝ (EuclideanSpace ℝ (Fin 2))) (w : Fin 3 → ℝ),
+  w 0 + w 1 + w 2 = 1 →
+    (Finset.affineCombination ℝ Finset.univ t.points) w =
+      !₂[w 0 * (t.points 0).ofLp 0 + w 1 * (t.points 1).ofLp 0 + w 2 * (t.points 2).ofLp 0,
+        w 0 * (t.points 0).ofLp 1 + w 1 * (t.points 1).ofLp 1 + w 2 * (t.points 2).ofLp 1]
+@ErdosMordell.l14_angle_lt : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {A B C : P},
+  0 ≤ Inner.inner ℝ (A -ᵥ B) (C -ᵥ B) → EuclideanGeometry.angle A B C < 2 * Real.pi / 3
+@ErdosMordell.l14_angle_eq : ∀ {V : Type u_1} {P : Type u_2} [inst : NormedAddCommGroup V]
+  [inst_1 : InnerProductSpace ℝ V] [inst_2 : MetricSpace P] [inst_3 : NormedAddTorsor V P] {A F B : P},
+  Inner.inner ℝ (A -ᵥ F) (B -ᵥ F) = -2 →
+    Dist.dist A F = 2 → Dist.dist B F = 2 → EuclideanGeometry.angle A F B = 2 * Real.pi / 3
+ErdosMordell.l14w_erdos_mordell : ∃ t X,
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] ∧
+    X = !₂[1, 1] ∧
+      X ∈ Affine.Simplex.interior t ∧
+        X ∈ Affine.Simplex.closedInterior t ∧
+          X ≠ t.points 0 ∧
+            X ≠ t.points 1 ∧
+              X ≠ t.points 2 ∧
+                Dist.dist (t.points 2) (t.points 0) * Metric.infDist X ↑line[ℝ, t.points 0, t.points 1] +
+                      Dist.dist (t.points 0) (t.points 1) * Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] <
+                    Dist.dist (t.points 1) (t.points 2) * Dist.dist X (t.points 0) ∧
+                  Dist.dist (t.points 0) (t.points 1) * Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] +
+                        Dist.dist (t.points 1) (t.points 2) * Metric.infDist X ↑line[ℝ, t.points 0, t.points 1] <
+                      Dist.dist (t.points 2) (t.points 0) * Dist.dist X (t.points 1) ∧
+                    Dist.dist (t.points 1) (t.points 2) * Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] +
+                          Dist.dist (t.points 2) (t.points 0) * Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] <
+                        Dist.dist (t.points 0) (t.points 1) * Dist.dist X (t.points 2) ∧
+                      2 *
+                            (Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] +
+                                Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] +
+                              Metric.infDist X ↑line[ℝ, t.points 0, t.points 1]) <
+                          Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2) ∧
+                        ¬(Dist.dist (t.points 0) (t.points 1) = Dist.dist (t.points 1) (t.points 2) ∧
+                            Dist.dist (t.points 1) (t.points 2) = Dist.dist (t.points 2) (t.points 0))
+ErdosMordell.l14w_erdos_mordell_eq : ∃ t X,
+  t.points = ![!₂[0, 0], !₂[2, 0], !₂[1, √3]] ∧
+    X = Finset.centroid ℝ Finset.univ t.points ∧
+      X ∈ Affine.Simplex.closedInterior t ∧
+        2 *
+            (Metric.infDist X ↑line[ℝ, t.points 1, t.points 2] + Metric.infDist X ↑line[ℝ, t.points 2, t.points 0] +
+              Metric.infDist X ↑line[ℝ, t.points 0, t.points 1]) =
+          Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2)
+ErdosMordell.l14w_barrow : ∃ t X U V' W,
+  t.points = ![!₂[5, 0], !₂[-3, 4], !₂[-3, -4]] ∧
+    X = !₂[0, 0] ∧
+      U = !₂[-3, 0] ∧
+        V' = !₂[1, -2] ∧
+          W = !₂[1, 2] ∧
+            X ∈ Affine.Simplex.interior t ∧
+              Wbtw ℝ (t.points 1) U (t.points 2) ∧
+                Wbtw ℝ (t.points 2) V' (t.points 0) ∧
+                  Wbtw ℝ (t.points 0) W (t.points 1) ∧
+                    EuclideanGeometry.angle (t.points 1) X U = EuclideanGeometry.angle U X (t.points 2) ∧
+                      EuclideanGeometry.angle (t.points 2) X V' = EuclideanGeometry.angle V' X (t.points 0) ∧
+                        EuclideanGeometry.angle (t.points 0) X W = EuclideanGeometry.angle W X (t.points 1) ∧
+                          U ≠ V' ∧
+                            V' ≠ W ∧
+                              W ≠ U ∧
+                                2 * (Dist.dist X U + Dist.dist X V' + Dist.dist X W) <
+                                  Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2)
+ErdosMordell.l14w_fermat_min : ∃ A B C F X,
+  A = !₂[2, 0] ∧
+    B = !₂[-1, √3] ∧
+      C = !₂[-1, -√3] ∧
+        F = !₂[0, 0] ∧
+          X = A ∧
+            EuclideanGeometry.angle A F B = 2 * Real.pi / 3 ∧
+              EuclideanGeometry.angle B F C = 2 * Real.pi / 3 ∧
+                EuclideanGeometry.angle C F A = 2 * Real.pi / 3 ∧
+                  A ≠ B ∧
+                    B ≠ C ∧
+                      C ≠ A ∧
+                        Dist.dist F A + Dist.dist F B + Dist.dist F C < Dist.dist X A + Dist.dist X B + Dist.dist X C
+ErdosMordell.l14w_fermat_torricelli : ∃ t,
+  t.points = ![!₂[0, 0], !₂[4, 0], !₂[0, 3]] ∧
+    EuclideanGeometry.angle (t.points 1) (t.points 0) (t.points 2) < 2 * Real.pi / 3 ∧
+      EuclideanGeometry.angle (t.points 2) (t.points 1) (t.points 0) < 2 * Real.pi / 3 ∧
+        EuclideanGeometry.angle (t.points 0) (t.points 2) (t.points 1) < 2 * Real.pi / 3 ∧
+          ∃ F,
+            EuclideanGeometry.angle (t.points 0) F (t.points 1) = 2 * Real.pi / 3 ∧
+              EuclideanGeometry.angle (t.points 1) F (t.points 2) = 2 * Real.pi / 3 ∧
+                EuclideanGeometry.angle (t.points 2) F (t.points 0) = 2 * Real.pi / 3 ∧
+                  F ≠ t.points 0 ∧
+                    F ≠ t.points 1 ∧
+                      F ≠ t.points 2 ∧
+                        ∀ (X : EuclideanSpace ℝ (Fin 2)),
+                          Dist.dist F (t.points 0) + Dist.dist F (t.points 1) + Dist.dist F (t.points 2) ≤
+                            Dist.dist X (t.points 0) + Dist.dist X (t.points 1) + Dist.dist X (t.points 2)

@@ -1,0 +1,16 @@
+x86-64: == paperh_euler d1edd8009962976316a698575a74bca5391d308c
+x86-64: Build completed successfully (8714 jobs).
+x86-64: PASS (60 declarations, standard axioms only)
+x86-64: ALL TAMPERING TESTS REJECTED
+x86-64: digest d40a6efb929d3c7d
+x86-64: == paperh_fermat f6660dc9c9cfa84825003e943bde2fba3e316be2
+x86-64: Build completed successfully (8712 jobs).
+x86-64: PASS (47 declarations, standard axioms only)
+x86-64: ALL TAMPERING TESTS REJECTED
+x86-64: digest 3a5bd3d4ac1da328
+x86-64: == paperh_mordell 01ddb5294cab6c7196e59ffd4061aee3c2100866
+x86-64: Build completed successfully (8711 jobs).
+x86-64: PASS (48 declarations, standard axioms only)
+x86-64: ALL TAMPERING TESTS REJECTED
+x86-64: digest ca87ad239b36e1b5
+x86-64: RECEIPT DONE

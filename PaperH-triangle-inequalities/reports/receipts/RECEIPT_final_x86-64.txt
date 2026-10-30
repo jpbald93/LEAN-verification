@@ -1,0 +1,16 @@
+== paperh_euler 0c95102c792b8d47d2720f4e9fbc39aa5f21a424
+Build completed successfully (8717 jobs).
+PASS (243 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+digest 66134350e93aa338
+== paperh_fermat 8f680c86b068196a4d27201209c856a5d038aaa4
+Build completed successfully (8715 jobs).
+PASS (171 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+digest 02ca3ed938473d72
+== paperh_mordell 7b2270146195cf2a4c589e403143dba0abd0f6a7
+Build completed successfully (8714 jobs).
+PASS (144 declarations, standard axioms only)
+ALL TAMPERING TESTS REJECTED
+digest 922a0515df82b5e0
+RECEIPT DONE

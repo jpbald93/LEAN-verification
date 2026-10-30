@@ -1,0 +1,563 @@
+\begin{document}
+\sloppy
+\maketitle
+\begin{abstract}
+  For an
+  We
+characterise the equality case of Ptolemy's inequality in any real inner product space (concyclic
+points in separated order, or collinear points in one of eight orders). For a point $X$ of the
+\emph{closed} triangle we prove the Erdős--Mordell inequality, its key lemma and its equality case
+(equilateral triangle, $X$ the centre), and, for interior points, Barrow's inequality. If every
+angle is less than $2\pi/3$, the Fermat--Torricelli point exists and minimises $XA+XB+XC$ over the
+whole space. In the oriented plane we prove that the segments $AA'$, $BB'$, $CC'$ to the apexes of the
+outer equilateral triangles have equal lengths and lie on concurrent lines meeting pairwise at angle
+$\pi/3$, that if every angle is less than $2\pi/3$ the common point is the Fermat point $F$ and
+$AA'=FA+FB+FC$, and Napoleon's theorem with the centroid
+statement.  Several of these results were
+  For the remaining
+ 
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+The inequalities between the circumradius $R$, the inradius $r$, the semiperimeter $s$, the area
+$\Delta$ and the sides $a,b,c$ of a triangle form a classical and well-catalogued subject; the
+monograph of Bottema, \DJ{}or\dj{}evi\'c, Jani\'c, Mitrinovi\'c and Vasi\'c \cite{bottema} collects
+several hundred of them. The best-known are Euler's inequality $R\ge 2r$, which follows from his
+relation $OI^2=R(R-2r)$ for the distance between the circumcentre and the incentre; Weitzenb\"ock's
+inequality $a^2+b^2+c^2\ge 4\sqrt3\,\Delta$ \cite{weitzenboeck} and its strengthening by Finsler
+and Hadwiger \cite{finslerhadwiger}; Gerretsen's two-sided bound on $s^2$ in terms of $R$ and $r$;
+and the Erdős--Mordell inequality, posed by Erdős in 1935 \cite{erdos1935} and proved by Mordell and
+Barrow \cite{mordellbarrow1937}. 
+
+\paragraph{Prior formal work, up front.  Euler's relation $OI^2=R(R-2r)$, Euler's inequality
+ 
+  The Erdős--Mordell inequality, for a
+  Weitzenb\"ock's and the Hadwiger--Finsler inequalities with their equality cases are
+proved in algebraic form (real numbers $a,b,c,T$ satisfying Heron's relation) in Compfiles
+\cite{compfiles} and [NAME] \cite{lgweitz,lghf}.  Section~\ref{sec:related} gives the details and dates.
+
+  None of
+this is new mathematics.
+
+\subsection{Contributions}
+Unless stated otherwise, the theorems hold for an arbitrary [NAME] in a real inner
+product space of arbitrary dimension and have no hypothesis beyond the triangle.
+\begin{itemize}
+\item \emph{The Euler family} (Section~\ref{sec:euler}): Euler's relation, the inequality and its
+equality case, the excircle relation, and $OG^2$, $OH^2$, $IG^2$
+(Theorems~\ref{thm:euler}--\ref{thm:ogh}).
+\item \emph{Inequalities in $R$, $r$, $s$} (Section~\ref{sec:rrs}): the fundamental quartic,
+Gerretsen and Kooi (Theorems~\ref{thm:quartic}--\ref{thm:kooi}).
+\item \emph{Area inequalities and extremal problems} (Section~\ref{sec:area}): Weitzenb\"ock,
+Hadwiger--Finsler, the isoperimetric inequality and the Leibniz minimum, each with its equality case
+(Theorems~\ref{thm:weitz}--\ref{thm:leibniz}).
+\item \emph{Two triangles} (Section~\ref{sec:pedoe}): Neuberg--Pedoe with its equality case
+(Theorem~\ref{thm:pedoe}).
+\item \emph{Ptolemy} (Section~\ref{sec:ptolemy}): the inequality (a reproof) and the
+characterisation of its equality case (Theorems~\ref{thm:ptolemy} and~\ref{thm:ptolemyeq}).
+\item \emph{Erdős--Mordell and Barrow} (Section~\ref{sec:mordell}): key lemma, inequality and
+equality case for the closed triangle; Barrow for interior points
+(Theorems~\ref{thm:key}--\ref{thm:barrow}).
+\item \emph{Fermat and Napoleon} (Section~\ref{sec:fermat}): Fermat--Torricelli existence and
+minimality; in the oriented plane, the Fermat--Napoleon lines and Napoleon's theorem
+(Theorems~\ref{thm:fermatmin}--\ref{thm:napoleon}).
+\end{itemize}
+  The proofs are by polynomial certificates, as in our earlier papers
+\cite{paperA,paperG}: sum-of-squares identities valid modulo Heron's relation, and one barycentric
+distance formula, used throughout (Section~\ref{sec:setting}).
+\section{Setting, conventions and the two basic tools}\label{sec:setting}
+\paragraph{Ambient space and triangle.} Throughout, $V$ is a real inner product space, $P$ a metric
+  No finite-dimensionality or dimension
+hypothesis is made except in Section~\ref{sec:fermat}, where the Napoleon results assume
+$\dim V=2$ and fix an orientation. Non-degeneracy of the triangle is part of
+[NAME] and is never a separate hypothesis. We write
+\[
+a=|BC|,\quad b=|CA|,\quad c=|AB|,\quad s=\tfrac12(a+b+c)
+\]
+([NAME] and so on; $s$ is [NAME]), and
+ excenter \{i\}},
+ exradius \{i\}}, [NAME] and [NAME].  ``Equilateral'' is stated as
+$|AB|=|BC|\wedge|BC|=|CA|$.
+
+\paragraph{Area.} Besides $s$ and two auxiliary definitions ([NAME] and [NAME]), the only new definition in [NAME] is the area
+\[
+\Delta=\tfrac12\,|AB|\,|AC|\,\sin\angle BAC,
+\]
+  Heron's formula is proved as the bridge
+[NAME]: $(2\Delta)^2=\Gamma(a,b,c)$ with
+\[
+\Gamma(a,b,c)=\tfrac14\bigl(2a^2b^2+2b^2c^2+2c^2a^2-a^4-b^4-c^4\bigr)
+\]
+([NAME]), from the law of cosines and $\sin^2+\cos^2=1$; and $\Delta>0$
+([NAME]).  
+
+\paragraph{Points in the closed triangle; feet of perpendiculars.} For weights $w_0,w_1,w_2$ with
+  A point
+$X$ is \emph{in the closed triangle} if $X=w_0A+w_1B+w_2C$ for some weights with all $w_i\ge0$, and
+\emph{strictly inside} if all $w_i>0$; these are the literal hypotheses of
+Section~\ref{sec:mordell}. The distance from $X$ to the line $YZ$ is $|X\,\pi_{YZ}(X)|$, where
+  (The library abbreviates this as [NAME], but the
+main statements are written with the projection itself.)
+
+\paragraph{Tool 1: the barycentric distance formula.} The identity behind Euler's relation, the
+excircle relation, $OG^2$, $IG^2$ and the Leibniz minimum is the classical formula of Lagrange and
+Leibniz for an affine combination, proved once for three points in any inner product space
+([NAME]):
+\begin{equation}\label{eq:leibniz}
+\Bigl|\sum_i w_iP_i-Q\Bigr|^2=\sum_i w_i|P_iQ|^2-\sum_{i<j}w_iw_j|P_iP_j|^2\qquad
+\Bigl(\sum_i w_i=1\Bigr).
+\end{equation}
+With $Q=O$ the first sum is $R^2$ ([NAME]); for two
+affine combinations with weight difference $d=w-v$ the distance squared is
+$-\sum_{i<j}d_id_j|P_iP_j|^2$ ([NAME]).
+ 
+
+\paragraph{Tool 2: certificates modulo Heron.} Every inequality between $R$, $r$, $s$, $\Delta$ and
+the sides is reduced to a polynomial statement in $a,b,c,\Delta$ subject to $(2\Delta)^2=\Gamma$,
+$\Delta>0$ and the strict triangle inequalities, and then closed by an explicit identity: a
+sum of squares with nonnegative weights, or a product of known-sign factors, found with SymPy and
+checked by [NAME]. The equality cases come out of the same identity: equality
+forces every square to vanish. As in our earlier papers, the identities were checked numerically
+  We write $x=s-a$, $y=s-b$, $z=s-c$
+(the tangent lengths, all positive), so that $a=y+z$ etc.\ (the Ravi substitution).
+\section{The Euler family}\label{sec:euler}
+ [omitted] 
+
+The theorems of Sections~\ref{sec:euler}--\ref{sec:pedoe} are in [NAME]; each has
+the triangle (or, for Pedoe, the two triangles) as its only hypothesis. File:line references are
+to the library files; the commits are given in Section~\ref{sec:avail}.
+
+\begin{theorem}[Euler's relation; reproof]\label{thm:euler}
+For every triangle, $|IO|^2=R^2-2Rr$.
+\end{theorem}
+\begin{theorem}[Euler's inequality and its equality case]\label{thm:eulerineq}
+For every triangle, $2r\le R$; and $2r=R$ if and only if the triangle is equilateral.
+\end{theorem}
+\begin{theorem}[Euler for the excircles; reproof]\label{thm:eulerex}
+  exradius \{i\}} (the excircle opposite vertex $i$).
+\end{theorem}
+\begin{theorem}[$OG$, $OH$, $IG$]\label{thm:ogh}
+For every triangle,
+\[
+|OG|^2=R^2-\tfrac19(a^2+b^2+c^2),\qquad |OH|^2=9R^2-(a^2+b^2+c^2),\qquad
+|IG|^2=\tfrac19\bigl(s^2+5r^2-16Rr\bigr).
+\]
+\end{theorem}
+
+\paragraph{Proofs.} By the incentre bridge, $I$ has weights $(a,b,c)/(a+b+c)$, so
+\eqref{eq:leibniz} with $Q=O$ gives $|IO|^2=R^2-abc/(a+b+c)$, and $abc/(a+b+c)=2Rr$ by $4R\Delta=abc$
+and $r(a+b+c)=2\Delta$. For the excentre opposite $A$ the weights are $(-a,b,c)/(-a+b+c)$ and the
+same computation gives $R^2+abc/(-a+b+c)=R^2+2Rr_a$; the other two excentres are analogous. For the
+inequality, the key identity ([NAME]) is
+\[
+4\Delta(R-2r)=\tfrac12\bigl[(-a+b+c)(b-c)^2+(a-b+c)(c-a)^2+(a+b-c)(a-b)^2\bigr],
+\]
+a polynomial identity once $R=abc/(4\Delta)$ and $r=2\Delta/(a+b+c)$ are substituted. Since
+$\Delta>0$ and the three linear factors are positive, the right side is nonnegative, and it vanishes
+exactly when $a=b=c$ (the auxiliary lemmas [NAME] and
+[NAME]). Note that Euler's relation does not give the equality case
+by itself: $|IO|=0$ means $I=O$, and one still has to show that this forces the triangle to be
+equilateral; the identity above does both at once. For $OG^2$ apply \eqref{eq:leibniz} with weights
+$\tfrac13$ and $Q=O$.  For
+$IG^2$ use the distance between two affine combinations with $d=(a,b,c)/(2s)-(\tfrac13,\tfrac13,\tfrac13)$;
+the result is a symmetric rational function of $a,b,c$, which equals $(s^2+5r^2-16Rr)/9$ after substituting
+$r=2\Delta/(a+b+c)$ and $4R\Delta=abc$ and using Heron's relation (one [NAME]).
+\section{Inequalities in $R$, $r$ and $s$: the fundamental quartic, Gerretsen and Kooi}\label{sec:rrs}
+\begin{theorem}[The fundamental quartic]\label{thm:quartic}
+For every triangle,
+$s^4-2(2R^2+10Rr-r^2)\,s^2+r(4R+r)^3\le0$.
+\end{theorem}
+\begin{theorem}[Gerretsen's inequalities]\label{thm:gerretsen}
+For every triangle, $16Rr-5r^2\le s^2\le 4R^2+4Rr+3r^2$. Moreover
+$(R-r)(R-2r)\ge0$ ([NAME]).
+\end{theorem}
+\begin{theorem}[Kooi's inequality]\label{thm:kooi}
+For every triangle,
+\[
+s^2\le\frac{R(4R+r)^2}{2(2R-r)}\qquad\text{and}\qquad \frac{R(4R+r)^2}{2(2R-r)}\le 4R^2+4Rr+3r^2,
+\]
+so Kooi's bound is at least as strong as the upper Gerretsen bound.
+\end{theorem}
+
+ 
+
+\paragraph{The quartic.} The quartic is the discriminant form of Blundon's fundamental inequality
+\cite{blundon1965}: in the Ravi variables $x,y,z$ (so $s=x+y+z$), the relations
+$r^2s=xyz$ and $4Rrs=(y+z)(z+x)(x+y)$ hold, and the certificate
+[NAME],
+\[
+s^3\bigl(4r^2 f(s^2)+\bigl((y-x)(z-y)(x-z)\bigr)^2\bigr)=0,\qquad
+f(u)=u^2-2(2R^2+10Rr-r^2)u+r(4R+r)^3,
+\]
+holds modulo these two relations (the explicit cofactors are in the source). Since $s>0$ and
+$r>0$, $f(s^2)\le0$. The certificate and the quartic are copied, with attribution in the source,
+ 
+
+\paragraph{Gerretsen.} The roots of $f$ are $2R^2+10Rr-r^2\pm2(R-2r)\sqrt{R(R-2r)}$, and
+Gerretsen's bounds are the observation that this interval lies inside
+$[16Rr-5r^2,\,4R^2+4Rr+3r^2]$.  The cross-check states what
+Gerretsen's two bounds give when combined: $(R-r)(R-2r)\ge0$. This does \emph{not} imply $R\ge2r$,
+so Euler's inequality is not a consequence of Gerretsen's bounds alone (we use it in their proof).
+
+\paragraph{Kooi.} Write $K=R(4R+r)^2/(2(2R-r))$. The algebraic lemma
+[NAME] shows: if $r>0$, $2r\le R$ and $f(u)\le0$, then $u\le K$. Its proof
+uses the identity
+\[
+M^2-\bigl(2(2R-r)(u-B)\bigr)^2=\bigl(r(R-2r)(4R+r)\bigr)^2-4(2R-r)^2f(u),
+\]
+with $B=2R^2+10Rr-r^2$ and $M=(R-2r)(8R^2-12Rr+r^2)$; here $M\ge0$ because $R\ge2r$ makes both
+factors nonnegative. Hence $2(2R-r)(u-B)\le M$, which is $u\le K$. Kooi's inequality is this lemma at
+$u=s^2$. The comparison with Gerretsen is
+$4R^2+4Rr+3r^2-K=3r^2(R-2r)/(2(2R-r))\ge0$, closed after clearing the denominator by
+[NAME] with the hint $r^2(R-2r)\ge0$. Numerically, equality in Kooi's inequality holds only for
+  In [NAME], since $(u-B)^2-f(u)=4R(R-2r)^3$, the hypotheses $r>0$ and $f(u)\le0$
+together with $R\ge0$ already force $2r\le R$ (the lemma states $2r\le R$ explicitly to avoid a separate
+positivity hypothesis on $R$); Theorem~\ref{thm:kooi} itself has no hypothesis beyond the triangle.
+\section{Area inequalities and two extremal problems}\label{sec:area}
+\begin{theorem}[Weitzenb\"ock]\label{thm:weitz}
+For every triangle, $4\sqrt3\,\Delta\le a^2+b^2+c^2$, with equality if and only if the triangle is
+equilateral.
+\end{theorem}
+\begin{theorem}[Hadwiger--Finsler]\label{thm:hf}
+For every triangle,
+$4\sqrt3\,\Delta+(a-b)^2+(b-c)^2+(c-a)^2\le a^2+b^2+c^2$, with equality if and only if the
+triangle is equilateral.
+\end{theorem}
+\begin{theorem}[Isoperimetric inequality for triangles]\label{thm:iso}
+For every triangle, $12\sqrt3\,\Delta\le(a+b+c)^2$, with equality if and only if the triangle is
+equilateral.
+\end{theorem}
+\begin{theorem}[Leibniz relation and minimum]\label{thm:leibniz}
+For every triangle and every point $X$ of the space,
+\[
+|XA|^2+|XB|^2+|XC|^2=3|XG|^2+\tfrac13(a^2+b^2+c^2);
+\]
+hence $|XA|^2+|XB|^2+|XC|^2\ge\tfrac13(a^2+b^2+c^2)$, with equality if and only if $X=G$.
+\end{theorem}
+Here $\Delta$ is the area of the triangle as defined in Section~\ref{sec:setting}, and in
+Theorem~\ref{thm:leibniz} $X$ ranges over all of $P$, not only the plane of the triangle.
+
+\paragraph{Proofs.} With $L=2(ab+bc+ca)-(a^2+b^2+c^2)$, the Hadwiger--Finsler inequality says
+$4\sqrt3\,\Delta\le L$. Heron's relation gives the identity ([NAME])
+\[
+L^2-(4\sqrt3\,\Delta)^2=2\bigl[\bigl((a-b+c)(c-a)\bigr)^2+\bigl((a+b-c)(a-b)\bigr)^2+\bigl((-a+b+c)(b-c)\bigr)^2\bigr],
+\]
+and $L=4(xy+yz+zx)>0$ in the Ravi variables ([NAME]); taking square roots of
+nonnegative quantities gives the inequality. Equality forces the three squares to vanish, and since
+the linear factors are positive, $a=b=c$. Weitzenb\"ock follows by adding
+$(a-b)^2+(b-c)^2+(c-a)^2\ge0$; its equality case uses both that sum and the Hadwiger--Finsler
+equality case. For the isoperimetric inequality, Heron gives
+$(12\sqrt3\,\Delta)^2=27\,p\,(-a+b+c)(a-b+c)(a+b-c)$ with $p=a+b+c$, while
+$p^4=p\,\bigl((-a+b+c)+(a-b+c)+(a+b-c)\bigr)^3$; three-term AM--GM in the explicit form
+([NAME])
+\[
+(x+y+z)^3-27xyz=\tfrac12(x+y+z)\bigl[(x-y)^2+(y-z)^2+(z-x)^2\bigr]+3\bigl[x(y-z)^2+y(z-x)^2+z(x-y)^2\bigr]
+\]
+finishes the inequality, and the same identity gives the equality case. The Leibniz relation is
+\eqref{eq:leibniz} with weights $\tfrac13$ and $Q=X$; the minimum and its equality case follow
+because $|XG|^2\ge0$ with equality iff $X=G$.
+
+\section{Two triangles: the Neuberg--Pedoe inequality}\label{sec:pedoe}
+\begin{theorem}[Neuberg--Pedoe]\label{thm:pedoe}
+Let $t$ and $t'$ be triangles, possibly in different real inner product spaces, with sides
+$a,b,c$ and $a',b',c'$ (in the same vertex labelling) and areas $\Delta$, $\Delta'$. Then
+\[
+a'^2(b^2+c^2-a^2)+b'^2(c^2+a^2-b^2)+c'^2(a^2+b^2-c^2)\ \ge\ 16\,\Delta\Delta',
+\]
+with equality if and only if there is $k>0$ with $a'=ka$, $b'=kb$ and $c'=kc$.
+\end{theorem}
+The equality condition is similarity with the given correspondence of vertices; the statement is
+not symmetric under relabelling $t'$ alone.
+
+\paragraph{Proof.} Write $S=a^2+b^2+c^2$, $T=a'^2+b'^2+c'^2$ and $\Lambda$ for the left side. The
+certificate [NAME] is
+\[
+2ST\bigl(\Lambda-16\Delta\Delta'\bigr)=\bigl(4T\Delta-4S\Delta'\bigr)^2
++2\bigl[(Ta^2-Sa'^2)^2+(Tb^2-Sb'^2)^2+(Tc^2-Sc'^2)^2\bigr],
+\]
+valid for real numbers whenever $(2\Delta)^2=\Gamma(a,b,c)$ and $(2\Delta')^2=\Gamma(a',b',c')$.
+Since $S,T>0$, the inequality follows. If equality holds, all the squares vanish, so
+$a'^2=(T/S)a^2$ and so on, and $k=\sqrt{T/S}$; conversely, for similar triangles $\Delta'=k^2\Delta$ and
+both sides equal $16k^2\Delta^2$. No Lorentzian Cauchy--Schwarz step is needed. Pedoe's notes
+\cite{pedoe1941,pedoe1942} give the inequality and its equality case; the name Neuberg--Pedoe follows
+common usage, and we have not checked Neuberg's original nineteenth-century source.
+\section{Ptolemy's inequality and its equality case}\label{sec:ptolemy}
+\begin{theorem}[Ptolemy's inequality; reproof]\label{thm:ptolemy}
+For any four points $A,B,C,D$ of $P$, $|AC|\,|BD|\le|AB|\,|CD|+|BC|\,|AD|$.
+\end{theorem}
+\begin{theorem}[Equality in Ptolemy's inequality]\label{thm:ptolemyeq}
+Let $A,B,C,D$ be four pairwise distinct points of $P$ (six hypotheses $A\ne B,\dots,C\ne D$).
+Then $|AC|\,|BD|=|AB|\,|CD|+|BC|\,|AD|$ if and only if one of the following holds:
+\begin{enumerate}
+ 
+\end{enumerate}
+\end{theorem}
+   No dimension hypothesis is
+needed: in a space of dimension $>2$, ``cospherical'' for four non-collinear points with crossing
+diagonals means that they lie on a circle in their common plane. The distinctness hypotheses are
+needed: for $A=B$ and $C,D$ not collinear with $A$ the equality holds trivially but neither (a) nor (b)
+ 
+
+\paragraph{Proof.  For (b) the points are transported to the real
+line along the line $AC$, where the statement becomes a statement about four distinct reals,
+$|a-c||b-d|=|a-b||c-d|+|b-c||a-d|$, decided by a case split on the $2^6$ order patterns
+([NAME], [NAME]). For the converse,
+put $b=B-A$, $c=C-A$, $d=D-A$ and invert about $A$: $x\mapsto x'=x/|x|^2$. Since
+$|x'-y'|=|x-y|/(|x||y|)$, the equality becomes $|b'-c'|+|c'-d'|=|b'-d'|$, so $c'=(1-\mu)b'+\mu d'$
+with $0\le\mu\le1$ ([NAME]). If $b'$ and $d'$ are parallel, all four points are
+collinear and the real-line case applies. Otherwise there is a vector $m$ with
+$\langle m,b'\rangle=\langle m,d'\rangle=\tfrac12$, hence $\langle m,c'\rangle=\tfrac12$; the sphere
+with centre $A+m$ through $A$ then contains $B$, $C$ and $D$ (because $\langle m,x'\rangle=\tfrac12$
+is equivalent to $|x-m|=|m|$). Finally, with $\kappa=(1-\mu)|b'|^2+\mu|d'|^2$, the point
+$X=A+c'/\kappa$ lies on $AC$ with parameter $(|c|^2\kappa)^{-1}\in(0,1)$ and on $BD$ with parameter
+$\mu/(\kappa|d|^2)\in(0,1)$, which gives the crossing diagonals. The inversion is done by hand on vectors.
+\section{The Erdős--Mordell inequality, its equality case, and Barrow's inequality}\label{sec:mordell}
+The theorems of this section are in [NAME]. Recall (Section~\ref{sec:setting}) that
+``$X$ in the closed triangle'' is the hypothesis $\exists w,\ (\forall i,\ w_i\ge0)\wedge\sum_iw_i=1
+\wedge X=w_0A+w_1B+w_2C$, and that $d_A(X)$, $d_B(X)$, $d_C(X)$ are the distances from $X$ to its
+orthogonal projections onto the lines $BC$, $CA$, $AB$.
+
+\begin{theorem}[Key lemma; reproof, extended]\label{thm:key}
+For every triangle and every $X$ in the closed triangle,
+\[
+b\,d_C(X)+c\,d_B(X)\le a\,|XA|,\qquad c\,d_A(X)+a\,d_C(X)\le b\,|XB|,\qquad
+a\,d_B(X)+b\,d_A(X)\le c\,|XC|.
+\]
+\end{theorem}
+\begin{theorem}[Erdős--Mordell and its equality case]\label{thm:em}
+For every triangle and every $X$ in the closed triangle,
+\[
+2\bigl(d_A(X)+d_B(X)+d_C(X)\bigr)\le|XA|+|XB|+|XC|,
+\]
+ centroid \(\mathbb{R}\) t.points}).
+\end{theorem}
+\begin{theorem}[Barrow's inequality]\label{thm:barrow}
+Let $X$ be strictly inside the triangle (all three weights positive), and let $U$, $V'$, $W$ be points
+with $U$ weakly between $B$ and $C$, $V'$ weakly between $C$ and $A$, $W$ weakly between $A$ and $B$
+  Then
+\[
+2\bigl(|XU|+|XV'|+|XW|\bigr)\le|XA|+|XB|+|XC|.
+\]
+\end{theorem}
+The pairing in the key lemma matters for the proof: the unpaired form $b\,d_B+c\,d_C\le a|XA|$
+is also true (it is $|XA|+d_A\ge h_a$), but summing it does not give the Erdős--Mordell inequality;
+the reflected pairing $b\,d_C+c\,d_B\le a|XA|$ is the one needed.
+  In Barrow's inequality, $U$ is the foot on $BC$ of the internal
+bisector of $\angle BXC$; we require $X$ strictly inside because on the boundary $X$ can coincide
+with a vertex and the bisector hypotheses degenerate. Barrow's inequality strengthens Erdős--Mordell,
+ 
+
+\paragraph{Key lemma.} At vertex $A$ write $X-A=w_1(B-A)+w_2(C-A)$ with $w_1,w_2\ge0$, let
+$k=\langle B-A,C-A\rangle$ and $\Gamma=b^2c^2-k^2>0$ (the Gram determinant). Then
+  After
+multiplying by $bc$ and squaring, the key lemma is the identity ([NAME])
+\[
+\bigl(bc\cdot a|XA|\bigr)^2-\bigl(bc(b\,d_C+c\,d_B)\bigr)^2
+=\bigl(b^2c^2w_1+b^2kw_2-c^2kw_1-b^2c^2w_2\bigr)^2,
+\]
+which uses $a^2=b^2+c^2-2k$. The key lemma itself is classical (see Kazarinoff
+\cite{kazarinoff1957}); our proof of it is this coordinate identity. The other two vertices are relabellings.
+
+\paragraph{Erdős--Mordell.} Multiply the three key-lemma inequalities by $bc$, $ca$, $ab$, add, and
+divide by $abc$; what remains is
+$\sum_{\mathrm{cyc}}d_A(X)\bigl(\tfrac bc+\tfrac cb\bigr)\ge 2\sum d_A(X)$, which is
+$\sum d_A(X)\,(b-c)^2/(bc)\ge0$. 
+
+\paragraph{Equality.} Equality in the sum forces equality in each key lemma and
+$d_A(X)(b-c)^2=d_B(X)(c-a)^2=d_C(X)(a-b)^2=0$. The equality case of the key lemma is the vanishing
+of the square above ([NAME]), a linear relation between the weights for each
+vertex. A combinatorial lemma ([NAME]) shows that these relations, together with the side
+conditions (``if $w_1>0$ then \dots''), force the weights to be positive ([NAME] gives $w_0>0$; the
+other two weights by the cyclic relabelling), hence every $d_i(X)>0$ and so $a=b=c$; then the linear relations give $w_0=w_1=w_2=\tfrac13$. The converse is a direct
+computation for the equilateral triangle and its centroid. The scalar statement is
+ 
+
+\paragraph{Barrow.} The proof avoids angles beyond the hypotheses. With
+$x=|XA|$, $y=|XB|$, $z=|XC|$, $p=\langle XB,XC\rangle$, $q=\langle XC,XA\rangle$,
+$\rho=\langle XA,XB\rangle$ (vectors from $X$):
+(i) the angle-bisector theorem in squared form gives $|XU|^2(y+z)^2=2yz(yz+p)$
+([NAME]), hence $|XU|\le\sqrt y\sqrt z\,\alpha$ with $\alpha^2=(yz+p)/(2yz)$, the
+squared cosine of half of $\angle BXC$; (ii) since $X$ is strictly inside,
+$w_0(A-X)+w_1(B-X)+w_2(C-X)=0$ with positive weights, which gives $xyz+xp+yq+z\rho\le0$ and the
+vanishing of the $3\times3$ Gram determinant of the three vectors, and together these give
+$\alpha^2+\beta^2+\gamma^2+2\alpha\beta\gamma=1$ for the three half-angle cosines; (iii) for
+nonnegative $\alpha,\beta,\gamma$ with this relation, Wolstenholme's inequality
+$\xi^2+\eta^2+\zeta^2\ge2(\alpha\eta\zeta+\beta\zeta\xi+\gamma\xi\eta)$ holds (a sum of squares), and with $\xi=\sqrt x$,
+$\eta=\sqrt y$, $\zeta=\sqrt z$ it gives the result. The positivity of the two-dimensional Gram determinants
+$\|B-X\|^2\|C-X\|^2-\langle B-X,C-X\rangle^2$ (needed for the bisector step) comes from the weight of
+$A$ being nonzero ([NAME]).
+\section{The Fermat--Torricelli point and the Napoleon configuration}\label{sec:fermat}
+\subsection{Fermat--Torricelli (any dimension)}
+These two theorems are in [NAME] and have no dimension hypothesis.
+\begin{theorem}[Minimality]\label{thm:fermatmin}
+Let $A,B,C,F$ be points of $P$ with $\angle AFB=\angle BFC=\angle CFA=2\pi/3$. Then for every
+$X\in P$, $|FA|+|FB|+|FC|\le|XA|+|XB|+|XC|$.
+\end{theorem}
+\begin{theorem}[Existence and minimality]\label{thm:fermat}
+Let $t$ be a triangle whose three angles $\angle BAC$, $\angle CBA$, $\angle ACB$ are all less than
+$2\pi/3$. Then there is a point $F\in P$ with $\angle AFB=\angle BFC=\angle CFA=2\pi/3$, and for every
+$X\in P$, $|FA|+|FB|+|FC|\le|XA|+|XB|+|XC|$.
+\end{theorem}
+In Theorem~\ref{thm:fermatmin} the points need not form a triangle: the angle hypotheses already
+  The angle
+ 
+
+\paragraph{Proofs.} For minimality let $u_A,u_B,u_C$ be the unit vectors from $F$ to $A,B,C$. The
+angle hypotheses give $\langle u_i,u_j\rangle=-\tfrac12$ for $i\ne j$, so $|u_A+u_B+u_C|^2=0$. By
+Cauchy--Schwarz, $|XA|\ge\langle u_A,A-X\rangle=|FA|+\langle u_A,F-X\rangle$; summing the three
+inequalities, the last terms cancel. For existence, the point is explicit
+([NAME]): with $g$ twice the area, $x_A=g+\sqrt3\langle B-A,C-A\rangle$
+and cyclically, and $T=x_Bx_C+x_Ax_C+x_Ax_B$,
+\[
+F=A+\frac{x_Ax_C}{T}(B-A)+\frac{x_Ax_B}{T}(C-A),
+\]
+i.e.\ barycentric weights proportional to $1/x_A:1/x_B:1/x_C$. The angle condition $\angle A<2\pi/3$
+is exactly $x_A>0$ ([NAME], using [NAME]: $\angle(u,v)<2\pi/3$ implies
+ 
+
+\subsection{The Fermat--Napoleon lines and Napoleon's theorem (oriented plane)}
+The remaining theorems are in [NAME], under the hypotheses
+  Let $\sigma\in\{1,-1\}$ be the orientation sign of
+$t$ ([NAME]: $\sigma=1$ iff $\omega(B-A,C-A)>0$ for the area form $\omega$
+of $o$). For points $X,Y$ the \emph{outer apex} on $XY$ is the image of $Y$ under the rotation about
+  Let $A'$,
+$B'$, $C'$ be the outer apexes on $BC$, $CA$, $AB$ ([NAME]) and $N_A$,
+$N_B$, $N_C$ the centroids of the triangles $BCA'$, $CAB'$, $ABC'$
+([NAME]). The definitions use the orientation only to choose the
+rotation direction; Theorem~\ref{thm:fn}(o) checks that the result does not depend on it in the
+sense that matters.
+
+\begin{theorem}[Fermat--Napoleon lines]\label{thm:fn}
+In the setting above, for every triangle $t$:
+\begin{enumerate}
+\item[(o)] for each vertex $i$, the vertex $t_i$ and the apex on the opposite side lie strictly on
+ 
+\end{enumerate}
+\end{theorem}
+\begin{theorem}[Napoleon; reproof]\label{thm:napoleon}
+In the setting above, $|N_AN_B|=|N_BN_C|=|N_CN_A|$, and the centroid of $N_A,N_B,N_C$ is the
+centroid $G$ of $t$.
+\end{theorem}
+Under the angle hypotheses of (iii), by (iii) and Theorem~\ref{thm:fermatmin} the common point of the lines is the Fermat point and
+$|AA'|$ is the minimal value of $|XA|+|XB|+|XC|$; we do not state this combination as a separate
+  Statement (iii) holds for any $F$ on the lines $AA'$ and $BB'$ (by symmetry for any two of the lines;
+  In (iv), since lines
+are unoriented, the angle between the lines $AA'$ and $BB'$ is $\pi/3$.
+
+\paragraph{Proofs.  The rotation by $-\sigma\pi/3$
+is $v\mapsto\tfrac12v-\sigma\tfrac{\sqrt3}2Jv$ ([NAME]). Every point
+is written in the frame $p=B-A$, $q=C-A$ ([NAME], using $\dim V=2$ and
+$\omega(p,q)\neq0$), and $Jp$, $Jq$ are expressed in this frame through a scalar $\alpha>0$ with
+$4\alpha^2(|p|^2|q|^2-\langle p,q\rangle^2)=3$ ([NAME]); this removes
+$\sigma$ and $\omega$ from all later computations. With these coordinates, (o) is a sign computation
+of $\omega$ ([NAME]); (i) and (iv) follow from the Gram matrix of
+$u_A=A'-A$, $u_B=B'-B$, $u_C=C'-C$, which has equal diagonal entries $M$ and off-diagonal entries
+$-M/2$ ([NAME]). For (ii), with
+$y_A=1+2\alpha\langle p,q\rangle$, $y_B=1+2\alpha(|p|^2-\langle p,q\rangle)$,
+$y_C=1+2\alpha(|q|^2-\langle p,q\rangle)$ and $S=y_A+y_B+y_C>0$, the point $F$ with
+$F-A=(y_A/S)\,u_A$ also satisfies $F-B=(y_B/S)\,u_B$ and $F-C=(y_C/S)\,u_C$
+([NAME]; here $y_i=x_i/g$ in the notation of Section~\ref{sec:fermat}.1, and $u_A=A'-A$ already incorporates the factor $x_Bx_C$). For (iii), the angle conditions make
+$y_A,y_B,y_C>0$ ([NAME]); if $F=A+r\,u_A=B+r'u_B$, taking inner products with $u_A$ and $u_B$
+and using the Gram matrix gives $r=y_A/S$, so any $F$ on both lines is this point, and since $F-A$, $F-B$, $F-C$ are positive multiples of
+$u_A,u_B,u_C$ the angles are those of (iv), i.e.\ $2\pi/3$; finally
+$|FA|+|FB|+|FC|=\frac{y_A+y_B+y_C}{S}\,|u_A|=|AA'|$ because $|u_A|=|u_B|=|u_C|$. For Napoleon's theorem,
+$N_B-N_A=\tfrac13(u_B-u_A)$ and cyclically ([NAME],
+[NAME]), and the Gram matrix of the $u_i$ makes the three differences equal
+in length; the centroid statement is $u_A+u_B+u_C=0$.
+
+The argument for (ii)--(iii) is the classical one in coordinates; for the classical sources see
+\cite{coxetergreitzer}. 
+ \section{Related work and prior art}\label{sec:related}
+\paragraph{Euler's relation and inequality.  
+  We found no
+  Our proofs were written without using these developments; they share the
+  If
+\#44230 is merged, Theorems~\ref{thm:euler}, \ref{thm:eulerex} and the inequality of
+ 
+
+\paragraph{Ptolemy.} Ptolemy's inequality in any real inner product space,
+  [NAME] has another proof (24 June 2026) \cite{lgptolemy}. The
+  e.\ of the characterisation in Theorem~\ref{thm:ptolemyeq}.
+
+\paragraph{Erdős--Mordell.  The equality case appears in [NAME] as an [NAME]
+([NAME], January 2026), in a file that also contains [NAME]
+\cite{lg898}; we found no proof of it. A variant with constant $3/2$ in arbitrary normed planes is in
+the Principia [NAME] collection (26 October 2026) \cite{principia}; it is a different
+statement. 
+
+\paragraph{Weitzenb\"ock, Hadwiger--Finsler, isoperimetric, Leibniz.} Weitzenb\"ock's inequality
+with its equality case (IMO 1961 Problem 2) is proved in Compfiles ([NAME], December 2025)
+\cite{compfiles} and in [NAME] (June 2026) \cite{lgweitz}, and Hadwiger--Finsler with
+its equality case in [NAME] (June 2026) \cite{lghf}. All three are algebraic: the
+``area'' is a real number $T$ assumed to satisfy Heron's relation $16T^2=(a+b+c)(-a+b+c)\cdots$
+(with the triangle inequalities as further hypotheses for Hadwiger--Finsler). Our
+Theorems~\ref{thm:weitz} and~\ref{thm:hf} are about the area of an actual [NAME],
+which requires the Heron bridge; the algebraic core is the same, so the novelty here is limited to
+the geometric statement. (The ``Finsler--Hadwiger theorem'' in [NAME] is a different
+result about squares erected on two sides.) For the triangle isoperimetric inequality and the
+Leibniz minimum we found only the general isoperimetric theorem (HOL~Light) and unrelated
+ 
+
+\paragraph{Gerretsen, Kooi, $OG$, $OH$, $IG$, Neuberg--Pedoe, Fermat--Torricelli.} We found no formal
+proof of any of these.   Our earlier Blundon development \cite{paperD} proves Blundon's
+inequalities, from which the fundamental quartic is taken.
+
+\paragraph{Napoleon.  Our Theorem~\ref{thm:napoleon} is a
+  Guilhot's Coq development of oriented angles includes a file on
+Napoleon's theorem \cite{guilhot}.  This claim rests on a narrower search than the rest of this section: only the
+AFP entry page, the [NAME] file and a GitHub code search were checked for it, and the
+GeoCoq, HOL~Light and AFP theory sources were not searched for the concurrence.
+
+\paragraph{Automated reasoning.} Many of these inequalities have been proved by automated methods
+outside interactive provers, for instance by quantifier elimination and with dynamic-geometry tools
+(see \cite{kovacs2017} for Euler's inequality in GeoGebra). 
+
+\paragraph{How the search was done, and its gaps.} The sweep (28 October 2026) used the GitHub API
+  Every file classified as prior art was downloaded and read; none was compiled, so
+  The
+Napoleon prior art comes from the search for our Paper~A \cite{paperA}, re-checked on 28 October 2026
+by fetching the AFP entry page and the [NAME] file. Gaps: general web search was not
+  Our statements of novelty are
+subject to these gaps.
+
+\paragraph{Classical sources.} For the inequalities we follow Bottema et al.\ \cite{bottema}; the
+original sources are Weitzenb\"ock \cite{weitzenboeck}, Finsler and Hadwiger \cite{finslerhadwiger},
+Pedoe \cite{pedoe1941,pedoe1942}, Blundon \cite{blundon1965}, Erdős's problem \cite{erdos1935} with
+the solution by Mordell and Barrow \cite{mordellbarrow1937}, and Kazarinoff's proof of the key lemma
+\cite{kazarinoff1957}. Gerretsen's and Kooi's inequalities are cited, as is usual, through
+\cite{bottema}; we did not obtain the original papers. For the Fermat point and Napoleon's theorem
+see Coxeter and Greitzer \cite{coxetergreitzer}.
+
+\section{Limitations}\label{sec:limits}
+\begin{enumerate}
+\item \textbf{Reproofs.} Theorems~\ref{thm:euler}, \ref{thm:eulerex}, the inequality of
+\ref{thm:eulerineq}, \ref{thm:ptolemy}, \ref{thm:key}, the inequality of \ref{thm:em} and
+ 
+ } Kooi's and Gerretsen's inequalities, Barrow's
+inequality and the Fermat--Torricelli minimality are stated without equality cases; uniqueness of the
+ 
+\item \textbf{Dimension and orientation.} Theorems~\ref{thm:fn} and~\ref{thm:napoleon} assume
+$\dim V=2$ and an orientation; all other theorems hold in any dimension.
+\item \textbf{One labelling, one statement form.} Where a statement has three cyclic forms (key lemma,
+excircles) all are stated; otherwise no relabelling lemmas are proved. Barrow's bisector feet are
+given by hypotheses (betweenness and equal angles), not constructed.
+\item \textbf{Our own definitions.} The area, the semiperimeter, the orientation sign, the outer apexes
+  Gerretsen and Kooi are stated with our $s$.
+\item \textbf{Verification still to be done.} The Layer-13--15 checks, fresh-clone receipts, final
+batteries, hand check and external review are placeholders in this draft (Section~\ref{sec:verify}).
+\item \textbf{All-AI checking.} The proofs, numerical checks, battery and prior-art search were done by
+ 
+\item \textbf{Prior art.} The search had the gaps listed in Section~\ref{sec:related}.
+\end{enumerate}
+\section{Data availability}\label{sec:avail}
+ 33.  Line counts are of the library [NAME] files,
+including the root import file, in the current working trees.
+\begin{center}\small
+ [omitted] 
+\end{center}
+The repositories will be [NAME],
+[NAME] and [NAME]
+   Every name in [NAME] font (qualified by its library namespace in Table~\ref{tab:thms}) is in the
+ 
+
+ 

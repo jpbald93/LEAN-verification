@@ -26,8 +26,9 @@ Notes a reader of the paper needs:
   degenerate case is false — `PaperKn.brief_E_false` proves a counterexample at `n = 2` — and the
   completion map of the source's Theorem 3.4 does **not** fix `P_X` (refuted numerically, `numerics/`).
   Anything written about this paper must keep both.
-- **The at-infinity / improper (concentric) classification is Carver's** (*Amer. Math. Monthly*, 1920), not
-  ours; the paper credits it and claims formalisation only.
+- **The at-infinity case is outside the paper's claim.** Paper K does not formalise the at-infinity /
+  improper classification and does not discuss it: §`sec:not` records the hyperplane encoding only as the
+  missing ingredient of Theorem 3.6. (Carver's 1920 classification is cited in Paper I, not here.)
 - **Source status**: Proposition 3.1's collinearity step is formalised (with its spanning hypothesis made
   explicit, the source's derivation of it not formalised); Theorem 3.4, Theorem 3.6 and the Morita corollary
   are **not** formalised in any dimension, and §`sec:not` says exactly what would be needed.

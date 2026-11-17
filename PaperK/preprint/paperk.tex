@@ -18,8 +18,8 @@
 \theoremstyle{remark}
 \newtheorem{remark}[theorem]{Remark}
 
-% A declaration of our own development. Every \decl{...} is checked against the repository by the
-% name gate (Layer 11) before deposit.
+% A declaration of our own development. Every \decl{...} is checked by base name against the
+% repository by the name gate (Layer 11) before deposit; the gate does not check namespaces.
 \DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
 \newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
 % File:line anchor into the Paper K repository, public at the pinned commit (see \S\ref{sec:availability});
@@ -54,9 +54,11 @@ Apollonius cycles; the source's derivation of that hypothesis from the existence
 distinct Apollonius cycles is \emph{not} formalised. Second, two statements the source does not
 contain: an explicit determinant formula for the point and radius of equal Laguerre power at $n=2$,
 which a hand argument --- not packaged as a theorem of the pinned library, though certified in the supplementary layer-13 implication --- identifies with the concurrency point $P_X$, and the
-equal-power property of $P_X$: every cycle orthogonal to it has the same Laguerre power. Third, degenerate configurations where the source's centre-line is
+equal-power property of $P_X$: every finite cycle ($v\neq0$) orthogonal to it has the same Laguerre
+power. Third, degenerate configurations where the source's centre-line is
 undefined: concentric Apollonius pairs (the square), equilateral circle triples, the regular
-tetrahedron in $\RR^3$, and regular simplices at general $n$ (under an equal-norm hypothesis that cannot be dropped: a Lean
+tetrahedron in $\RR^3$, and simplices at general $n$ whose centres are equidistant from the origin
+(under an equal-norm hypothesis that cannot be dropped: a Lean
 counterexample at $n=2$ shows the unqualified statement is false). Two negative results are kept visible: the general-$n$ "centroid" reading of the
 degenerate case is false, with a Lean counterexample, and our conjecture that the completion map of the
 source's Theorem~3.4 fixes $P_X$, refuted numerically. Theorem~3.4, Theorem~3.6 and the Morita corollary
@@ -140,7 +142,8 @@ and the bilinear form of the model is
 \end{equation}
 A projective point $[X]$ is a cycle iff $(X\mid X)=0$ (Lemma~2.4), and two cycles are tangent iff
 $(X\mid Y)=0$ (Lemma~2.5). The form has signature $(n+1,2)$ --- $n+1$ positive directions and two negative, the $r$ slot and the
-hyperbolic $(v,w)$ pair; the quadric is Lie's.
+one direction of the hyperbolic $(v,w)$ plane, whose other direction supplies the $(n+1)$-st positive
+one; the quadric is Lie's.
 
 The results we are concerned with are:
 
@@ -292,8 +295,9 @@ orthogonal complement, and $[A_1],[A_1']$ are two distinct points of $Y_1$. We d
 derivation in Lean. It requires (i) formalising the cycle condition on $A,A'$, (ii) formalising
 ``exactly two distinct Apollonius cycles tangent to $n+1$ given cycles'', and (iii) proving that the
 orthogonal complement of the $n+1$ cycles is a projective line which meets the quadric in exactly
-$A,A'$. Each
-is a separate development; the first is present in our files, the other two are not. So
+$A,A'$. Each is a separate development; the vocabulary for the first is present
+(\decl{PaperK.B_self_eq_zero_iff} and the affine chart), but no theorem of ours uses it on $A,A'$,
+and the other two are not there. So
 Theorem~\ref{thm:prop31} is the linear-algebra core of Proposition~3.1 and not the proposition.
 
 \paragraph{The source's own definition of $P_X$.} One point of the source is easy to miss and is
@@ -339,8 +343,9 @@ First, the theorem proves the equal-power property of the displayed point; it do
 that this point equals $p(P)$ for a cofactor vector. The link is a hand derivation, and the obvious
 version of it is \emph{wrong}: the rows $(r,a,b,s,1)$ are not cycles in the $(r,a,b,v,w)$ encoding,
 so $G\cdot\texttt{cofactor}$ of that matrix is $B$-orthogonal to the rows and not to the circles,
-and its $\texttt{pt}$ is not $p$ (a random instance gives $(1.266,-4.738)$ against
-$p=(1.821,-6.819)$). The correct vector, recorded in the Layer-15 comparison, is
+and its $\texttt{pt}$ is not $p$ (an unseeded random instance gives $(1.266,-4.738)$ against
+$p=(1.821,-6.819)$; the instance is not reproducible from the file set, but the discrepancy is
+structural and the Layer-13 comparison records the naive variant as refuted). The correct vector, recorded in the Layer-15 comparison, is
 $P=(q_0,-q_1,-q_2,2q_3,-q_4)$ with $q=\texttt{cofactor}(M)$: it satisfies
 $B(P,\texttt{circ}_i)=0$ by \decl{PaperK.row_relation}, its centre is $p$, and its $v$-slot is
 $-2D$. The change of basis and the final identity are not a theorem of the pinned library: they were
@@ -354,11 +359,11 @@ sphere radius of the source's Theorem~3.6, which is a different statement involv
 hyperplanes. The number is the natural candidate --- it is the cofactor vector's $r$-slot divided by its
 $v$-slot --- but the identification with an inscribed sphere is not formalised.
 
-The determinant formula was checked numerically before it was proved: on random four-circle data the
-four powers agree to $10^{-15}$ with this formula, while the version with the $a$ and $b$ columns
-interchanged (which our own brief had contained) gives four different values. That check is why the
-formula in the theorem is the one it is; the closed-form-versus-cofactor residuals are recorded in
-\texttt{k0/FORMULA.md} (the K1 report quotes the common value without a tolerance).
+The determinant formula was checked numerically before it was proved: on the K1 report's four-circle
+instance the four powers agree on the common value $-3.2906$, while the version with the $a$ and $b$
+columns interchanged (which our own brief had contained) gives four different values; the closed form
+agrees with the cofactor vector to $1.3\times10^{-15}$ on 2000 random configurations
+(\texttt{numerics/FORMULA.md}). That check is why the formula in the theorem is the one it is.
 
 \section{Equal power and the metric meaning of \texorpdfstring{$P_X$}{P\_X}}\label{sec:equalpower}
 
@@ -366,7 +371,7 @@ The second ingredient of the extension is that the concurrency point is a point 
 
 \begin{theorem}[Equal power]\label{thm:equalpower}
 Let $P\in\RR^5$ be any vector with $P_3\neq0$ and let $Y$ be a normalised cycle --- a null vector
-with $Y_3=1$, in the sense of \S\ref{sec:source} --- orthogonal to $P$.
+with $Y_3=1$, in the sense of the affine chart of \S\ref{sec:encoding} --- orthogonal to $P$.
 Then the Laguerre power of the point/radius pair $(p(P),P_0/P_3)$ with respect to $Y$ equals
 \[
 -\frac{B(P,P)}{P_3^{\,2}} .
@@ -387,7 +392,7 @@ $+(P\mid P)/p_v^2$, which is the sign remark of \S\ref{sec:encoding} in action.
 The metric reading is immediate: $\lVert p-c\rVert^2-(\rho-r)^2$ is, up to the sign convention, the
 power of $p$ with respect to the circle of centre $c$ and radius $\rho-r$ --- Mathlib's
 \texttt{Sphere.power} of that sphere, which is the Laguerre power of the two cycles. So the theorem says: \emph{$P_X$ is the centre of a sphere whose power with
-respect to every cycle orthogonal to $P_X$ is the same number.} In the degenerate cases of
+respect to every finite cycle ($v\neq0$) orthogonal to $P_X$ is the same number.} In the degenerate cases of
 \S\ref{sec:degenerate} this is the statement that survives when the source's centre-line does not
 exist, and it is what the proofs there use.
 
@@ -423,21 +428,23 @@ circle's orthogonality hypothesis at all, and the three-circle statement follows
 first circle. What the theorem does not assert is existence: if every vector orthogonal to the four has
 $v$-slot $0$, there is no finite $P$ to speak of, and a fourth unit circle at $(0,1)$ is an example.
 Continuity under a perturbation of one input circle is a numerical observation
-(\texttt{EXTENSION.md} \S2), not a theorem.
+(\texttt{numerics/EXTENSION.md} \S2), not a theorem.
 
 \begin{theorem}[Square: concentric Apollonius pairs]\label{thm:square}
 Let the four cycles be the unit circles centred at $(\pm1,\pm1)$. For each $3$-subset, the affine
 cycles tangent to the three are exactly those centred at the origin with radius $1+\sqrt2$ or
 $1-\sqrt2$; the two are distinct and concentric, so no centre-line exists. Nevertheless the space of
 \emph{vectors} orthogonal to all four is two-dimensional --- exactly
-$\operatorname{span}\{(1,0,0,0,1),(0,0,0,1,1/2)\}$, and neither spanning vector is null --- and
-every such vector with $P_3\neq0$ has $p(P)=(0,0)$.
+$\operatorname{span}\{(1,0,0,0,1),(0,0,0,1,1/2)\}$ --- and every such vector with $P_3\neq0$ has
+$p(P)=(0,0)$.
 \end{theorem}
 
 This is the group \decl{PaperK2.square_apollonius}, \decl{PaperK2.square_apollonius_radii_ne},
 \decl{PaperK2.square_null_space}, \decl{PaperK2.square_null_span},
 \decl{PaperK2.square_null_indep} and \decl{PaperK2.square_PX} in
-\src{PaperK}{TwoD.lean}{217}--\src{PaperK}{TwoD.lean}{286}. Two things are worth separating. The
+\src{PaperK}{TwoD.lean}{217}--\src{PaperK}{TwoD.lean}{286}. Neither spanning vector is null --- their
+$B$-values are $1$ and $-1$, a direct computation, not a separate declaration. Two things are worth
+separating. The
 geometric fact is that the Apollonius pair degenerates to two concentric circles: the source's
 Proposition~3.1 hypothesis ``exactly two distinct Apollonius cycles'' \emph{holds} among affine
 cycles, so the proposition's conclusion is not merely hard to state, it is undefined at this
@@ -474,14 +481,16 @@ than tidied: the theorem's own docstring still reads ``Thm 3.6 conclusion in the
 case'' and is queued for the next commit, and the Layer-15 comparison was run on the pre-rename file,
 whose only difference is the name.
 
-\paragraph{The regular simplex at general $n$.} The pattern is not special to dimension three. Let
+\paragraph{The simplex at general $n$.} The pattern is not special to dimension three. Let
 $n+1$ unit spheres have affinely independent centres with centroid $0$. If in addition the centres
 have equal norms, then every vector $P$ orthogonal to them with $P_v\neq0$ has $p(P)=0$
 (\decl{PaperKn.simplex_E1}; the statement carries an extra cycle hypothesis, unused in the proof), and
 the common squared distance from $p(P)$ to the centres equals the common squared vertex norm
 $\sum_k (c_{i,k})^2$ (\decl{PaperKn.simplex_circumradius}), which is the coordinate form of the
 squared circumradius; the identification with Mathlib's \texttt{Affine.Simplex.circumradius} is made
-by hand, not in the pinned library. The equal-norm hypothesis is not
+by hand, not in the pinned library. Given equal norms, the centroid hypothesis is redundant --- the
+origin is then the circumcentre --- but the Lean statement keeps it, and with $n+1$ centres in
+$\RR^n$ equidistant from the origin the simplex need not be regular for $n\ge3$. The equal-norm hypothesis is not
 cosmetic: without it the statement is false, and a counterexample is a theorem
 (\S\ref{sec:negative}). This is also the right general statement of the pattern, in the light of the
 equal-circles theorem above: $P_X$ is equidistant from the centres at general $n$
@@ -515,7 +524,7 @@ whether the construction is invariant, i.e.\ whether the concurrency point of th
 configuration is again $P_X$. It is not. In six generic planar configurations where every step is
 well defined, the distance between the two points is $5.7\times10^{-2}$ to $3.1\times10^{-1}$, while
 in the same runs the residual of Theorem~3.4's own conclusion is at most $8.7\times10^{-14}$
-(\texttt{AFM/PaperK/num/iterate.py}; \texttt{AFM/PaperK/EXTENSION.md} \S1). This is a numerical
+(\texttt{numerics/iterate.py}; \texttt{numerics/EXTENSION.md} \S1). This is a numerical
 refutation, not a Lean theorem, and it is labelled as such: it kills a plausible claim before a
 machine spent budget on it.
 
@@ -526,7 +535,8 @@ buried in a proof.
 
 \section{Verification}\label{sec:verification}
 
-The development is a single Lean~4 project on Mathlib, pinned at Lean \texttt{v4.33.1}. Every figure below is
+The development is a single Lean~4 project on Mathlib, pinned at Lean \texttt{v4.33.1} and Mathlib
+\texttt{0df444a3...} (\texttt{lake-manifest.json}). Every figure below is
 read from one commit, \texttt{\pkcommit}: the gate and tampering lines were produced there, the
 battery was run there, and the second-machine rebuild was made from a \texttt{git archive} of it.
 Where a number comes from an earlier run, the sentence that quotes it says so.
@@ -549,28 +559,35 @@ the non-collinearity hypothesis $D_3\neq0$ from the planar equal-power uniquenes
 (\texttt{falsehyp2}), and changing the tetrahedral radius $\sqrt3+1$ to the false $\sqrt3+2$
 (\texttt{falsestmt2}). All nine are rejected, and the suite prints
 \texttt{ALL TAMPERING TESTS REJECTED}. The four semantic tests are the ones worth having: each is a
-statement a reader might plausibly have written, and each fails at the build stage. That rejection
-is of the modified statement/proof pair, not a falsity certificate: independently checked
-counterexamples, not the build alone, are what establish that the four intended mutations are false.
-The suite's own comments record one explicit
-counterexample and the reason for a second (for instance $X=(1,0,0,1,\tfrac12)$,
-$Y=(1,0,0,1,0)$ for the tangency identity), so a rejection is not merely a compile failure.
+statement a reader might plausibly have written, and each fails at the build stage. That rejection is
+of the modified statement/proof pair, not a falsity certificate: two of the tests delete a hypothesis
+that the retained proof still uses, so the build fails for a syntactic reason as well. The suite's own
+comments give one explicit counterexample and explain a second (for instance
+$X=(1,0,0,1,\tfrac12)$, $Y=(1,0,0,1,0)$ for the tangency identity); the other two mutations were
+checked by direct computation during review, not by Lean.
 
 \paragraph{The battery.} A nine-layer battery (baseline build, gate, tamper, mutations,
 contradiction probe, ablation, linter, satisfiability, bridge inventory) is run at \texttt{\pkcommit}
-over the five files, a superset of the 73 the gate pins. Its numbers: the baseline build compiles 5
+over the five library files, a superset of the 73 the gate pins. Its numbers: the baseline build compiles 5
 of 5 files; 444 of 460 mutants are killed, 16 survive; the contradiction probe finds 0 contradictory
 statements in 75 probes; satisfiability is certified for 73 of 127 declarations, with 54 unresolved
 and none invalid; ablation needs 238 hypotheses and reports 4 unused, one of them
 \decl{PaperKn.simplex_E1}'s extra cycle hypothesis (\texttt{\_hP0}, underscore-marked in the source
-because the extra cycle plays no part in the proof); the battery's linter layer reports 0 warnings,
-while Lean's own style linter reports one \texttt{unnecessarySeqFocus} warning at
-\texttt{TwoD.lean:272}. Eleven of the 16 survivors are mutants of
+because the extra cycle plays no part in the proof); the battery's linter layer reports 0 warnings in
+the library, while Lean's own style linter reports one \texttt{unnecessarySeqFocus} warning at
+\texttt{TwoD.lean:272}, from the Layer-15 recompile of the same file (byte-identical at
+\texttt{a77e2e53...}). Eleven of the 16 survivors are mutants of
 \decl{PaperK3.tetra_centre_norm} (three) and \decl{PaperK3.tetra_affineIndependent} (eight),
 which is a fair description of where our statement-level redundancy is; one is a helper of the
 counterexample of \S\ref{sec:negative} whose mutation keeps the helper true while breaking the
 theorem that uses it. They are published by name in the battery report rather than rounded into a
-percentage. Two results belong beside the numbers rather than hidden: the bridge inventory
+percentage. One scope note belongs with the totals: the battery reports 148 theorem declarations and
+scores 127 of them for satisfiability, while the five files contain 121 \texttt{theorem} and
+\texttt{lemma} declarations on a direct count, and its linter layer also scanned one scratch file
+(\texttt{scratch/paperK\_l14b.lean}, nonzero exit). The report does not itemise the extra
+declarations, so the mutation, satisfiability and ablation figures are quoted as that tool's counts
+over its scan set, not as a per-declaration audit of the gate's 73. Two further results belong beside
+the numbers rather than hidden: the bridge inventory
 (Layer~9) reports 24 notions, 3 bridged and 21 without a bridge, and its name-pattern matcher does
 not credit the \texttt{bridge\_*} lemmas, so that layer is uninformative rather than negative; and no
 mutants were generated for three theorems this paper headlines
@@ -602,7 +619,7 @@ hypothesis was caught by the general-$n$ run and the determinant sign by the num
 
 \paragraph{Layer 15: comparison with the source.} A row-by-row comparison against the verbatim
 arXiv source (17 rows, 44 identifiers, 16 quoted statements) is in
-\texttt{AFM/PaperK/layer15/L15\_COMPARE.md}. Its conclusion is the reason this paper's abstract is
+\texttt{layer15/L15\_COMPARE.md}. Its conclusion is the reason this paper's abstract is
 as narrow as it is: \emph{not one row is equivalent}. The formalised statements are either weaker
 than the source's (the spanning hypothesis instead of its derivation), restricted to the affine chart
 ($v=1$), or about different objects (the $B$-value instead of the projective form). The comparison
@@ -610,10 +627,12 @@ also lists, explicitly, the source items with \emph{no} counterpart at all: the 
 the reflection $R_P$ and its interchange lemma, Theorem~3.4, Theorem~3.6, and the Morita corollary.
 
 \paragraph{Layer 13: blind re-formalisation.} The layers above test proofs; this one tests whether the
-statements say what the prose says. A model that had not seen the development (a separate session with
-no access to the Lean files) was given only the mathematical prose of the frozen draft --- theorem
-statements, definitions and conventions, with Lean names, code and repository links stripped --- and
-wrote 43 statements in Mathlib vocabulary. That file elaborates with \texttt{rc=0} and no proofs.
+statements say what the prose says. A model in a separate session, instructed not to look at the Lean
+development or any layer report, was given the frozen draft as text and asked to work from its
+mathematical prose alone --- it stripped the markup itself and recorded the prose it used --- and
+wrote 43 statements in Mathlib vocabulary. This is source-isolation by instruction, not a
+pre-sanitised input: the draft it read still contained the paper's declaration names, which it was
+told to ignore. That file elaborates with \texttt{rc=0} and no proofs.
 A second model, different from the writer, then paired each statement with the repository declaration
 I designated for it --- the pairing was made by me from the paper's own theorem labels, not by the
 comparer --- and proved the two implications in Lean, using only unfolding, encoding transport
@@ -627,21 +646,22 @@ restatements of the tangency defect, the numerical instance of \S\ref{sec:explic
 ``neither spanning vector is null'' claim). Of the differences, \emph{one} is real: the blind reading
 of the cofactor variant expected the full conclusion of Theorem~\ref{thm:prop31}, while
 \decl{PaperK.prop31_cofactor} concludes the collinearity only. No implication certificate is
-supplied for s25, s36 or s40, where the two encodings are different objects rather than one being
-stronger; the remaining differences are artefacts of the blind encoding, and several of them are
-cases where the Lean is \emph{stronger} than
+supplied for s25, s36 or s40: those comparisons need bridges or a change of configuration beyond the
+permitted transport steps, and the audit establishes no strength ordering for them. The remaining
+differences are artefacts of the blind encoding, and several of them are cases where the Lean is
+\emph{stronger} than
 the prose: the blind reading supplied a null hypothesis on $P$ that the repository does not need
 (Theorem~\ref{thm:equilateral} and the tetrahedral statement), restricted a family to one universe,
 chose unit radii where the repository has a common radius $s$, and fixed the tetrahedral centres where
-\decl{PaperK3.tetraFamR} scales them. Two further gaps the exercise exposed are in the prose rather
-than the code, and both had already been repaired in this draft: ``cycle'' in
-Theorem~\ref{thm:equalpower} must mean \emph{null}, since the identity is false for a general vector,
-and Theorem~\ref{thm:prop31} never introduces $P$ in its list of objects, so it is universally
-quantified. The comparison file is \texttt{PaperK/layer13/BlindCompare\_K.lean} in the
+\decl{PaperK3.tetraFamR} scales them. Two further gaps the exercise exposed were in the prose rather
+than the code, and both are repaired in this draft: ``cycle'' in
+Theorem~\ref{thm:equalpower} had to mean \emph{null}, since the identity is false for a general
+vector, and Theorem~\ref{thm:prop31} did not introduce $P$ in its list of objects, so it was
+universally quantified. The comparison file is \texttt{PaperK/layer13/BlindCompare\_K.lean} in the
 \texttt{LEAN-verification} supporting repository, outside the code commit and its gate --- it was run
 against \texttt{\pkcommit} from an untracked \texttt{scratch/} work copy --- with
 \texttt{sha256} \texttt{87a22493...} and the report in
-\texttt{AFM/PaperK/layer13/L13\_COMPARE.md}.
+\texttt{layer13/L13\_COMPARE.md}.
 
 \paragraph{Two-machine receipt.} The repository was exported with \texttt{git archive} at the
 pinned commit and rebuilt on a second machine (arm64 macOS, same Lean version, separate Mathlib
@@ -668,7 +688,7 @@ source's own terms.
 
 \begin{enumerate}
 \item \textbf{Theorem~3.4} (the two-step construction): not formalised. Numerically checked at $n=2$
-before any dispatch (residual at most $8.7\times10^{-14}$, \texttt{EXTENSION.md} \S1), and the
+before any dispatch (residual at most $8.7\times10^{-14}$, \texttt{numerics/EXTENSION.md} \S1), and the
 invariance question of \S\ref{sec:negative} was tested in the same runs. To formalise it one needs the construction of the
 derived cycles $B_i,B_i'$, which depends on the reflection $R_P$ of the Lie quadric --- itself
 absent from our development.
@@ -696,7 +716,7 @@ be an error of exactly the kind the layer-15 comparison exists to prevent.
 \section{Prior art and what is new}\label{sec:prior}
 
 A prior-art scout was run \emph{before} the proof dispatch, as the workflow requires, and is in
-\texttt{AFM/PaperK/SCOUT.md}. It was a first-pass search --- arXiv, GitHub code search,
+\texttt{SCOUT.md}. It was a first-pass search --- arXiv, GitHub code search,
 Mathlib and the AFP; zbMATH and MathSciNet were not searched --- and its own header requires a
 pre-draft re-run, which was not made. What it found: no formalisation of any statement of the source,
 and no Lie-sphere-geometry development in any proof assistant; the closest work is a formalisation of
@@ -704,7 +724,11 @@ the augmented Descartes theorem at general $n$ \cite{augdescartes}, which contai
 Descartes/Soddy \emph{identities} and their converses, and which pre-empts any claim that those
 identities are new. Accordingly this paper claims no identity as new.
 
-What is new here, in the only sense a formalisation paper can defend, is the following.
+Our contributions relative to the source, in the only sense a formalisation paper can defend, are the
+following. The equal-power property identifies $P_X$ with the Laguerre radical centre of the oriented
+cycles, and we expect that characterisation to be classical in Laguerre geometry; the scout searched
+for prior \emph{formalisations}, not for the mathematical literature, so nothing below is claimed as
+new mathematics.
 \begin{itemize}
 \item The Lie-coordinate model for affine cycles in $\RR^2$, $\RR^3$ and $\RR^n$, and, at $n=2$,
 the cofactor construction, including the coordinate-level tangency criterion in the form \eqref{eq:tangency} that
@@ -712,14 +736,15 @@ a Lean proof can actually use (with the null hypotheses made explicit --- the id
 without them, and the error term is identified).
 \item The collinearity theorem \S\ref{sec:prop31} with its hypothesis made explicit, which is a
 statement about the source's Proposition~3.1 that a reader can check line by line.
-\item The explicit determinant formula of \S\ref{sec:explicit}. The source gives existence only; a
-formula is the kind of statement a machine proof can be held to, and the equal-power form makes it
-checkable without solving the Apollonius problem again.
+\item The explicit determinant formula of \S\ref{sec:explicit}, which is Cramer's rule for that
+linear system. The source gives existence only; a formula is the kind of statement a machine proof
+can be held to, and the equal-power form makes it checkable without solving the Apollonius problem
+again.
 \item The equal-power property of \S\ref{sec:equalpower}, and the degenerate configurations of
 \S\ref{sec:degenerate}, which are not in the source at all. The square configuration in particular is
 a case where the source's hypotheses hold among affine cycles while its conclusion is not even
-statable --- a mathematical remark independent of any formalisation, with the affine restriction made
-explicit in \S\ref{sec:degenerate}.
+statable --- an observation about the source's hypotheses, checked here among affine cycles, with the
+affine restriction made explicit in \S\ref{sec:degenerate}.
 \item The two negative results of \S\ref{sec:negative}.
 \end{itemize}
 We do not claim to have formalised Płatek's theorems; \S\ref{sec:not} is the accounting.
@@ -752,7 +777,8 @@ The table below condenses the Layer-15 comparison (\texttt{layer15/L15\_COMPARE.
 identifiers, 16 statements quoted from the verbatim arXiv source). Verdicts: \textbf{E} equivalent,
 \textbf{O} ours weaker or otherwise different, \textbf{N} no source counterpart or a different object.
 The count is 0 E, 6 O, 11 N. This is the table behind the abstract's narrow claim: our formalisation is
-the linear core, not the theorem.
+the linear core, not the theorem. Rows~12--13 use the theorem's current name;
+\texttt{L15\_COMPARE.md} lists the same statement as \texttt{tetra\_thm36} (\S\ref{sec:degenerate}).
 
 \begin{longtable}{p{0.19\linewidth} p{0.045\linewidth} p{0.66\linewidth}}
 \toprule
@@ -780,7 +806,9 @@ equal-Laguerre-power reformulation is ours. \\
 \decl{PaperK.explicit_power}, \decl{PaperK.explicit_power_indep} & N & no source counterpart; needs
 $\det[r\,a\,b\,1]\neq0$; the link to $\texttt{pt}(P)$ is hand-derived (\S\ref{sec:explicit}). \\
 \decl{PaperK2.equal_power}, \decl{PaperK2.PX_circumcentre}, \decl{PaperK2.equilateral_PX},
-\decl{PaperK2.square_PX} & N & E1 in $\RR^2$, equal radii; the continuity statement is numerical only. \\
+\decl{PaperK2.square_PX} & N & equal power for arbitrary affine circle families; the circumcentre,
+equilateral and square instances are E1 in $\RR^2$ with equal radii; the continuity statement is
+numerical only. \\
 \decl{PaperK2.PX_circumcentre} at $r_0=0$ & O & recovers the source's circumcentre example as an
 instance; the credit is the source's. \\
 \decl{PaperK2.square_apollonius}, \decl{PaperK2.square_null_space} & N & the square's Apollonius pairs
@@ -791,7 +819,8 @@ hyperplane; it is an E1 fact about the Apollonius pair's centre. \\
 \decl{PaperK3.tetra_E1_apollonius}, \decl{PaperK3.tetra_tangent_B} vs Morita & N & not Morita's
 configuration: the four unit spheres are $2\sqrt2$ apart, not mutually tangent. \\
 \decl{PaperK3.tetra_PX_origin}, \decl{PaperK3.tetraR_PX_origin}, \decl{PaperK3.equal_power} & N &
-E1 in $\RR^3$ for the regular tetrahedron plus an arbitrary fifth sphere. \\
+equal power for arbitrary affine families in $\RR^3$; the origin conclusions are E1 for the regular
+tetrahedron (and its scaled version) plus an arbitrary fifth sphere. \\
 Theorem~3.6 at general $n$ & N & not formalised: no statement names the hyperplane families $T_i$. \\
 \decl{PaperKn.simplex_E1}, \decl{PaperKn.simplex_circumradius} & N & E1 at general $n$ under the
 equal-norm hypothesis, which cannot be dropped from the universal statement, as the $n=2$
@@ -818,7 +847,7 @@ workflow that changed this paper the most.
 Apollonius Spheres in $\mathbb{R}^n$}, arXiv:2604.03067v1 (submitted 3 April 2026).
 \bibitem{augdescartes} \texttt{JD-Jones-ASES}, \texttt{augmented-descartes-lean}, a general-$n$
 formalisation of the augmented Descartes theorem (2026); consulted as prior art in
-\texttt{AFM/PaperK/SCOUT.md}.
+\texttt{SCOUT.md}.
 \end{thebibliography}
 
 \end{document}

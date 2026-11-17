@@ -1,0 +1,166 @@
++ export PATH=/Users/john/.elan/bin:/Users/john/.local/gitonly:/Users/john/.elan/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/john/.local/bin:/Users/john/.local/mm/env/bin:/Users/john/.local/mm/gnu/bin
++ PATH=/Users/john/.elan/bin:/Users/john/.local/gitonly:/Users/john/.elan/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/john/.local/bin:/Users/john/.local/mm/env/bin:/Users/john/.local/mm/gnu/bin
++ D=/Users/john/pk_export_62ccf87
++ rm -rf /Users/john/pk_export_62ccf87
++ mkdir -p /Users/john/pk_export_62ccf87
++ cd /Users/john/pk_export_62ccf87
++ tar xf /Users/john/pk_62ccf87.tar
++ echo '=== files'
+=== files
++ ls -R
++ head -30
+PaperK
+PaperK.lean
+gate.sh
+lake-manifest.json
+lakefile.toml
+lean-toolchain
+tests
+
+./PaperK:
+Bridge.lean
+LieCore.lean
+ThreeD.lean
+TwoD.lean
+
+./tests:
+tamper.sh
++ echo '=== sha256 of sources'
+=== sha256 of sources
++ shasum -a 256 PaperK/Bridge.lean PaperK/LieCore.lean PaperK/ThreeD.lean PaperK/TwoD.lean PaperK.lean gate.sh tests/tamper.sh
+24e803518794cc2a97087f1af7dcdadd9c6567e937e847ebc422b2a2b90f27b8  PaperK/Bridge.lean
+6a19ca206116e5f78c7ef3596fc46dc36851324c48b708cccf1951a375f97581  PaperK/LieCore.lean
+3b326b04f20c6e32e4d155c3c3fd8b00dd7c16d993902a0cc73b8f493b9d1cb1  PaperK/ThreeD.lean
+a77e2e53dd80ef77e3a6b95938ddf2ce91790b5e03e8a9c72320f3c20dca8c7e  PaperK/TwoD.lean
+1556abaa02abc1a9e20a7e9666c0c286d0f9c4925c071dbb499a4b7672e813a0  PaperK.lean
+e67e8d31beb17b5cbe9a508ca660cea5a71da0266cc8c283056d78961d995585  gate.sh
+84beb11afac698744f03f919bc1796fa14211229ea9457b569e7d9c608d0549e  tests/tamper.sh
++ echo '=== lean toolchain'
+=== lean toolchain
++ cat lean-toolchain
+leanprover/lean4:v4.33.1
++ echo '=== lake update/cache'
+=== lake update/cache
++ timeout 1800 lake exe cache get
+info: mathlib: cloning https://github.com/leanprover-community/mathlib4
+info: mathlib: checking out revision '0df444a360eaa60ab8c11dca51a86af692955474'
+info: plausible: cloning https://github.com/leanprover-community/plausible
+info: plausible: checking out revision 'b7eb3304aeae834b12dda98993a37f6a41f6f0bb'
+info: LeanSearchClient: cloning https://github.com/leanprover-community/LeanSearchClient
+info: LeanSearchClient: checking out revision '5f4d51b81cbd3f6b32b156bfad9056621a040404'
+info: importGraph: cloning https://github.com/leanprover-community/import-graph
+info: importGraph: checking out revision '16f02aa7642864af59f1ff0e384a015994db9118'
+info: proofwidgets: cloning https://github.com/leanprover-community/ProofWidgets4
+info: proofwidgets: checking out revision '4be2e3d5087eeb272cf5a8853b8f9dd025ef5957'
+info: aesop: cloning https://github.com/leanprover-community/aesop
+info: aesop: checking out revision '3448c0bcc5ce01b2d1546e483ec3620e32df3d0e'
+info: Qq: cloning https://github.com/leanprover-community/quote4
+info: Qq: checking out revision '92c15be17b7caf78c2ad767ec40f89052d908d81'
+info: batteries: cloning https://github.com/leanprover-community/batteries
+info: batteries: checking out revision '4488d40d070b9700d4d5a6aa342f0d40c31b2a2d'
+info: Cli: cloning https://github.com/leanprover/lean4-cli
+info: Cli: checking out revision '6130a47896ce867c6a4a55373441e59e565bad0f'
+✔ [5/27] Built Cache.Cli (278ms)
+✔ [6/27] Built Cache.Lean (292ms)
+✔ [7/27] Built Cache.Infra (234ms)
+✔ [8/27] Built Batteries.Tactic.OpenPrivate (442ms)
+✔ [9/27] Built Cache.Cli:c.o (856ms)
+✔ [10/27] Built Cache.Lean:c.o (836ms)
+✔ [11/27] Built Cache.Infra:c.o (723ms)
+✔ [12/27] Built Cache.IO (601ms)
+✔ [13/27] Built Batteries.Tactic.OpenPrivate:c.o (837ms)
+✔ [14/27] Built Cache.Hashing (407ms)
+✔ [15/27] Built Cache.IO:c.o (515ms)
+✔ [16/27] Built Cache.Hashing:c.o (159ms)
+✔ [17/27] Built Cache.Requests (766ms)
+✔ [18/27] Built Cache.Marker (324ms)
+✔ [19/27] Built Cache.Marker:c.o (61ms)
+✔ [20/27] Built Cache.Query (366ms)
+✔ [21/27] Built Cache.Requests:c.o (902ms)
+✔ [22/27] Built Cache.Query:c.o (120ms)
+✔ [23/27] Built Cache.Warning (352ms)
+✔ [24/27] Built Cache.Warning:c.o (104ms)
+✔ [25/27] Built Cache.Main (510ms)
+✔ [26/27] Built Cache.Main:c.o (322ms)
+✔ [27/27] Built cache:exe (920ms)
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+Decompressing 8689 already-cached file(s) (1 already decompressed)
+No files to download
+Decompressed 8689 already-cached file(s)
+Completed successfully in 8403 ms!
++ echo cache_rc=0
+cache_rc=0
++ echo '=== build'
+=== build
++ timeout 3600 lake build
+ℹ [8706/8711] Built PaperK.LieCore (6.3s)
+info: PaperK/LieCore.lean:263:0: 'PaperK.B_self_eq_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:264:0: 'PaperK.tangency_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:265:0: 'PaperK.B_eq_zero_iff_tangent' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:266:0: 'PaperK.mulVec_cofactor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:267:0: 'PaperK.B_G_cofactor_row' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:268:0: 'PaperK.prop31' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:269:0: 'PaperK.prop31_cofactor' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:270:0: 'PaperK.explicit_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:271:0: 'PaperK.explicit_power_indep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/LieCore.lean:272:0: 'PaperK.equal_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [8707/8711] Built PaperK.ThreeD (6.4s)
+info: PaperK/ThreeD.lean:206:0: 'PaperK3.B_self_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:207:0: 'PaperK3.tangency_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:208:0: 'PaperK3.equal_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:209:0: 'PaperK3.tetra_equidistant_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:210:0: 'PaperK3.tetra_PX_origin' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:211:0: 'PaperK3.tetra_radii_metric' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:212:0: 'PaperK3.tetra_tangent_B' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:213:0: 'PaperK3.tetra_tangent_sq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:214:0: 'PaperK3.tetra_E1_apollonius' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:215:0: 'PaperK3.tetraR_PX_origin' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:216:0: 'PaperK3.tetraR_tangent_B' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/ThreeD.lean:217:0: 'PaperK3.tetra_affineIndependent' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [8708/8711] Built PaperK.TwoD (8.1s)
+warning: PaperK/TwoD.lean:272:38: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+info: PaperK/TwoD.lean:316:0: 'PaperK2.equal_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:317:0: 'PaperK2.power_eq_const' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:318:0: 'PaperK2.equilateral_PX_param' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:319:0: 'PaperK2.equilateral_PX' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:320:0: 'PaperK2.equilateral_centre_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:321:0: 'PaperK2.square_apollonius' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:322:0: 'PaperK2.square_apollonius_radii_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:323:0: 'PaperK2.square_null_space' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:324:0: 'PaperK2.square_null_span' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:325:0: 'PaperK2.square_null_indep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:326:0: 'PaperK2.square_PX' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:327:0: 'PaperK2.square_PX_via_equal_power' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:328:0: 'PaperK2.equi_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:329:0: 'PaperK2.equi_cc' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:330:0: 'PaperK2.equi_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:331:0: 'PaperK2.equal_power_point_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PaperK/TwoD.lean:332:0: 'PaperK2.PX_circumcentre' depends on axioms: [propext, Classical.choice, Quot.sound]
+✔ [8709/8711] Built PaperK.Bridge (3.2s)
+✔ [8710/8711] Built PaperK (2.6s)
+Build completed successfully (8711 jobs).
++ echo build_rc=0
+build_rc=0
++ echo '=== gate'
+=== gate
++ timeout 1200 bash gate.sh
++ echo gate_rc=0
+gate_rc=0
++ grep -E '^PASS|^FAIL' gate.out
+PASS (60 declarations, standard axioms only)
++ echo '=== tamper'
+=== tamper
++ timeout 1800 bash tests/tamper.sh
++ echo tamper_rc=0
+tamper_rc=0
++ tail -3 tamper.out
+ok    falsehyp2  rejected (exit 1): FAIL: build
+ok    falsestmt2 rejected (exit 1): FAIL: build
+ALL TAMPERING TESTS REJECTED
++ echo '=== git status (no git here)'
+=== git status (no git here)
++ date -u
+Mon Nov 16 20:16:49 UTC 2026

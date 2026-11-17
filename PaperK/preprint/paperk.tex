@@ -1,0 +1,788 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% A declaration of our own development. Every \decl{...} is checked against the repository by the
+% name gate (Layer 11) before deposit.
+\DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
+\newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
+% File:line anchor into the Paper K repository. The repository has no public remote yet (see \S\ref{sec:availability}),
+% so the anchor prints as text rather than a link; the commit is pinned below and the anchors are
+% machine-checked against that commit.
+\newcommand{\pkcommit}{464a59df987e149e1e545cbd5299196ecce354ed}
+\newcommand{\src}[3]{\texttt{#2}:#3}
+\newcommand{\RR}{\mathbb{R}}
+
+\title{Apollonius centres in Lean~4: the cofactor construction, equal Laguerre power, and degenerate configurations}
+\author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
+\small ORCID: \texttt{0009-0002-1317-6489}
+\thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0
+(\url{https://creativecommons.org/licenses/by/4.0/}). The accompanying Lean code is licensed under
+the Apache License 2.0.}}
+\date{16 November 2026}
+\emergencystretch=3em
+\begin{document}
+\sloppy
+\maketitle
+
+\begin{abstract}
+We report a Lean~4 formalisation, on top of Mathlib, of part of the Lie-coordinate theory of
+Apollonius cycles behind M.~Płatek's concurrency theorem for $n+2$ cycles in $\RR^n$
+(arXiv:2604.03067). The formalisation covers three layers. First, the linear algebra: the
+Lie form of signature $(n+1,2)$, its null cone, the tangency criterion, and, at $n=2$, the cofactor
+construction that produces from $n+2$ cycles a vector orthogonal to all of them. On that basis we prove the
+collinearity step of the source's Proposition~3.1 --- the concurrency point lies on the line joining
+the centres of the two Apollonius cycles of each $(n+1)$-subset --- for $n=2$ and for general $n$,
+under the hypothesis that the orthogonal complement of the remaining cycles is spanned by the two
+Apollonius cycles; the source's derivation of that hypothesis from the existence of exactly two
+distinct Apollonius cycles is \emph{not} formalised. Second, two statements the source does not
+contain: an explicit determinant formula for the point and radius of equal Laguerre power at $n=2$,
+which a hand argument --- not formalised --- identifies with the concurrency point $P_X$, and the
+equal-power property of $P_X$: every cycle orthogonal to it has the same Laguerre power. Third, degenerate configurations where the source's centre-line is
+undefined: concentric Apollonius pairs (the square), equilateral circle triples, the regular
+tetrahedron in $\RR^3$, and regular simplices at general $n$ (under an equal-norm hypothesis that cannot be dropped: a Lean
+counterexample at $n=2$ shows the unqualified statement is false). Two negative results are kept visible: the general-$n$ "centroid" reading of the
+degenerate case is false, with a Lean counterexample, and our conjecture that the completion map of the
+source's Theorem~3.4 fixes $P_X$, refuted numerically. Theorem~3.4, Theorem~3.6 and the Morita corollary
+of the source are \emph{not} formalised in any dimension; we state precisely what would be needed.
+The development is gated (73 declarations, the general-$n$ file included, standard axioms only), carries a nine-test tampering
+suite and a mutation/ablation/satisfiability battery, and was rebuilt from a clean export on a second
+machine with byte-identical sources.
+\end{abstract}
+
+\section{Introduction}
+
+Płatek's paper on Apollonius cycles in $\RR^n$ \cite{platek} states a concurrency theorem with an
+unusually clean linear-algebra core. Given $n+2$ cycles $X_1,\dots,X_{n+2}$ in $\RR^n$, for each
+index $i$ form the two Apollonius cycles $A_i,A_i'$ tangent to all the cycles except $X_i$; then the
+$n+2$ lines joining the centres of the pairs $A_i,A_i'$ are concurrent at a point $P_X$
+(Proposition~3.1). The point has a second description: it is the centre of the sphere tangent to
+every hyperplane tangent to the two cycles of each pair (Theorem~3.6), which in $\RR^3$ specialises
+to Morita's inscribed-sphere theorem. The framework is Lie's: cycles are points of a projective
+quadric, tangency is orthogonality, and the Apollonius problem becomes linear algebra.
+
+This paper reports what of that programme has been machine-checked in Lean~4 with Mathlib, and what
+has not. The division matters more than the count. Our formalisation covers the Lie-coordinate model in $\RR^2$, $\RR^3$ and at general $n$, and the
+cofactor construction at $n=2$; it proves the
+collinearity step of Proposition~3.1 whenever the relevant orthogonal complement is spanned by the
+Apollonius pair; and it proves, at $n=2$, an explicit determinant formula for the equal-power point that the source
+does not give. What it does not do is derive the spanning hypothesis from the geometry of the
+Apollonius problem, and it does not construct the hyperplane families $T_i$ that Theorem~3.6 is
+about. So no theorem of this paper should be read as a formalisation of Theorem~3.4, Theorem~3.6 or
+the Morita corollary; \S\ref{sec:not} lists exactly the missing steps.
+
+The paper's own contributions, in the sense that they are not statements of the source, are:
+\begin{enumerate}
+\item an explicit formula at $n=2$ for the point and radius of equal Laguerre power, as a quotient of
+$4\times4$ determinants (Theorem~\ref{thm:explicit}), which a hand derivation identifies with
+$P_X$;
+\item the equal-power property of $P_X$ (Theorem~\ref{thm:equalpower}), which turns the
+concurrency point into a centre of a sphere in the ordinary metric sense and identifies the point in
+degenerate configurations where the source's centre-line does not exist;
+\item proved degenerate cases: an equilateral triple of equal circles forces $P_X$ to the triangle
+centre for \emph{any} fourth circle (Theorem~\ref{thm:equilateral}); the square configuration has
+concentric Apollonius pairs, so the source's line is undefined, while the orthogonal complement is
+two-dimensional and every admissible $P$ still projects to the square's centre
+(Theorem~\ref{thm:square}); the regular tetrahedron in $\RR^3$ and the regular simplex with equal
+centre norms at general $n$ likewise force $P_X$ to the symmetry centre
+(\S\ref{sec:degenerate});
+\item two negative results, one of them a refutation in Lean of a statement we had conjectured
+(Theorem~\ref{thm:negative}), the other a numerical refutation of an invariance property that a
+reader of Theorem~3.4 would plausibly expect (\S\ref{sec:negative}).
+\end{enumerate}
+
+The verification story is reported as data, not as a claim of correctness: a gate over 73
+declarations, a nine-test tampering suite, a mutation/contradiction/ablation/satisfiability battery,
+a definition-bridge layer, and 13 restatements of the main claims in pure Mathlib vocabulary
+(\S\ref{sec:verification}). The restatements are where our own errors were caught: two of the
+statements we first wrote down are false, and one of them is now a Lean theorem
+(\decl{PaperKn.brief\_E\_false}).
+
+\paragraph{What is deliberately absent.} No claim of priority: a prior-art scout
+(\S\ref{sec:prior}) found no formalisation of any statement of the source, but it did find a
+general-$n$ formalisation of the augmented Descartes theorem that pre-empts the \emph{identities} in
+the Soddy family; we cite it as a resource and do not claim the identities as new. No claim about
+space forms, about the two-step construction (Theorem~3.4), or about hyperplanes as cycles at
+infinity: all are outside this paper.
+
+\section{The source and its conventions}\label{sec:source}
+
+We fix Płatek's notation \cite{platek}. A \emph{cycle} in $\RR^n$ is represented by
+\[
+X=(r,\,c_1,\dots,c_n,\,v,\,w)\in V:=\RR^{n+3},
+\]
+where $r$ is the signed radius, $c=(c_1,\dots,c_n)$ the centre coordinates, and $[c_1:\cdots:c_n:v]$
+is the homogeneous centre, with $v=0$ the points at infinity. Cycles satisfy the relation
+\begin{equation}\label{eq:def21}
+2wv=r^2-\lVert c\rVert^2 ,
+\end{equation}
+and the bilinear form of the model is
+\begin{equation}\label{eq:sourceform}
+(X\mid Y)=-x_1y_1+\sum_{i=2}^{n+1}x_iy_i+x_{n+2}y_{n+3}+x_{n+3}y_{n+2}
+=-rr'+c\cdot c'+vw'+wv' .
+\end{equation}
+A projective point $[X]$ is a cycle iff $(X\mid X)=0$ (Lemma~2.4), and two cycles are tangent iff
+$(X\mid Y)=0$ (Lemma~2.5). The form has signature $(n+1,2)$ --- $n+1$ positive directions and two negative, the $r$ slot and the
+hyperbolic $(v,w)$ pair; the quadric is Lie's.
+
+The results we are concerned with are:
+
+\begin{itemize}
+\item \textbf{Proposition~3.1.} For $n+2$ cycles $X$, and for each $i$ the two Apollonius cycles
+$A_i,A_i'$ of $X\setminus X_i$, the lines through the centres of $A_i,A_i'$ are concurrent at a
+point $P_X$.
+\item \textbf{Theorem~3.4.} A two-step construction produces, for each $i$, a further pair
+$B_i,B_i'$ whose centre-lines pass through the same $P_X$.
+\item \textbf{Theorem~3.6.} With $T_i$ the set of hyperplanes tangent to both $A_i$ and $A_i'$, and
+$P_X$ not at infinity, there is a sphere centred at $P_X$ tangent to every hyperplane in every $T_i$.
+\item \textbf{Corollary (Morita).} For four mutually externally tangent spheres and an outer sphere
+tangent to all four, there is a unique inscribed sphere.
+\item \textbf{Corollaries.} The circumcentre, incentre and outer-Apollonius-circle theorems, the
+Soddy line and the Soddy gasket, as instances.
+\end{itemize}
+
+Two features of the source matter for a formalisation and are worth stating at the outset, because
+they determine what a machine proof of Proposition~3.1 has to contain. First, the argument has two
+independent halves: a linear-algebra half, in which $P$ is a null vector of the $(n+2)\times(n+3)$
+system of orthogonality to all $n+2$ cycles, and a geometric half, in which one shows that the
+complement of the $n+1$ cycles other than $X_i$ is \emph{two}-dimensional and is spanned by the two
+Apollonius cycles. Only the first half is linear algebra in the strict sense; the second uses the Apollonius
+geometry. Second, the concurrency point is defined by a single linear condition --- $[P]$ is the null
+vector of a matrix with $n+2$ rows and $n+3$ columns, that is, a cofactor vector --- and this is what
+makes the explicit formula of \S\ref{sec:explicit} possible.
+
+We also record a defect in the source's statement of Theorem~3.4: it quantifies over pairs
+$B_1,\dots,B_n$ while the index runs to $n+2$. Nothing in this paper depends on it; we note it so
+that no reader takes our silence for agreement.
+
+\section{The encoding in Lean}\label{sec:encoding}
+
+\paragraph{Coordinates.} A cycle at $n=2$ is a function $\texttt{Fin 5}\to\RR$ with slots
+$(r,a,b,v,w)$, in that order; at $n=3$ a function $\texttt{Fin 6}\to\RR$ with an extra centre slot;
+at general $n$ a structure \decl{PaperKn.Cyc} with fields \texttt{r}, \texttt{c : Fin n $\to$ $\RR$},
+\texttt{v}, \texttt{w}. All three carry the same form, written out rather than derived from a matrix:
+\begin{equation}\label{eq:leanB}
+B(X,Y)=rr'-c\cdot c'-vw'-wv' .
+\end{equation}
+The Lean definition at $n=2$ is \decl{PaperK.B} (\src{PaperK}{LieCore.lean}{16}); the general-$n$
+one is \decl{PaperKn.B}. The two are the same polynomial, and the $\RR^3$ version
+(\decl{PaperK3.B}) differs only in the number of centre slots.
+
+\paragraph{The sign relative to the source.} Comparing \eqref{eq:leanB} with \eqref{eq:sourceform},
+our $B$ is the \emph{negative} of the source's $(X\mid Y)$. This is not a convention we can choose
+away: the null cone and orthogonality are unchanged, so every statement of the form ``$B(X,Y)=0$''
+transfers verbatim to the source's form, but every statement about a \emph{value} flips sign. We
+state the two consequences once and use them throughout:
+\begin{itemize}
+\item \emph{Zero-set statements transfer.} Null cone, tangency, and ``$P$ is orthogonal to $X_i$''
+are the same conditions in both conventions.
+\item \emph{Value statements are stated for $B$.} The equal-power constant is
+$-B(P,P)/p_v^2$; in the source's convention it reads $+(X\mid X)/p_v^2$, whose sign is the source's
+own.
+\end{itemize}
+The relation \eqref{eq:def21} appears as \decl{PaperK.B\_self\_eq\_zero\_iff}: $B(X,X)=0$ iff
+$X_0^2-X_1^2-X_2^2=2X_3X_4$, i.e.\ $r^2-\lVert c\rVert^2=2vw$. At general $n$ the same statement is
+\decl{PaperKn.B\_self\_eq\_zero\_iff} and reads $r^2-\sum c_k^2=2vw$.
+
+\paragraph{The Gram matrix.} At $n=2$ the form is represented by a symmetric matrix $G$ with
+$G^2=1$ and $B(X,Y)=X\cdot(GY)$ (\decl{PaperK.G}, \decl{PaperK.B\_eq\_dot\_G},
+\decl{PaperK.G\_mul\_G}, \decl{PaperK.B\_G\_mulVec}). Two consequences are used later: the
+$G$-adjoint $P\mapsto GP$ is an involution, and a vector $P$ orthogonal to the rows of a matrix is
+obtained by applying $G$ to a cofactor vector.
+
+\paragraph{The null cone and tangency.} The tangency criterion is proved in the form the briefs
+needed, with both cycles on the null cone:
+\begin{equation}\label{eq:tangency}
+-2\,v\,v'\,B(X,Y)=(rv'-r'v)^2-\lVert cv'-c'v\rVert^2 ,
+\end{equation}
+which is \decl{PaperK.tangency\_identity}. Two remarks belong here, because both are places where a
+formalisation can silently go wrong. First, \eqref{eq:tangency} is \emph{false} as a polynomial
+identity in the five free coordinates: the difference between its two sides is
+$-\bigl((Y_3)^2B(X,X)+(X_3)^2B(Y,Y)\bigr)$ --- the $v$-slots, with a minus sign --- so the
+null-cone hypotheses are not decoration. (The $\RR^3$
+statement carries them explicitly; see \decl{PaperK3.tangency\_identity}.) Second, for
+$v=v'\neq0$ the identity reduces to $2B(X,Y)=\lVert c-c'\rVert^2-(r-r')^2$, which is the ordinary
+oriented tangency equation, and the iff form for non-zero $v$-slots is
+\decl{PaperK.B\_eq\_zero\_iff\_tangent}. At general $n$ both forms are
+\decl{PaperKn.tangency\_identity} and \decl{PaperKn.B\_eq\_zero\_iff\_tangent}.
+
+\paragraph{Cofactors.} For a $4\times5$ matrix $M$ whose rows are four cycles at $n=2$, the cofactor
+vector is
+\[
+\texttt{cofactor}(M)_k=(-1)^k\det\bigl(M\text{ with column }k\text{ deleted}\bigr),
+\]
+\decl{PaperK.cofactor} (\src{PaperK}{LieCore.lean}{75}). Laplace expansion gives
+$M\cdot\texttt{cofactor}(M)=0$ (\decl{PaperK.mulVec\_cofactor}), and since $G\cdot v$ is the
+$B$-adjoint of $v$,
+\begin{equation}\label{eq:cofactororth}
+B\bigl(G\cdot\texttt{cofactor}(M),\,M_i\bigr)=0 \qquad\text{for every row } i,
+\end{equation}
+which is \decl{PaperK.B\_G\_cofactor\_row}. So $P:=G\cdot\texttt{cofactor}(M)$ is the concurrency
+candidate, and its affine centre is \decl{PaperK.pt} $P\mapsto(P_1/P_3,P_2/P_3)$
+(\src{PaperK}{LieCore.lean}{104}). This is the only place where a division occurs, and every
+statement about the centre carries $P_3\neq0$; in the source's language, $P_X$ is not at infinity.
+
+\paragraph{The affine chart.} Spheres with finite centre are encoded by
+$\texttt{circ}(r,a,b)=![r,a,b,1,(r^2-a^2-b^2)/2]$ at $n=2$ (\decl{PaperK2.circ}) and by the
+analogous \decl{PaperK3.sph} and \decl{PaperKn.aff}. These satisfy \eqref{eq:def21} with $v=1$, and
+the encoding is the source's Definition~2.1 chart. Hyperplanes ($v=0$) exist as raw vectors at
+general $n$ but no theorem is stated for hyperplane cycles or uses $v=0$ non-trivially; this is the
+formal gap that keeps Theorem~3.6 out of reach (\S\ref{sec:not}).
+
+\section{The collinearity step of Proposition~3.1}\label{sec:prop31}
+
+\begin{theorem}[Collinearity, $n=2$]\label{thm:prop31}
+Let $X_1,\dots,X_4,A,A'$ be vectors in $\RR^5$ --- no null-cone hypothesis on any of them is used
+--- and $i$ an index. Suppose
+\begin{enumerate}
+\item (spanning) every vector $Y\in\RR^5$ orthogonal to all $X_j$ with $j\neq i$ lies in
+$\operatorname{span}\{A,A'\}$;
+\item (orthogonality) $P$ is orthogonal to all four $X_j$;
+\item (finite centres) the $v$-slots of $A,A'$ and $P$ are non-zero.
+\end{enumerate}
+Then $P\in\operatorname{span}\{A,A'\}$, and
+\[
+\exists s,t\in\RR,\quad s+t=1,\quad p(P)=s\,p(A)+t\,p(A'),
+\]
+where $p$ denotes the affine centre; in particular $p(P),p(A),p(A')$ are collinear.
+\end{theorem}
+
+This is \decl{PaperK.prop31} (\src{PaperK}{LieCore.lean}{121}). The proof is short and entirely
+linear: $P$ lies in the span by hypothesis~(1), the affine combination is computed by clearing the
+$v$-slots,
+\[
+p(P)=\frac{\alpha A_3}{\alpha A_3+\beta A'_3}\,p(A)+\frac{\beta A'_3}{\alpha A_3+\beta A'_3}\,p(A'),
+\]
+and collinearity follows from the line-map formula. The weights are the content: they say that the
+concurrency point is an affine combination of the two Apollonius centres with coefficients that sum
+to one, which is stronger than the bare collinearity of the source's statement.
+
+Two variants are proved. \decl{PaperK.prop31\_cofactor} specialises $P$ to the cofactor vector
+$G\cdot\texttt{cofactor}(M)$ of \eqref{eq:cofactororth}, so that the existence of $P$ is discharged
+by the Laplacian identity instead of assumed; its conclusion is the collinearity alone, with the span
+membership and the affine weights coming from \decl{PaperK.prop31} itself, which the variant applies
+rather than re-states. At general $n$ the same theorem is
+\decl{PaperKn.prop31}, over $n+2$ cycles and with the conclusion stated for
+$\operatorname{Collinear}$ in $\RR^n$.
+
+\paragraph{What is assumed, and why it is assumed.} Hypothesis~(1) is exactly the step the source
+derives from the existence of two distinct Apollonius cycles: its $Y_1$ is the two-dimensional
+orthogonal complement, and $[A_1],[A_1']$ are two distinct points of $Y_1$. We do not have that
+derivation in Lean. It requires (i) formalising the cycle condition on $A,A'$, (ii) formalising
+``exactly two distinct Apollonius cycles tangent to $n+1$ given cycles'', and (iii) proving that the
+orthogonal complement of the $n+1$ cycles is a projective line which meets the quadric in exactly
+$A,A'$. Each
+is a separate development; the first is present in our files, the other two are not. So
+Theorem~\ref{thm:prop31} is the linear-algebra core of Proposition~3.1 and not the proposition.
+
+\paragraph{The source's own definition of $P_X$.} One point of the source is easy to miss and is
+worth isolating, because it is what makes \S\ref{sec:explicit} possible. In the source, $P$ is
+defined by a homogeneous system of $n+2$ equations in $n+3$ unknowns --- the conditions
+$(P\mid X_i)=0$ --- so the projective point is the null vector of an $(n+2)\times(n+3)$ matrix. At
+$n=2$ that is a $4\times5$ matrix, and its null vector is a cofactor vector. Our
+\decl{PaperK.B\_G\_cofactor\_row} is the coordinate form of that observation, and
+\decl{PaperK.prop31\_cofactor} is Proposition~3.1's linear step with $P$ taken to be that vector.
+
+\section{An explicit formula for \texorpdfstring{$P_X$}{P\_X}}\label{sec:explicit}
+
+The source gives existence, not a formula. At $n=2$ the cofactor construction can be unwound into
+determinants. Write the four cycles as rows $i\mapsto(r_i,a_i,b_i,s_i,1)$ with
+$s_i=a_i^2+b_i^2-r_i^2$, let $D=\det[r\,a\,b\,1]$ be the $4\times4$ determinant whose columns are
+the four rows' $(r,a,b,1)$ entries, and for a column vector $u$ let $\det[r\,a\,b\,u]$ denote the
+determinant with the fourth column replaced by $u$.
+
+\begin{theorem}[Explicit equal-power point and radius, $n=2$]\label{thm:explicit}
+Assume $D\neq0$. Put
+\[
+p=\Bigl(\frac{-\det[r\,b\,s\,1]}{2D},\ \frac{\det[r\,a\,s\,1]}{2D}\Bigr),
+\qquad
+\rho=\frac{-\det[a\,b\,s\,1]}{2D},
+\qquad s=a^2+b^2-r^2 .
+\]
+Then for every $i\in\{1,2,3,4\}$,
+\[
+\lVert p-c_i\rVert^2-(\rho-r_i)^2=\lVert p\rVert^2-\rho^2+\frac{\det[r\,a\,b\,s]}{D},
+\]
+that is, the point $p$ with radius $\rho$ has the \emph{same} Laguerre power with respect to all four
+cycles.
+\end{theorem}
+
+This is \decl{PaperK.explicit\_power} (\src{PaperK}{LieCore.lean}{231}) together with
+\decl{PaperK.explicit\_power\_indep} (\src{PaperK}{LieCore.lean}{250}), which states the
+right-hand side's independence of $i$. Two cautions, both of which a reader should hold us to.
+
+First, the theorem proves the equal-power property of the displayed point; it does \emph{not} prove
+that this point equals $p(P)$ for a cofactor vector. The link is a hand derivation, and the obvious
+version of it is \emph{wrong}: the rows $(r,a,b,s,1)$ are not cycles in the $(r,a,b,v,w)$ encoding,
+so $G\cdot\texttt{cofactor}$ of that matrix is $B$-orthogonal to the rows and not to the circles,
+and its $\texttt{pt}$ is not $p$ (a random instance gives $(1.266,-4.738)$ against
+$p=(1.821,-6.819)$). The correct vector, recorded in the Layer-15 comparison, is
+$P=(q_0,-q_1,-q_2,2q_3,-q_4)$ with $q=\texttt{cofactor}(M)$: it satisfies
+$B(P,\texttt{circ}_i)=0$ by \decl{PaperK.row\_relation}, its centre is $p$, and its $v$-slot is
+$-2D$. What is missing in Lean is this change of basis and the final identity; the slotwise cofactor
+identities \decl{PaperK.cof0}--\decl{PaperK.cof4} and \decl{PaperK.row\_relation} are their
+ingredients, not the whole of the gap.
+
+Second, $\rho$ is the radius that equalises the powers; it is \emph{not} proved to be the inscribed
+sphere radius of the source's Theorem~3.6, which is a different statement involving tangent
+hyperplanes. The number is the natural candidate --- it is the cofactor vector's $r$-slot divided by its
+$v$-slot --- but the identification with an inscribed sphere is not formalised.
+
+The determinant formula was checked numerically before it was proved: on random four-circle data the
+four powers agree to $10^{-15}$ with this formula, while the version with the $a$ and $b$ columns
+interchanged (which our own brief had contained) gives four different values. That check is why the
+formula in the theorem is the one it is; the closed-form-versus-cofactor residuals are recorded in
+\texttt{k0/FORMULA.md} (the K1 report quotes the common value without a tolerance).
+
+\section{Equal power and the metric meaning of \texorpdfstring{$P_X$}{P\_X}}\label{sec:equalpower}
+
+The second ingredient of the extension is that the concurrency point is a point of equal power.
+
+\begin{theorem}[Equal power]\label{thm:equalpower}
+Let $P\in\RR^5$ be any vector with $P_3\neq0$ and let $Y$ be a normalised cycle ($Y_3=1$)
+orthogonal to $P$.
+Then the Laguerre power of the point/radius pair $(p(P),P_0/P_3)$ with respect to $Y$ equals
+\[
+-\frac{B(P,P)}{P_3^{\,2}} .
+\]
+Consequently, if $P$ is orthogonal to a family of normalised cycles $\{Y_i\}_{i\in\iota}$, then the
+powers of $(p(P),P_0/P_3)$ with respect to all $Y_i$ coincide, whatever the index set $\iota$.
+\end{theorem}
+
+This is \decl{PaperK.power\_eq\_of\_B\_eq\_zero} (\src{PaperK}{LieCore.lean}{155}) and
+\decl{PaperK.equal\_power} (\src{PaperK}{LieCore.lean}{164}). The $n=2$ coordinate form is
+\decl{PaperK2.power\_eq\_const} and \decl{PaperK2.equal\_power}
+(\src{PaperK}{TwoD.lean}{38},\,\src{PaperK}{TwoD.lean}{47}), which give the common value explicitly as
+$\lVert p\rVert^2-\rho^2+2P_4/P_3$; the $\RR^3$ form is \decl{PaperK3.equal\_power} with constant
+$\lVert p\rVert^2-\rho^2+2P_5/P_4$ (\src{PaperK}{ThreeD.lean}{32}); and the general-$n$ form is
+\decl{PaperKn.equal\_power}. In the source's convention the constant is
+$+(P\mid P)/p_v^2$, which is the sign remark of \S\ref{sec:encoding} in action.
+
+The metric reading is immediate: $\lVert p-c\rVert^2-(\rho-r)^2$ is, up to the sign convention, the
+power of $p$ with respect to the circle of centre $c$ and radius $\rho-r$ --- Mathlib's
+\texttt{Sphere.power} of that sphere, which is the Laguerre power of the two cycles. So the theorem says: \emph{$P_X$ is the centre of a sphere whose power with
+respect to every cycle orthogonal to $P_X$ is the same number.} In the degenerate cases of
+\S\ref{sec:degenerate} this is the statement that survives when the source's centre-line does not
+exist, and it is what the proofs there use.
+
+\section{Degenerate configurations}\label{sec:degenerate}
+
+The source's statements are about the line through two (affine) centres. That line can fail to exist
+in two ways: the source's Proposition~3.1 assumes ``exactly two distinct Apollonius cycles'', so it
+excludes equality but not concentricity, and both cases occur below. Both happen in configurations of interest, and in both the concurrency point still
+has a canonical value.
+
+\paragraph{Equal circles: the circumcentre.} For three circles of a common radius $r_0$ with
+non-collinear centres, every vector $P$ orthogonal to all three with $P_3\neq0$ has $p(P)$ equal to
+the circumcentre of the three centres. This is \decl{PaperK2.PX\_circumcentre} (\src{PaperK}{TwoD.lean}{144}), proved by
+identifying the equal-power point with the circumcentre and using uniqueness of the latter
+(\decl{PaperK2.equal\_power\_point\_unique}, \src{PaperK}{TwoD.lean}{130}). At $r_0=0$ this recovers
+the source's circumcentre example, where the three cycles are point cycles at the vertices; the
+credit for the geometric statement is the source's.
+
+\begin{theorem}[Equilateral triple]\label{thm:equilateral}
+Let $P$ be a cycle with $P_3\neq0$ orthogonal to the three unit circles centred at $(0,0)$, $(2,0)$
+and $(1,\sqrt3)$. Then $p(P)=(1,\sqrt3/3)$.
+\end{theorem}
+
+This is \decl{PaperK2.equilateral\_PX} (\src{PaperK}{TwoD.lean}{177}), with the parametric version
+\decl{PaperK2.equilateral\_PX\_param} and the direct perpendicular-bisector check
+\decl{PaperK2.equilateral\_centre\_unique}. The point of the theorem is the quantification: the
+triangle centre is forced by the three equal circles alone, so the fourth circle --- which in the
+source's set-up is what makes the Apollonius pair exist --- does not move $P_X$. That is the sense in which the locus is
+removable here: for the three equal circles the Apollonius pair is always concentric, so the
+centre-line of that subset never exists, and the point is fixed nonetheless --- the fourth circle
+moves $A,A'$ but not $p(P)$, and its hypothesis is unused in the Lean proof. Continuity in the fourth
+circle is a numerical observation (\texttt{EXTENSION.md} \S2), not a theorem.
+
+\begin{theorem}[Square: concentric Apollonius pairs]\label{thm:square}
+Let the four cycles be the unit circles centred at $(\pm1,\pm1)$. For each $3$-subset, the affine
+cycles tangent to the three are exactly those centred at the origin with radius $1+\sqrt2$ or
+$1-\sqrt2$; the two are distinct and concentric, so no centre-line exists. Nevertheless the space of
+\emph{vectors} orthogonal to all four is two-dimensional --- exactly
+$\operatorname{span}\{(1,0,0,0,1),(0,0,0,1,1/2)\}$, and neither spanning vector is null --- and
+every such vector with $P_3\neq0$ has $p(P)=(0,0)$.
+\end{theorem}
+
+This is the group \decl{PaperK2.square\_apollonius}, \decl{PaperK2.square\_apollonius\_radii\_ne},
+\decl{PaperK2.square\_null\_space}, \decl{PaperK2.square\_null\_span},
+\decl{PaperK2.square\_null\_indep} and \decl{PaperK2.square\_PX} in
+\src{PaperK}{TwoD.lean}{217}--\src{PaperK}{TwoD.lean}{286}. Two things are worth separating. The
+geometric fact is that the Apollonius pair degenerates to two concentric circles: the source's
+Proposition~3.1 hypothesis ``exactly two distinct Apollonius cycles'' \emph{holds} among affine
+cycles, so the proposition's conclusion is not merely hard to state, it is undefined at this
+configuration --- a gap in the source's hypotheses, exhibited in Lean among affine cycles. That no
+oriented line ($v=0$) is an Apollonius cycle here is a hand argument, not a theorem of ours. The algebraic fact is that the
+null space drops from one dimension to two: $P$ is not unique as a vector, but the \emph{point} is,
+and the equal-power proof (\decl{PaperK2.square\_PX\_via\_equal\_power}) shows why, by reducing to the
+circumcentre of the triple that omits the fourth circle.
+
+\paragraph{The regular tetrahedron in $\RR^3$.} For the four unit spheres centred at
+$(1,1,1),(1,-1,-1),(-1,1,-1),(-1,-1,1)$ and an arbitrary fifth sphere, every cycle $P$ orthogonal to
+all five with $P_4\neq0$ has $p(P)=(0,0,0)$ (\decl{PaperK3.tetra\_PX\_origin},
+\src{PaperK}{ThreeD.lean}{91}), with the uniqueness step \decl{PaperK3.tetra\_equidistant\_unique}
+(the equidistant point is the origin, at squared distance $3$). Two Apollonius cycles of the four
+spheres are centred at $P_X$, with radii $\sqrt3+1$ and the orientation-reversed $1-\sqrt3$
+(\decl{PaperK3.tetra\_E1\_apollonius}, \src{PaperK}{ThreeD.lean}{142}); the statement proves that
+both are $B$-orthogonal to the four spheres, not that no third exists. The tangency is verified in the
+B-form (\decl{PaperK3.tetra\_tangent\_B}), as two real-number identities
+(\decl{PaperK3.tetra\_tangent\_sq}, \decl{PaperK3.tetra\_radii\_metric}), and against Mathlib's
+\emph{unsigned} tangency predicates through \decl{PaperK3.bridge\_sph\_isExtTangent}. The scaled family $\texttt{tetraFamR}$ is the same statement for
+spheres of common radius $s>0$ (\decl{PaperK3.tetraR\_PX\_origin},
+\decl{PaperK3.tetraR\_tangent\_B}), and the four centres are affinely independent
+(\decl{PaperK3.tetra\_affineIndependent}).
+
+This theorem carried the misleading name \texttt{PaperK3.tetra\_thm36} in an earlier version, which is
+how it invited the reading that Theorem~3.6 had been formalised. It has been renamed
+\decl{PaperK3.tetra\_E1\_apollonius}, because that is what it is: a statement about where the
+Apollonius pair of the four spheres is centred, with no hyperplane family and no $T_i$ anywhere in
+its statement. The rename is a correction of the record, not a change of claim. Two residues are recorded rather
+than tidied: the theorem's own docstring still reads ``Thm 3.6 conclusion in the regular-tetrahedron
+case'' and is queued for the next commit, and the Layer-15 comparison was run on the pre-rename file,
+whose only difference is the name.
+
+\paragraph{The regular simplex at general $n$.} The pattern is not special to dimension three. Let
+$n+1$ unit spheres have affinely independent centres with centroid $0$. If in addition the centres
+have equal norms, then every vector $P$ orthogonal to them with $P_v\neq0$ has $p(P)=0$
+(\decl{PaperKn.simplex\_E1}; the statement carries an extra cycle hypothesis, unused in the proof), and
+the common squared distance from $p(P)$ to the centres is the squared circumradius
+(\decl{PaperKn.simplex\_circumradius}). The equal-norm hypothesis is not
+cosmetic: without it the statement is false, and a counterexample is a theorem
+(\S\ref{sec:negative}). This is also the right general statement of the pattern, in the light of the
+equal-circles theorem above: $P_X$ is equidistant from the centres at general $n$
+(\decl{PaperKn.dist\_sq\_const}), hence the circumcentre; that identification is proved as such only
+at $n=2$, and the centroid is the circumcentre only when the two coincide.
+
+\section{Negative results}\label{sec:negative}
+
+Two claims that we had reason to believe, and that are false; both are recorded because a paper that
+reports only what closed misleads about what the mathematics is like.
+
+\begin{theorem}[The centroid reading is false]\label{thm:negative}
+Let $n+1$ unit spheres in $\RR^n$ have affinely independent centres with centroid $0$. It does
+\emph{not} follow that $P_X=0$. At $n=2$ the following is a counterexample.
+\end{theorem}
+
+\noindent The natural generalisation of the equilateral and tetrahedral cases is the statement just
+refuted. It fails at $n=2$. Take centres $(-1,-1),(2,-1),(-1,2)$ (sum zero,
+affinely independent), unit radii, and the fourth cycle $X_0$ of radius $3$ centred at $(3,3)$. The
+vector $P=(0,(1/2,1/2),1,3/2)$ is orthogonal to all four --- $X_0$ is not a fifth cycle, there are
+only four at $n=2$ --- has $P_3=1$, and $p(P)=(1/2,1/2)\neq0$
+(\decl{PaperKn.brief\_E\_false}, \decl{PaperKn.cex\_orth}, \decl{PaperKn.cex\_pt\_ne}). The
+correct statement is the circumcentre one; the failure is exactly the failure of
+``circumcentre $=$ centroid''. That the hypothesis is the right repair is proved by
+\decl{PaperKn.simplex\_E1} in the presence of \texttt{hnorm}.
+
+\paragraph{Invariance under the completion map.} Theorem~3.4 derives, from the Apollonius pairs
+$A_i,A_i'$, a second family $B_i,B_i'$ whose centre-lines pass through $P_X$. A reader will ask
+whether the construction is invariant, i.e.\ whether the concurrency point of the derived
+configuration is again $P_X$. It is not. In six generic planar configurations where every step is
+well defined, the distance between the two points is $5.7\times10^{-2}$ to $3.1\times10^{-1}$, while
+in the same runs the residual of Theorem~3.4's own conclusion is at most $8.7\times10^{-14}$
+(\texttt{AFM/PaperK/num/iterate.py}; \texttt{AFM/PaperK/EXTENSION.md} \S1). This is a numerical
+refutation, not a Lean theorem, and it is labelled as such: it kills a plausible claim before a
+machine spent budget on it.
+
+A third, smaller negative result belongs here too: our own first general-$n$ brief for the
+degenerate case omitted the equal-norm hypothesis, and the error was found by the runner, not by us.
+That history is why the hypothesis is stated prominently in \S\ref{sec:degenerate} rather than
+buried in a proof.
+
+\section{Verification}\label{sec:verification}
+
+The development is a single Lean~4 project on Mathlib, pinned at Lean \texttt{v4.33.1}. Every figure below is
+read from one commit, \texttt{\pkcommit}: the gate and tampering lines were produced there, the
+battery was run there, and the second-machine rebuild was made from a \texttt{git archive} of it.
+Where a number comes from an earlier run, the sentence that quotes it says so.
+
+\paragraph{The gate.} \texttt{gate.sh} compiles the project and then checks, for each of 73 required
+declarations (24 core statements, 36 definition bridges and 13 general-$n$ theorems), that it depends
+only on the standard axioms. It prints \texttt{PASS (73 declarations, standard axioms only)}. The
+gate checks axioms, not meaning: it says that these 73 pinned declarations have no \texttt{sorry},
+no axiom of their own and no native-evaluation shortcut in their dependency cones. The other
+theorems of the files are covered by the forbidden-token scan and by the build, not by an axiom
+report, and the count above should be read that way.
+
+\paragraph{The tampering suite.} Nine negative tests are applied to copies of the development, each
+expected to be \emph{rejected}: a \texttt{sorry}, an axiom declaration split across two lines, a fake
+evaluation trick, a macro disguise, a wrapper whose proof goes through a non-standard axiom, and four semantic defects
+planted in real statements --- dropping the second null hypothesis from the tangency identity
+(\texttt{falsehyp}), changing the null-cone constant from $2$ to $3$ (\texttt{falsestmt}), dropping
+the non-collinearity hypothesis $D_3\neq0$ from the planar equal-power uniqueness
+(\texttt{falsehyp2}), and changing the tetrahedral radius $\sqrt3+1$ to the false $\sqrt3+2$
+(\texttt{falsestmt2}). All nine are rejected, and the suite prints
+\texttt{ALL TAMPERING TESTS REJECTED}. The four semantic tests are the ones worth having: each is a
+statement a reader might plausibly have written, and each fails at the build stage, which is the
+suite testing the \emph{statements} rather than the proofs. The suite's own comments record one explicit
+counterexample and the reason for a second (for instance $X=(1,0,0,1,\tfrac12)$,
+$Y=(1,0,0,1,0)$ for the tangency identity), so a rejection is not merely a compile failure.
+
+\paragraph{The battery.} A nine-layer battery (baseline build, gate, tamper, mutations,
+contradiction probe, ablation, linter, satisfiability, bridge inventory) is run at \texttt{\pkcommit}
+over the five files, a superset of the 73 the gate pins. Its numbers: the baseline build compiles 5
+of 5 files; 444 of 460 mutants are killed, 16 survive; the contradiction probe finds 0 contradictory
+statements in 75 probes; satisfiability is certified for 73 of 127 declarations, with 54 unresolved
+and none invalid; ablation needs 238 hypotheses and reports 4 unused, one of them
+\decl{PaperKn.simplex\_E1}'s extra cycle hypothesis (\texttt{\_hP0}, underscore-marked in the source
+because the extra cycle plays no part in the proof); the battery's linter layer reports 0 warnings,
+while Lean's own style linter reports one \texttt{unnecessarySeqFocus} warning at
+\texttt{TwoD.lean:272}. Eleven of the 16 survivors are mutants of
+\decl{PaperK3.tetra\_centre\_norm} (three) and \decl{PaperK3.tetra\_affineIndependent} (eight),
+which is a fair description of where our statement-level redundancy is; one is a helper of the
+counterexample of \S\ref{sec:negative} whose mutation keeps the helper true while breaking the
+theorem that uses it. They are published by name in the battery report rather than rounded into a
+percentage. Two results belong beside the numbers rather than hidden: the bridge inventory
+(Layer~9) reports 24 notions, 3 bridged and 21 without a bridge, and its name-pattern matcher does
+not credit the \texttt{bridge\_*} lemmas, so that layer is uninformative rather than negative; and no
+mutants were generated for three theorems this paper headlines
+(\decl{PaperK.explicit\_power}, \decl{PaperK.explicit\_power\_indep},
+\decl{PaperK.prop31\_cofactor}), so mutation coverage is not uniform across \S\ref{sec:explicit}.
+
+\paragraph{Definition bridges.} \texttt{PaperK/Bridge.lean} (438 lines) proves 36 statements
+connecting the development's vocabulary to Mathlib's: $B$ versus \texttt{dist} and
+\texttt{Sphere.power}, the cofactor versus \texttt{Matrix.det}, \texttt{circ}/\texttt{sph} versus
+\texttt{EuclideanGeometry.Sphere} and its tangent predicates, and determinant collinearity versus
+\texttt{Collinear}. Only two bridges are \texttt{rfl}. The bridges are where the honest gaps are
+recorded: Mathlib's tangency predicates are unsigned, so oriented (negative) radii can only appear as
+the negated radius and the orientation survives only in the $B$-statements; and the
+\texttt{ccx}/\texttt{ccy} formula versus \texttt{Affine.Simplex.circumcenter} is bridged on the
+distance half only.
+
+\paragraph{Layer 14: restatements in Mathlib vocabulary.} Independent files, importing
+\texttt{Mathlib} only and re-proving the claims, are the closest thing to a statement-level audit
+that this workflow has. Part~1 covers seven planar and linear-algebra claims plus one $\RR^3$ claim: 6 equivalent, 1 weaker
+(\decl{PaperK.prop31} loses the explicit affine coefficients) and 1 expressed against Mathlib's
+circumcentre instead of the Cramer formula; it also found that the tetrahedral statement needs
+neither the fifth sphere nor $P_4\neq0$. Part~2's eight remaining planar claims now all compile,
+after four proof repairs with no statement changed. Part~3 (the five $\RR^3$ claims) gives 5
+equivalent restatements, with the caveat that the tetrahedral theorem is a faithful restatement of
+an \emph{E1} fact and not of Theorem~3.6. The layer's credit is mixed and worth stating exactly: the
+misleading name was caught by part~3's audit and by the Layer-15 comparison, while the equal-norm
+hypothesis was caught by the general-$n$ run and the determinant sign by the numerical check of
+\S\ref{sec:explicit}, both before this layer existed.
+
+\paragraph{Layer 15: comparison with the source.} A row-by-row comparison against the verbatim
+arXiv source (17 rows, 44 identifiers, 16 quoted statements) is in
+\texttt{AFM/PaperK/layer15/L15\_COMPARE.md}. Its conclusion is the reason this paper's abstract is
+as narrow as it is: \emph{not one row is equivalent}. The formalised statements are either weaker
+than the source's (the spanning hypothesis instead of its derivation), restricted to the affine chart
+($v=1$), or about different objects (the $B$-value instead of the projective form). The comparison
+also lists, explicitly, the source items with \emph{no} counterpart at all: the decomposition lemma,
+the reflection $R_P$ and its interchange lemma, Theorem~3.4, Theorem~3.6, and the Morita corollary.
+
+\paragraph{Layer 13: blind re-formalisation.} The layers above test proofs; this one tests whether the
+statements say what the prose says. A model that had not seen the development (a separate session with
+no access to the Lean files) was given only the mathematical prose of the frozen draft --- theorem
+statements, definitions and conventions, with Lean names, code and repository links stripped --- and
+wrote 43 statements in Mathlib vocabulary. That file elaborates with \texttt{rc=0} and no proofs.
+A second model, different from the writer, then paired each statement with the repository declaration
+I designated for it --- the pairing was made by me from the paper's own theorem labels, not by the
+comparer --- and proved the two implications in Lean, using only unfolding, encoding transport
+($\RR\times\RR$ versus \texttt{Fin 2 $\to$ $\RR$}, the product encoding of a cycle versus the
+structure, \texttt{lag} versus \texttt{power}) and explicit arithmetic; no theorem of the
+development is used as a proof step, only as a type. Thirty-three of the 43 rows carry at least one
+implication certificate (25 in both directions, 8 in one), three rows stopped with a recorded
+difference, two were rejected at the pairing stage because the designated declaration does not state
+the blind claim, and five are explicitly unpaired (no counterpart exists: a signature statement, two
+restatements of the tangency defect, the numerical instance of \S\ref{sec:explicit}, and the
+``neither spanning vector is null'' claim). Of the differences, \emph{one} is real: the blind reading
+of the cofactor variant expected the full conclusion of Theorem~\ref{thm:prop31}, while
+\decl{PaperK.prop31\_cofactor} concludes the collinearity only. The remaining differences are
+artefacts of the blind encoding, and several of them are cases where the Lean is \emph{stronger} than
+the prose: the blind reading supplied a null hypothesis on $P$ that the repository does not need
+(Theorem~\ref{thm:equilateral} and the tetrahedral statement), restricted a family to one universe,
+chose unit radii where the repository has a common radius $s$, and fixed the tetrahedral centres where
+\decl{PaperK3.tetraFamR} scales them. Two further gaps the exercise exposed are in the prose rather
+than the code, and both had already been repaired in this draft: ``cycle'' in
+Theorem~\ref{thm:equalpower} must mean \emph{null}, since the identity is false for a general vector,
+and Theorem~\ref{thm:prop31} never introduces $P$ in its list of objects, so it is universally
+quantified. The comparison file is \texttt{scratch/BlindCompare\_K.lean} at \texttt{\pkcommit}
+(\texttt{sha256} \texttt{87a22493...}), with the report in
+\texttt{AFM/PaperK/layer13/L13\_COMPARE.md}.
+
+\paragraph{Two-machine receipt.} The repository was exported with \texttt{git archive} at the
+pinned commit and rebuilt on a second machine (arm64 macOS, same Lean version, separate Mathlib
+cache). The build exited 0, the gate printed the same \texttt{PASS (73 declarations)} line, the
+tampering suite rejected all nine, and the five library files are byte-identical to the first
+machine's (\texttt{sha256} \texttt{24e80351...} Bridge, \texttt{9e28c5a3...} GeneralN,
+\texttt{6a19ca20...} LieCore, \texttt{3b326b04...} ThreeD, \texttt{a77e2e53...} TwoD).
+
+\paragraph{What is gated, and what is not.} The general-$n$ development is part of the repository
+(\texttt{PaperK/GeneralN.lean}, 294 lines) and its 13 axiom-checked theorems are in the gate, so the
+count of 73 covers them; the file holds 32 theorem and lemma declarations in all, and the other 19
+are covered by the token scan and the build only. The layer-14 restatement files remain outside the
+gate, and no number above includes them. We say so here because a count that quietly includes
+ungated files is the commonest way this kind of paper overstates itself.
+
+\section{What is not formalised}\label{sec:not}
+
+For the reader who wants to know how far the machine proof reaches, here is the boundary, in the
+source's own terms.
+
+\begin{enumerate}
+\item \textbf{Theorem~3.4} (the two-step construction): not formalised. Numerically checked at $n=2$
+before any dispatch (residual at most $8.7\times10^{-14}$, \texttt{EXTENSION.md} \S1), and the
+invariance question of \S\ref{sec:negative} was tested in the same runs. To formalise it one needs the construction of the
+derived cycles $B_i,B_i'$, which depends on the reflection $R_P$ of the Lie quadric --- itself
+absent from our development.
+\item \textbf{Theorem~3.6} (the inscribed sphere): not formalised in any dimension. The missing
+ingredients are precise. (a) Hyperplanes as cycles at infinity: an oriented plane
+$\{x:n\cdot x=h\}$, $\lVert n\rVert=1$, must be encoded as the null vector $(1,n_1,\dots,n_n,0,h)$, which is
+the cycle of the oriented plane $\{x:n\cdot x=-h\}$; no theorem of ours is stated for a hyperplane
+cycle. (b) The families
+$T_i=\{H: H\text{ null},\ v=0,\ B(H,A_i)=B(H,A_i')=0\}$ must be constructed for every $i$, which
+needs the Apollonius pairs for all $n+2$ subsets simultaneously. (c) The ``$P_X$ not at infinity''
+hypothesis must be carried as $p_v\neq0$ throughout, and the sphere centred at $P_X$ must be shown
+tangent to each $H\in T_i$. Our \decl{PaperK2.power\_eq\_const} and
+\decl{PaperK3.equal\_power} are the equal-power shadow of this argument --- the sphere exists as a
+point of equal power --- but a tangent hyperplane is not a power equality, and we do not claim the
+step.
+\item \textbf{The Morita corollary}: not formalised. Beyond the above, our $\RR^3$ tetrahedral
+configuration is \emph{not} Morita's: its four unit spheres are $2\sqrt2$ apart, so they are not
+mutually tangent, and no tangent cone or inscribed sphere appears. Calling it Morita's theorem would
+be an error of exactly the kind the layer-15 comparison exists to prevent.
+\item \textbf{The reflection $R_P$ and the interchange lemma}: absent, as noted.
+\item \textbf{Space forms}: optional in the plan, out of scope here.
+\end{enumerate}
+
+\section{Prior art and what is new}\label{sec:prior}
+
+A prior-art scout was run \emph{before} the proof dispatch, as the workflow requires, and is in
+\texttt{AFM/PaperK/SCOUT.md}. It was a first-pass search --- arXiv, GitHub code search,
+Mathlib and the AFP; zbMATH and MathSciNet were not searched --- and its own header requires a
+pre-draft re-run, which was not made. What it found: no formalisation of any statement of the source,
+and no Lie-sphere-geometry development in any proof assistant; the closest work is a formalisation of
+the augmented Descartes theorem at general $n$ \cite{augdescartes}, which contains the
+Descartes/Soddy \emph{identities} and their converses, and which pre-empts any claim that those
+identities are new. Accordingly this paper claims no identity as new.
+
+What is new here, in the only sense a formalisation paper can defend, is the following.
+\begin{itemize}
+\item The Lie-coordinate model for affine cycles in $\RR^2$, $\RR^3$ and $\RR^n$, and, at $n=2$,
+the cofactor construction, including the coordinate-level tangency criterion in the form \eqref{eq:tangency} that
+a Lean proof can actually use (with the null hypotheses made explicit --- the identity is false
+without them, and the error term is identified).
+\item The collinearity theorem \S\ref{sec:prop31} with its hypothesis made explicit, which is a
+statement about the source's Proposition~3.1 that a reader can check line by line.
+\item The explicit determinant formula of \S\ref{sec:explicit}. The source gives existence only; a
+formula is the kind of statement a machine proof can be held to, and the equal-power form makes it
+checkable without solving the Apollonius problem again.
+\item The equal-power property of \S\ref{sec:equalpower}, and the degenerate configurations of
+\S\ref{sec:degenerate}, which are not in the source at all. The square configuration in particular is
+a case where the source's hypotheses hold among affine cycles while its conclusion is not even
+statable --- a mathematical remark independent of any formalisation, with the affine restriction made
+explicit in \S\ref{sec:degenerate}.
+\item The two negative results of \S\ref{sec:negative}.
+\end{itemize}
+We do not claim to have formalised Płatek's theorems; \S\ref{sec:not} is the accounting.
+
+\section{Availability and reproducibility}\label{sec:availability}
+
+The Lean development is a single repository, \texttt{paperk}, with five library files
+(\texttt{PaperK/LieCore.lean}, \texttt{TwoD.lean}, \texttt{ThreeD.lean}, \texttt{Bridge.lean},
+\texttt{GeneralN.lean}; 272, 332, 217, 438 and 294 lines), a \texttt{gate.sh} and a nine-test \texttt{tests/tamper.sh}. The commit
+this paper refers to is \texttt{\pkcommit}. The repository has no public remote yet: it is being
+prepared for deposit together with the four repositories of the companion paper, and until it is
+pushed the \texttt{File:line} anchors in this paper are text, not links --- we would rather say that
+than print URLs that return 404. The pinned commit, the gate line, the tampering line and the
+byte-identical two-machine hashes in \S\ref{sec:verification} are the reproducibility statement that
+does not depend on a remote.
+
+The supporting material --- numerical checks (\texttt{AFM/PaperK/num/}), the extension design, the
+layer reports, the layer-15 comparison against the verbatim source, and the battery reports --- is
+kept alongside the paper. The battery and gate logs are quoted at the pinned commits; where a
+figure comes from an earlier commit (the battery's mutation layer), the paper says so in the
+sentence that quotes it.
+
+
+\appendix
+\section{Statement-level comparison with the source}\label{app:l15}
+
+The table below condenses the Layer-15 comparison (\texttt{layer15/L15\_COMPARE.md}, 17 rows, 44
+identifiers, 16 statements quoted from the verbatim arXiv source). Verdicts: \textbf{E} equivalent,
+\textbf{O} ours weaker or otherwise different, \textbf{N} no source counterpart or a different object.
+The count is 0 E, 6 O, 11 N. This is the table behind the abstract's narrow claim: our formalisation is
+the linear core, not the theorem.
+
+\begin{longtable}{p{0.19\linewidth} p{0.045\linewidth} p{0.66\linewidth}}
+\toprule
+our statement & verdict & reason \\
+\midrule
+\endhead
+\decl{PaperK.B}, \decl{PaperKn.B} & N & $B$ is the negative of the source's form: same null cone, same
+orthogonality, values flip sign. \\
+\decl{PaperK2.circ}, \decl{PaperK3.sph}, \decl{PaperKn.aff} & O & only the $v=1$ affine chart of the
+source's Definition~2.1; hyperplanes exist as raw vectors but no theorem quantifies over them. \\
+\decl{PaperK.B\_self\_eq\_zero\_iff}, \decl{PaperK3.B\_self\_zero\_iff},
+\decl{PaperKn.B\_self\_eq\_zero\_iff} & O & proves the coordinate relation
+$r^2-\lVert c\rVert^2=2vw$; ``represents a cycle'' and the projective class are not formalised. \\
+\decl{PaperK.tangency\_identity}, \decl{PaperK.B\_eq\_zero\_iff\_tangent} & O & two spheres with
+$v\neq0$ only; tangency is the oriented equation; both null hypotheses are required (the identity is
+false without them). \\
+\decl{PaperK.prop31}, \decl{PaperK.prop31\_cofactor} & O & the collinearity step given the spanning
+hypothesis; the source's derivation of that hypothesis from two distinct Apollonius cycles is absent;
+centres at infinity excluded. \\
+\decl{PaperKn.prop31} & O & same shape at general $n$; concurrency of all $n+2$ lines is an immediate
+corollary but is not itself a stated theorem. \\
+\decl{PaperK.equal\_power}, \decl{PaperK.power\_eq\_of\_B\_eq\_zero} & N & no source counterpart: the
+equal-Laguerre-power reformulation is ours. \\
+\decl{PaperK.explicit\_power}, \decl{PaperK.explicit\_power\_indep} & N & no source counterpart; needs
+$\det[r\,a\,b\,1]\neq0$; the link to $\texttt{pt}(P)$ is hand-derived (\S\ref{sec:explicit}). \\
+\decl{PaperK2.equal\_power}, \decl{PaperK2.PX\_circumcentre}, \decl{PaperK2.equilateral\_PX},
+\decl{PaperK2.square\_PX} & N & E1 in $\RR^2$, equal radii; the continuity statement is numerical only. \\
+\decl{PaperK2.PX\_circumcentre} at $r_0=0$ & O & recovers the source's circumcentre example as an
+instance; the credit is the source's. \\
+\decl{PaperK2.square\_apollonius}, \decl{PaperK2.square\_null\_space} & N & the square's Apollonius pairs
+are concentric and distinct, so the source's hypothesis holds while its conclusion is undefined; the null
+space is two-dimensional. \\
+\decl{PaperK3.tetra\_E1\_apollonius} vs Theorem~3.6 & N & different statement: no $A_i$, no $T_i$, no
+hyperplane; it is an E1 fact about the Apollonius pair's centre. \\
+\decl{PaperK3.tetra\_E1\_apollonius}, \decl{PaperK3.tetra\_tangent\_B} vs Morita & N & not Morita's
+configuration: the four unit spheres are $2\sqrt2$ apart, not mutually tangent. \\
+\decl{PaperK3.tetra\_PX\_origin}, \decl{PaperK3.tetraR\_PX\_origin}, \decl{PaperK3.equal\_power} & N &
+E1 in $\RR^3$ for the regular tetrahedron plus an arbitrary fifth sphere. \\
+Theorem~3.6 at general $n$ & N & not formalised: no statement names the hyperplane families $T_i$. \\
+\decl{PaperKn.simplex\_E1}, \decl{PaperKn.simplex\_circumradius} & N & E1 at general $n$ under the
+equal-norm hypothesis, which is necessary (\decl{PaperKn.brief\_E\_false}). \\
+\decl{PaperKn.brief\_E\_false} & N & refutes our own brief's centroid version; it refutes nothing in the
+source and shows the correct reading is the circumcentre. \\
+\bottomrule
+\end{longtable}
+
+\noindent Source items with no Lean counterpart at all, listed so that nothing is read into silence: the
+decomposition lemma, the reflection $R_P$ and its interchange lemma, Theorem~3.4 (numerics at $n=2$ only),
+Theorem~3.6, the Morita corollary, and the \S4 examples (incentre, outer Apollonius, mixtilinear, Soddy
+line, gasket). We also record a defect in the source's Theorem~3.4 statement: it lists pairs
+$B_1,\dots,B_n$ while the index runs to $n+2$.
+
+\section*{Acknowledgements}
+The Lean work was carried out on two machines dedicated to this series; the battery harness, the
+tampering suite and the layer reports were developed for the companion paper on bicentric
+quadrilaterals and the arbelos. The prior-art scout and the layer-15 comparison are the parts of the
+workflow that changed this paper the most.
+
+\begin{thebibliography}{9}
+\bibitem{platek} M.~Płatek, \emph{On the Inscribed Sphere and Concurrent Lines through the Centers of
+Apollonius Spheres in $\mathbb{R}^n$}, arXiv:2604.03067v1 (submitted 3 April 2026).
+\bibitem{augdescartes} \texttt{JD-Jones-ASES}, \texttt{augmented-descartes-lean}, a general-$n$
+formalisation of the augmented Descartes theorem (2026); consulted as prior art in
+\texttt{AFM/PaperK/SCOUT.md}.
+\end{thebibliography}
+
+\end{document}

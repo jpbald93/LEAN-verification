@@ -1,0 +1,30 @@
+# Two-machine receipt — Paper K at 464a59d (john, arm64 macOS)
+
+Exported with `git archive 464a59d` from jack (2026-11-16 18:11 EST) and rebuilt on john in
+/Users/john/pk_export_464a59d (same Lean v4.33.1, separate Mathlib cache).
+
+## Source hashes (john = jack)
+24e803518794cc2a97087f1af7dcdadd9c6567e937e847ebc422b2a2b90f27b8  PaperK/Bridge.lean
+9e28c5a3f15c5e87526715b20c39013b8dee82a29b8aa54754c763b9883eca4a  PaperK/GeneralN.lean
+6a19ca206116e5f78c7ef3596fc46dc36851324c48b708cccf1951a375f97581  PaperK/LieCore.lean
+3b326b04f20c6e32e4d155c3c3fd8b00dd7c16d993902a0cc73b8f493b9d1cb1  PaperK/ThreeD.lean
+a77e2e53dd80ef77e3a6b95938ddf2ce91790b5e03e8a9c72320f3c20dca8c7e  PaperK/TwoD.lean
+d1d23e3b95b399894aeb32a72832b059b871c95f5341d662fd5f34a2a3d61729  PaperK.lean
+f29cc5d41fbcf84d963714dc4cc0b0487a3626c2c176ee4444361044a57acc74  gate.sh
+84beb11afac698744f03f919bc1796fa14211229ea9457b569e7d9c608d0549e  tests/tamper.sh
+
+## Build
+info: PaperK/GeneralN.lean:294:0: 'PaperKn.brief_E_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+✔ [8711/8712] Built PaperK (2.6s)
+Build completed successfully (8712 jobs).
+build_rc=0
+
+## Gate
+'PaperKn.brief_E_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+PASS (73 declarations, standard axioms only)
+
+## Tamper
+ok    falsestmt2 rejected (exit 1): FAIL: build
+ALL TAMPERING TESTS REJECTED
+
+Collected 2026-11-16 18:3x EST.

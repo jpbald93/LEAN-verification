@@ -1,0 +1,21 @@
+thm:twin | twin_left, twin_right
+thm:twin | twin_left_exists, twin_right_exists
+thm:area | arbelos_area
+thm:pappus | pappus_chain
+thm:pappus | pappus_tangent_big, pappus_tangent_left, pappus_tangent_succ
+thm:pappus | pappus_unique
+thm:bankoff | incircle_eq, bankoff
+thm:bankoff | bankoff_exists
+thm:steiner | steiner_porism
+thm:steiner | steiner_porism_simple, steiner_porism_disjoint
+thm:steiner | steiner_porism_strong, steiner_concentric_strong
+thm:steiner | steiner_concentric, exists_inversion_concentric
+thm:steiner | image_inversion_sphere
+thm:ptolemyinv | ptolemy_inequality
+thm:ptolemyinv | collinear_iff_dist_boundary, ptolemy_concyclic
+thm:peaucellier | peaucellier_add, peaucellier_inner, peaucellier_collinear
+thm:peaucellier | peaucellier, peaucellier_classic, peaucellier_line, peaucellier_classic_line
+thm:descartes | descartes
+thm:soddy | soddy
+thm:apollonian | descartes_solve, descartes_vieta
+thm:apollonian | descartes_reflect, apollonian_integral

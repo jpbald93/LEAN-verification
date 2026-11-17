@@ -1,0 +1,17 @@
+thm:bretschneider | bretschneider
+thm:brahmagupta | brahmagupta
+thm:pitot | pitot
+thm:pitot | pitot_converse
+thm:euler4 | euler_quadrilateral
+thm:ptolemy2 | ptolemy_second
+thm:vanaubel | van_aubel
+thm:newton | newton_line
+thm:fuss | fuss
+thm:radical | radical_center_concurrent
+thm:coaxal | pencil_through_common_point
+thm:johnson | johnson_mem_circles, johnson_circle
+thm:johnson | johnson_orthocenter, johnson_orthocenter_eq
+thm:johnson | johnson_reflection, johnson_congruent
+thm:simson | simson_det_eq_circumcircle_power
+thm:simson | simson_wallace
+thm:steinerline | steiner_line, steiner_line_orthocenter

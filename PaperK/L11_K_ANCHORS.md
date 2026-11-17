@@ -2,8 +2,8 @@
 
 Draft: `paperk.tex` (17 pp, 0 undefined refs), built 2026-11-17 11:20 EST from v4 after the round-3 review
 triage (`REVIEW_TRIAGE_k3.md`: Astra fix-check 0 open MAJOR, 2 partial and 3 new minor; Opus 2 MAJOR +
-14 minor); sha256 `a400e66a5f2bbf0f39245e11284ce83abae3ef217d699ff6796c3fc36515c1be`, PDF
-`7131a78fa03fd1727bc4af9103cda2f4b0a21de092aaea321408721c83cd25fe` (415,630 bytes). Repository snapshot at
+14 minor); sha256 `88d925345f1b4e39a5995caf973e69c4b6b8f000a6961f491c098bfcc6d7aa87`, PDF
+`75b03c324792f6e2d2a43d516e1557c4d00dd169f65d51b28126fd0ecac4d289` (415,643 bytes). Repository snapshot at
 the pinned commit `464a59d` (parent `62ccf87`).
 
 Checker: `namegate_k.py` — every `\decl{Name}` must exist as a declaration in the snapshot, and every

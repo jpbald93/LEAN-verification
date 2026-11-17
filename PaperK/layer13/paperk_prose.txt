@@ -1,0 +1,164 @@
+PAPER K (paperk_frozen_v2.tex, dated 16 November 2026) -- extracted mathematical prose
+Record of the only input given to the L13 blind writer. LaTeX markup stripped; Lean identifiers
+(\decl{...}) and file:line anchors removed deliberately so that the writer's statements are independent.
+Wording kept as close to the source as plain text allows.
+
+======================================================================
+ABSTRACT (claims)
+======================================================================
+A Lean 4 formalisation, on top of Mathlib, of part of the Lie-coordinate theory of Apollonius cycles
+behind M. Platek's concurrency theorem for n+2 cycles in R^n (arXiv:2604.03067).
+(1) Linear algebra: the Lie form of signature (n+1,2), its null cone, the tangency criterion, and, at
+    n=2, the cofactor construction that produces from n+2 cycles a vector orthogonal to all of them.
+    The collinearity step of the source's Proposition 3.1 -- the concurrency point lies on the line
+    joining the centres of the two Apollonius cycles of each (n+1)-subset -- is proved for n=2 and for
+    general n, under the hypothesis that the orthogonal complement of the remaining cycles is spanned
+    by the two Apollonius cycles. The derivation of that hypothesis from the existence of exactly two
+    distinct Apollonius cycles is NOT formalised.
+(2) Two statements not in the source: an explicit determinant formula for the point and radius of
+    equal Laguerre power at n=2 (identified with P_X only by a hand argument, not formalised), and the
+    equal-power property of P_X: every cycle orthogonal to it has the same Laguerre power.
+(3) Degenerate configurations where the source's centre-line is undefined: concentric Apollonius
+    pairs (the square), equilateral circle triples, the regular tetrahedron in R^3, and regular
+    simplices at general n (under an equal-norm hypothesis that cannot be dropped: a counterexample at
+    n=2 shows the unqualified statement is false).
+Negative results: the general-n "centroid" reading of the degenerate case is false (Lean
+counterexample); the conjecture that the completion map of the source's Theorem 3.4 fixes P_X is
+refuted numerically. Theorem 3.4, Theorem 3.6 and the Morita corollary are NOT formalised in any
+dimension. (Verification metadata: 73 gated declarations, standard axioms only, nine-test tampering
+suite, mutation battery, two-machine rebuild.)
+
+======================================================================
+SECTION 2 -- SOURCE CONVENTIONS
+======================================================================
+A cycle in R^n is X = (r, c_1..c_n, v, w) in V := R^{n+3}; r signed radius, c the centre
+coordinates, [c_1:...:c_n:v] the homogeneous centre, v=0 the points at infinity.
+(eq 2.1)  2wv = r^2 - |c|^2.
+Source form: (X|Y) = -x1 y1 + sum_{i=2}^{n+1} x_i y_i + x_{n+2} y_{n+3} + x_{n+3} y_{n+2}
+                   = -r r' + c.c' + v w' + w v'.
+[X] is a cycle iff (X|X)=0 (Lemma 2.4); two cycles tangent iff (X|Y)=0 (Lemma 2.5).
+Signature (n+1,2).
+Source results referred to (NOT formalised except the linear step of 3.1):
+ Prop 3.1: for n+2 cycles X and for each i the two Apollonius cycles A_i, A_i' of X \ X_i, the lines
+   through the centres of A_i, A_i' are concurrent at a point P_X.
+ Thm 3.4: a two-step construction produces a further pair B_i, B_i' whose centre-lines pass through P_X.
+ Thm 3.6: with T_i the hyperplanes tangent to both A_i and A_i', P_X not at infinity, there is a sphere
+   centred at P_X tangent to every hyperplane in every T_i.
+ Morita corollary: four mutually externally tangent spheres plus an outer sphere tangent to all four
+   have a unique inscribed sphere.
+P is a null vector of the (n+2)x(n+3) system of orthogonality to all n+2 cycles (a cofactor vector).
+Defect noted in the source's Thm 3.4: pairs B_1..B_n while the index runs to n+2.
+
+======================================================================
+SECTION 3 -- ENCODING (explicitly quantified claims)
+======================================================================
+n=2 cycle: function Fin 5 -> R, slots (r,a,b,v,w). n=3: Fin 6 -> R. General n: fields r, c : Fin n -> R, v, w.
+Paper's form: B(X,Y) = r r' - c.c' - v w' - w v'  (the NEGATIVE of the source's form).
+Zero-set statements transfer; value statements flip sign. Equal-power constant = -B(P,P)/p_v^2,
+i.e. +(P|P)/p_v^2 in the source convention.
+Claim: B(X,X)=0 iff X0^2 - X1^2 - X2^2 = 2 X3 X4 (n=2); at general n: r^2 - sum c_k^2 = 2vw.
+Claim (Gram matrix, n=2): symmetric G with G^2 = 1 and B(X,Y) = X.(G Y).
+Claim (tangency identity), both cycles on the null cone:
+   -2 v v' B(X,Y) = (r v' - r' v)^2 - |c v' - c' v|^2.
+   It is FALSE as a polynomial identity; the difference of the two sides is
+   -((Y_3)^2 B(X,X) + (X_3)^2 B(Y,Y)).
+   For v = v' != 0 it reduces to 2B(X,Y) = |c-c'|^2 - (r-r')^2; iff form for non-zero v-slots.
+Cofactor: for a 4x5 matrix M (rows = four cycles), cofactor(M)_k = (-1)^k det(M with column k deleted).
+   M . cofactor(M) = 0, and B(G.cofactor(M), M_i) = 0 for every row i.
+   Affine centre pt(P) = (P1/P3, P2/P3); every centre statement carries P3 != 0.
+Affine chart: circ(r,a,b) = (r,a,b,1,(r^2-a^2-b^2)/2) at n=2, analogues at n=3 and general n.
+
+======================================================================
+THEOREM 1 (Collinearity, n=2)
+======================================================================
+Let X_1..X_4, A, A' be vectors in R^5 -- no null-cone hypothesis on any of them is used -- and i an
+index. Suppose
+ (1) (spanning) every vector Y in R^5 orthogonal to all X_j with j != i lies in span{A, A'};
+ (2) (orthogonality) P is orthogonal to all four X_j;
+ (3) (finite centres) the v-slots of A, A' and P are non-zero.
+Then P in span{A,A'}, and there exist s,t in R with s+t=1 and p(P) = s p(A) + t p(A'), where p is the
+affine centre; in particular p(P), p(A), p(A') are collinear.
+Variants: P specialised to the cofactor vector G.cofactor(M); general n over n+2 cycles with the
+conclusion stated as Collinear in R^n.
+Appendix: concurrency of all n+2 lines is an immediate corollary but is not itself a stated theorem.
+
+======================================================================
+THEOREM 2 (Explicit equal-power point and radius, n=2)
+======================================================================
+Write the four cycles as rows i -> (r_i, a_i, b_i, s_i, 1) with s_i = a_i^2 + b_i^2 - r_i^2; let
+D = det[r a b 1] be the 4x4 determinant whose columns are the four rows' (r,a,b,1) entries, and
+det[r a b u] the determinant with the fourth column replaced by u.
+Assume D != 0. Put
+   p = ( -det[r b s 1]/(2D), det[r a s 1]/(2D) ),  rho = -det[a b s 1]/(2D),  s = a^2+b^2-r^2.
+Then for every i in {1,2,3,4}:
+   |p - c_i|^2 - (rho - r_i)^2 = |p|^2 - rho^2 + det[r a b s]/D,
+i.e. the point p with radius rho has the same Laguerre power w.r.t. all four cycles. (Companion
+statement: the right-hand side is independent of i.)
+Cautions in the prose: this does NOT prove p = p(P) for a cofactor vector (hand derivation). The
+correct vector is P = (q0, -q1, -q2, 2 q3, -q4), q = cofactor(M) [M the matrix of rows (r,a,b,s,1)]:
+it satisfies B(P, circ_i) = 0, its centre is p, its v-slot is -2D (not formalised as a whole).
+rho is not proved to be the inscribed-sphere radius of Thm 3.6; rho = cofactor r-slot / v-slot.
+Numerical check: four powers agree to 1e-15; the a<->b swapped version fails.
+
+======================================================================
+THEOREM 3 (Equal power)
+======================================================================
+Let P in R^5 be any vector with P3 != 0 and let Y be a normalised cycle (Y3 = 1) orthogonal to P.
+Then the Laguerre power of the point/radius pair (p(P), P0/P3) w.r.t. Y equals -B(P,P)/P3^2.
+Consequently, if P is orthogonal to a family of normalised cycles {Y_i}_{i in iota}, the powers of
+(p(P), P0/P3) w.r.t. all Y_i coincide, whatever the index set iota.
+Coordinate forms: common value |p|^2 - rho^2 + 2 P4/P3 (n=2); |p|^2 - rho^2 + 2 P5/P4 (R^3); general n.
+Laguerre power of (p,rho) w.r.t. cycle (c,r): |p-c|^2 - (rho-r)^2.
+
+======================================================================
+SECTION 6 -- DEGENERATE CONFIGURATIONS
+======================================================================
+Equal circles (n=2): for three circles of a common radius r0 with non-collinear centres, every vector
+P orthogonal to all three with P3 != 0 has p(P) = circumcentre of the three centres (uniqueness of
+the equal-power point). At r0 = 0 recovers the source's circumcentre example.
+
+THEOREM 4 (Equilateral triple). Let P be a cycle with P3 != 0 orthogonal to the three unit circles
+centred at (0,0), (2,0), (1, sqrt3). Then p(P) = (1, sqrt3/3).
+(Fourth circle: does not move P_X; its hypothesis is unused. Continuity in the fourth circle is
+numerical only.)
+
+THEOREM 5 (Square: concentric Apollonius pairs). Let the four cycles be the unit circles centred at
+(+-1, +-1). For each 3-subset, the affine cycles tangent to the three are exactly those centred at the
+origin with radius 1+sqrt2 or 1-sqrt2; the two are distinct and concentric, so no centre-line exists.
+Nevertheless the space of vectors orthogonal to all four is two-dimensional -- exactly
+span{(1,0,0,0,1), (0,0,0,1,1/2)}, and neither spanning vector is null -- and every such vector with
+P3 != 0 has p(P) = (0,0).
+(That no oriented line (v=0) is an Apollonius cycle here is a hand argument, not a theorem.)
+
+Regular tetrahedron in R^3: four unit spheres centred at (1,1,1),(1,-1,-1),(-1,1,-1),(-1,-1,1) and an
+arbitrary fifth sphere; every cycle P orthogonal to all five with P4 != 0 has p(P) = (0,0,0).
+Uniqueness: the equidistant point is the origin, at squared distance 3. Two Apollonius cycles of the
+four spheres are centred at P_X with radii sqrt3+1 and 1-sqrt3 (both B-orthogonal to the four
+spheres; not that no third exists). Scaled family: same statement for spheres of common radius s>0.
+The four centres are affinely independent. (Not Theorem 3.6, not Morita: spheres are 2 sqrt2 apart.)
+
+Regular simplex at general n: let n+1 unit spheres have affinely independent centres with centroid 0.
+If in addition the centres have equal norms, every vector P orthogonal to them with P_v != 0 has
+p(P) = 0 (the paper's statement carries an extra cycle hypothesis, unused), and the common squared
+distance from p(P) to the centres is the squared circumradius. Without equal norms it is false.
+P_X is equidistant from the centres at general n, hence the circumcentre (proved as such only at n=2).
+
+======================================================================
+THEOREM 6 (The centroid reading is false) -- SECTION 7
+======================================================================
+Let n+1 unit spheres in R^n have affinely independent centres with centroid 0. It does NOT follow that
+P_X = 0. At n=2: centres (-1,-1), (2,-1), (-1,2) (sum zero, affinely independent), unit radii, fourth
+cycle X0 of radius 3 centred at (3,3). The vector P = (0, (1/2,1/2), 1, 3/2) is orthogonal to all four,
+has P3 = 1, and p(P) = (1/2,1/2) != 0. Correct statement: circumcentre one (failure of
+"circumcentre = centroid"); the equal-norm hypothesis is the right repair.
+Invariance under the completion map (Thm 3.4): the concurrency point of the derived configuration is
+NOT again P_X -- six generic planar configurations, distance 5.7e-2 .. 3.1e-1, Thm 3.4 residual
+<= 8.7e-14. Numerical refutation, not a Lean theorem.
+
+======================================================================
+SECTION 9 -- WHAT IS NOT FORMALISED (claims of absence)
+======================================================================
+Thm 3.4 (needs B_i, B_i' and the reflection R_P); Thm 3.6 in any dimension (needs hyperplanes as cycles
+at infinity (1, n_1..n_n, 0, h), the families T_i = {H null, v=0, B(H,A_i)=B(H,A_i')=0}, p_v != 0
+throughout, and tangency of the sphere to each H); Morita corollary; reflection R_P and interchange
+lemma; space forms.

@@ -8,7 +8,7 @@ prior art, the layer reports, the receipts, the battery reports, the reviews and
 
 | item | what it is |
 |---|---|
-| `SCOUT.md` | prior-art scout written **before** any proof was dispatched (`AFM/NOVELTY_SCOUT_PROTOCOL.md`); its own header requires a pre-draft re-run, which was not made — the paper says so |
+| `SCOUT.md` | prior-art scout written **before** any proof was dispatched (protocol: `AFM/NOVELTY_SCOUT_PROTOCOL.md` in the author's workspace); its own header requires a pre-draft re-run, which was not made — the paper says so |
 | `L11_K_ANCHORS.md` | Layer 11 name/line gate: every `\decl` and `\src` in the paper checked against the pinned tree (NAME GATE PASS, 57 declarations, 18 anchors, 0 ungated) |
 | `namegate_k.py` | the checker behind it (`python3 namegate_k.py paperk.tex repo_flat_464a59d`) |
 | `repo/` | pristine export of the gated repository at `464a59d`: `PaperK.lean`, the five library files, `gate.sh`, `tests/tamper.sh`, `lakefile.toml`, `lean-toolchain`, `lake-manifest.json`, plus `paperK_464a59d.bundle` (the exact object that was pushed) |
@@ -17,8 +17,8 @@ prior art, the layer reports, the receipts, the battery reports, the reviews and
 | `layer14/` | Layer 14 restatements (a: 8 rows, b: 8 rows, c: 5 rows) and the repair report for rows 7–8 |
 | `layer15/` | Layer 15 classical comparison against the verbatim source (17 rows) and its verifier |
 | `reports/` | the numbers the paper quotes at the pin: gate output, battery/tamper report, promotion report, and the two clean-export second-machine receipts |
-| `reviews/` | the external review of draft v1 (12 major / 25 minor) and the consolidated triage of all 36 findings |
-| `numerics/` | the independent numerical checks used before dispatch: the `K0` formula, the explicit `P_X`, the degenerate loci, the at-infinity behaviour, the iteration/continuity probes |
+| `reviews/` | the three review rounds and their triages: draft v1 (12 major / 25 minor), v3 (Argon 9 / Astra 16), v4 (Astra fix-check + Opus 2 major / 14 minor) |
+| `numerics/` | the independent numerical checks: the `K0` formula (`FORMULA.md`, `k0_formula.py`), the explicit `P_X`, the degenerate loci, the at-infinity behaviour, the iteration/continuity probes, and `EXTENSION.md` (the extension analysis and the numeric refutations the paper cites) |
 
 Notes a reader of the paper needs:
 

@@ -578,7 +578,7 @@ directory must be read through this mapping; the files themselves are the ones n
 
 | cited here | published in `LEAN-verification/PaperL` |
 |---|---|
-| `AFM/PaperL/DRAFT.md`, `COMPANION.md` | `preprint/DRAFT_v10.md`, `preprint/COMPANION.md` and the PDF of the paper beside them |
+| `AFM/PaperL/DRAFT.md`, `COMPANION.md` | `preprint/DRAFT_v1.2.md`, `preprint/COMPANION.md` and the PDF of the paper beside them |
 | `AFM/PaperL/PLAN.md`, `SCOUT.md`, `namegate.py`, `L11_NAMEGATE.md`, `L12_REVIEW.md`, `L13_REPORT.md`, `L14_*`, `L15_*`, `JOHN_LEG.md` | `reports/` |
 | `AFM/PaperL/REVIEW_*`, `REVIEW_TRIAGE_*` | `reviews/` |
 | `AFM/PaperL/layer13/*` | `layer13/` (the same files, minus `run4/`–`run6/`) |

@@ -977,5 +977,6 @@ change rather than alone.
   with the help of automated tools — the idea, direction and feedback his — and keeps the mechanical
   facts (proof scripts by coding agents under his specification; the corner produced in the proof work;
   tools drafting prose at his direction and making reading passes).
-- **Result**: 18 pp, 0 overfull, 0 undefined; PDF sha `f573b9e3…`, 188,574 B; name gate **PASS 67/63**,
-  34 attribution checks.
+- **Result**: 18 pp, 0 overfull, 0 undefined; PDF sha `7ed7581e…`, 188,569 B, built with
+  `SOURCE_DATE_EPOCH=1795705200` (2026-11-26T15:00:00Z) so that the build is byte-reproducible; name gate
+  **PASS 67/63**, 34 attribution checks.

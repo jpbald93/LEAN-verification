@@ -1,6 +1,6 @@
 # Clifford's chain for every n: point–circle configurations on the Riemann sphere, formalised in Lean 4
 
-**Draft v1.0 — 2026-11-26.** Typeset from `DRAFT.md`; the full verification record is the companion file `COMPANION.md`.
+**Draft v1.2 — 2026-11-26.** Typeset from `DRAFT.md`; the full verification record is the companion file `COMPANION.md`.
 
 **Abstract.** We give a machine-checked proof, in Lean 4 on top of Mathlib, of Clifford's chain of
 circle theorems for every $n$, stated on the Riemann sphere rather than in the finite plane. For every

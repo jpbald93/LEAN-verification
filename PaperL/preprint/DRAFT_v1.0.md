@@ -700,8 +700,9 @@ generator could not mutate at all rest on the gate and on the axiom report.
 
 ### 4.4 Use of automated tools
 
-The author wrote this paper and is responsible for its content, including every mathematical claim and
-every number in it. Automated tools were used, and this is what they did.
+The author wrote this paper as he directed it, and he has hand-checked it: every statement, every step of
+the argument and every number in it was checked against the development, and he is responsible for its
+content. Automated tools were used, and this is what they did.
 
 *Proof scripts.* The Lean development was written with the assistance of large-language-model coding
 agents, working under the author's direction on a specification fixed in advance: the statements of §2
@@ -713,9 +714,9 @@ item in §5 and in the companion, not smoothed over.
 
 *Editorial work.* Language-model tools were used for editorial assistance — drafting and revising prose
 under the author's direction — and for automated reading passes over the draft, in the manner of a referee
-report. Every correction those passes produced was checked by the author against the development before it
-was applied; the list of what was changed, and why, is in the companion's history section. No claim in
-this paper rests on a model's judgement.
+report. The author read every paragraph of the result and hand-checked every correction those passes
+produced against the development before it was applied; the list of what was changed, and why, is in the
+companion's history section. No claim in this paper rests on a model's judgement.
 
 *What is not automated.* The mathematical content is classical (Clifford, Morley, Carver,
 Longuet-Higgins, Bobenko–Schief), and the corner argument of §3.7 is the author's. The interpretive

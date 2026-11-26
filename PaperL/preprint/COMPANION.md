@@ -896,3 +896,11 @@ makes a choice the classical prose leaves open (the existential recursion, the n
 point, the totalisation of the vanishing vector to ∞, and `GenPosN` against classical general
 position). A disclosure of the use of automated tools (paper §4.4) is now in the paper, and the
 referee-style reading passes are described there as what they are rather than named by file.
+
+*§4.4, as settled.* The author's own statement of authorship is the opening of §4.4: he wrote the paper
+as he directed it and has hand-checked it, every statement, every step of the argument and every number
+checked against the development. The paragraphs below it are the record of what the tools did — the proof
+scripts written under his direction with the Lean kernel as the only judge, the editorial and
+referee-style passes whose every correction he checked — and they stand unchanged. The paper was rebuilt
+without any change to a statement, a proof or a number; the PDF in `preprint/` is that build
+(sha256 `978ede43…`).

@@ -981,6 +981,6 @@ change rather than alone.
   Lean's 200k default for the 36 finite cases; plain `lake env lean` exits 0 in ~28 s, as the paper
   states) — the last code push of this pass, pin `e1ae145`.
 - **Result**: 18 pp, 0 overfull, 0 undefined; PDF sha
-  `a7daceed9e305ce5c70962414fcd25d78b74246449822ce0fe638fbe1eb2aa47`, 188,571 B, built with
+  `79ccb1538653e0cc0f29d5ba0f2e7e26519d69769c7a3a73fee67de17315349e`, 188,503 B, built with
   `SOURCE_DATE_EPOCH=1795705200` (2026-11-26T15:00:00Z) so the build is byte-reproducible; name gate
   **PASS 67/63**, 34 attribution checks.

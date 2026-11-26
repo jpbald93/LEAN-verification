@@ -657,8 +657,7 @@ $-W_{2k+5} \cdot \overline{W_0}$, the same expression with the conjugate on $W_0
 $t_r = -c_r/\bar c_r$ (injectivity of $t$ is `GenPosN.1`). Only three of the corner's hypotheses are used:
 $V = 0$ in the deleted coordinate, $P_0(d) \ne 0$, and `GenPosN.1`. The grandchildren's finiteness, an
 explicit hypothesis of `EvenCornerQL`, is *not* used by the identity; it is used downstream, by
-`evenCorner_of_QL` (`Clifford/MorleyKernel.lean:5284`), to deduce the geometric statement. The hypothesis
-is in the statement because the geometric form needs it; the identity does not use it.
+`evenCorner_of_QL` (`Clifford/MorleyKernel.lean:5284`), to deduce the geometric statement.
 
 The corner identity is what turns the even side into a theorem rather than a conditional: with
 $w_{2k+5} = 0$ the grandchildren's level points all coincide, and the parent's ∞ is a generalized circle

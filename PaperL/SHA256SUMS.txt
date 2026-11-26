@@ -1,4 +1,4 @@
-d6f206324f608e710f994a6a8e5af8f36872e9a49e8fea58737a3bdfd97ef15c  ./README.md
+c5b2a5065e776b635f6113aa238a4425413f3e077aeeb9db2db83220db0f378d  ./README.md
 ed05c3c13de303f5ed8f6d1dccaf04b8a2537f4f7db0d4cde9989c0dea3a2848  ./check/allN.lean
 d769d76744351cc8857e7000b517dc9165581cfab5130a587eacaf0740cbf301  ./check/not_UniqEven.lean
 80fe06247ea1f3c349e9fe37e2858edec78a0f9120b9d11ee035672639b4fd4b  ./evidence/math-papers-PaperL-excerpt.md
@@ -116,12 +116,16 @@ bba4398dd85eab0ee53f29f52c97ad99b0b04eedf609d419d69cf8c9fa4be158  ./layer13/L13_
 cc95936f7a3d310c8165eb144ddb56cd07f86915636ad456d7385f8aee9af7f0  ./layer13/s1_counterexample/search5.py
 88b7d17a79b4395ee4d26c2c1796b2550ade24d541faeecf4ec09003600be3a5  ./layer13/s1_counterexample/search6.py
 ae2eaede9a6c310be32009328e664fd15dd00faacc3dc0cc24d3935f2b6ac4fc  ./layer13/s1_counterexample/verify_hp.py
-bb126df410a4f561bca1c315ea56f15f9b9b3b2e2c4e42395a55aaf582a929e1  ./preprint/Cliffords chain for every n - Paper L draft v0.11.pdf
-b2c16abcda1a94cc0fb0e14302c90c977410f075248f5cb3c6772d1ff9c14af5  ./preprint/DRAFT_v11.md
+20b1a2fab609d55f2d4e5755c5194d9de15b6a444ca4f4e7a1ab12f22b4e6a9a  ./preprint/Cliffords chain for every n - Paper L draft v0.12.pdf
+0074663ba584ce52f32e6072594ab86dad47c3c0a7e62820ae1ef9b7b00368cc  ./preprint/DRAFT_v12.md
+d6f44de93417f00a3e55b84d1565a629bec92561d3edeb9f174d1fb6c7c7e57c  ./preprint/build_paperl.py
+25eef233fc86d8d5528dcf9eed0adee14d562fd5837499a5c48c208fb9009ca5  ./preprint/paperl.tex
 7546f889d02db2f17153e3f3f75684dbeb002db48a6fc6259692eb104fef676a  ./preprint/superseded/Cliffords chain for every n - Paper L draft v0.10.pdf
+bb126df410a4f561bca1c315ea56f15f9b9b3b2e2c4e42395a55aaf582a929e1  ./preprint/superseded/Cliffords chain for every n - Paper L draft v0.11.pdf
 a7dab7425090c837093013321d304f31a293599ad875fd32b2397af50ea0f1ab  ./preprint/superseded/Cliffords chain for every n - Paper L draft v0.9.pdf
 26ee5ebba5ca6ebb0c29edbd5913978d5c7d9cacd226e59ff30f2fac40455c81  ./preprint/superseded/DRAFT_v09.md
 f5c6b702948947b9a78449cee0650e45a4f5406d666c46b7321ad8cd84a1f80e  ./preprint/superseded/DRAFT_v10.md
+b2c16abcda1a94cc0fb0e14302c90c977410f075248f5cb3c6772d1ff9c14af5  ./preprint/superseded/DRAFT_v11.md
 9db6b795b93876fd25ad29d6f8e04f1671bd89ffeb23a66cdc86296b8f7e9ec3  ./reports/JOHN_LEG.md
 e6c3e36c5995eea7fd5915ed7e5a82905ce3856da91c66082dd164d703c3d118  ./reports/L11_NAMEGATE.md
 e07fc200ce6b2732db80722cab919bcedf1ccc948221eff092d7bc63440f332d  ./reports/L12_REVIEW.md

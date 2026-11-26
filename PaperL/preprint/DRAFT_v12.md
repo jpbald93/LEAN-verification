@@ -1,6 +1,6 @@
 # Clifford's chain for every n: point–circle configurations on the Riemann sphere, in Lean 4
 
-**Draft v0.11 — 2026-11-26.** This draft is assembled only from recorded artifacts: the plan
+**Draft v0.12 — 2026-11-26.** This draft is assembled only from recorded artifacts: the plan
 (`PLAN.md`), the novelty scout and its verdict table (`SCOUT.md`), the round records in
 `notes/math-papers.md`, the machine-generated layer reports on the build host
 (`layer10/REPORT_L10.md`, `layer11/ANCHORS.md`, `~/leancheck/reports/paperL_jack_20261119_020713.md`),
@@ -9,7 +9,24 @@ marked **OPEN** at the point where it would be needed. **Appendix C** lists what
 what the late-block contradiction probes and the re-run of the unattributed rows changed in v0.6,
 what the two-machine satisfiability passes changed in v0.7, what the publication of the code
 repository changed in v0.9, what the referee pass on v0.9 changed in v0.10, and what the Opus 5.5 pass on v0.10
-changed in v0.11.
+changed in v0.11, and the change of typesetting in v0.12.
+
+**Abstract.** We report a Lean 4 formalisation, on top of Mathlib, of Clifford's chain of circle
+theorems for every $n$, on the Riemann sphere rather than in the finite plane. For every family of
+$n$ circles through a common point we prove that a level-$n$ Clifford object exists: for odd $n$ a
+generalized circle (lines included) meeting one level-$(n-1)$ object of each deletion, for even $n$ a
+point of $\mathrm{OnePoint}\,\mathbb{C}$ (∞ included) lying on one such object of each deletion. The
+odd side is proved without hypotheses beyond general position; the even side, including the
+degenerate corner where the parent cross vector vanishes, is proved in full. Base levels are
+transported from the finite-plane theorem, and a six-centre configuration shows that the finite plane
+itself is false for $n \ge 6$, which is why the sphere is needed. All terminal theorems depend only
+on Lean's standard axioms. The paper reports the verification record in full — an axiom gate over 36
+declarations, an eight-test tampering suite, mutation testing over 516 of the 577 theorem-level
+declarations, contradiction probes over 551, a 262-declaration hypothesis ablation, and
+satisfiability certification on two machines — and states its limits: one open lemma in the direct S1
+route, four layer-13 rows whose writer-side statements need new mathematics, 180 declarations
+unresolved by the satisfiability search, Carver's 1920 criterion unformalised, and the recorded gaps
+of the prior-art search.
 
 Axiom shorthand used throughout: **std** = `[propext, Classical.choice, Quot.sound]`.
 
@@ -1009,7 +1026,7 @@ jack only. Layers 1, 2 and 7 also ran on john in his 19 November battery, on a w
 are still quoted from the notes; and the re-runs of layers 11 and 13 are re-runs on new inputs, not
 reproductions.
 
-## Appendix C — changes in v0.3 through v0.11
+## Appendix C — changes in v0.3 through v0.12
 
 ### v0.3 — all nineteen rows of `REVIEW_TRIAGE_v02.md`
 
@@ -1256,3 +1273,13 @@ the source. No Lean proof, statement or definition changed.
 8. §1.1: the numerical-witness caveat is stated once and the duplicated sentence is merged.
 9. Supporting reports: the three reports that still described `u ≠ 0` as an unused hypothesis carry a
    dated correction notice.
+
+### v0.12 — typeset in the style of Papers I and K (2026-11-26)
+
+No statement, proof, number or citation changed. The paper is now built as LaTeX with the preamble
+used by the other papers in this series (11 pt article, 1 in margins, Latin Modern, booktabs
+tables, numbered sections, title/author block with the licence footnote), instead of the markdown
+pandoc build. The abstract, previously only in the deposit record, is now part of the paper. The
+version changelog (this appendix) stays in the markdown source and is not typeset into the PDF;
+`paperl.tex` is generated from `DRAFT.md` by `build_paperl.py`, and both are published beside the
+PDF.

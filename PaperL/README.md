@@ -1,21 +1,22 @@
 # Paper L — Clifford's chain for every n, in Lean 4
 
 Supporting material for the paper *Clifford's chain for every n: point–circle configurations on the
-Riemann sphere, in Lean 4* (draft v0.11, 26 November 2026; v0.9 and v0.10 superseded in `preprint/superseded/`).
+Riemann sphere, in Lean 4* (draft v0.12, 26 November 2026; v0.9–v0.11 superseded in `preprint/superseded/`).
 
 **Lean code:** <https://github.com/jpbald93/paperl_clifford_chain> — the audited tree is commit
 `d15464f` (156 files). Every `File:line` anchor in the paper resolves at that commit. `main` carries
 later commits that only add `check/` and revise `README.md`; the pinned tree itself is unchanged.
 
-**Paper:** [`preprint/Cliffords chain for every n - Paper L draft v0.11.pdf`](preprint/) (27 pp) and
-its source `preprint/DRAFT_v11.md`. Built with pandoc/xelatex from the markdown; the PDF has a table
-of contents and live links.
+**Paper:** [`preprint/Cliffords chain for every n - Paper L draft v0.12.pdf`](preprint/) (28 pp),
+typeset with the same LaTeX preamble as Papers I and K. The source is `preprint/paperl.tex`, generated
+from `preprint/DRAFT_v12.md` by `preprint/build_paperl.py` (pandoc + xelatex); every `File:line` is a
+live link to the pinned commit.
 
 ## Contents
 
 | path | what it is |
 |---|---|
-| `preprint/` | draft v0.11, PDF and markdown; v0.9 and v0.10 kept in `preprint/superseded/` |
+| `preprint/` | draft v0.12: LaTeX source, PDF, markdown and the build script; v0.9–v0.11 kept in `preprint/superseded/` |
 | `reports/L11_NAMEGATE.md`, `reports/namegate.py` | layer 11: the citation gate and its exact result — 143 occurrences, 98 distinct `Clifford/File.lean:N` pairs, 25 attribution checks, 85 table rows, all resolving at the pin |
 | `reports/L12_REVIEW.md`, `L12_TRIAGE.md` | layer 12: prose-versus-code review of v0.1 and its dispositions |
 | `reports/L13_*`, `layer13/` | layer 13: blind re-formalisation of the seven rows (writer and comparer on different models), the seven-row comparison, the bridge layer (`BridgeBlind.lean`, 9 of 11 statements proved in both directions, 2 open); S6/S7 are bridged in both directions, while S4/S5 are stated over the writer's finite-plane encoding, which forbids lines — S4 is false as written at `n = 3` (see `layer13/L13_FULL_COMPARE.md`, update of 2026-11-26), the S1 direct-proof runs (`BlindChain.lean`, one `sorry` at `blindClifford_second`), and the S1 counterexample search (`s1_counterexample/`) |

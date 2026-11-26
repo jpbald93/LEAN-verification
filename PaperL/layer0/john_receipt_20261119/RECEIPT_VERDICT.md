@@ -1,11 +1,17 @@
 # Second-machine receipt — verdict (john, 2026-11-25)
 
+> **Correction notice (2026-11-26, v0.11).** This report describes the four surviving mutants of
+> `child_line_of_parent_mid_zero` as mutations of an "unused hypothesis" `u ≠ 0`. That reading was
+> wrong: `u ≠ 0` is a conjunct of the existential conclusion, the lemma's hypotheses are inconsistent
+> on purpose, and two of the four mutants touch `u ≠ 0` while one flips the finiteness antecedent and
+> one the incidence equation. The paper's §5.1/§5.8 and Appendix C carry the corrected account.
+
 **Reproduced.** John audited the same file at the same pin with the same generator as jack's late
 block, and returned the **identical sixteen survivors** and **zero contradictions**.
 
 ## What ran
 
-- Host: `john@[second host]` (Mac mini, macOS), tree `~/lean/paperL_john`, pin `dce7b011…`.
+- Host: `john@100.101.160.66` (Mac mini, macOS), tree `~/lean/paperL_john`, pin `dce7b011…`.
 - Script: `john:~/lc_mod_receipt.py` — jack's `lc_mod.py` patched only in `OUT`, `REPOS` and the file
   filter; `WORKERS=10`, `CTIMEOUT=900`.
 - Scope: all 343 `theorem`/`lemma` declarations of `Clifford/MorleyKernel.lean`, mutation **and**

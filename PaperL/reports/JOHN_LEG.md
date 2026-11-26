@@ -1,5 +1,11 @@
 # John's outstanding Paper L work — finished on jack (2026-11-24)
 
+> **Correction notice (2026-11-26, v0.11).** This report describes the four surviving mutants of
+> `child_line_of_parent_mid_zero` as mutations of an "unused hypothesis" `u ≠ 0`. That reading was
+> wrong: `u ≠ 0` is a conjunct of the existential conclusion, the lemma's hypotheses are inconsistent
+> on purpose, and two of the four mutants touch `u ≠ 0` while one flips the finiteness antecedent and
+> one the incidence equation. The paper's §5.1/§5.8 and Appendix C carry the corrected account.
+
 John (`joshs-mac-mini`) has been offline since 2026-11-20. Two items were queued for him:
 
 1. the second-machine battery leg (`layers 1,2,4,5,7,8`), whose report never got past layers 1–2 and

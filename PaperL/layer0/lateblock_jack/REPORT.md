@@ -1,5 +1,11 @@
 # Late-block mutation run on jack (2026-11-24 21:28Z → 2026-11-25 03:41Z)
 
+> **Correction notice (2026-11-26, v0.11).** This report describes the four surviving mutants of
+> `child_line_of_parent_mid_zero` as mutations of an "unused hypothesis" `u ≠ 0`. That reading was
+> wrong: `u ≠ 0` is a conjunct of the existential conclusion, the lemma's hypotheses are inconsistent
+> on purpose, and two of the four mutants touch `u ≠ 0` while one flips the finiteness antecedent and
+> one the incidence equation. The paper's §5.1/§5.8 and Appendix C carry the corrected account.
+
 Purpose: close the layer-4 mutation gap in `Clifford/MorleyKernel.lean` that john's survivors exposed —
 the 2026-11-19 battery mutated only its first 61 declarations (lines 33–806).
 

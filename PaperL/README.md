@@ -1,21 +1,21 @@
 # Paper L — Clifford's chain for every n, in Lean 4
 
 Supporting material for the paper *Clifford's chain for every n: point–circle configurations on the
-Riemann sphere, in Lean 4* (draft v0.10, 26 November 2026; v0.9 superseded in `preprint/superseded/`).
+Riemann sphere, in Lean 4* (draft v0.11, 26 November 2026; v0.9 and v0.10 superseded in `preprint/superseded/`).
 
 **Lean code:** <https://github.com/jpbald93/paperl_clifford_chain> — the audited tree is commit
 `d15464f` (156 files). Every `File:line` anchor in the paper resolves at that commit. `main` carries
 later commits that only add `check/` and revise `README.md`; the pinned tree itself is unchanged.
 
-**Paper:** [`preprint/Cliffords chain for every n - Paper L draft v0.10.pdf`](preprint/) (25 pp) and
-its source `preprint/DRAFT_v10.md`. Built with pandoc/xelatex from the markdown; the PDF has a table
+**Paper:** [`preprint/Cliffords chain for every n - Paper L draft v0.11.pdf`](preprint/) (27 pp) and
+its source `preprint/DRAFT_v11.md`. Built with pandoc/xelatex from the markdown; the PDF has a table
 of contents and live links.
 
 ## Contents
 
 | path | what it is |
 |---|---|
-| `preprint/` | draft v0.10, PDF and markdown; v0.9 kept in `preprint/superseded/` |
+| `preprint/` | draft v0.11, PDF and markdown; v0.9 and v0.10 kept in `preprint/superseded/` |
 | `reports/L11_NAMEGATE.md`, `reports/namegate.py` | layer 11: the citation gate and its exact result — 143 occurrences, 98 distinct `Clifford/File.lean:N` pairs, 25 attribution checks, 85 table rows, all resolving at the pin |
 | `reports/L12_REVIEW.md`, `L12_TRIAGE.md` | layer 12: prose-versus-code review of v0.1 and its dispositions |
 | `reports/L13_*`, `layer13/` | layer 13: blind re-formalisation of the seven rows (writer and comparer on different models), the seven-row comparison, the bridge layer (`BridgeBlind.lean`, 9 of 11 statements proved in both directions, 2 open); S6/S7 are bridged in both directions, while S4/S5 are stated over the writer's finite-plane encoding, which forbids lines — S4 is false as written at `n = 3` (see `layer13/L13_FULL_COMPARE.md`, update of 2026-11-26), the S1 direct-proof runs (`BlindChain.lean`, one `sorry` at `blindClifford_second`), and the S1 counterexample search (`s1_counterexample/`) |
@@ -23,7 +23,7 @@ of contents and live links.
 | `reports/L15_PRIOR_ART_v07.md` | layer 15 on v0.7: claim-by-claim prior-art table, PASS with recorded search gaps |
 | `reports/PLAN.md`, `SCOUT.md` | the plan and the novelty scout (verdict table, 26 search rows, and the sources recorded as *not searched*) |
 | `reports/JOHN_LEG.md` | the second-machine leg: what ran on the second build host and what is only recorded |
-| `reviews/` | every review round and its triage: the three-model round on v0.2, the v0.3 review, the v0.7 referee pass that produced v0.8, and the v0.9 referee pass that produced v0.10 (`REVIEW_TRIAGE_v09.md`) |
+| `reviews/` | every review round and its triage: the three-model round on v0.2, the v0.3 review, the v0.7 referee pass that produced v0.8, the v0.9 referee pass that produced v0.10 (`REVIEW_TRIAGE_v09.md`), and the Opus 5.5 pass on v0.10 that produced v0.11 (`REVIEW_TRIAGE_v10.md`) |
 | `layer0/` | the machine-produced run records: the round-25/26 collections, the late-block mutation run, the late-block contradiction probes, the two satisfiability passes (jack and john), the curated witness-table round, and the second-machine receipt with its verdict |
 | `check/` | `allN.lean` (the all-n composition of the two headline theorems) and `not_UniqEven.lean` (the counterexample to uniqueness of the even-level point) |
 | `evidence/` | the excerpt of the round records the paper's provenance appendix cites |

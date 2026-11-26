@@ -1,7 +1,7 @@
 # Paper L — verification record and provenance
 
 **Companion to “Clifford’s chain for every n: point–circle configurations on the Riemann sphere,
-formalised in Lean 4” (v1.0, 26 November 2026).**
+formalised in Lean 4” (v1.1, 26 November 2026).**
 
 This document is the audit trail behind the paper. The paper itself carries only the mathematics and
 the statements about what was checked; everything that would turn it into a test report lives here:
@@ -61,8 +61,8 @@ contributes 251 (`MorleyKernel.lean` alone is 5,610 lines; before promotion the 
 the 5,610 pinned here).
 
 Every `file:line` citation in this record — prose, code comments, comma lists and tables alike — is
-machine-checked by `namegate.py` (layer 11, `L11_NAMEGATE.md`): **68 occurrences of 64 distinct
-`Clifford/File.lean:N` pairs**, each resolving to a declaration in the pinned tree, and the 33 checks
+machine-checked by `namegate.py` (layer 11, `L11_NAMEGATE.md`): **66 occurrences of 63 distinct
+`Clifford/File.lean:N` pairs** on v1.1 (68 / 64 on v1.0), each resolving to a declaration in the pinned tree, and the 33 checks
 written in the form `` `name` (`file:line`) `` additionally checked against the name the paper
 attributes to them. (In the v0.12 draft the same gate read 143 occurrences of 98 distinct pairs: the
 twelve declaration tables that carried most of them are in this record now, not in the paper.) Bare single-line citations have been removed; the eight "lines A–B" range citations left (four distinct spans)
@@ -243,7 +243,7 @@ was developed for this paper series. Host: `jack`. Report
 | 8b | theorem ↔ witness linkage | **0 links** — neither tree contains hand-written `*_sat` witnesses, so there is nothing to link (§3.2) |
 | 9 | notion inventory: which notions have a Mathlib bridge | **137 notions, 24 flagged `has-bridge`, 113 not** — a heuristic flag, not a semantic count (§3.6) |
 | 10 | definition bridges (`BridgeL10.lean`) | 19 theorems; **13 of the 113** moved to bridged; 25 reclassified INTERNAL; **75 remain unbridged** (arithmetic, same caveat) |
-| 11 | name/line anchors for the paper | **PASS** — 68 occurrences / 64 distinct citations, 33 attribution checks, all resolving (§1) |
+| 11 | name/line anchors for the paper | **PASS** — 66 occurrences / 63 distinct citations on v1.1, 33 attribution checks, all resolving (§1) |
 
 The eight tamper tests are `sorry`, `ax2line`, `evalfake`, `macro`, `wrap` (nonstandard-axiom catch),
 `falsehyp`, `cleanand`, `classify6`; the log reports `ALL TAMPERING TESTS REJECTED` (there is no
@@ -897,10 +897,48 @@ point, the totalisation of the vanishing vector to ∞, and `GenPosN` against cl
 position). A disclosure of the use of automated tools (paper §4.4) is now in the paper, and the
 referee-style reading passes are described there as what they are rather than named by file.
 
-*§4.4, as settled.* The author's own statement of authorship is the opening of §4.4: he wrote the paper
-as he directed it and has hand-checked it, every statement, every step of the argument and every number
-checked against the development. The paragraphs below it are the record of what the tools did — the proof
-scripts written under his direction with the Lean kernel as the only judge, the editorial and
-referee-style passes whose every correction he checked — and they stand unchanged. The paper was rebuilt
-without any change to a statement, a proof or a number; the PDF in `preprint/` is that build
-(sha256 `978ede43…`).
+*§4.4, first form.* v1.0's §4.4 opened with the author's statement that he wrote the paper as he directed
+it and had hand-checked it. That wording was replaced in v1.1 (below), which states the same
+responsibility and adds the plain attribution of the corner argument.
+
+### v1.1 — the pre-submission referee pass (2026-11-26)
+
+A referee read v1.0 and returned a list of corrections before submission. All of them were applied; no
+statement, proof or number of the mathematics changed.
+
+- **References.** The paper cited Clifford, Morley, Carver, Longuet-Higgins, Bobenko–Schief, Lean,
+  Mathlib and the existing Miquel formalisations inline and had no list. A reference list now closes the
+  paper, alphabetical and author–year, with DOIs or stable URLs for the classical sources, the two
+  software entries, the Miquel formalisations, and this work's own earlier paper and code.
+- **§4.4 rewritten.** The referee asked for the AI disclosure to be plain. The section now states the
+  author's responsibility, and then says without hedging that the corner argument of §3.7 was produced
+  by the coding agents in the course of the formalisation and is not the author's own discovery. The
+  earlier claim that it was his has been removed from the paper. The prose paragraph (language-model
+  drafting and reading passes, every correction checked against the development) is unchanged in
+  substance.
+- **Internal leftovers removed.** The round numbers and line counts of the proof rounds, the `hV`-only
+  remark, the tamper suite's internal variant names, and the unexplained `BlindGenPos` / "blind
+  restatement" sentence are gone; the tamper variants are described in words, and "the companion" is
+  named and linked at its first mention (*Verification record for Paper L*, COMPANION.md, with the
+  supporting material on GitHub).
+- **§3.7 Step 3.** The prose said the $X^{2m+1}$ coefficient is the leading coefficient times the
+  *constant* term; a coefficient of the top power of a binary form of degree $2m+1$ is leading times
+  leading, and the displayed formula was already the leading-coefficient one. Corrected, and the
+  conjugate is now stated explicitly to sit on $w_0$ — which is what `polyF_coeff_top` proves
+  (`-(W (2k+5) * conj (W 0))` at the pin). The two places that mention the coefficient now agree.
+- **Reconciled.** §1 said the corner argument had no counterpart in the literature while §3 opened with
+  "Nothing here is new mathematics". Both now say the same thing: the statement is classical, the corner
+  is a proof device not found in the sources, and it is not a new theorem.
+- **Cross-references and layout.** §3.4's stale pointer to §2.3 is now to what §2.3 records; the §4.1
+  table, which overflowed its columns, is a list; the stretched line around "The main result" in §2.3 is
+  fixed, as are the theorem heads of §3.7 (their machine citations moved into the statements). 18 pages,
+  0 overfull boxes, 0 undefined references.
+- **New sections.** §1.1 Related work (classical sources; the four Miquel formalisations and what they
+  prove; Mathlib's target list; the author's earlier plane formalisation) and §4.5 Lessons for
+  formalisers (canonical payloads instead of uniqueness; coordinates before predicates; ∞ in the
+  carrier; induct at the parity of the level).
+
+*Not done, and why.* The referee's strengthening list also asked for the eight unused hypotheses to be
+removed from the Lean development and for `MorleyKernel.lean` (5,610 lines) to be split. Both change the
+library and its gate rather than the paper, and both are queued for the next pin; the paper no longer
+calls the unused hypotheses a defect of economy but reports them as the ablation's finding (§3.7, §4.3).

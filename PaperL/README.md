@@ -1,7 +1,7 @@
 # Paper L — Clifford's chain for every n, in Lean 4
 
 Supporting material for the paper *Clifford's chain for every n: point–circle configurations on the
-Riemann sphere, formalised in Lean 4* (v1.0, 26 November 2026; v0.9–v0.12 superseded in
+Riemann sphere, formalised in Lean 4* (v1.1, 26 November 2026; v0.9–v1.0 superseded in
 `preprint/superseded/`).
 
 **Companion:** [`preprint/COMPANION.md`](preprint/COMPANION.md) is the verification record — per-file
@@ -13,17 +13,17 @@ paper, which now carries only the mathematics and the statements about what was 
 `1001939` (159 files, gate 37 declarations). Every `File:line` anchor in the paper resolves at that
 commit.
 
-**Paper:** [`preprint/Cliffords chain for every n - Paper L v1.0.pdf`](preprint/) (15 pp), typeset
+**Paper:** [`preprint/Cliffords chain for every n - Paper L v1.1.pdf`](preprint/) (18 pp), typeset
 with the same LaTeX preamble as Papers I and K. The source is `preprint/paperl.tex`, generated from
-`preprint/DRAFT_v1.0.md` by `preprint/build_paperl.py` (pandoc + xelatex); every `File:line` is a live
+`preprint/DRAFT_v1.1.md` by `preprint/build_paperl.py` (pandoc + xelatex); every `File:line` is a live
 link to the pinned commit.
 
 ## Contents
 
 | path | what it is |
 |---|---|
-| `preprint/` | v1.0: LaTeX source, PDF, markdown, the companion and the build script; v0.9–v0.12 kept in `preprint/superseded/` |
-| `reports/L11_NAMEGATE.md`, `reports/namegate.py` | layer 11: the citation gate and its exact result on v1.0 — 68 occurrences, 64 distinct `Clifford/File.lean:N` pairs, 33 attribution checks, all resolving at the pin |
+| `preprint/` | v1.1: LaTeX source, PDF, markdown, the companion and the build script; v0.9–v1.0 kept in `preprint/superseded/` |
+| `reports/L11_NAMEGATE.md`, `reports/namegate.py` | layer 11: the citation gate and its exact result on v1.1 — 66 occurrences, 63 distinct `Clifford/File.lean:N` pairs, 33 attribution checks, all resolving at the pin |
 | `reports/L12_REVIEW.md`, `L12_TRIAGE.md` | layer 12: prose-versus-code review of v0.1 and its dispositions |
 | `reports/L13_*`, `layer13/` | layer 13: blind re-formalisation of the seven rows (writer and comparer on different models), the seven-row comparison, the bridge layer (`BridgeBlind.lean`, 9 of 11 statements proved in both directions, 2 open); S6/S7 are bridged in both directions, while S4/S5 are stated over the writer's finite-plane encoding, which forbids lines — S4 is false as written at `n = 3` (see `layer13/L13_FULL_COMPARE.md`, update of 2026-11-26), the S1 direct-proof runs (`BlindChain.lean`, one `sorry` at `blindClifford_second`), and the S1 counterexample search (`s1_counterexample/`) |
 | `reports/L14_RESTATEMENTS_v07.md` | layer 14 on v0.7: seven blind restatements, 7 of 7 faithful |

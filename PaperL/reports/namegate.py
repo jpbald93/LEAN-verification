@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Layer 11 name/line gate for Paper L (v0.11).
+"""Layer 11 name/line gate for Paper L (v1.1).
 
 Checks every `Clifford/<File>.lean:N` citation in DRAFT.md against a line-numbered dump of the
 pinned tree. All citation forms are read: backticked, inside code comments, comma lists
@@ -111,7 +111,7 @@ def main():
 
     if report:
         out = []
-        out.append('# Layer 11 — name/line gate, Paper L v1.0\n')
+        out.append('# Layer 11 — name/line gate, Paper L v1.1\n')
         out.append('Instrument: `namegate.py` (this directory), run against a full line-numbered dump '
                    'of the pinned tree (`jack:~/paperL_jack`, `Clifford/MorleyKernel.lean` sha '
                    '`4beb169a…`, gate 37 declarations). It reads every `Clifford/File.lean:N` citation, not only backticked '

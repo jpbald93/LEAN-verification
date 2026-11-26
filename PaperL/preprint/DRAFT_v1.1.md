@@ -29,9 +29,9 @@ intersections, and those three lie on a generalized circle; every four of them g
 circles, and the four share a point; and so on, each level indexed by the subfamilies of a fixed size.
 The chain says that the process never dies: at every level the objects either pass through a common
 point (even levels) or lie on a common circle (odd levels). The statement and its first proofs are
-classical — Clifford (*Messenger of Mathematics* 5, 1870–71; reprinted in *Mathematical Papers*, 1882),
-Morley (1900), Carver (1920), and the polytope picture of Longuet-Higgins (1972); the analytic, cross-ratio
-route is set out by Bobenko and Schief (arXiv:1509.04109, published 2016).
+classical — Clifford (1871), Morley (1900), Carver (1920), and the polytope picture of Longuet-Higgins
+(1972); the analytic, cross-ratio route is set out by Bobenko and Schief (2016). The full bibliographic
+details are in the references.
 
 The ambient space matters, and this is the first thing the present work had to settle. A "circle" of an
 odd level may degenerate to a line, and a "point" of an even level may be the point at infinity. The
@@ -56,8 +56,8 @@ the novelty search behind the claim did and did not cover. The development itsel
 transcription, for one reason: the classical proofs assume that the configuration is in general position
 at every level, and the degenerate corner where that assumption fails has to be handled explicitly. In
 the present development it is handled by an elementary polynomial argument (§3.7) which, as far as we
-know, has no counterpart in the literature; it is the one place where the formalisation had to go beyond
-the sources.
+know, is not in the published sources; it is a proof device rather than a new theorem, and it is the one
+place where the formalisation had to go beyond them.
 
 The other work is interpretive. A formal statement of a classical theorem is only as good as the
 correspondence between the two, and several of the choices forced by the recursion are choices, not
@@ -71,10 +71,37 @@ The paper is organised as follows. §2 gives the statements: the carrier, the re
 failure of the finite plane, and the discussion of the statement's fidelity. §3 explains how the proof
 works: inversion at the common point, Morley's matrix, the readouts, the two-step induction, the generic
 step, the degenerate branches, and the corner. §4 describes the formal development, what is checked about
-it, and the use made of automated tools. §5 lists the limits. The full verification record — per-file
-hashes, the gate's declaration list, the mutation, contradiction and satisfiability runs, the two-machine
-receipts and the history of the text — is in the companion document, so that this paper can be read as a
-paper.
+it, the lessons the development suggests for formalisers, and the use made of automated tools. §5 lists
+the limits. The full verification record — per-file hashes, the gate's declaration list, the mutation,
+contradiction and satisfiability runs, the two-machine receipts and the history of the text — is in the
+companion document, *Verification record for Paper L* (Companion 2026; COMPANION.md, published with the
+supporting material at
+[github.com/jpbald93/LEAN-verification/tree/main/PaperL](https://github.com/jpbald93/LEAN-verification/tree/main/PaperL)),
+so that this paper can be read as a paper.
+
+### 1.1 Related work
+
+The mathematics is a classical chain and its literature is old and settled. Clifford (1871) has the base
+cases; Morley (1900) the analytic method and the characteristic matrix; Carver (1920) the failure of the
+chain in the plane and its classification in the inversion plane; Longuet-Higgins (1972) the picture in
+higher polytopes. The cross-ratio form of the uniform step used in §3.4 is Bobenko and Schief's (2016),
+and the same step appears in Coxeter (1969) in the circles-through-a-point form. None of these gives a
+proof that a proof assistant can check, and that is the gap this paper fills.
+
+On the formal side, Miquel's theorem — the level-4 base case — exists in several systems: in Isabelle/HOL
+(Ramos, Hulak and Queiroz 2026), in the Atlas project's Lean extension (Atlas project 2026), in the Rocq
+library HighSchoolGeometry (HighSchoolGeometry 2026), and in lean-genius (Walters 2026). Each proves the
+pivot or complete-quadrilateral form of the theorem, and none states a chain for a family of $n$ circles.
+Mathlib lists Clifford's circle theorems, Miquel's theorem and the five- and six-circle theorems among
+its thousand target theorems, with no declaration behind them (Mathlib 2026); its Euclidean library
+supplies the circle, sphere, inversion and concyclicity API on which §4 builds, but contains no Miquel or
+Clifford result. Bald (2026) formalised levels three to six in the plane, together with the neighbouring
+circle theorems of that paper; the present work is the step from a fixed level to every $n$, and from the
+plane to the sphere.
+
+What is therefore new here is not the theorem but its formalisation: the chain for arbitrary $n$, stated
+on the carrier in which it is true, with the degenerate cases carried by the statement instead of
+excluded from it. §5 says what the search behind that claim covered and what it did not.
 
 ## 2. The statement
 
@@ -176,7 +203,7 @@ it.
 
 ### 2.3 The theorem
 
-The main result is a single declaration with no hypothesis on $n$
+The main result, `cliffordChainS_all`, is one declaration with no hypothesis on $n$
 (`Clifford/MorleyKernel.lean:5599`):
 
 ```lean
@@ -292,9 +319,7 @@ predicate and handled by the proof. Concretely, `GenPosN` says: no two circles t
 `GenTriple`). The second of these is what keeps the level-3 object a circle; the first is what makes
 `second` a genuine second intersection. Conversely, the classical hypothesis "general position" does not
 by itself prevent the *higher* level objects from degenerating, which is why the even side of the present
-development needs the four-way branch split of §3.6 at all. `GenPosN` is strictly stronger than
-`BlindGenPos`, the weaker hypothesis under which an independent blind restatement of these statements was
-attempted; the comparison, including the case where the two hypotheses separate, is part of the companion.
+development needs the four-way branch split of §3.6 at all.
 
 One further relation between the formal and the classical is worth naming, since it is easily misread.
 The carrier `IsGCircleS` is *modelled on* Carver's inversion convention but is not Carver's carrier: his §6
@@ -305,9 +330,10 @@ chain, is Carver's contribution. §5 records this as a limit.
 
 ## 3. How the proof works
 
-This section sets out the mechanism. Nothing here is new mathematics — it is Morley's method — but the
-development depends on it line by line, and the two places where the classical account is silent (the
-bordering step in general position and the degenerate corner) are the two places where the work was.
+This section sets out the mechanism. Nothing in its statements is new mathematics — the method is
+Morley's — but the development depends on it line by line, and the two places where the classical account
+is silent (the bordering step in general position and the degenerate corner) are the two places where the
+work was. The corner is the one point at which the argument of §3.7 is not in the sources (§1).
 
 ### 3.1 Inversion at the common point: circles become lines
 
@@ -463,8 +489,8 @@ $$ \texttt{ChainS}(2k+4) \;\Rightarrow\; \texttt{hodd}(2k+5) \;\Rightarrow\; \te
 
 The base of the induction is level 4 (`h4_pt_inf`, `Clifford/MorleyKernel.lean:2566`), and level 3 is
 transported separately (`cliffordChain_threeS`, `Clifford/Mobius.lean:181`). The odd payload needs no
-hypothesis beyond `GenPosN` — that is the content of §3.5 — which is why the odd side of the chain is
-hypothesis-free (§2.3).
+hypothesis beyond `GenPosN` — that is the content of §3.5 — which is what makes the odd side of the chain
+hypothesis-free, the claim §2.3 records.
 
 ### 3.5 The generic step: bordering, and one row that is not free
 
@@ -561,18 +587,20 @@ The conclusion needed is a generalized circle through the parent's level point �
 being zero, is ∞ by totalisation — and through every grandchild's canonical point. The claim proved is
 much stronger than collinearity:
 
-\begin{theorem}[The corner, geometric form; {\tt EvenCorner\_proof}, {\tt Clifford/MorleyKernel.lean:5584}]
+\begin{theorem}[The corner, geometric form]
 In the corner, all $2k+5$ grandchild level points coincide, at the single point $-w_{2k+4}/w_{k+2}$, where
 $w$ is the child's cross vector. Hence the line through that point and ∞ is a generalized circle through
-the parent's point and all the grandchildren's points.
+the parent's point and all the grandchildren's points. (Formally \texttt{EvenCorner\_proof},
+\src{Clifford/MorleyKernel.lean}{5584}.)
 \end{theorem}
 
 The geometric statement is `EvenCorner` (`Clifford/MorleyKernel.lean:5253`) and it is obtained from a
 scalar identity (§2.5(c)); the substance is the identity. Let $w = \texttt{crossVec}(\texttt{KP}\,(2k+5)\ d\ \bar d)$
 be the child's cross vector and $d = c \circ i^{\uparrow}$.
 
-\begin{theorem}[The corner identity; {\tt evenCornerQL\_proof}, {\tt Clifford/MorleyKernel.lean:5539}]
-In the corner, $w_{2k+5} = 0$.
+\begin{theorem}[The corner identity]
+In the corner, $w_{2k+5} = 0$. (Formally \texttt{evenCornerQL\_proof},
+\src{Clifford/MorleyKernel.lean}{5539}.)
 \end{theorem}
 
 The proof has three steps. The first two are linear algebra; the third is an elementary polynomial
@@ -587,8 +615,8 @@ $w$ agree, and $w$ satisfies the child's row $r$ because the cross product of a 
 $i$, the dot product $\text{row}_i \cdot \tilde w$ is the Laplace expansion, along the border, of the
 $(2k+6)$-square matrix obtained from the parent's matrix by deleting column $k+3$ — that is, of the child's
 matrix with its rows permuted to put row $i$ last. Its value is $\pm V_{k+3}$. By the corner hypothesis
-$V = 0$, so it is zero, and $\tilde w$ is a parent kernel vector. (This is `hV`-only: neither $P_0(d) \ne 0$
-nor the grandchildren's finiteness is used.)
+$V = 0$, so it is zero, and $\tilde w$ is a parent kernel vector. (Only the corner's $V = 0$ is used here: neither $P_0(d) \ne 0$
+nor the grandchildren's finiteness is needed.)
 
 *Step 2: the reflected vector.* Conjugating the row equation of $(\ast)$ and using $t = -c/\bar c$, so
 $\bar t = 1/t$, gives a second parent kernel vector: the vector $s = \sigma(\tilde w)$ whose polynomial
@@ -607,49 +635,50 @@ $(\ast)$ says $\bar c_r \Phi = \Psi$ and, by Step 2 applied to $s$, $\bar c_r \P
 $R(c_r, \bar c_r) = 0$. The points $(c_r, \bar c_r)$, $r = 0, \dots, 2m+1$, are pairwise non-proportional
 because `Transversal` holds (`GenPosN`), and $\bar c_r \ne 0$; so $R$ has $2m+2$ pairwise
 non-proportional zeros. A binary form of degree $2m+1$ with $2m+2$ such zeros is identically zero, so each
-of its coefficients vanishes. Its coefficient of $X^{2m+1}$ — the leading coefficient of $\Phi$ times the
-constant term of $\Psi'$, minus the leading coefficient of $\Phi'$ times the constant term of $\Psi$ —
-is $P_{m+1}(\tilde w)\, Q_m(s) - P_{m+1}(s)\, Q_m(\tilde w)$. Now $P_{m+1}(\tilde w) = \tilde w_{m+1}$,
+of its coefficients vanishes. Its coefficient of $X^{2m+1}$ is the leading coefficient of $\Phi$ times
+the leading coefficient of $\Psi'$, minus the leading coefficient of $\Phi'$ times the leading coefficient
+of $\Psi$ — the two factors contribute $X^{m+1}$ and $X^{m}$ — and that is
+$P_{m+1}(\tilde w)\, Q_m(s) - P_{m+1}(s)\, Q_m(\tilde w)$. Now $P_{m+1}(\tilde w) = \tilde w_{m+1}$,
 and $m+1 = k+3$: the top coefficient of $\Phi$ *is* the padded zero, so the first product vanishes.
 $P_{m+1}(s) = \overline{\tilde w_0} = \overline{w_0}$ by construction of $s$, and
 $Q_m(\tilde w) = \tilde w_{2m+2} = w_{2k+5}$. The coefficient is therefore
-$-\overline{w_0}\, w_{2k+5}$, and $w_0 \ne 0$ forces $w_{2k+5} = 0$, which is the identity.
+$-\overline{w_0}\, w_{2k+5}$ — the conjugate sits on $w_0$, the factor $Q_m(\tilde w)$ being linear in
+the unconjugated entries of $w$ — and $w_0 \ne 0$ forces $w_{2k+5} = 0$, which is the identity.
 
 The development states this in dehomogenised coordinates, as a polynomial identity for $\Phi$, $\Psi$ and
 their conjugates at $X = -c/\bar c$ (`polyF`, with `polyF_eval_zero`, `polyF_natDegree_le` — degree
 $\le 2k+5$ — and `polyF_coeff_top` (`Clifford/MorleyKernel.lean:5499`), whose coefficient is
-$-W_{2k+5} \cdot \overline{W_0}$), and concludes with
+$-W_{2k+5} \cdot \overline{W_0}$, the same expression with the conjugate on $W_0$), and concludes with
 `eq_zero_of_natDegree_lt_card_of_eval_eq_zero` from the $2k+6$ distinct roots
 $t_r = -c_r/\bar c_r$ (injectivity of $t$ is `GenPosN.1`). Only three of the corner's hypotheses are used:
 $V = 0$ in the deleted coordinate, $P_0(d) \ne 0$, and `GenPosN.1`. The grandchildren's finiteness, an
 explicit hypothesis of `EvenCornerQL`, is *not* used by the identity; it is used downstream, by
-`evenCorner_of_QL` (`Clifford/MorleyKernel.lean:5287`), to deduce the geometric statement. That the
-hypothesis is present and unused is a defect of economy, not of the proof, and it is recorded in the
-companion.
+`evenCorner_of_QL` (`Clifford/MorleyKernel.lean:5287`), to deduce the geometric statement. The hypothesis
+is present in the statement and unused by the proof; it is one of the eight unused hypotheses the ablation
+of §4.3 reports.
 
-The corner identity is what turns the even side into a theorem rather than a conditional. Round 25 reduced
-the corner to this one scalar identity; round 26 proved it, in 267 lines added to a 5,344-line file whose
-first part is unchanged. §5 records what the numerical evidence for the corner was before the proof
-existed, and why it was needed.
+The corner identity is what turns the even side into a theorem rather than a conditional: with
+$w_{2k+5} = 0$ the grandchildren's level points all coincide, and the parent's ∞ is a generalized circle
+through them. §5 records what the numerical evidence for the corner was before the proof existed, and why
+it was needed.
 
 ## 4. The formal development
 
 ### 4.1 What is formalised, and where
 
 The development is a Lean 4 library, nine files under `Clifford/`, 8,321 lines, on Lean
-`leanprover/lean4:v4.33.1` and Mathlib at the pin `0df444a3`. Its shape follows §2–§3:
+`leanprover/lean4:v4.33.1` (de Moura and Ullrich 2021) and Mathlib at the pin `0df444a3` (Mathlib
+Community 2020). Its shape follows §2–§3:
 
-| what | declarations |
-|---|---|
-| the carrier, `second`, `Transversal`, `GenTriple` | `Clifford/Basic.lean`, `Clifford/Clean.lean` |
-| the sphere, `ChainS`, the transports, the induction | `Clifford/Mobius.lean` |
-| the finite-plane characterisation and the six-centre witness | `Clifford/Counter6.lean`, `Clifford/Classify.lean` |
-| inversion, the Morley matrix, the rank statement | `Clifford/MorleyKernel.lean` (lines 1–450) |
-| the level-3 to level-5 closed forms and the Plücker relation | `Clifford/MorleyKernel.lean` (lines 450–530) |
-| the step lemmas, every level | `Clifford/MorleyKernel.lean` (lines 530–2100) |
-| the kernel circle and the odd payload | `Clifford/MorleyKernel.lean` (lines 2100–4700) |
-| the even payload, the corner, the headline | `Clifford/MorleyKernel.lean` (lines 4700–5610) |
-| the definition bridges to Mathlib | `Clifford/BridgeL10.lean` |
+- **The carrier and its predicates** — `second`, `Transversal`, `GenTriple` — in `Clifford/Basic.lean`
+  and `Clifford/Clean.lean`.
+- **The sphere and the recursion** — `ChainS`, the transports, the induction — in `Clifford/Mobius.lean`.
+- **The finite plane and the six-centre witness** — the characterisation and the counterexample — in
+  `Clifford/Counter6.lean` and `Clifford/Classify.lean`.
+- **The core** — inversion, the Morley matrix, the rank statement, the level-3 to level-5 closed forms and
+  the Plücker relation, the step lemmas, the kernel circle and the odd payload, the even payload, the
+  corner, and the headline — in `Clifford/MorleyKernel.lean`, 5,610 lines.
+- **The definition bridges to Mathlib** — `Clifford/BridgeL10.lean`.
 
 The library is published at [github.com/jpbald93/paperl_clifford_chain](https://github.com/jpbald93/paperl_clifford_chain);
 the state this paper describes is the commit `1001939fa120adb94989defd3a3a7b9d50aac5c1`, and the two check
@@ -669,8 +698,8 @@ the finite-plane characterisation, and the corner lemmas. Appendix A lists them.
 
 *The tamper suite.* Eight hand-made cheat attempts — `sorry`, a deliberately nonstandard axiom,
 `#eval`-based "proofs", a macro that redefines the axiom printer, a wrapped declaration, a false
-hypothesis, a `cleanand` variant and a `classify6` variant — are each required to be rejected; all eight
-are, and the suite runs as part of every build.
+hypothesis, a weakened general-position predicate, and a version of the theorem restricted to six points —
+are each required to be rejected; all eight are, and the suite runs as part of every build.
 
 ***The checks on this paper's own text.*** Every `file:line` citation in this paper is machine-resolved
 against the pinned tree, and every citation written as `` `name` (`file:line`) `` is additionally checked
@@ -700,28 +729,70 @@ generator could not mutate at all rest on the gate and on the axiom report.
 
 ### 4.4 Use of automated tools
 
-The author wrote this paper as he directed it, and he has hand-checked it: every statement, every step of
-the argument and every number in it was checked against the development, and he is responsible for its
-content. Automated tools were used, and this is what they did.
+The author is responsible for this paper: for its statements, its argument, every number in it, and the
+decision to publish it. He directed the work and has read and hand-checked the text. This section records
+which parts of it were produced by tools and which by him, because a reader is entitled to know.
 
-*Proof scripts.* The Lean development was written with the assistance of large-language-model coding
-agents, working under the author's direction on a specification fixed in advance: the statements of §2
-were fixed before the proofs were attempted, and each proof was accepted only when the Lean kernel
-accepted it under the gate of §4.2. No step of any proof is accepted on a model's authority; the only
-judge of correctness in this development is the Lean kernel, and the gate's axiom report is the record of
-what it accepted. Where the answer was "this is not currently provable", the result is recorded as an open
-item in §5 and in the companion, not smoothed over.
+*The proof scripts.* The Lean development was written by large-language-model coding agents working under
+the author's direction on a specification fixed in advance: the statements of §2 were fixed before the
+proofs were attempted, and each proof was accepted only when the Lean kernel accepted it under the gate of
+§4.2. No step of any proof is accepted on a model's authority; the Lean kernel is the only judge of
+correctness in this development, and the gate's axiom report is the record of what it accepted. Where the
+answer was "this is not currently provable", the result is recorded as an open item in §5 and in the
+companion, not smoothed over.
 
-*Editorial work.* Language-model tools were used for editorial assistance — drafting and revising prose
-under the author's direction — and for automated reading passes over the draft, in the manner of a referee
-report. The author read every paragraph of the result and hand-checked every correction those passes
-produced against the development before it was applied; the list of what was changed, and why, is in the
-companion's history section. No claim in this paper rests on a model's judgement.
+*The corner argument of §3.7.* This argument is not the author's own discovery, and it is not claimed as
+one. It was produced by the coding agents in the course of the formalisation: the reduction of the corner
+to the single scalar identity $w_{2k+5} = 0$, and the three-step proof set out in §3.7, came out of the
+proof work, and the Lean proof takes a slightly different route to the same identity. The author's part
+was to direct that work, to check it against the development, and to decide that it should be published
+with this attribution.
 
-*What is not automated.* The mathematical content is classical (Clifford, Morley, Carver,
-Longuet-Higgins, Bobenko–Schief), and the corner argument of §3.7 is the author's. The interpretive
-decisions of §2.5 — what to state, which totalisation, which general position — are the author's, and the
-paper defends them in the text rather than delegating them.
+*The prose.* Language-model tools drafted and revised the prose under the author's direction, and made
+automated reading passes over the draft in the manner of a referee report. The author read every paragraph
+of the result and checked each correction against the development before it was applied; the list of
+changes, and why they were made, is in the companion's history section. No claim in this paper rests on a
+model's judgement.
+
+*What is the author's.* The mathematical content is classical (Clifford, Morley, Carver, Longuet-Higgins,
+Bobenko–Schief), and the interpretive decisions of §2.5 — what to state, which totalisation, which general
+position — are his to make and to defend, and the paper defends them in the text rather than delegating
+them. The errors that remain are his.
+
+### 4.5 Lessons for formalisers
+
+Four choices in this development were made against a plausible alternative, and each would have cost more
+than it looked. They are recorded here because they are the part of this work that transfers to other
+incidence theorems.
+
+*Canonical objects as payloads, not uniqueness in the statement.* The recursion is existential: a Clifford
+object exists at each level and nothing says which. The tempting repair is to designate the object and
+prove the designation unique, and it is not available — the even-level point is genuinely not unique
+(§2.5(b) has a six-centre configuration where both a finite point and ∞ satisfy the level-6 condition).
+What works is weaker and far more useful: define a canonical *function* $E_n$ of the configuration, prove
+the induction's payloads about $E_n$, and let the public statement stay existential, deriving it from the
+canonical form. Uniqueness, where the classical prose's definite article suggests it, is neither true nor
+needed.
+
+*Coordinates and determinants first, predicates second.* Everything in §3 is done in the centres $c_k$,
+their conjugates and the determinants `triP` and `cycP`, with level objects read off as kernel vectors. An
+API stated in incidence predicates — point on circle, three points collinear — is what the classical prose
+suggests, and it would have made every branch condition of §3.5–3.6 a case analysis instead of a rewrite.
+The price of the coordinate route is that the formal statement then looks unlike the classical one, and
+the correspondence has to be argued; that is what §2.5 is for.
+
+*The point at infinity belongs to the carrier.* A vanishing even-level vector is totalised to ∞ rather
+than treated as an error or a partiality. `ChainS` therefore stays a plain existential over subsets of the
+Riemann sphere: no option type, no monad, no definedness obligations, and the classical "exceptional case"
+becomes an ordinary point. The six-centre configuration of §2.4 stops being a counterexample and becomes a
+configuration whose level-6 object is ∞. The cost is bookkeeping about what ∞ means and a carrier that is
+not quite Carver's (§2.5, §5.1).
+
+*Induct at the parity of the level, not step by step.* The step from $2k+4$ to $2k+6$ runs through
+$2k+5$ because the parity of the object changes there: an even level is a point, the next odd level a
+generalized circle. A one-step induction forces a disjunction into every payload and multiplies the
+branches; the two-step form keeps each payload a statement about one kind of object, which is why §3.4's
+odd and even payloads are as short as they are.
 
 ## 5. Limits
 
@@ -779,3 +850,46 @@ two encodings: `collinear_iff_conj_mul`, `transversal_iff`, `triP_ne_zero_iff`, 
 headline and the corner: `MorleyKernel.cliffordChainS_inf`, `MorleyKernel.heven_inf_all`,
 `MorleyKernel.EvenCorner_proof`, `MorleyKernel.evenCornerQL_proof`, `MorleyKernel.cliffordChainS_all`.
 Every one of the 37 is reported by `#print axioms` as depending only on **std**.
+
+## References
+
+Alphabetical by author. Two entries are this work's own artefacts — the earlier paper that formalised the
+low levels in the plane (Bald 2026a), and the code and verification record for this one (Bald 2026b).
+
+- Atlas project. 2026. *atlas-lean*, Mathlib extension, file
+  `MathlibExt/Geometry/Euclidean/MiquelTheorem.lean`. GitHub, `facebookresearch/atlas-lean`. Accessed 26
+  November 2026.
+- Bald, J. 2026a. *Circle configurations in classical plane geometry, formalized in Lean 4: Clifford's
+  chain, Miquel's five circles, Lester, Sawayama–Thébault and Kosnita*. Zenodo.
+  doi:10.5281/zenodo.23653309.
+- Bald, J. 2026b. *paperl_clifford_chain* (Lean 4 library), commit `1001939`. GitHub,
+  `jpbald93/paperl_clifford_chain`. Accessed 26 November 2026.
+- Bobenko, A. I., and W. K. Schief. 2016. "Circle complexes and the discrete CKP equation."
+  *International Mathematics Research Notices*, article rnw021. doi:10.1093/imrn/rnw021. Preprint
+  arXiv:1509.04109.
+- Carver, W. B. 1920. "The failure of the Clifford chain." *American Journal of Mathematics* 42:
+  137–167. doi:10.2307/2370427. Errata, *ibid.* 42: 286, doi:10.2307/2370470.
+- Clifford, W. K. 1871. "A synthetic proof of Miquel's theorem." *Oxford, Cambridge and Dublin Messenger
+  of Mathematics* 5: 124–141. Reprinted in *Mathematical Papers*, edited by R. Tucker, 38–54. London:
+  Macmillan, 1882.
+- Companion. 2026. *Verification record for Paper L* (COMPANION.md), published with the supporting
+  material at `PaperL/preprint/`. GitHub, `jpbald93/LEAN-verification`. Accessed 26 November 2026.
+- Coxeter, H. S. M. 1969. *Introduction to Geometry*. 2nd ed. New York: Wiley.
+- de Moura, L., and S. Ullrich. 2021. "The Lean 4 theorem prover and programming language." In
+  *Automated Deduction — CADE-28*, Lecture Notes in Computer Science 12699, 625–635. Springer.
+  doi:10.1007/978-3-030-79876-5_37.
+- HighSchoolGeometry. 2026. Rocq library, `theories/applications_cocyclicite.v`, theorem `Miquel`. GitHub,
+  `rocq-community/HighSchoolGeometry`. Accessed 26 November 2026.
+- Longuet-Higgins, M. S. 1972. "Clifford's chain and its analogues in relation to the higher polytopes."
+  *Proceedings of the Royal Society of London A* 330: 443–466. doi:10.1098/rspa.1972.0154.
+- Mathlib. 2026. *1000+ theorems*, `docs/1000.yaml`, at Mathlib commit `0df444a3`.
+  <https://leanprover-community.github.io/1000.html>.
+- Mathlib Community. 2020. "The Lean mathematical library." In *Proceedings of the 9th ACM SIGPLAN
+  International Conference on Certified Programs and Proofs (CPP '20)*, 367–381.
+  doi:10.1145/3372885.3373824.
+- Morley, F. 1900. "On the metric geometry of the plane n-line." *Transactions of the American
+  Mathematical Society* 1: 97–115. doi:10.1090/S0002-9947-1900-1500528-8.
+- Ramos, A. F., D. B. Hulak, and R. J. G. B. de Queiroz. 2026. "Miquel's theorem in Isabelle/HOL."
+  *Archive of Formal Proofs*, 11 August 2026. <https://www.isa-afp.org/entries/Miquel.html>.
+- Walters, R. 2026. *lean-genius*, file `proofs/Proofs/MiquelPivotTheoremOQ01.lean`. GitHub,
+  `rjwalters/lean-genius`. Accessed 26 November 2026.

@@ -1,8 +1,8 @@
-# Layer 11 — name/line gate, Paper L v1.0
+# Layer 11 — name/line gate, Paper L v1.1
 
 Instrument: `namegate.py` (this directory), run against a full line-numbered dump of the pinned tree (`jack:~/paperL_jack`, `Clifford/MorleyKernel.lean` sha `4beb169a…`, gate 37 declarations). It reads every `Clifford/File.lean:N` citation, not only backticked ones: prose, code comments, comma lists and table rows.
 
-**Result: PASS.** 68 citation occurrences, 64 distinct `file:line` pairs, all resolving to a declaration; 33 attribution checks in the `` `name` (`file:line`) `` form all matching; 0 table rows (gate list, bridges, statement declarations) all matching the attributed name.
+**Result: PASS.** 66 citation occurrences, 63 distinct `file:line` pairs, all resolving to a declaration; 33 attribution checks in the `` `name` (`file:line`) `` form all matching; 0 table rows (gate list, bridges, statement declarations) all matching the attributed name.
 
 ## Distinct citations
 
@@ -67,7 +67,6 @@ Instrument: `namegate.py` (this directory), run against a full line-numbered dum
 | `Clifford/MorleyKernel.lean:5287` | `evenCorner_of_QL` |
 | `Clifford/MorleyKernel.lean:5345` | `kpe5_eq_kpe6_succAbove` |
 | `Clifford/MorleyKernel.lean:5499` | `polyF_coeff_top` |
-| `Clifford/MorleyKernel.lean:5539` | `evenCornerQL_proof` |
 | `Clifford/MorleyKernel.lean:5584` | `EvenCorner_proof` |
 | `Clifford/MorleyKernel.lean:5586` | `heven_inf_all` |
 | `Clifford/MorleyKernel.lean:5592` | `cliffordChainS_inf` |

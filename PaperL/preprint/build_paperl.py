@@ -14,7 +14,7 @@ import sys
 SRC = 'DRAFT.md'
 OUT = 'paperl.tex'
 BODY = '/tmp/paperl_body.tex'
-COMMIT = '1001939fa120adb94989defd3a3a7b9d50aac5c1'
+COMMIT = '3df056f596e5dffa15c22292055bbd4b6a9e4299'
 REPO = 'https://github.com/jpbald93/paperl_clifford_chain'
 
 PREAMBLE = r"""\documentclass[11pt]{article}
@@ -122,6 +122,8 @@ def convert(text):
         chunks = [h[i:i + 8] for i in range(0, len(h), 8)]
         return '\\texttt{' + '\\allowbreak '.join(chunks) + '}'
     body = re.sub(r'\\texttt\{([0-9a-f]{64})\}', chunk_hash, body)
+    # the reference list is unnumbered, like the appendices
+    body = body.replace('\\section{References}', '\\section*{References}')
     # markdown horizontal rules between sections are not part of the typeset paper
     body = body.replace('\\begin{center}\\rule{0.5\\linewidth}{0.5pt}\\end{center}\n', '')
     body = body.replace('\\textasciitilde{}', '\\textasciitilde')

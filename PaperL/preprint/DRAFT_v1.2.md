@@ -84,9 +84,10 @@ so that this paper can be read as a paper.
 The mathematics is a classical chain and its literature is old and settled. Clifford (1871) has the base
 cases; Morley (1900) the analytic method and the characteristic matrix; Carver (1920) the failure of the
 chain in the plane and its classification in the inversion plane; Longuet-Higgins (1972) the picture in
-higher polytopes. The cross-ratio form of the uniform step used in §3.4 is Bobenko and Schief's (2016),
-and the same step appears in Coxeter (1969) in the circles-through-a-point form. None of these gives a
-proof that a proof assistant can check, and that is the gap this paper fills.
+higher polytopes. The cross-ratio form of the uniform step used in §3.4 is Bobenko and Schief's (2016);
+Coxeter (1969, §14.9) states the chain itself — the first three theorems and "and so on" — in the
+circles-through-a-point form, but gives no general step. None of these gives a proof that a proof
+assistant can check, and that is the gap this paper fills.
 
 On the formal side, Miquel's theorem — the level-4 base case — exists in several systems: in Isabelle/HOL
 (Ramos, Hulak and Queiroz 2026), in the Atlas project's Lean extension (Atlas project 2026), in the Rocq
@@ -108,8 +109,8 @@ excluded from it. §5 says what the search behind that claim covered and what it
 ### 2.1 The carrier
 
 Everything is stated for circles through the origin $M = 0$ (a similarity moves any $M$ there) with
-centres $c : \mathrm{Fin}\,n \to \mathbb{C}$. The two ground-level notions are
-`Clifford/Basic.lean:394`
+centres $c : \mathrm{Fin}\,n \to \mathbb{C}$. The two ground-level notions (`Clifford/Basic.lean:394`)
+are
 
 ```lean
 noncomputable def second (c d : ℂ) : ℂ := (conj c * d - c * conj d) / (conj c - conj d)
@@ -204,7 +205,7 @@ it.
 ### 2.3 The theorem
 
 The main result, `cliffordChainS_all`, is one declaration with no hypothesis on $n$
-(`Clifford/MorleyKernel.lean:5599`):
+(`Clifford/MorleyKernel.lean:5596`):
 
 ```lean
 theorem cliffordChainS_all (n : ℕ) : CliffordChainS n
@@ -214,10 +215,10 @@ It is the join of two proofs. The levels $n \le 5$ come from the finite plane: t
 proved there for $n \le 5$ and transported to the sphere by `cliffordChainS_of_le_five`
 (`Clifford/Mobius.lean:178`) and `chainS_of_chain`. The levels $n \ge 3$ come from the Morley induction of
 §3, whose headline is `cliffordChainS_inf (n) (hn : 3 ≤ n) : CliffordChainS n`
-(`Clifford/MorleyKernel.lean:5592`). The two overlap on $3 \le n \le 5$, and the declaration
+(`Clifford/MorleyKernel.lean:5589`). The two overlap on $3 \le n \le 5$, and the declaration
 `cliffordChainS_all` is their join; it is the statement the paper is about. All three terminal theorems —
-`cliffordChainS_inf`, `heven_inf_all` (`Clifford/MorleyKernel.lean:5586`) and `EvenCorner_proof`
-(`Clifford/MorleyKernel.lean:5584`) — depend on **std** only, and `cliffordChainS_all` is in the axiom
+`cliffordChainS_inf`, `heven_inf_all` (`Clifford/MorleyKernel.lean:5583`) and `EvenCorner_proof`
+(`Clifford/MorleyKernel.lean:5581`) — depend on **std** only, and `cliffordChainS_all` is in the axiom
 gate's required list, so the claim is machine-checked at every build (§4.2).
 
 Read out in prose, for every $n$ and every `GenPosN` family of $n$ circles through $M$: a Clifford object
@@ -259,7 +260,8 @@ The pair `cliffordChain_iff` / `chainS_six_unique` is the precise sense in which
 too small: the sphere adds the level-6 point that this configuration was missing, and it adds nothing
 else in this instance. The uniqueness in `chainS_six_unique` is a property of this configuration, not of
 the predicate (§2.5(b)). The construction is *inspired by* Carver's reading — "the plane has only one
-point at infinity … circle includes straight lines and point-circles" — but is not identical to it:
+point at infinity … the word circle to include straight lines and point-circles" — but is not identical
+to it:
 Carver's §6 admits a point-circle at infinity, which `IsGCircleS` excludes (§5).
 
 ### 2.5 Is this the classical theorem?
@@ -300,7 +302,7 @@ the kernel vector $v$ of the level-$n$ matrix (§3), and a vanishing middle coor
 includes the case of the *whole* vector vanishing, which is not a projective coordinate at all; sending it
 to ∞ is the development's chosen totalisation and not a consequence of projective geometry. The branch is
 not vacuous: for the parabola configuration of (b) the middle coordinate of the level-6 parent cross vector
-vanishes and, by `parent_crossVec_zero_of_mid` (`Clifford/MorleyKernel.lean:4998`), so does the whole
+vanishes and, by `parent_crossVec_zero_of_mid` (`Clifford/MorleyKernel.lean:4995`), so does the whole
 vector — two exact evaluations at the pinned tree, recorded in the companion (**std** axioms). General
 position for that tuple is proved in `check/not_UniqEven.lean`. `Counter6.cx` itself is *not* an instance:
 its parent vector has last coordinate $-238878720000$, checked exactly. The choice of totalisation is
@@ -459,7 +461,7 @@ and the two payloads are:
 
 *Odd payload.* For $2k+5$ circles, there is a generalized circle $Y$ containing, for every deletion $i$,
 the canonical point $E_{2k+4}$ of the deletion. Formally `hodd_inf_all'`
-(`Clifford/MorleyKernel.lean:4643`):
+(`Clifford/MorleyKernel.lean:4642`):
 
 ```lean
 ∀ (k : ℕ) (d : Fin (2*k+5) → ℂ), GenPosN d →
@@ -468,7 +470,7 @@ the canonical point $E_{2k+4}$ of the deletion. Formally `hodd_inf_all'`
 
 *Even payload.* For $2k+6$ circles and every $i$, there is a generalized circle through the canonical
 level-$(2k+6)$ point of the whole family and all $2k+5$ canonical level-$(2k+4)$ points of the
-grandchildren. Formally `heven_inf_all` (`Clifford/MorleyKernel.lean:5586`):
+grandchildren. Formally `heven_inf_all` (`Clifford/MorleyKernel.lean:5583`):
 
 ```lean
 ∀ (k : ℕ) (c : Fin (2*k+6) → ℂ), GenPosN c → ∀ i : Fin (2*k+6),
@@ -489,8 +491,8 @@ $$ \texttt{ChainS}(2k+4) \;\Rightarrow\; \texttt{hodd}(2k+5) \;\Rightarrow\; \te
 
 The base of the induction is level 4 (`h4_pt_inf`, `Clifford/MorleyKernel.lean:2566`), and level 3 is
 transported separately (`cliffordChain_threeS`, `Clifford/Mobius.lean:181`). The odd payload needs no
-hypothesis beyond `GenPosN` — that is the content of §3.5 — which is what makes the odd side of the chain
-hypothesis-free, the claim §2.3 records.
+hypothesis beyond `GenPosN` — that is the content of §3.5 — and that is what makes the odd side of the
+chain hypothesis-free.
 
 ### 3.5 The generic step: bordering, and one row that is not free
 
@@ -501,7 +503,7 @@ $P$-columns $0, \dots, k+2$ and the parent's columns $k+4, \dots, 2k+6$ are the 
 $$ \texttt{KP}\,(2k+5)\ =\ \texttt{KP}\,(2k+6)\ \text{ with column } k+3 \text{ deleted}, $$
 
 entry by entry, for any common centre data (`kpe5_eq_kpe6_succAbove`,
-`Clifford/MorleyKernel.lean:5345`). The deleted column is the last $P$-column, and the deleted
+`Clifford/MorleyKernel.lean:5342`). The deleted column is the last $P$-column, and the deleted
 coordinate of a level-$(2k+6)$ vector is $v_{k+3}$ — which is exactly the middle index of the parent,
 $n/2 = k+3$, that is, exactly the denominator whose vanishing sends the parent's *point* to ∞
 (`EptInf`). This is the whole geometry of the corner: **the parent's level point is at infinity precisely
@@ -511,7 +513,7 @@ For a child $i$, the vector $u_i$ obtained from the parent's cross product $v$ b
 $k+3$ satisfies every row of the child's matrix except row $i$, by `mulVec_crossVec`; the row $i$ is a
 bordered determinant. By the Laplace expansion of the bordered matrix along the border, that row is
 $\pm v_{k+3}$, times a minor that does not vanish in general position
-(`child_mulVec_of_parentN`, `Clifford/MorleyKernel.lean:4082`, with `child_crossVec_zero_of_P3` for the
+(`child_mulVec_of_parentN`, `Clifford/MorleyKernel.lean:4081`, with `child_crossVec_zero_of_P3` for the
 degenerate reading). So $u_i$ is a child kernel vector if and only if $v_{k+3} = 0$; and then, by the rank
 statement, $u_i$ is *the* child vector and every child's level point is read off the same $u_i$.
 
@@ -547,8 +549,8 @@ point at all, in which case the parent's object has to be a line through ∞.
 
 *The level circle is a line, on the odd side ($P_0 = 0$).* In $\mathrm{E}_m(v)$ the coefficient of
 $z\bar z$ is $|P_0|^2$, so $P_0 = 0$ makes the equation real-linear: a line. The odd payload's first
-branch (`hodd_inf_P0_eq`, `Clifford/MorleyKernel.lean:4270`) splits again. If in addition $Q_0 = 0$, all
-the children's finite level points coincide (`QL_zero_of_P0_Q0`, `Clifford/MorleyKernel.lean:4115`) and
+branch (`hodd_inf_P0_eq`, `Clifford/MorleyKernel.lean:4269`) splits again. If in addition $Q_0 = 0$, all
+the children's finite level points coincide (`QL_zero_of_P0_Q0`, `Clifford/MorleyKernel.lean:4114`) and
 the line through that point and ∞ works. Otherwise the finite children are collinear
 (`collinear_of_reallin`), with the direction read off $Q_0$, and the line through them works. In both
 cases the witness line contains ∞, so a child whose own middle coordinate vanishes is on it for free.
@@ -558,22 +560,22 @@ fail to be a circle is the way in which a line is a legitimate level object.
 *A child has no finite level point ($P_{k+2} = 0$ for the child).* On the even side this is the third
 branch. The child's level point is ∞, so the parent's object cannot be the child's circle read out at a
 finite point; but the finite children all coincide (`children_eq_of_P3_zero`,
-`Clifford/MorleyKernel.lean:4583`), the child's circle degenerates to the line through that common point
-and ∞, and `heven_of_common` (`Clifford/MorleyKernel.lean:5119`) puts the common point and ∞ on the
+`Clifford/MorleyKernel.lean:4582`), the child's circle degenerates to the line through that common point
+and ∞, and `heven_of_common` (`Clifford/MorleyKernel.lean:5116`) puts the common point and ∞ on the
 witness line. The corresponding odd-side statement is `child_line_of_P3_zero`
-(`Clifford/MorleyKernel.lean:4601`), whose line then carries both the finite children and ∞
+(`Clifford/MorleyKernel.lean:4600`), whose line then carries both the finite children and ∞
 (`hodd_inf_P0_ne_some`).
 
 *The child's level circle is a line ($P_0(d) = 0$).* On the even side this is the first branch
-(`heven_line_of_P0`, `Clifford/MorleyKernel.lean:5137`), and it covers both positions of the parent.
+(`heven_line_of_P0`, `Clifford/MorleyKernel.lean:5134`), and it covers both positions of the parent.
 Here the parent's point is read off a degenerated subfamily circle, and the witness is again a line
 through the parent and the finite grandchildren; the proof splits on whether $Q_0(d) = 0$, exactly as in
 the odd case.
 
 What is left, on the even side, is the generic branch — $P_0(d) \ne 0$, the parent's middle coordinate
-$P_{k+3} \ne 0$, every child finite — where `heven_kernel` (`Clifford/MorleyKernel.lean:4697`) reads the
+$P_{k+3} \ne 0$, every child finite — where `heven_kernel` (`Clifford/MorleyKernel.lean:4696`) reads the
 witness straight off the subfamily's kernel circle, and the corner, where the parent's middle coordinate
-vanishes and with it, by `parent_crossVec_zero_of_mid` (`Clifford/MorleyKernel.lean:4998`), the whole
+vanishes and with it, by `parent_crossVec_zero_of_mid` (`Clifford/MorleyKernel.lean:4995`), the whole
 parent vector. The corner is the fourth branch and the only one the classical argument does not cover,
 because there is no parent line and no parent point from which to read anything. It is treated
 separately.
@@ -591,16 +593,18 @@ much stronger than collinearity:
 In the corner, all $2k+5$ grandchild level points coincide, at the single point $-w_{2k+4}/w_{k+2}$, where
 $w$ is the child's cross vector. Hence the line through that point and ∞ is a generalized circle through
 the parent's point and all the grandchildren's points. (Formally \texttt{EvenCorner\_proof},
-\src{Clifford/MorleyKernel.lean}{5584}.)
+\src{Clifford/MorleyKernel.lean}{5581}.)
 \end{theorem}
 
-The geometric statement is `EvenCorner` (`Clifford/MorleyKernel.lean:5253`) and it is obtained from a
-scalar identity (§2.5(c)); the substance is the identity. Let $w = \texttt{crossVec}(\texttt{KP}\,(2k+5)\ d\ \bar d)$
+The geometric statement is `EvenCorner` (`Clifford/MorleyKernel.lean:5250`), and it follows from a scalar
+identity — the corner identity proved below, through `evenCorner_of_QL`
+(`Clifford/MorleyKernel.lean:5284`); the parent's point is ∞ by the totalisation of §2.5(c). The
+substance is the identity. Let $w = \texttt{crossVec}(\texttt{KP}\,(2k+5)\ d\ \bar d)$
 be the child's cross vector and $d = c \circ i^{\uparrow}$.
 
 \begin{theorem}[The corner identity]
 In the corner, $w_{2k+5} = 0$. (Formally \texttt{evenCornerQL\_proof},
-\src{Clifford/MorleyKernel.lean}{5539}.)
+\src{Clifford/MorleyKernel.lean}{5536}.)
 \end{theorem}
 
 The proof has three steps. The first two are linear algebra; the third is an elementary polynomial
@@ -647,15 +651,14 @@ the unconjugated entries of $w$ — and $w_0 \ne 0$ forces $w_{2k+5} = 0$, which
 
 The development states this in dehomogenised coordinates, as a polynomial identity for $\Phi$, $\Psi$ and
 their conjugates at $X = -c/\bar c$ (`polyF`, with `polyF_eval_zero`, `polyF_natDegree_le` — degree
-$\le 2k+5$ — and `polyF_coeff_top` (`Clifford/MorleyKernel.lean:5499`), whose coefficient is
+$\le 2k+5$ — and `polyF_coeff_top` (`Clifford/MorleyKernel.lean:5496`), whose coefficient is
 $-W_{2k+5} \cdot \overline{W_0}$, the same expression with the conjugate on $W_0$), and concludes with
 `eq_zero_of_natDegree_lt_card_of_eval_eq_zero` from the $2k+6$ distinct roots
 $t_r = -c_r/\bar c_r$ (injectivity of $t$ is `GenPosN.1`). Only three of the corner's hypotheses are used:
 $V = 0$ in the deleted coordinate, $P_0(d) \ne 0$, and `GenPosN.1`. The grandchildren's finiteness, an
 explicit hypothesis of `EvenCornerQL`, is *not* used by the identity; it is used downstream, by
-`evenCorner_of_QL` (`Clifford/MorleyKernel.lean:5287`), to deduce the geometric statement. The hypothesis
-is present in the statement and unused by the proof; it is one of the eight unused hypotheses the ablation
-of §4.3 reports.
+`evenCorner_of_QL` (`Clifford/MorleyKernel.lean:5284`), to deduce the geometric statement. The hypothesis
+is in the statement because the geometric form needs it; the identity does not use it.
 
 The corner identity is what turns the even side into a theorem rather than a conditional: with
 $w_{2k+5} = 0$ the grandchildren's level points all coincide, and the parent's ∞ is a generalized circle
@@ -666,7 +669,7 @@ it was needed.
 
 ### 4.1 What is formalised, and where
 
-The development is a Lean 4 library, nine files under `Clifford/`, 8,321 lines, on Lean
+The development is a Lean 4 library, nine files under `Clifford/`, 8,318 lines, on Lean
 `leanprover/lean4:v4.33.1` (de Moura and Ullrich 2021) and Mathlib at the pin `0df444a3` (Mathlib
 Community 2020). Its shape follows §2–§3:
 
@@ -677,12 +680,13 @@ Community 2020). Its shape follows §2–§3:
   `Clifford/Counter6.lean` and `Clifford/Classify.lean`.
 - **The core** — inversion, the Morley matrix, the rank statement, the level-3 to level-5 closed forms and
   the Plücker relation, the step lemmas, the kernel circle and the odd payload, the even payload, the
-  corner, and the headline — in `Clifford/MorleyKernel.lean`, 5,610 lines.
+  corner, and the headline — in `Clifford/MorleyKernel.lean`, 5,607 lines.
 - **The definition bridges to Mathlib** — `Clifford/BridgeL10.lean`.
 
 The library is published at [github.com/jpbald93/paperl_clifford_chain](https://github.com/jpbald93/paperl_clifford_chain);
-the state this paper describes is the commit `1001939fa120adb94989defd3a3a7b9d50aac5c1`, and the two check
-files of §2.4 and §2.5(b) are in `check/`. `lake exe cache get`, `lake build`, `./gate.sh` and
+the state this paper describes is the commit `3df056f596e5dffa15c22292055bbd4b6a9e4299` (v1.2, the tree
+from which the eight unused hypotheses of §4.3 have been removed), and the two check files of §2.4 and
+§2.5(b) are in `check/`. `lake exe cache get`, `lake build`, `./gate.sh` and
 `bash tests/tamper.sh` reproduce everything §4.2 reports about the library.
 
 ### 4.2 What is checked
@@ -716,8 +720,9 @@ Beyond the gate, the development was audited by mutation testing (mutate a const
 require a downstream failure) over 516 of the 577 declarations of the library, including 318 of the 343 in
 `MorleyKernel.lean`; by contradiction probes (attempt to derive `False` from each declaration's
 hypotheses) over 551 of the 577 declarations, with no contradiction found; by a hypothesis ablation over
-262 declarations, which found eight unused hypotheses in auxiliary lemmas and none in a headline
-statement; by a satisfiability search on two machines, which certified the hypotheses of 68 of the 577
+262 declarations, which found no unused hypothesis in a headline statement; the eight it reported in
+auxiliary lemmas have since been removed, together with two hypotheses of their immediate callers that
+only forwarded them (v1.2); by a satisfiability search on two machines, which certified the hypotheses of 68 of the 577
 declarations and refuted none; and by a like-for-like second-machine reproduction of the mutation and
 contradiction audits on an independent host, which reproduced the survivor set exactly. None of this is
 mathematics, and none of it is in this paper; the numbers, the sixteen mutation survivors and their
@@ -729,35 +734,37 @@ generator could not mutate at all rest on the gate and on the axiom report.
 
 ### 4.4 Use of automated tools
 
-The author is responsible for this paper: for its statements, its argument, every number in it, and the
-decision to publish it. He directed the work and has read and hand-checked the text. This section records
-which parts of it were produced by tools and which by him, because a reader is entitled to know.
+The author drafted this paper with the help of automated tools: the idea, the mathematical direction, the
+decisions the statement leaves open, and the feedback that shaped each revision are his, and he read and
+hand-checked the result. This section records which parts of the text came from which, because a reader
+is entitled to know.
 
-*The proof scripts.* The Lean development was written by large-language-model coding agents working under
-the author's direction on a specification fixed in advance: the statements of §2 were fixed before the
-proofs were attempted, and each proof was accepted only when the Lean kernel accepted it under the gate of
-§4.2. No step of any proof is accepted on a model's authority; the Lean kernel is the only judge of
-correctness in this development, and the gate's axiom report is the record of what it accepted. Where the
-answer was "this is not currently provable", the result is recorded as an open item in §5 and in the
-companion, not smoothed over.
+*The proof scripts.* The Lean development was written by large-language-model coding agents working to the
+author's specification and under his direction: the statements of §2 were fixed before the proofs were
+attempted, and each proof was accepted only when the Lean kernel accepted it under the gate of §4.2. No
+step of any proof is accepted on a model's authority; the Lean kernel is the only judge of correctness in
+this development, and the gate's axiom report is the record of what it accepted. Where the answer was
+"this is not currently provable", the result is recorded as an open item in §5 and in the companion, not
+smoothed over.
 
 *The corner argument of §3.7.* This argument is not the author's own discovery, and it is not claimed as
 one. It was produced by the coding agents in the course of the formalisation: the reduction of the corner
 to the single scalar identity $w_{2k+5} = 0$, and the three-step proof set out in §3.7, came out of the
 proof work, and the Lean proof takes a slightly different route to the same identity. The author's part
-was to direct that work, to check it against the development, and to decide that it should be published
-with this attribution.
+was to set the problem, to direct that work, to check it against the development, and to decide that it
+should be published with this attribution.
 
-*The prose.* Language-model tools drafted and revised the prose under the author's direction, and made
-automated reading passes over the draft in the manner of a referee report. The author read every paragraph
-of the result and checked each correction against the development before it was applied; the list of
-changes, and why they were made, is in the companion's history section. No claim in this paper rests on a
-model's judgement.
+*The prose.* The author drafted the prose and revised it with language-model tools as his assistants: the
+tools produced editorial and referee-style reading passes over drafts he directed, and text he asked for.
+He decided what every paragraph should say, read every paragraph of the result, and checked each
+correction against the development before it was applied; the list of changes, and why they were made, is
+in the companion's history section. No claim in this paper rests on a model's judgement.
 
-*What is the author's.* The mathematical content is classical (Clifford, Morley, Carver, Longuet-Higgins,
-Bobenko–Schief), and the interpretive decisions of §2.5 — what to state, which totalisation, which general
-position — are his to make and to defend, and the paper defends them in the text rather than delegating
-them. The errors that remain are his.
+*What is the author's.* The idea for this formalisation, the choice to state the chain on the sphere with
+the degenerate cases carried by the predicate, and the interpretive decisions of §2.5 — what to state,
+which totalisation, which general position — are his to make and to defend, and the paper defends them in
+the text rather than delegating them. The mathematical content is classical (Clifford, Morley, Carver,
+Longuet-Higgins, Bobenko–Schief). The errors that remain are his.
 
 ### 4.5 Lessons for formalisers
 
@@ -862,7 +869,7 @@ low levels in the plane (Bald 2026a), and the code and verification record for t
 - Bald, J. 2026a. *Circle configurations in classical plane geometry, formalized in Lean 4: Clifford's
   chain, Miquel's five circles, Lester, Sawayama–Thébault and Kosnita*. Zenodo.
   doi:10.5281/zenodo.23653309.
-- Bald, J. 2026b. *paperl_clifford_chain* (Lean 4 library), commit `1001939`. GitHub,
+- Bald, J. 2026b. *paperl_clifford_chain* (Lean 4 library), commit `3df056f`. GitHub,
   `jpbald93/paperl_clifford_chain`. Accessed 26 November 2026.
 - Bobenko, A. I., and W. K. Schief. 2016. "Circle complexes and the discrete CKP equation."
   *International Mathematics Research Notices*, article rnw021. doi:10.1093/imrn/rnw021. Preprint

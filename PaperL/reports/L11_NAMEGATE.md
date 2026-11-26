@@ -1,8 +1,8 @@
-# Layer 11 — name/line gate, Paper L v1.1
+# Layer 11 — name/line gate, Paper L v1.2
 
-Instrument: `namegate.py` (this directory), run against a full line-numbered dump of the pinned tree (`jack:~/paperL_jack`, `Clifford/MorleyKernel.lean` sha `4beb169a…`, gate 37 declarations). It reads every `Clifford/File.lean:N` citation, not only backticked ones: prose, code comments, comma lists and table rows.
+Instrument: `namegate.py` (this directory), run against a full line-numbered dump of the pinned tree (`jack:~/paperL_jack`, `Clifford/MorleyKernel.lean` sha `1dfe2f13…`, gate 37 declarations). It reads every `Clifford/File.lean:N` citation, not only backticked ones: prose, code comments, comma lists and table rows.
 
-**Result: PASS.** 66 citation occurrences, 63 distinct `file:line` pairs, all resolving to a declaration; 33 attribution checks in the `` `name` (`file:line`) `` form all matching; 0 table rows (gate list, bridges, statement declarations) all matching the attributed name.
+**Result: PASS.** 67 citation occurrences, 63 distinct `file:line` pairs, all resolving to a declaration; 34 attribution checks in the `` `name` (`file:line`) `` form all matching; 0 table rows (gate list, bridges, statement declarations) all matching the attributed name.
 
 ## Distinct citations
 
@@ -53,24 +53,24 @@ Instrument: `namegate.py` (this directory), run against a full line-numbered dum
 | `Clifford/MorleyKernel.lean:2160` | `kernelCircle_isGCircleS` |
 | `Clifford/MorleyKernel.lean:2549` | `EptInf` |
 | `Clifford/MorleyKernel.lean:2566` | `h4_pt_inf` |
-| `Clifford/MorleyKernel.lean:4082` | `child_mulVec_of_parentN` |
-| `Clifford/MorleyKernel.lean:4115` | `QL_zero_of_P0_Q0` |
-| `Clifford/MorleyKernel.lean:4270` | `hodd_inf_P0_eq` |
-| `Clifford/MorleyKernel.lean:4583` | `children_eq_of_P3_zero` |
-| `Clifford/MorleyKernel.lean:4601` | `child_line_of_P3_zero` |
-| `Clifford/MorleyKernel.lean:4643` | `hodd_inf_all'` |
-| `Clifford/MorleyKernel.lean:4697` | `heven_kernel` |
-| `Clifford/MorleyKernel.lean:4998` | `parent_crossVec_zero_of_mid` |
-| `Clifford/MorleyKernel.lean:5119` | `heven_of_common` |
-| `Clifford/MorleyKernel.lean:5137` | `heven_line_of_P0` |
-| `Clifford/MorleyKernel.lean:5253` | `EvenCorner` |
-| `Clifford/MorleyKernel.lean:5287` | `evenCorner_of_QL` |
-| `Clifford/MorleyKernel.lean:5345` | `kpe5_eq_kpe6_succAbove` |
-| `Clifford/MorleyKernel.lean:5499` | `polyF_coeff_top` |
-| `Clifford/MorleyKernel.lean:5584` | `EvenCorner_proof` |
-| `Clifford/MorleyKernel.lean:5586` | `heven_inf_all` |
-| `Clifford/MorleyKernel.lean:5592` | `cliffordChainS_inf` |
-| `Clifford/MorleyKernel.lean:5599` | `cliffordChainS_all` |
+| `Clifford/MorleyKernel.lean:4081` | `child_mulVec_of_parentN` |
+| `Clifford/MorleyKernel.lean:4114` | `QL_zero_of_P0_Q0` |
+| `Clifford/MorleyKernel.lean:4269` | `hodd_inf_P0_eq` |
+| `Clifford/MorleyKernel.lean:4582` | `children_eq_of_P3_zero` |
+| `Clifford/MorleyKernel.lean:4600` | `child_line_of_P3_zero` |
+| `Clifford/MorleyKernel.lean:4642` | `hodd_inf_all'` |
+| `Clifford/MorleyKernel.lean:4696` | `heven_kernel` |
+| `Clifford/MorleyKernel.lean:4995` | `parent_crossVec_zero_of_mid` |
+| `Clifford/MorleyKernel.lean:5116` | `heven_of_common` |
+| `Clifford/MorleyKernel.lean:5134` | `heven_line_of_P0` |
+| `Clifford/MorleyKernel.lean:5250` | `EvenCorner` |
+| `Clifford/MorleyKernel.lean:5284` | `evenCorner_of_QL` |
+| `Clifford/MorleyKernel.lean:5342` | `kpe5_eq_kpe6_succAbove` |
+| `Clifford/MorleyKernel.lean:5496` | `polyF_coeff_top` |
+| `Clifford/MorleyKernel.lean:5581` | `EvenCorner_proof` |
+| `Clifford/MorleyKernel.lean:5583` | `heven_inf_all` |
+| `Clifford/MorleyKernel.lean:5589` | `cliffordChainS_inf` |
+| `Clifford/MorleyKernel.lean:5596` | `cliffordChainS_all` |
 
 ## Table rows checked (name → declaration at line)
 

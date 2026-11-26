@@ -1,7 +1,7 @@
 # Paper L — verification record and provenance
 
 **Companion to “Clifford’s chain for every n: point–circle configurations on the Riemann sphere,
-formalised in Lean 4” (v1.1, 26 November 2026).**
+formalised in Lean 4” (v1.2, 26 November 2026).**
 
 This document is the audit trail behind the paper. The paper itself carries only the mathematics and
 the statements about what was checked; everything that would turn it into a test report lives here:
@@ -33,7 +33,7 @@ each of them.
 
 The development is a git repository, published at
 [github.com/jpbald93/paperl_clifford_chain](https://github.com/jpbald93/paperl_clifford_chain), with
-the audited tree at commit `1001939` (159 files). The per-file sha256 table below is the identity of
+the audited tree at commit `3df056f` (v1.2, 159 files). The per-file sha256 table below is the identity of
 that tree and the table every citation in this record was checked against; the eleven hashes were
 re-checked against a fresh clone of the published repository on 2026-11-26, immediately after the
 push. Toolchain:
@@ -50,19 +50,19 @@ source files plus the gate:
 | `Clifford/Mobius.lean` | 787 | `f8c9f013188f7767b8c2f5850b0f761cfb689d0e490a782d5c9e10ddaec83200` |
 | `Clifford/Counter6.lean` | 233 | `d6bf1cc913841fd487c539c61e4db62054e62d4b861af3a3cb9eaac8cf35d57a` |
 | `Clifford/Classify.lean` | 239 | `ba4fc1b3c567f5d69ca33ea2bcbab0dfaed3a54a779e3405efdb4241be65b83b` |
-| `Clifford/MorleyKernel.lean` | 5610 | `4beb169a6391fef16cecfb5850115ccf7572e585218d2f6e90768cf96bfc8c9f` |
+| `Clifford/MorleyKernel.lean` | 5607 | `1dfe2f13df852e927015dd433eed51b41cc5ba584cbc6e4acb4525b6d5297ba6` |
 | `Clifford/BridgeL10.lean` | 251 | `097722f3d2ff994965dcb1ccff5180d8a62404ea3dfc362bef345934c1ab6054` |
 | `Clifford.lean` (root) | — | `8bb0f5f0d4663cb4e026980d88fae6e24d0c2046b32062fb6cce25a9e465f046` |
 | `gate.sh` | — | `445a7093332fd04144e050328364e0fd8b51af43d556d2929e96f81da3fda599` |
 
-Total: 8,321 lines of Lean across the nine `Clifford/*.lean` files, of which the layer-10 bridge file
-contributes 251 (`MorleyKernel.lean` alone is 5,610 lines; before promotion the scratch file was 5,611 — a
-5,344-line prefix plus the 267-line round-26 proof — and the two gate-forced edits of §2 took it to
-the 5,610 pinned here).
+Total: 8,318 lines of Lean across the nine `Clifford/*.lean` files, of which the layer-10 bridge file
+contributes 251 (`MorleyKernel.lean` alone is 5,607 lines: 5,610 at v1.1, less the two lines of `hQ0`
+and the one of `_hP0` removed in v1.2. Before promotion the scratch file was 5,611 — a 5,344-line prefix
+plus the 267-line round-26 proof — and the two gate-forced edits of §2 took it to 5,610).
 
 Every `file:line` citation in this record — prose, code comments, comma lists and tables alike — is
-machine-checked by `namegate.py` (layer 11, `L11_NAMEGATE.md`): **66 occurrences of 63 distinct
-`Clifford/File.lean:N` pairs** on v1.1 (68 / 64 on v1.0), each resolving to a declaration in the pinned tree, and the 33 checks
+machine-checked by `namegate.py` (layer 11, `L11_NAMEGATE.md`): **67 occurrences of 63 distinct
+`Clifford/File.lean:N` pairs** on v1.2 (68 / 64 on v1.0, 66 / 63 on v1.1), each resolving to a declaration in the pinned tree, and the 34 checks
 written in the form `` `name` (`file:line`) `` additionally checked against the name the paper
 attributes to them. (In the v0.12 draft the same gate read 143 occurrences of 98 distinct pairs: the
 twelve declaration tables that carried most of them are in this record now, not in the paper.) Bare single-line citations have been removed; the eight "lines A–B" range citations left (four distinct spans)
@@ -126,12 +126,12 @@ the two layer reports. Every one depends on **std** only.
 | 29 | `Clifford.not_chain_of_extends` | `Clifford/Classify.lean:57` | theorem |
 | 30 | `Clifford.not_cliffordChain_of_six_le` | `Clifford/Classify.lean:219` | theorem |
 | 31 | `Clifford.cliffordChain_iff` | `Clifford/Classify.lean:227` | theorem |
-| 32 | `Clifford.MorleyKernel.cliffordChainS_inf` | `Clifford/MorleyKernel.lean:5592` | theorem |
-| 33 | `Clifford.MorleyKernel.heven_inf_all` | `Clifford/MorleyKernel.lean:5586` | theorem |
-| 34 | `Clifford.MorleyKernel.EvenCorner_proof` | `Clifford/MorleyKernel.lean:5584` | theorem |
-| 35 | `Clifford.MorleyKernel.evenCornerQL_proof` | `Clifford/MorleyKernel.lean:5539` | theorem |
+| 32 | `Clifford.MorleyKernel.cliffordChainS_inf` | `Clifford/MorleyKernel.lean:5589` | theorem |
+| 33 | `Clifford.MorleyKernel.heven_inf_all` | `Clifford/MorleyKernel.lean:5583` | theorem |
+| 34 | `Clifford.MorleyKernel.EvenCorner_proof` | `Clifford/MorleyKernel.lean:5581` | theorem |
+| 35 | `Clifford.MorleyKernel.evenCornerQL_proof` | `Clifford/MorleyKernel.lean:5536` | theorem |
 | 36 | `Clifford.GenPosN.exists_snoc` | `Clifford/Classify.lean:167` | theorem |
-| 37 | `Clifford.MorleyKernel.cliffordChainS_all` | `Clifford/MorleyKernel.lean:5599` | theorem |
+| 37 | `Clifford.MorleyKernel.cliffordChainS_all` | `Clifford/MorleyKernel.lean:5596` | theorem |
 
 (`GenPosN.exists_snoc` is namespace-qualified in its declaration, which is why a naive
 `theorem <short> match` misses it; the anchor harvester records that explicitly.)
@@ -199,16 +199,16 @@ each is checked at the cited line by the same layer-11 script that checks the pr
 | S17 | `levelPointN` | `Clifford/MorleyKernel.lean:452` | `−v_last / v_{n/2}` |
 | S18 | `EptInf` | `Clifford/MorleyKernel.lean:2549` | the totalized projective level point |
 | S19 | `h4_pt_inf` | `Clifford/MorleyKernel.lean:2566` | the level-4 certificate for `EptInf` |
-| S20 | `parent_crossVec_zero_of_mid` | `Clifford/MorleyKernel.lean:4998` | `V = 0` in the corner |
-| S21 | `EvenCorner` | `Clifford/MorleyKernel.lean:5253` | the geometric corner statement |
-| S22 | `evenCorner_of_QL` | `Clifford/MorleyKernel.lean:5287` | corner from the scalar identity |
-| S23 | `EvenCornerQL` | `Clifford/MorleyKernel.lean:5317` | the scalar identity |
-| S24 | `evenCorner_of_cornerQL` | `Clifford/MorleyKernel.lean:5325` | packaging |
-| S25 | `evenCornerQL_proof` | `Clifford/MorleyKernel.lean:5539` | round-26 proof of S23 |
-| S26 | `EvenCorner_proof` | `Clifford/MorleyKernel.lean:5584` | S21 from S25 |
-| S27 | `heven_inf_all` | `Clifford/MorleyKernel.lean:5586` | the even payload |
-| S28 | `hodd_inf_all'` | `Clifford/MorleyKernel.lean:4643` | the odd payload |
-| S29 | `cliffordChainS_inf` | `Clifford/MorleyKernel.lean:5592` | the headline, `n ≥ 3` |
+| S20 | `parent_crossVec_zero_of_mid` | `Clifford/MorleyKernel.lean:4995` | `V = 0` in the corner |
+| S21 | `EvenCorner` | `Clifford/MorleyKernel.lean:5250` | the geometric corner statement |
+| S22 | `evenCorner_of_QL` | `Clifford/MorleyKernel.lean:5284` | corner from the scalar identity |
+| S23 | `EvenCornerQL` | `Clifford/MorleyKernel.lean:5314` | the scalar identity |
+| S24 | `evenCorner_of_cornerQL` | `Clifford/MorleyKernel.lean:5322` | packaging |
+| S25 | `evenCornerQL_proof` | `Clifford/MorleyKernel.lean:5536` | round-26 proof of S23 |
+| S26 | `EvenCorner_proof` | `Clifford/MorleyKernel.lean:5581` | S21 from S25 |
+| S27 | `heven_inf_all` | `Clifford/MorleyKernel.lean:5583` | the even payload |
+| S28 | `hodd_inf_all'` | `Clifford/MorleyKernel.lean:4642` | the odd payload |
+| S29 | `cliffordChainS_inf` | `Clifford/MorleyKernel.lean:5589` | the headline, `n ≥ 3` |
 | S30 | `not_cliffordChain_of_six_le` | `Clifford/Classify.lean:219` | finite-plane failure for `n ≥ 6` |
 
 The gate's earlier omission of `ChainS`, `CliffordChainS`, `lineS`, `IsGCircleS`, `chainS_six*`,
@@ -243,7 +243,7 @@ was developed for this paper series. Host: `jack`. Report
 | 8b | theorem ↔ witness linkage | **0 links** — neither tree contains hand-written `*_sat` witnesses, so there is nothing to link (§3.2) |
 | 9 | notion inventory: which notions have a Mathlib bridge | **137 notions, 24 flagged `has-bridge`, 113 not** — a heuristic flag, not a semantic count (§3.6) |
 | 10 | definition bridges (`BridgeL10.lean`) | 19 theorems; **13 of the 113** moved to bridged; 25 reclassified INTERNAL; **75 remain unbridged** (arithmetic, same caveat) |
-| 11 | name/line anchors for the paper | **PASS** — 66 occurrences / 63 distinct citations on v1.1, 33 attribution checks, all resolving (§1) |
+| 11 | name/line anchors for the paper | **PASS** — 67 occurrences / 63 distinct citations on v1.2, 34 attribution checks, all resolving (§1) |
 
 The eight tamper tests are `sorry`, `ax2line`, `evalfake`, `macro`, `wrap` (nonstandard-axiom catch),
 `falsehyp`, `cleanand`, `classify6`; the log reports `ALL TAMPERING TESTS REJECTED` (there is no
@@ -307,8 +307,8 @@ in descending order of consequence for a reader.
    a late block on 2026-11-24/25 over 257 further `MorleyKernel.lean` declarations, all in lines
    816–5586 and disjoint from the first set. `MorleyKernel.lean` therefore has **318 of its 343
    declarations (93%)** under mutation, including the round 19–26 material: `heven_kernel`
-   (`Clifford/MorleyKernel.lean:4697`), `heven_line_of_P0` (`Clifford/MorleyKernel.lean:5137`),
-   `evenCorner_of_QL`, `heven_inf_all` and `polyF_coeff_top` (`Clifford/MorleyKernel.lean:5499`)
+   (`Clifford/MorleyKernel.lean:4696`), `heven_line_of_P0` (`Clifford/MorleyKernel.lean:5134`),
+   `evenCorner_of_QL`, `heven_inf_all` and `polyF_coeff_top` (`Clifford/MorleyKernel.lean:5496`)
    each carry mutant rows. The late block contributes 891 mutant rows — 872 killed outright, 3 killed by heartbeat
    timeout, **16 survivors**, 0 unattributed — against the first battery's 631 rows over all eight
    files. Of the sixteen late-block survivors, nine compile their own mutant proof and are caught
@@ -480,21 +480,27 @@ in descending order of consequence for a reader.
    heartbeat or wall-clock timeout, 1 survivor) and 294 probe rows (147 `ok`, 125 no-hypothesis,
    22 timeout). The only rows still without a verdict are those 22 probe timeouts, which are limits
    of the tactic budget, not load artifacts, and the one `probe-invalid` row of item 1.
-8. **Eight unused hypotheses on the layer-6 list, plus one the ablation cannot see.** `cramer2_P0`
-   and `cramer2_Qm` both still take `(hm : 1 ≤ m)`; `child_levelPt_kernel_line` takes
-   `(hd : ∀ j, d j ≠ 0)`; `p0_children_gcircleS_genPos` takes a `_hP0` it does not use;
-   `kpe_odd_succ_eq_mul_x`, `kpe5_hi`, `kpe6_hi` take bound hypotheses `hj`, `hj'` that are unused;
-   and `parent_on_child_line` takes `(hQ0 : … ≠ 0)`. The late-block mutation run adds a different case, not an unused input:
+8. **Eight unused hypotheses, removed in v1.2; one the ablation cannot see.** The layer-6 report
+   (2026-11-19) named eight auxiliary lemmas carrying assumptions their proofs did not use:
+   `cramer2_P0` and `cramer2_Qm` `(hm : 1 ≤ m)`; `child_levelPt_kernel_line` `(hd : ∀ j, d j ≠ 0)`;
+   `p0_children_gcircleS_genPos` `_hP0`; `kpe_odd_succ_eq_mul_x` `(hj : j ≤ 2*k+4)`; `kpe5_hi`
+   `(hj' : j ≤ 2*k+5)`; `kpe6_hi` `(hj' : j ≤ 2*k+6)`; and `parent_on_child_line` `(hQ0 : … ≠ 0)`.
+   All eight are removed at the v1.2 pin, together with the two hypotheses of immediate callers that
+   only forwarded them (`rowRel2_gen`'s `hm`; `child_levelPt_kernel_line_five`'s `hd`). Each removal was
+   hand-checked before the build: dropping `hj'` reproduces the two `kpe` lemmas, and dropping the lower
+   bound `(hj : k+3 ≤ j)` / `(k+4 ≤ j)` does not — `omega` then fails — so the report's "`hj`, `hj'`"
+   wording is corrected here: only the upper bounds were unused, and they stay removed while the lower
+   bounds stay. The late-block mutation run adds a different case, not an unused input:
    `child_line_of_parent_mid_zero` concludes `∃ p u, u ≠ 0 ∧ …` from `hv : V ≠ 0`, `hmid` and
    `P₀ ≠ 0`, and its proof is `absurd (parent_crossVec_zero_of_mid …) hv` — the branch is empty, so
    the four mutants of the conjunct `u ≠ 0` in its *conclusion* have no proof obligation to break and
    survive. The lemma is an empty-branch closer that mutation cannot test; that is a limit of the
    audit, not an unused hypothesis, and it is why `0 CONTRADICTORY` in layer 5 does not by itself
-   exclude this source-visible vacuity. An unused hypothesis is not an error, but a
-   reader should know that these eight *auxiliary* lemmas carry assumptions their proofs do not use;
-   removing them would strengthen those lemmas, and the headline statements of §2 are unaffected
-   either way. To them add `evenCornerQL_proof`'s unused `_hall` (paper §2.4), which layer 6 could not
-   reach because `EvenCornerQL` is a `Prop` definition. **OPEN**: tighten or document each.
+   exclude this source-visible vacuity. To the eight add `evenCornerQL_proof`'s `_hall` (paper §3.7),
+   which layer 6 could not reach because `EvenCornerQL` is a `Prop` definition: it is not removable,
+   because the geometric form uses it downstream through `evenCorner_of_QL`; it is recorded as a
+   statement-level hypothesis the identity does not use. **RESOLVED for the eight** (v1.2; gate PASS 37
+   std, tamper 8/8 at the new pin).
 9. **Carver's classification is cited, not formalised.** paper §1.2 says this; it belongs in the limits
    list too. The development proves the chain exists on the sphere, including the line and ∞ cases
    as they arise; it does not state or prove the key-matrix criterion that predicts *when* they
@@ -528,7 +534,7 @@ in descending order of consequence for a reader.
     `BridgeBlind.lean` was checked on jack only. Layers 1, 2 and 7 also have a john run in his 19 November battery at the
     same pin (wider file set: gate PASS 37, tamper 8/8, linter 0; published in
     `layer0/john_receipt_20261119/BATTERY.md`); layers 6, 9, 10, 11, 12, 14 and 15 are jack-only. The upload is no
-    longer open: the pin is commit `1001939`, the repository is public at that commit and the
+    longer open: the pin is commit `3df056f`, the repository is public at that commit and the
     supporting material is published (§1); the Zenodo deposit is the authors' remaining step and is
     not described here as done.
 
@@ -882,8 +888,9 @@ which joins the transported levels $n \le 5$ with the Morley induction for $n \g
 hypothesis on $n$, and it is added to the gate's REQUIRED list: **37 declarations**, standard axioms.
 Previously the all-$n$ statement existed only as the composition checked in `check/allN.lean`, which is
 the one structural thing this version changes in the formal content. The build, the gate, the tamper
-suite (8/8) and the axiom report were re-run at the new pin `1001939`; `Clifford/MorleyKernel.lean` is
-now 5,610 lines, sha `4beb169a…`, and `gate.sh` sha `445a7093…`. Nothing else in the library moved:
+suite (8/8) and the axiom report were re-run at the new pin `1001939`; at that pin
+`Clifford/MorleyKernel.lean` was 5,610 lines, sha `4beb169a…`, and `gate.sh` sha `445a7093…` (the file
+lost three lines in v1.2, below). Nothing else in the library moved:
 `Clifford/Mobius.lean` and the other eight files are byte-identical to the previous pin.
 
 *The paper.* Restructured so that it reads as a mathematics paper rather than a test report. The
@@ -938,7 +945,37 @@ statement, proof or number of the mathematics changed.
   formalisers (canonical payloads instead of uniqueness; coordinates before predicates; ∞ in the
   carrier; induct at the parity of the level).
 
-*Not done, and why.* The referee's strengthening list also asked for the eight unused hypotheses to be
-removed from the Lean development and for `MorleyKernel.lean` (5,610 lines) to be split. Both change the
-library and its gate rather than the paper, and both are queued for the next pin; the paper no longer
-calls the unused hypotheses a defect of economy but reports them as the ablation's finding (§3.7, §4.3).
+*Done since.* The referee's strengthening list asked for two code changes. The eight unused hypotheses
+were removed in v1.2 (pin `3df056f`; §3 item 8 above, paper §4.3). Splitting `MorleyKernel.lean`
+(5,607 lines) is still queued: it moves declarations across files, so every `File:line` anchor in the
+paper and this record has to be regenerated at the new pin, and it is best done with the next content
+change rather than alone.
+
+### v1.2 — the referee's last pass: cross-references, citations by hand, unused hypotheses removed (2026-11-26)
+
+- **Two stale cross-references and one missing parenthesis.** §3.4 ended "the claim §2.3 records", but
+  §2.3 states the theorem, not the odd side's hypothesis-freeness; the clause is gone. §3.7 said the
+  corner statement was "obtained from a scalar identity (§2.5(c))", but §2.5(c) is the totalisation at ∞;
+  it now names the corner identity proved in §3.7 and `evenCorner_of_QL`, and cites §2.5(c) only for the
+  parent's ∞. §2.1's bare `Clifford/Basic.lean:394` gained its parentheses.
+- **Every reference checked by hand against the source.** Clifford 1871: *Messenger of Math.* 5,
+  124–141, reprint *Mathematical Papers* 38–54 — confirmed against the 1882 Tucker scan (article VIII
+  opens p. 38, article IX opens p. 55). Bobenko–Schief 2016: title "Circle complexes and the discrete
+  CKP equation", IMRN article **rnw021** — confirmed at Crossref/OpenAlex and the arXiv preprint
+  1509.04109, which does use cross-ratio identities for Miquel and Clifford. Carver 1920: 42(3),
+  137–167 with errata *ibid.* 42: 286 (doi 10.2307/2370470) — confirmed via Crossref and the JSTOR scan,
+  which also confirms §5 pp. 160–161 (Theorem 13) and §6 pp. 161–164 (limiting figures). **Coxeter was
+  wrong**: Introduction to Geometry (2nd ed., 1969) §14.9, p. 262, states Clifford's first three theorems
+  and "and so on" — the chain in circles-through-a-point form — but gives no general step. §1.1 now
+  says exactly that. The other eleven entries were re-checked (Crossref/OpenAlex, Zenodo API, GitHub
+  contents API, the AFP entry page, Mathlib's `docs/1000.yaml` at the pin).
+- **The eight unused hypotheses removed.** v1.2 pin `3df056f…`; MorleyKernel 5,607 lines; public raw
+  sha `1dfe2f13…`. Hand check before the build confirmed only the *upper* bounds of `kpe5_hi`/`kpe6_hi`
+  were unused (dropping the lower bound makes `omega` fail), which corrects the layer-6 report's "hj,
+  hj'" wording. Build rc 0, gate PASS 37 std, tamper 8/8 at the new pin; `check/allN.lean` still passes.
+- **§4.4 restated on the author's instruction**: the paper now opens by saying the author drafted it
+  with the help of automated tools — the idea, direction and feedback his — and keeps the mechanical
+  facts (proof scripts by coding agents under his specification; the corner produced in the proof work;
+  tools drafting prose at his direction and making reading passes).
+- **Result**: 18 pp, 0 overfull, 0 undefined; PDF sha `f573b9e3…`, 188,574 B; name gate **PASS 67/63**,
+  34 attribution checks.

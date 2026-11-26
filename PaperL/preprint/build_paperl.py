@@ -14,7 +14,7 @@ import sys
 SRC = 'DRAFT.md'
 OUT = 'paperl.tex'
 BODY = '/tmp/paperl_body.tex'
-COMMIT = 'd15464f0f4f4c8848e7d3e63dd68a03ce45433ae'
+COMMIT = '1001939fa120adb94989defd3a3a7b9d50aac5c1'
 REPO = 'https://github.com/jpbald93/paperl_clifford_chain'
 
 PREAMBLE = r"""\documentclass[11pt]{article}
@@ -55,7 +55,7 @@ PREAMBLE = r"""\documentclass[11pt]{article}
 \newcommand{\src}[2]{\href{__REPO__/blob/__COMMIT__/#1\#L#2}{\texttt{\seqsplit{#1}}:#2}}
 \newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
 
-\title{Clifford's chain for every $n$: point--circle configurations on the Riemann sphere, in Lean~4}
+\title{Clifford's chain for every $n$: point--circle configurations on the Riemann sphere, formalised in Lean~4}
 \author{Josh Bald\\ \small Independent researcher, Ontario, Canada\\ \small\texttt{jpbald93@gmail.com}\\
 \small ORCID: \texttt{0009-0002-1317-6489}
 \thanks{\copyright~2026 Josh Bald. Licensed under CC BY 4.0

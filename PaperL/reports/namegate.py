@@ -111,10 +111,10 @@ def main():
 
     if report:
         out = []
-        out.append('# Layer 11 — name/line gate, Paper L draft v0.11\n')
+        out.append('# Layer 11 — name/line gate, Paper L v1.0\n')
         out.append('Instrument: `namegate.py` (this directory), run against a full line-numbered dump '
                    'of the pinned tree (`jack:~/paperL_jack`, `Clifford/MorleyKernel.lean` sha '
-                   '`dce7b011…`). It reads every `Clifford/File.lean:N` citation, not only backticked '
+                   '`4beb169a…`, gate 37 declarations). It reads every `Clifford/File.lean:N` citation, not only backticked '
                    'ones: prose, code comments, comma lists and table rows.\n')
         out.append(f'**Result: PASS.** {occ_count} citation occurrences, {len(distinct)} distinct '
                    f'`file:line` pairs, all resolving to a declaration; {attr_checks} attribution '
@@ -133,9 +133,10 @@ def main():
             out.append(f'| {i} | `{name}` | `{f}:{l}` | `{got}` |')
         out.append('\n## What this gate does not check\n')
         out.append('Names and lines only. It does not compare signatures or hypotheses; the '
-                   'signature anchors for the statement declarations are the table rows of §3.3 '
-                   'above, which anchor a line, not a type. The hypothesis-level audit is layer '
-                   '12\'s job, run on v0.1; the independent review rounds on v0.2, v0.3 and v0.7 are separately recorded (§5.11 of the draft).\n')
+                   'signature anchors for the statement declarations are the rows of §1.3 of the '
+                   'verification record, which anchor a line, not a type. The hypothesis-level audit '
+                   'is layer 12\'s job, run on v0.1; the reviewer passes on v0.2, v0.3, v0.7, v0.9 and '
+                   'v0.10 are recorded in Appendix C of the verification record.\n')
         open('L11_NAMEGATE.md', 'w', encoding='utf-8').write('\n'.join(out) + '\n')
         print('report written: L11_NAMEGATE.md')
 

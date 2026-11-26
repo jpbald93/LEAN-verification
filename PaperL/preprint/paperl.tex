@@ -32,8 +32,8 @@
 % A declaration of the development; the name/line gate (layer 11) resolves every File:line anchor
 % against the pinned tree.
 \DeclareUrlCommand\decl{\urlstyle{tt}\def\UrlBreaks{\do\_\do\.}}
-\newcommand{\plcommit}{3df056f596e5dffa15c22292055bbd4b6a9e4299}
-\newcommand{\src}[2]{\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/#1\#L#2}{\texttt{\seqsplit{#1}}:#2}}
+\newcommand{\plcommit}{e1ae145c2565cc98816635387412edc0a740c27c}
+\newcommand{\src}[2]{\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/#1\#L#2}{\texttt{\seqsplit{#1}}:#2}}
 \newcommand{\PH}[1]{\textcolor{red}{\textbf{[PLACEHOLDER:} #1\textbf{]}}}
 
 \title{Clifford's chain for every $n$: point--circle configurations on the Riemann sphere, formalised in Lean~4}
@@ -160,7 +160,7 @@ excluded from it. \S{}5 says what the search behind that claim covered and what 
 \subsection{The carrier}\label{the-carrier}}
 
 Everything is stated for circles through the origin \(M = 0\) (a similarity moves any \(M\) there) with
-centres \(c : \mathrm{Fin}\,n \to \mathbb{C}\). The two ground-level notions (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Basic.lean\#L394}{\texttt{Clifford/\allowbreak Basic.lean}:394})
+centres \(c : \mathrm{Fin}\,n \to \mathbb{C}\). The two ground-level notions (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Basic.lean\#L394}{\texttt{Clifford/\allowbreak Basic.lean}:394})
 are
 
 \begin{Verbatim}
@@ -172,7 +172,7 @@ def Transversal (c d : ℂ) : Prop := conj c * d ≠ c * conj d
 \texttt{second\ c\ d} is the second intersection of the two circles (besides \(M = 0\)), and \texttt{Transversal\ c\ d} says
 the two circles meet transversally, equivalently that \(M\), \(c\), \(d\) are not collinear.
 
-General position is \texttt{GenPosN} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Clean.lean\#L177}{\texttt{Clifford/\allowbreak Clean.lean}:177}):
+General position is \texttt{GenPosN} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Clean.lean\#L177}{\texttt{Clifford/\allowbreak Clean.lean}:177}):
 
 \begin{Verbatim}
 def GenPosN {n : ℕ} (c : Fin n → ℂ) : Prop :=
@@ -180,7 +180,7 @@ def GenPosN {n : ℕ} (c : Fin n → ℂ) : Prop :=
     ∀ i j k, i < j → j < k → GenTriple (c i) (c j) (c k)
 \end{Verbatim}
 
-with \texttt{GenTriple} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Basic.lean\#L402}{\texttt{Clifford/\allowbreak Basic.lean}:402}) the conjunction of two non-vanishing determinants,
+with \texttt{GenTriple} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Basic.lean\#L402}{\texttt{Clifford/\allowbreak Basic.lean}:402}) the conjunction of two non-vanishing determinants,
 
 \begin{Verbatim}
 def GenTriple (a b c : ℂ) : Prop :=
@@ -189,7 +189,7 @@ def GenTriple (a b c : ℂ) : Prop :=
 
 where \texttt{triP} is twice the signed area of the centre triangle and \texttt{cycP} a determinant in the inverted
 coordinates. Both conjuncts matter, and neither is a formality: by \texttt{genTriple\_\allowbreak iff}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Bridge.lean\#L110}{\texttt{Clifford/\allowbreak Bridge.lean}:110}) the pair says that the three centres are not collinear \textbf{and} that the
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Bridge.lean\#L110}{\texttt{Clifford/\allowbreak Bridge.lean}:110}) the pair says that the three centres are not collinear \textbf{and} that the
 three second intersections are not collinear. The second conjunct is what keeps the level-3 object a
 genuine circle and never a line, which is why lines --- and the point $\infty$ --- can first occur at level 5, not
 at level 3. Geometrically the two conjuncts exclude the configurations in which the recursion would start
@@ -217,7 +217,7 @@ rather than excluding them, so that the prose matches the predicate and not an i
 \hypertarget{the-recursion}{%
 \subsection{The recursion}\label{the-recursion}}
 
-The chain is the following recursion on the number of circles (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L35}{\texttt{Clifford/\allowbreak Mobius.lean}:35}):
+The chain is the following recursion on the number of circles (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L35}{\texttt{Clifford/\allowbreak Mobius.lean}:35}):
 
 \begin{Verbatim}
 def ChainS : (n : ℕ) → (Fin n → ℂ) → Set (OnePoint ℂ) → Prop
@@ -240,25 +240,25 @@ in the child's object, which is the point taken up in \S{}2.5(a).
 
 Levels 0, 1, 2 are the degenerate base of the recursion: level 0 is the origin, level 1 the circle with
 centre \(c_0\) (the first given circle), level 2 the second intersection. The theorem is
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L46}{\texttt{Clifford/\allowbreak Mobius.lean}:46})
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L46}{\texttt{Clifford/\allowbreak Mobius.lean}:46})
 
 \begin{Verbatim}
 def CliffordChainS (n : ℕ) : Prop := ∀ c : Fin n → ℂ, GenPosN c → ∃ X, ChainS n c X
 \end{Verbatim}
 
-\texttt{ChainS} differs from the finite-plane \texttt{Chain} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Clean.lean\#L165}{\texttt{Clifford/\allowbreak Clean.lean}:165}) in two respects: its carrier is
+\texttt{ChainS} differs from the finite-plane \texttt{Chain} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Clean.lean\#L165}{\texttt{Clifford/\allowbreak Clean.lean}:165}) in two respects: its carrier is
 \texttt{Set\ (OnePoint\ ℂ)} throughout, so the level-2 point is a point of the sphere; and at odd levels the object
 must be a generalized circle \emph{on the sphere}, so lines and $\infty$ are admissible. The combined effect is that
-nothing forces a later object to be finite. \texttt{liftS} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L51}{\texttt{Clifford/\allowbreak Mobius.lean}:51}) is the closure of a
+nothing forces a later object to be finite. \texttt{liftS} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L51}{\texttt{Clifford/\allowbreak Mobius.lean}:51}) is the closure of a
 generalized circle of \(\mathbb{C}\) in the sphere --- the set with $\infty$ adjoined iff the underlying set is
-unbounded --- and \texttt{chainS\_\allowbreak of\_\allowbreak chain} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L119}{\texttt{Clifford/\allowbreak Mobius.lean}:119}) transports any finite chain object along
+unbounded --- and \texttt{chainS\_\allowbreak of\_\allowbreak chain} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L119}{\texttt{Clifford/\allowbreak Mobius.lean}:119}) transports any finite chain object along
 it.
 
 \hypertarget{the-theorem}{%
 \subsection{The theorem}\label{the-theorem}}
 
 The main result, \texttt{cliffordChainS\_\allowbreak all}, is one declaration with no hypothesis on \(n\)
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5596}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5596}):
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5596}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5596}):
 
 \begin{Verbatim}
 theorem cliffordChainS_all (n : ℕ) : CliffordChainS n
@@ -266,12 +266,12 @@ theorem cliffordChainS_all (n : ℕ) : CliffordChainS n
 
 It is the join of two proofs. The levels \(n \le 5\) come from the finite plane: the finite-plane chain is
 proved there for \(n \le 5\) and transported to the sphere by \texttt{cliffordChainS\_\allowbreak of\_\allowbreak le\_\allowbreak five}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L178}{\texttt{Clifford/\allowbreak Mobius.lean}:178}) and \texttt{chainS\_\allowbreak of\_\allowbreak chain}. The levels \(n \ge 3\) come from the Morley induction of
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L178}{\texttt{Clifford/\allowbreak Mobius.lean}:178}) and \texttt{chainS\_\allowbreak of\_\allowbreak chain}. The levels \(n \ge 3\) come from the Morley induction of
 \S{}3, whose headline is \texttt{cliffordChainS\_\allowbreak inf\ (n)\ (hn\ \allowbreak :\ 3\ ≤\ n)\ \allowbreak :\ CliffordChainS\ n}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5589}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5589}). The two overlap on \(3 \le n \le 5\), and the declaration
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5589}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5589}). The two overlap on \(3 \le n \le 5\), and the declaration
 \texttt{cliffordChainS\_\allowbreak all} is their join; it is the statement the paper is about. All three terminal theorems ---
-\texttt{cliffordChainS\_\allowbreak inf}, \texttt{heven\_\allowbreak inf\_\allowbreak all} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5583}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5583}) and \texttt{EvenCorner\_\allowbreak proof}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5581}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5581}) --- depend on \textbf{std} only, and \texttt{cliffordChainS\_\allowbreak all} is in the axiom
+\texttt{cliffordChainS\_\allowbreak inf}, \texttt{heven\_\allowbreak inf\_\allowbreak all} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5583}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5583}) and \texttt{EvenCorner\_\allowbreak proof}
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5581}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5581}) --- depend on \textbf{std} only, and \texttt{cliffordChainS\_\allowbreak all} is in the axiom
 gate's required list, so the claim is machine-checked at every build (\S{}4.2).
 
 Read out in prose, for every \(n\) and every \texttt{GenPosN} family of \(n\) circles through \(M\): a Clifford object
@@ -285,7 +285,7 @@ objects nor the even-level point are determined in general (\S{}2.5(a)--(b)).
 \subsection{Why the sphere: the finite plane is false}\label{why-the-sphere-the-finite-plane-is-false}}
 
 The finite-plane predicate is \texttt{CliffordChain\ (n)\ \allowbreak :=\ ∀\ c,\ GenPosN\ c\ →\ ∃\ X,\ Chain\ n\ c\ X}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Clean.lean\#L184}{\texttt{Clifford/\allowbreak Clean.lean}:184}), and the development proves (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Classify.lean\#L227}{\texttt{Clifford/\allowbreak Classify.lean}:227})
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Clean.lean\#L184}{\texttt{Clifford/\allowbreak Clean.lean}:184}), and the development proves (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Classify.lean\#L227}{\texttt{Clifford/\allowbreak Classify.lean}:227})
 
 \begin{Verbatim}
 theorem cliffordChain_iff (n : ℕ) : CliffordChain n ↔ n ≤ 5
@@ -293,16 +293,16 @@ theorem cliffordChain_iff (n : ℕ) : CliffordChain n ↔ n ≤ 5
 
 The direction \(\texttt{CliffordChain}\ n \Rightarrow n \le 5\) is by a single six-centre configuration,
 \texttt{Counter6.\allowbreak cx\ =\ ⟨3,−6⟩,\ ⟨6,−3⟩,\ ⟨1,2⟩,\ ⟨−2,−1⟩,\ ⟨0,−4⟩,\ ⟨4,0⟩} (exact Gaussian integers,
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Counter6.lean\#L19}{\texttt{Clifford/\allowbreak Counter6.lean}:19}), which is in general position (\texttt{Counter6.\allowbreak cx\_\allowbreak genPosN},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Counter6.lean\#L33}{\texttt{Clifford/\allowbreak Counter6.lean}:33}) and has no level-6 object. What happens there is worth stating, because it is
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Counter6.lean\#L19}{\texttt{Clifford/\allowbreak Counter6.lean}:19}), which is in general position (\texttt{Counter6.\allowbreak cx\_\allowbreak genPosN},
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Counter6.lean\#L33}{\texttt{Clifford/\allowbreak Counter6.lean}:33}) and has no level-6 object. What happens there is worth stating, because it is
 the phenomenon the sphere repairs. For these six centres every level-4 point is forced to be the Miquel
 point, the six level-5 objects are lines (five distinct collinear Miquel points each --- the lines are
-\texttt{line0} \ldots{} \texttt{line5}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L492}{\texttt{Clifford/\allowbreak Mobius.lean}:492} through \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L627}{\texttt{Clifford/\allowbreak Mobius.lean}:627}), and three of those
-lines are not concurrent (\texttt{Counter6.\allowbreak not\_\allowbreak chain6}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Counter6.lean\#L182}{\texttt{Clifford/\allowbreak Counter6.lean}:182}; universal form
-\texttt{Counter6.\allowbreak not\_\allowbreak cliffordChain\_\allowbreak six}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Counter6.lean\#L227}{\texttt{Clifford/\allowbreak Counter6.lean}:227}). The proof of \texttt{not\_\allowbreak chain6} turns on the
+\texttt{line0} \ldots{} \texttt{line5}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L492}{\texttt{Clifford/\allowbreak Mobius.lean}:492} through \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L627}{\texttt{Clifford/\allowbreak Mobius.lean}:627}), and three of those
+lines are not concurrent (\texttt{Counter6.\allowbreak not\_\allowbreak chain6}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Counter6.lean\#L182}{\texttt{Clifford/\allowbreak Counter6.lean}:182}; universal form
+\texttt{Counter6.\allowbreak not\_\allowbreak cliffordChain\_\allowbreak six}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Counter6.lean\#L227}{\texttt{Clifford/\allowbreak Counter6.lean}:227}). The proof of \texttt{not\_\allowbreak chain6} turns on the
 contradiction obtained from the three vanishing cross relations at \(i = 4, 5, 0\).
 
-On the sphere nothing is contradicted; the missing object is simply $\infty$, and the sphere supplies it, in three declarations whose first is \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L651}{\texttt{Clifford/\allowbreak Mobius.lean}:651}:
+On the sphere nothing is contradicted; the missing object is simply $\infty$, and the sphere supplies it, in three declarations whose first is \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L651}{\texttt{Clifford/\allowbreak Mobius.lean}:651}:
 
 \begin{Verbatim}
 theorem chainS_six : ChainS 6 Counter6.cx {∞}
@@ -357,7 +357,7 @@ the kernel vector \(v\) of the level-\(n\) matrix (\S{}3), and a vanishing middl
 includes the case of the \emph{whole} vector vanishing, which is not a projective coordinate at all; sending it
 to $\infty$ is the development's chosen totalisation and not a consequence of projective geometry. The branch is
 not vacuous: for the parabola configuration of (b) the middle coordinate of the level-6 parent cross vector
-vanishes and, by \texttt{parent\_\allowbreak crossVec\_\allowbreak zero\_\allowbreak of\_\allowbreak mid} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4995}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4995}), so does the whole
+vanishes and, by \texttt{parent\_\allowbreak crossVec\_\allowbreak zero\_\allowbreak of\_\allowbreak mid} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4995}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4995}), so does the whole
 vector --- two exact evaluations at the pinned tree, recorded in the companion (\textbf{std} axioms). General
 position for that tuple is proved in \texttt{check/\allowbreak not\_\allowbreak UniqEven.\allowbreak lean}. \texttt{Counter6.\allowbreak cx} itself is \emph{not} an instance:
 its parent vector has last coordinate \(-238878720000\), checked exactly. The choice of totalisation is
@@ -403,10 +403,10 @@ multiplying by \(|w|^2\) the equation becomes
 \[ \bar c \, w + c \, \bar w = 1 , \qquad \text{i.e.} \qquad w = a + t \bar w, \quad a = \frac{1}{\bar c}, \quad t = -\frac{c}{\bar c}. \]
 
 Since \(|t| = 1\), the solutions form a real line: writing \(w = 1/(2\bar c) + s\,(i/\bar c)\)
-with \(s \in \mathbb{R}\) recovers \texttt{lineOf\_\allowbreak eq\_\allowbreak line} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L55}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:55}). So inversion at \(M\)
+with \(s \in \mathbb{R}\) recovers \texttt{lineOf\_\allowbreak eq\_\allowbreak line} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L55}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:55}). So inversion at \(M\)
 carries the \(n\) circles to \(n\) lines \(\ell_k\), and --- this is the point --- carries the second intersection of
 circles \(i\) and \(j\) to the vertex \(\ell_i \cap \ell_j\) (\texttt{onCircleM\_\allowbreak iff\_\allowbreak lineOf},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L44}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:44}, and \texttt{lineOf\_\allowbreak eq\_\allowbreak line}). Two circles tangent at \(M\) give parallel lines,
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L44}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:44}, and \texttt{lineOf\_\allowbreak eq\_\allowbreak line}). Two circles tangent at \(M\) give parallel lines,
 which is why \texttt{Transversal\ c\ d} is exactly \(\bar c d \ne c \bar d\).
 
 Clifford's chain for circles through a point is therefore \emph{the same theorem} as Clifford's chain for \(n\)
@@ -430,10 +430,10 @@ matrix whose \(k\)-th row is the evaluation of the pair at the \(k\)-th line, in
 
 \[ \bar c_k \, P(t_k) = Q(t_k), \qquad t_k = -\frac{c_k}{\bar c_k}. \qquad (\ast) \]
 
-In the development this matrix is \texttt{KP\ n\ c\ (conj\ ∘\ c)} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L214}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:214}), the row-scaled
-form of the polynomial matrix \texttt{Kf} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L95}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:95}) with \(a_k = 1/\bar c_k\) and
+In the development this matrix is \texttt{KP\ n\ c\ (conj\ ∘\ c)} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L214}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:214}), the row-scaled
+form of the polynomial matrix \texttt{Kf} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L95}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:95}) with \(a_k = 1/\bar c_k\) and
 \(t_k = -c_k/\bar c_k\); row scaling by \(\bar c_k^{n - m}\) does not change the kernel for nonzero centres
-(\texttt{KP\_\allowbreak mulVec\_\allowbreak eq\_\allowbreak zero\_\allowbreak iff}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L236}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:236}), and nonzero centres follow from \texttt{GenPosN} at
+(\texttt{KP\_\allowbreak mulVec\_\allowbreak eq\_\allowbreak zero\_\allowbreak iff}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L236}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:236}), and nonzero centres follow from \texttt{GenPosN} at
 every level where the readout is used. The name is Morley's: the matrix is the interpolation matrix of the
 \(n\) lines, and the classical reading is that a generalized circle is determined by its values at \(n\) lines.
 Why the row is \((\ast)\) is easiest to see in the smallest case, which also fixes the constants.
@@ -461,7 +461,7 @@ statement.
 
 \textbf{The case \(n = 4\).} Now \(m = 2\), \(v = (P_0, P_1, P_2 \mid Q_0, Q_1)\), four equations in five
 unknowns, and the object is the point \(-Q_1/P_2\). That this point lies on all four level-3 circles is
-\texttt{StepEven\ 1} (the \(m = 1\) instance of \S{}3.5), and \texttt{levelPoint\_\allowbreak four} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L321}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:321})
+\texttt{StepEven\ 1} (the \(m = 1\) instance of \S{}3.5), and \texttt{levelPoint\_\allowbreak four} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L321}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:321})
 identifies it with the Miquel point of the four circles, that is, of the four lines. The two cases
 together are the classical base of the chain, and they show the pattern the general step repeats: the
 matrix gains one column per level, the new column is the new coefficient, and the new object --- a circle
@@ -469,10 +469,10 @@ at odd levels, a point at even ones --- is the readout of the kernel vector.
 
 \textbf{The case \(n = 5\).} The first genuinely degenerate closed form. At \(n = 5\) the associated generalized
 circle is the Clifford circle of five points up to the non-degeneracy factor \(k_3\):
-\texttt{oddCircleEq\_\allowbreak five\_\allowbreak cross} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L462}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:462}) states
+\texttt{oddCircleEq\_\allowbreak five\_\allowbreak cross} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L462}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:462}) states
 \(\mathrm{E}_2(v)(z) = k_3 \cdot \texttt{cliffordEq}(z)\) as a polynomial identity, with no hypothesis, where
 \(k_3\) is the \(z\bar z\) coefficient of the Clifford circle. The identity is proved from the three-term
-Plücker relation \texttt{k0k3\_\allowbreak sub\_\allowbreak k1k2} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L406}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:406}) --- the first appearance of the
+Plücker relation \texttt{k0k3\_\allowbreak sub\_\allowbreak k1k2} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L406}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:406}) --- the first appearance of the
 determinantal relations that carry the general step.
 
 \hypertarget{the-readouts-and-the-rank-statement}{%
@@ -484,27 +484,27 @@ Two objects are read off a kernel vector \(v\).
 
 \[ z = -\frac{Q_{m-1}}{P_m} = -\frac{v_{2m}}{v_m}, \]
 
-which is \texttt{levelPointN} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L452}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:452}) in coordinates. On the sphere the point is
-\texttt{EptInf} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L2549}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2549}), which sends \(v_m = 0\) to $\infty$ (\S{}2.5(c)).
+which is \texttt{levelPointN} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L452}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:452}) in coordinates. On the sphere the point is
+\texttt{EptInf} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L2549}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2549}), which sends \(v_m = 0\) to $\infty$ (\S{}2.5(c)).
 
 \emph{Odd \(n = 2m+1\): the level circle.} With \(P = v_0\), \(Q = v_{m+1}\), \(R = v_{2m+1}\), the object is
 
 \[ \mathrm{E}_m(v): \quad |\bar P z - \bar Q|^2 = |R|^2 , \]
 
-that is, \texttt{oddCircleEq} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L446}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:446}). Completing the square
-(\texttt{kernelCircle\_\allowbreak eq}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L2118}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2118}) shows this is a circle with centre \(\bar Q/\bar P\)
+that is, \texttt{oddCircleEq} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L446}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:446}). Completing the square
+(\texttt{kernelCircle\_\allowbreak eq}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L2118}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2118}) shows this is a circle with centre \(\bar Q/\bar P\)
 and radius \(|R|/|P|\), a point-circle when \(R = 0\), and --- when \(P = 0\) --- a real line, which is the branch
-of \S{}3.6. \texttt{kernelCircle\_\allowbreak zeroSet} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L2140}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2140}) identifies the zero set with a
-\texttt{Metric.\allowbreak sphere}, and \texttt{kernelCircle\_\allowbreak isGCircleS} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L2160}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2160}) concludes
+of \S{}3.6. \texttt{kernelCircle\_\allowbreak zeroSet} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L2140}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2140}) identifies the zero set with a
+\texttt{Metric.\allowbreak sphere}, and \texttt{kernelCircle\_\allowbreak isGCircleS} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L2160}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2160}) concludes
 \texttt{IsGCircleS}. The invariance under \(v \to rv\) is what makes the object a point of a projective space
 rather than a vector.
 
 \emph{Rank.} If some \(n \times n\) column selection of the matrix has nonzero determinant, the kernel is a line
-(\texttt{finrank\_\allowbreak ker\_\allowbreak eq\_\allowbreak one}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L137}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:137}), the kernel is spanned by the cross product
-vector of signed maximal minors (\texttt{Kf\_\allowbreak ker\_\allowbreak eq\_\allowbreak span}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L187}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:187}), and the cross product
+(\texttt{finrank\_\allowbreak ker\_\allowbreak eq\_\allowbreak one}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L137}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:137}), the kernel is spanned by the cross product
+vector of signed maximal minors (\texttt{Kf\_\allowbreak ker\_\allowbreak eq\_\allowbreak span}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L187}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:187}), and the cross product
 is in the kernel by the Laplace expansion along a repeated row (\texttt{mulVec\_\allowbreak crossVec},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L164}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:164}). The cross product is
-\(v_j = (-1)^j \det A_{\hat j}\), \texttt{crossVec} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L159}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:159}). This is the whole of the
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L164}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:164}). The cross product is
+\(v_j = (-1)^j \det A_{\hat j}\), \texttt{crossVec} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L159}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:159}). This is the whole of the
 linear algebra: the level object is the projective point of the cross product, and it is unique as soon as
 one maximal minor does not vanish. The development never needs more: every branch of \S{}3.6 either produces
 such a minor or works with the cross product directly.
@@ -521,7 +521,7 @@ and the two payloads are:
 
 \emph{Odd payload.} For \(2k+5\) circles, there is a generalized circle \(Y\) containing, for every deletion \(i\),
 the canonical point \(E_{2k+4}\) of the deletion. Formally \texttt{hodd\_inf\_all\textquotesingle{}}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4642}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4642}):
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4642}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4642}):
 
 \begin{Verbatim}
 ∀ (k : ℕ) (d : Fin (2*k+5) → ℂ), GenPosN d →
@@ -530,7 +530,7 @@ the canonical point \(E_{2k+4}\) of the deletion. Formally \texttt{hodd\_inf\_al
 
 \emph{Even payload.} For \(2k+6\) circles and every \(i\), there is a generalized circle through the canonical
 level-\((2k+6)\) point of the whole family and all \(2k+5\) canonical level-\((2k+4)\) points of the
-grandchildren. Formally \texttt{heven\_\allowbreak inf\_\allowbreak all} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5583}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5583}):
+grandchildren. Formally \texttt{heven\_\allowbreak inf\_\allowbreak all} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5583}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5583}):
 
 \begin{Verbatim}
 ∀ (k : ℕ) (c : Fin (2*k+6) → ℂ), GenPosN c → ∀ i : Fin (2*k+6),
@@ -542,15 +542,15 @@ The odd payload converts a level-\((2k+4)\) singleton into a level-\((2k+5)\) ci
 level-\((2k+4)\) objects; the even payload converts the level-\((2k+5)\) circles into a level-\((2k+6)\) point,
 and it needs the circles of \emph{all} children, which is why its conclusion names the grandchildren's points.
 
-The induction is assembled in \texttt{cliffordChainS\_\allowbreak all\_\allowbreak of} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L330}{\texttt{Clifford/\allowbreak Mobius.lean}:330}), and the reason it is
+The induction is assembled in \texttt{cliffordChainS\_\allowbreak all\_\allowbreak of} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L330}{\texttt{Clifford/\allowbreak Mobius.lean}:330}), and the reason it is
 two steps rather than one is visible in its type: the induction hypothesis is
 \(\texttt{ChainS}\ (2k+4)\ c\ \{E_{2k+4}(c)\}\), the odd payload needs exactly the canonical point of each deletion, and
 the even payload needs the circles that the odd payload has just built. Concretely:
 
 \[ \texttt{ChainS}(2k+4) \;\Rightarrow\; \texttt{hodd}(2k+5) \;\Rightarrow\; \texttt{ChainS}(2k+5) \;\Rightarrow\; \texttt{heven}(2k+6) \;\Rightarrow\; \texttt{ChainS}(2k+6). \]
 
-The base of the induction is level 4 (\texttt{h4\_\allowbreak pt\_\allowbreak inf}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L2566}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2566}), and level 3 is
-transported separately (\texttt{cliffordChain\_\allowbreak threeS}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/Mobius.lean\#L181}{\texttt{Clifford/\allowbreak Mobius.lean}:181}). The odd payload needs no
+The base of the induction is level 4 (\texttt{h4\_\allowbreak pt\_\allowbreak inf}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L2566}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2566}), and level 3 is
+transported separately (\texttt{cliffordChain\_\allowbreak threeS}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/Mobius.lean\#L181}{\texttt{Clifford/\allowbreak Mobius.lean}:181}). The odd payload needs no
 hypothesis beyond \texttt{GenPosN} --- that is the content of \S{}3.5 --- and that is what makes the odd side of the
 chain hypothesis-free.
 
@@ -564,7 +564,7 @@ single column. Comparing the entry formulas of \texttt{KP}, the parent's columns
 \[ \texttt{KP}\,(2k+5)\ =\ \texttt{KP}\,(2k+6)\ \text{ with column } k+3 \text{ deleted}, \]
 
 entry by entry, for any common centre data (\texttt{kpe5\_\allowbreak eq\_\allowbreak kpe6\_\allowbreak succAbove},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5342}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5342}). The deleted column is the last \(P\)-column, and the deleted
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5342}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5342}). The deleted column is the last \(P\)-column, and the deleted
 coordinate of a level-\((2k+6)\) vector is \(v_{k+3}\) --- which is exactly the middle index of the parent,
 \(n/2 = k+3\), that is, exactly the denominator whose vanishing sends the parent's \emph{point} to $\infty$
 (\texttt{EptInf}). This is the whole geometry of the corner: \textbf{the parent's level point is at infinity precisely
@@ -574,7 +574,7 @@ For a child \(i\), the vector \(u_i\) obtained from the parent's cross product \
 \(k+3\) satisfies every row of the child's matrix except row \(i\), by \texttt{mulVec\_\allowbreak crossVec}; the row \(i\) is a
 bordered determinant. By the Laplace expansion of the bordered matrix along the border, that row is
 \(\pm v_{k+3}\), times a minor that does not vanish in general position
-(\texttt{child\_\allowbreak mulVec\_\allowbreak of\_\allowbreak parentN}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4081}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4081}, with \texttt{child\_\allowbreak crossVec\_\allowbreak zero\_\allowbreak of\_\allowbreak P3} for the
+(\texttt{child\_\allowbreak mulVec\_\allowbreak of\_\allowbreak parentN}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4081}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4081}, with \texttt{child\_\allowbreak crossVec\_\allowbreak zero\_\allowbreak of\_\allowbreak P3} for the
 degenerate reading). So \(u_i\) is a child kernel vector if and only if \(v_{k+3} = 0\); and then, by the rank
 statement, \(u_i\) is \emph{the} child vector and every child's level point is read off the same \(u_i\).
 
@@ -585,11 +585,11 @@ step lemmas are exactly that relation, in coordinates:
 \begin{itemize}
 \tightlist
 \item
-  \texttt{StepOdd\ m} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L571}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:571}): for \(c : \mathbb{C}^{2m+1}\) with nonzero centres, every
+  \texttt{StepOdd\ m} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L571}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:571}): for \(c : \mathbb{C}^{2m+1}\) with nonzero centres, every
   \(i\), and every child with \(P_m \ne 0\), the child's level point \(z_i = -Q^{(i)}_{m-1}/P^{(i)}_m\)
   satisfies \(\mathrm{E}_m(v)(z_i) = 0\), where \(v\) is the \emph{parent's} cross vector.
 \item
-  \texttt{StepEven\ m} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L560}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:560}): for \(c : \mathbb{C}^{2m+2}\) with nonzero centres and
+  \texttt{StepEven\ m} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L560}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:560}): for \(c : \mathbb{C}^{2m+2}\) with nonzero centres and
   parent \(P_{m+1} \ne 0\), the parent's level point \(z = -Q_m/P_{m+1}\) satisfies
   \(\mathrm{E}_m(v_i)(z) = 0\) for every child's circle \(v_i\).
 \end{itemize}
@@ -598,10 +598,10 @@ Both are polynomial identities in the \(2n\) real coordinates, and both are prov
 clearing denominators and applying Cramer's rule to the bordered system: the child's kernel vector is
 expressed in the parent's maximal minors, and the resulting identity is a determinantal relation of
 Plücker type. At level 5, where both sides can be written down, the identity is the three-term Plücker
-relation \texttt{k0k3\_\allowbreak sub\_\allowbreak k1k2} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L406}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:406}) and the closed form is
+relation \texttt{k0k3\_\allowbreak sub\_\allowbreak k1k2} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L406}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:406}) and the closed form is
 \texttt{oddCircleEq\_\allowbreak five\_\allowbreak cross} (\S{}3.2); the complete step at level 5 is \texttt{step\_\allowbreak four\_\allowbreak five}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L514}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:514}). The general case is \texttt{stepOdd\_\allowbreak gen}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L2088}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2088}, every \(m\)) and \texttt{stepEven\_\allowbreak gen} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L1674}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:1674},
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L514}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:514}). The general case is \texttt{stepOdd\_\allowbreak gen}
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L2088}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:2088}, every \(m\)) and \texttt{stepEven\_\allowbreak gen} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L1674}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:1674},
 every \(m \ge 1\)), and the two row identities behind them are \texttt{rowRel1}/\texttt{rowRel2} in the file. This is the
 one place in the argument where the work is genuinely analytic, and it is where the bulk of the
 formalisation sits.
@@ -616,8 +616,8 @@ point at all, in which case the parent's object has to be a line through $\infty
 
 \emph{The level circle is a line, on the odd side (\(P_0 = 0\)).} In \(\mathrm{E}_m(v)\) the coefficient of
 \(z\bar z\) is \(|P_0|^2\), so \(P_0 = 0\) makes the equation real-linear: a line. The odd payload's first
-branch (\texttt{hodd\_\allowbreak inf\_\allowbreak P0\_\allowbreak eq}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4269}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4269}) splits again. If in addition \(Q_0 = 0\), all
-the children's finite level points coincide (\texttt{QL\_\allowbreak zero\_\allowbreak of\_\allowbreak P0\_\allowbreak Q0}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4114}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4114}) and
+branch (\texttt{hodd\_\allowbreak inf\_\allowbreak P0\_\allowbreak eq}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4269}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4269}) splits again. If in addition \(Q_0 = 0\), all
+the children's finite level points coincide (\texttt{QL\_\allowbreak zero\_\allowbreak of\_\allowbreak P0\_\allowbreak Q0}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4114}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4114}) and
 the line through that point and $\infty$ works. Otherwise the finite children are collinear
 (\texttt{collinear\_\allowbreak of\_\allowbreak reallin}), with the direction read off \(Q_0\), and the line through them works. In both
 cases the witness line contains $\infty$, so a child whose own middle coordinate vanishes is on it for free.
@@ -627,22 +627,22 @@ fail to be a circle is the way in which a line is a legitimate level object.
 \emph{A child has no finite level point (\(P_{k+2} = 0\) for the child).} On the even side this is the third
 branch. The child's level point is $\infty$, so the parent's object cannot be the child's circle read out at a
 finite point; but the finite children all coincide (\texttt{children\_\allowbreak eq\_\allowbreak of\_\allowbreak P3\_\allowbreak zero},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4582}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4582}), the child's circle degenerates to the line through that common point
-and $\infty$, and \texttt{heven\_\allowbreak of\_\allowbreak common} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5116}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5116}) puts the common point and $\infty$ on the
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4582}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4582}), the child's circle degenerates to the line through that common point
+and $\infty$, and \texttt{heven\_\allowbreak of\_\allowbreak common} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5116}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5116}) puts the common point and $\infty$ on the
 witness line. The corresponding odd-side statement is \texttt{child\_\allowbreak line\_\allowbreak of\_\allowbreak P3\_\allowbreak zero}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4600}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4600}), whose line then carries both the finite children and $\infty$
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4600}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4600}), whose line then carries both the finite children and $\infty$
 (\texttt{hodd\_\allowbreak inf\_\allowbreak P0\_\allowbreak ne\_\allowbreak some}).
 
 \emph{The child's level circle is a line (\(P_0(d) = 0\)).} On the even side this is the first branch
-(\texttt{heven\_\allowbreak line\_\allowbreak of\_\allowbreak P0}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5134}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5134}), and it covers both positions of the parent.
+(\texttt{heven\_\allowbreak line\_\allowbreak of\_\allowbreak P0}, \href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5134}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5134}), and it covers both positions of the parent.
 Here the parent's point is read off a degenerated subfamily circle, and the witness is again a line
 through the parent and the finite grandchildren; the proof splits on whether \(Q_0(d) = 0\), exactly as in
 the odd case.
 
 What is left, on the even side, is the generic branch --- \(P_0(d) \ne 0\), the parent's middle coordinate
-\(P_{k+3} \ne 0\), every child finite --- where \texttt{heven\_\allowbreak kernel} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4696}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4696}) reads the
+\(P_{k+3} \ne 0\), every child finite --- where \texttt{heven\_\allowbreak kernel} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4696}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4696}) reads the
 witness straight off the subfamily's kernel circle, and the corner, where the parent's middle coordinate
-vanishes and with it, by \texttt{parent\_\allowbreak crossVec\_\allowbreak zero\_\allowbreak of\_\allowbreak mid} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L4995}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4995}), the whole
+vanishes and with it, by \texttt{parent\_\allowbreak crossVec\_\allowbreak zero\_\allowbreak of\_\allowbreak mid} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L4995}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:4995}), the whole
 parent vector. The corner is the fourth branch and the only one the classical argument does not cover,
 because there is no parent line and no parent point from which to read anything. It is treated
 separately.
@@ -661,18 +661,18 @@ much stronger than collinearity:
 In the corner, all $2k+5$ grandchild level points coincide, at the single point $-w_{2k+4}/w_{k+2}$, where
 $w$ is the child's cross vector. Hence the line through that point and $\infty$ is a generalized circle through
 the parent's point and all the grandchildren's points. (Formally \texttt{EvenCorner\_\allowbreak proof},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5581}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5581}.)
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5581}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5581}.)
 \end{theorem}
 
-The geometric statement is \texttt{EvenCorner} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5250}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5250}), and it follows from a scalar
+The geometric statement is \texttt{EvenCorner} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5250}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5250}), and it follows from a scalar
 identity --- the corner identity proved below, through \texttt{evenCorner\_\allowbreak of\_\allowbreak QL}
-(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5284}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5284}); the parent's point is $\infty$ by the totalisation of \S{}2.5(c). The
+(\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5284}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5284}); the parent's point is $\infty$ by the totalisation of \S{}2.5(c). The
 substance is the identity. Let \(w = \texttt{crossVec}(\texttt{KP}\,(2k+5)\ d\ \bar d)\)
 be the child's cross vector and \(d = c \circ i^{\uparrow}\).
 
 \begin{theorem}[The corner identity]
 In the corner, $w_{2k+5} = 0$. (Formally \texttt{evenCornerQL\_\allowbreak proof},
-\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5536}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5536}.)
+\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5536}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5536}.)
 \end{theorem}
 
 The proof has three steps. The first two are linear algebra; the third is an elementary polynomial
@@ -719,13 +719,13 @@ the unconjugated entries of \(w\) --- and \(w_0 \ne 0\) forces \(w_{2k+5} = 0\),
 
 The development states this in dehomogenised coordinates, as a polynomial identity for \(\Phi\), \(\Psi\) and
 their conjugates at \(X = -c/\bar c\) (\texttt{polyF}, with \texttt{polyF\_\allowbreak eval\_\allowbreak zero}, \texttt{polyF\_\allowbreak natDegree\_\allowbreak le} --- degree
-\(\le 2k+5\) --- and \texttt{polyF\_\allowbreak coeff\_\allowbreak top} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5496}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5496}), whose coefficient is
+\(\le 2k+5\) --- and \texttt{polyF\_\allowbreak coeff\_\allowbreak top} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5496}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5496}), whose coefficient is
 \(-W_{2k+5} \cdot \overline{W_0}\), the same expression with the conjugate on \(W_0\)), and concludes with
 \texttt{eq\_\allowbreak zero\_\allowbreak of\_\allowbreak natDegree\_\allowbreak lt\_\allowbreak card\_\allowbreak of\_\allowbreak eval\_\allowbreak eq\_\allowbreak zero} from the \(2k+6\) distinct roots
 \(t_r = -c_r/\bar c_r\) (injectivity of \(t\) is \texttt{GenPosN.\allowbreak 1}). Only three of the corner's hypotheses are used:
 \(V = 0\) in the deleted coordinate, \(P_0(d) \ne 0\), and \texttt{GenPosN.\allowbreak 1}. The grandchildren's finiteness, an
 explicit hypothesis of \texttt{EvenCornerQL}, is \emph{not} used by the identity; it is used downstream, by
-\texttt{evenCorner\_\allowbreak of\_\allowbreak QL} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/3df056f596e5dffa15c22292055bbd4b6a9e4299/Clifford/MorleyKernel.lean\#L5284}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5284}), to deduce the geometric statement. The hypothesis
+\texttt{evenCorner\_\allowbreak of\_\allowbreak QL} (\href{https://github.com/jpbald93/paperl_clifford_chain/blob/e1ae145c2565cc98816635387412edc0a740c27c/Clifford/MorleyKernel.lean\#L5284}{\texttt{Clifford/\allowbreak MorleyKernel.lean}:5284}), to deduce the geometric statement. The hypothesis
 is in the statement because the geometric form needs it; the identity does not use it.
 
 The corner identity is what turns the even side into a theorem rather than a conditional: with
@@ -762,7 +762,7 @@ Community 2020). Its shape follows \S{}2--\S{}3:
 \end{itemize}
 
 The library is published at \href{https://github.com/jpbald93/paperl_clifford_chain}{github.com/jpbald93/paperl\_clifford\_chain};
-the state this paper describes is the commit \texttt{3df056f596e5dffa15c22292055bbd4b6a9e4299} (v1.2, the tree
+the state this paper describes is the commit \texttt{e1ae145c2565cc98816635387412edc0a740c27c} (v1.2, the tree
 from which the eight unused hypotheses of \S{}4.3 have been removed), and the two check files of \S{}2.4 and
 \S{}2.5(b) are in \texttt{check/\allowbreak }. \texttt{lake\ exe\ cache\ get}, \texttt{lake\ build}, \texttt{.\allowbreak /\allowbreak gate.\allowbreak sh} and
 \texttt{bash\ tests/\allowbreak tamper.\allowbreak sh} reproduce everything \S{}4.2 reports about the library.
@@ -968,7 +968,7 @@ low levels in the plane (Bald 2026a), and the code and verification record for t
   chain, Miquel's five circles, Lester, Sawayama--Thébault and Kosnita}. Zenodo.
   doi:10.5281/zenodo.23653309.
 \item
-  Bald, J. 2026b. \emph{paperl\_clifford\_chain} (Lean 4 library), commit \texttt{3df056f}. GitHub,
+  Bald, J. 2026b. \emph{paperl\_clifford\_chain} (Lean 4 library), commit \texttt{e1ae145}. GitHub,
   \texttt{jpbald93/\allowbreak paperl\_\allowbreak clifford\_\allowbreak chain}. Accessed 26 November 2026.
 \item
   Bobenko, A. I., and W. K. Schief. 2016. ``Circle complexes and the discrete CKP equation.''

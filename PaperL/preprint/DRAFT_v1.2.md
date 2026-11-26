@@ -684,7 +684,7 @@ Community 2020). Its shape follows §2–§3:
 - **The definition bridges to Mathlib** — `Clifford/BridgeL10.lean`.
 
 The library is published at [github.com/jpbald93/paperl_clifford_chain](https://github.com/jpbald93/paperl_clifford_chain);
-the state this paper describes is the commit `3df056f596e5dffa15c22292055bbd4b6a9e4299` (v1.2, the tree
+the state this paper describes is the commit `e1ae145c2565cc98816635387412edc0a740c27c` (v1.2, the tree
 from which the eight unused hypotheses of §4.3 have been removed), and the two check files of §2.4 and
 §2.5(b) are in `check/`. `lake exe cache get`, `lake build`, `./gate.sh` and
 `bash tests/tamper.sh` reproduce everything §4.2 reports about the library.
@@ -869,7 +869,7 @@ low levels in the plane (Bald 2026a), and the code and verification record for t
 - Bald, J. 2026a. *Circle configurations in classical plane geometry, formalized in Lean 4: Clifford's
   chain, Miquel's five circles, Lester, Sawayama–Thébault and Kosnita*. Zenodo.
   doi:10.5281/zenodo.23653309.
-- Bald, J. 2026b. *paperl_clifford_chain* (Lean 4 library), commit `3df056f`. GitHub,
+- Bald, J. 2026b. *paperl_clifford_chain* (Lean 4 library), commit `e1ae145`. GitHub,
   `jpbald93/paperl_clifford_chain`. Accessed 26 November 2026.
 - Bobenko, A. I., and W. K. Schief. 2016. "Circle complexes and the discrete CKP equation."
   *International Mathematics Research Notices*, article rnw021. doi:10.1093/imrn/rnw021. Preprint

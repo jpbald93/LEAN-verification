@@ -10,7 +10,7 @@ receipts, the blind-restatement comparison and the document history. v1.0 moved 
 paper, which now carries only the mathematics and the statements about what was checked.
 
 **Lean code:** <https://github.com/jpbald93/paperl_clifford_chain> — the audited tree is commit
-`3df056f` (159 files, gate 37 declarations; v1.2 removes the eight unused hypotheses). Every
+`e1ae145` (159 files, gate 37 declarations; v1.2 removes the eight unused hypotheses). Every
 `File:line` anchor in the paper resolves at that commit.
 
 **Paper:** [`preprint/Cliffords chain for every n - Paper L v1.2.pdf`](preprint/) (18 pp), typeset

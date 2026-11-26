@@ -33,7 +33,7 @@ each of them.
 
 The development is a git repository, published at
 [github.com/jpbald93/paperl_clifford_chain](https://github.com/jpbald93/paperl_clifford_chain), with
-the audited tree at commit `3df056f` (v1.2, 159 files). The per-file sha256 table below is the identity of
+the audited tree at commit `e1ae145` (v1.2, 159 files). The per-file sha256 table below is the identity of
 that tree and the table every citation in this record was checked against; the eleven hashes were
 re-checked against a fresh clone of the published repository on 2026-11-26, immediately after the
 push. Toolchain:
@@ -534,7 +534,7 @@ in descending order of consequence for a reader.
     `BridgeBlind.lean` was checked on jack only. Layers 1, 2 and 7 also have a john run in his 19 November battery at the
     same pin (wider file set: gate PASS 37, tamper 8/8, linter 0; published in
     `layer0/john_receipt_20261119/BATTERY.md`); layers 6, 9, 10, 11, 12, 14 and 15 are jack-only. The upload is no
-    longer open: the pin is commit `3df056f`, the repository is public at that commit and the
+    longer open: the pin is commit `e1ae145`, the repository is public at that commit and the
     supporting material is published (§1); the Zenodo deposit is the authors' remaining step and is
     not described here as done.
 
@@ -946,7 +946,7 @@ statement, proof or number of the mathematics changed.
   carrier; induct at the parity of the level).
 
 *Done since.* The referee's strengthening list asked for two code changes. The eight unused hypotheses
-were removed in v1.2 (pin `3df056f`; §3 item 8 above, paper §4.3). Splitting `MorleyKernel.lean`
+were removed in v1.2 (pin `e1ae145`; §3 item 8 above, paper §4.3). Splitting `MorleyKernel.lean`
 (5,607 lines) is still queued: it moves declarations across files, so every `File:line` anchor in the
 paper and this record has to be regenerated at the new pin, and it is best done with the next content
 change rather than alone.
@@ -969,7 +969,7 @@ change rather than alone.
   and "and so on" — the chain in circles-through-a-point form — but gives no general step. §1.1 now
   says exactly that. The other eleven entries were re-checked (Crossref/OpenAlex, Zenodo API, GitHub
   contents API, the AFP entry page, Mathlib's `docs/1000.yaml` at the pin).
-- **The eight unused hypotheses removed.** v1.2 pin `3df056f…`; MorleyKernel 5,607 lines; public raw
+- **The eight unused hypotheses removed.** v1.2 pin `e1ae145…`; MorleyKernel 5,607 lines; public raw
   sha `1dfe2f13…`. Hand check before the build confirmed only the *upper* bounds of `kpe5_hi`/`kpe6_hi`
   were unused (dropping the lower bound makes `omega` fail), which corrects the layer-6 report's "hj,
   hj'" wording. Build rc 0, gate PASS 37 std, tamper 8/8 at the new pin; `check/allN.lean` still passes.
@@ -977,6 +977,10 @@ change rather than alone.
   with the help of automated tools — the idea, direction and feedback his — and keeps the mechanical
   facts (proof scripts by coding agents under his specification; the corner produced in the proof work;
   tools drafting prose at his direction and making reading passes).
-- **Result**: 18 pp, 0 overfull, 0 undefined; PDF sha `7ed7581e…`, 188,569 B, built with
-  `SOURCE_DATE_EPOCH=1795705200` (2026-11-26T15:00:00Z) so that the build is byte-reproducible; name gate
+- **`check/not_UniqEven.lean` now carries `set_option maxHeartbeats 2000000`** (it needs more than
+  Lean's 200k default for the 36 finite cases; plain `lake env lean` exits 0 in ~28 s, as the paper
+  states) — the last code push of this pass, pin `e1ae145`.
+- **Result**: 18 pp, 0 overfull, 0 undefined; PDF sha
+  `a7daceed9e305ce5c70962414fcd25d78b74246449822ce0fe638fbe1eb2aa47`, 188,571 B, built with
+  `SOURCE_DATE_EPOCH=1795705200` (2026-11-26T15:00:00Z) so the build is byte-reproducible; name gate
   **PASS 67/63**, 34 attribution checks.

@@ -1,0 +1,11 @@
+2026-11-24 21:26:57 unique files 1, unique theorems 275, repos 1
+2026-11-24 21:27:59 baseline: 1 ok of 1
+2026-11-24 21:27:59 step1+2a jobs: 891
+=== restarted at Tue Nov 24 10:26:39 PM UTC 2026 WORKERS=4 ===
+2026-11-24 22:26:39 unique files 1, unique theorems 275, repos 1
+2026-11-24 22:26:39 baseline: 1 ok of 1
+2026-11-24 22:26:39 step1+2a jobs: 891
+2026-11-25 03:41:07 step 1 + 2a done; summary written
+2026-11-25 03:41:07 step2b jobs: 0
+2026-11-25 03:41:07 layer 8b: 0 witness links, 0 rejected claims
+2026-11-25 03:41:07 ALL DONE

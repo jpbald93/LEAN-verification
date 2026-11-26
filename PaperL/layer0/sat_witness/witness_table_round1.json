@@ -1,0 +1,495 @@
+{
+"parent_on_child_line": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"Transversal.left_ne_zero": {
+"c": "1",
+"d": "(1/2 + Complex.I/2)"
+},
+"Transversal.ne": {
+"c": "1",
+"d": "(1/2 + Complex.I/2)"
+},
+"Transversal.right_ne_zero": {
+"c": "1",
+"d": "(1/2 + Complex.I/2)"
+},
+"second_ne_zero": {
+"c": "1",
+"d": "(1/2 + Complex.I/2)"
+},
+"mD_ne_zero": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)"
+},
+"miquel_mul": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)"
+},
+"cd_symm": {
+"c": "1",
+"d": "(1/2 + Complex.I/2)"
+},
+"conj_miquel_mul": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)"
+},
+"gamma_cospherical": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)"
+},
+"clifford_one": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)"
+},
+"cliffordEq_miquel": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"GenPos5.pos4_abcd": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"GenPos5.pos4_abce": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"GenPos5.pos4_abde": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"GenPos5.pos4_acde": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"GenPos5.pos4_bcde": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"GenPos4.mD_ne_zero": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)"
+},
+"GenPos4.cliffordEq_miquel": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"genTriple_iff": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)"
+},
+"exists_eqn_of_cD": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"q": "(4/5 + 2*Complex.I/5)"
+},
+"pT_ne_zero": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)"
+},
+"pC_ne_zero": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)"
+},
+"finite_bad": {
+"n": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"clifford_points_on": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"miquel_all_eq": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"miquel_eq_of_kK_zero": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"clifford_two_clean": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"chain4_of": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"GenPosN.pos4": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"GenPosN.pos5": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"second_eq": {
+"c": "1",
+"d": "(1/2 + Complex.I/2)",
+"z": "(1/5 + 2*Complex.I/5)"
+},
+"not_bounded_line": {
+"p": "1",
+"v": "(1/2 + Complex.I/2)"
+},
+"chain4_ofS": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"GenPosN.comp_succAbove": {
+"n": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"chain4S_of_eq": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"m": "(1/2 + Complex.I/2)"
+},
+"norm_t_eq_one": {
+"c": "1"
+},
+"lineOf_iff": {
+"c": "1",
+"w": "(1/2 + Complex.I/2)"
+},
+"onCircleM_iff_lineOf": {
+"c": "1",
+"z": "(1/2 + Complex.I/2)"
+},
+"lineOf_eq_line": {
+"c": "1"
+},
+"exists_line": {
+"c": "1"
+},
+"Kc_finrank_ker_eq_one": {
+"n": "1",
+"a": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"t": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"col": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"Kf_ker_eq_span": {
+"n": "1",
+"a": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"t": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"j": "0"
+},
+"KP_eq_scale": {
+"n": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"k": "0",
+"j": "0"
+},
+"Kf_ker_smul": {
+"n": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"j": "0",
+"v": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"c4_ne_zero": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"levelPoint_four": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"v": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"Kf_four_finrank": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"levelPointN_four": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"v": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"crossVec_even_P0_ne_zero": {
+"m": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"levelPointN_four_cross": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"stepOdd_two_triP": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"cliffordEq_miquel_noT": {
+"a": "1",
+"b": "(1/2 + Complex.I/2)",
+"c": "(1/5 + 2*Complex.I/5)",
+"d": "(4/5 + 2*Complex.I/5)",
+"e": "(-4 - 6*Complex.I)"
+},
+"stepOdd_core": {
+"m": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"kernelCircle_eq_dist": {
+"m": "1",
+"v": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"z": "(1/5 + 2*Complex.I/5)"
+},
+"hodd_levelPoint": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"crossVec_KP4_P2_ne_zero": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"Ept_four": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"h4_pt": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"heven_levelPoint": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"EptInf_eq_infty": {
+"n": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"EptInf_eq_coe": {
+"n": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"h4_pt_inf": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"kernel_eq_zero_of_P0": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"z": "(1/5 + 2*Complex.I/5)"
+},
+"child_levelPt_kernel_line": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"child_levelPt_kernel_line_five": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"levelPt_child_five": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"hodd_five": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"p0_children_gcircleS_genPos": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"child_det_M7": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"child_line_P0": {
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"child_mulVec_of_parent": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"V": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "0"
+},
+"Q3_zero_of_P0_Q0": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"children_eq_of_P0_Q0": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_one_P0_line": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"child_det_MN": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"child_line_P0N": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"child_mulVec_of_parentN": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"V": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"QL_zero_of_P0_Q0": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"children_eq_of_P0_Q0N": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_P0_line": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_one_P0_line'": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"EptInf_child_eq_coe": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"EptInf_child_eq_infty": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"hodd_inf_P0_ne": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_inf_P0_eq": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_inf_all": {},
+"hodd_inf": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_inf_zero": {
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"parent_ker_zero_of_P0": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"X": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"child_crossVec_zero_of_P3": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"parent_detL_zero": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"children_eq_of_P3_zero": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"child_line_of_P3_zero": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_inf_P0_ne_some": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"hodd_inf'": {
+"k": "1",
+"d": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2"
+},
+"heven_kernel": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"parent_det_MN": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"parent_mid_ker_MNF": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"parent_crossVec_zero_of_mid": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"child_line_of_parent_mid_zero": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"subfamily_P0_zero_gen": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"heven_of_common": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩",
+"q": "(4/5 + 2*Complex.I/5)"
+},
+"heven_of_line": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩",
+"p": "(4/5 + 2*Complex.I/5)",
+"u": "(-4 - 6*Complex.I)"
+},
+"heven_line_of_P0": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"heven_inf_of_corner": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+},
+"evenCorner_of_QL": {
+"k": "1",
+"c": "fun j => ((j : ℂ) + 1) + Complex.I * ((j : ℂ) + 1) ^ 2",
+"i": "⟨0, by omega⟩"
+}
+}

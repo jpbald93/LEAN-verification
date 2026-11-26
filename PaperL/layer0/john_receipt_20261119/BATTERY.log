@@ -1,0 +1,36 @@
+LEANCHECK lean/paperL_john Thu Nov 19 14:39:40 UTC 2026
+'Clifford.MorleyKernel.EvenCorner_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.evenCornerQL_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+PASS (36 declarations, standard axioms only)
+ok    sorry     rejected (exit 1): FAIL: forbidden token
+ok    ax2line   rejected (exit 1): FAIL: forbidden token
+ok    evalfake  rejected (exit 1): FAIL: forbidden token
+ok    macro     rejected (exit 1): FAIL: forbidden token
+ok    wrap      rejected (exit 1): FAIL: nonstandard axioms: Clifford.zz_extra_axiom_with_a_long_name_for_the_negative_gate_test
+ok    falsehyp  rejected (exit 1): FAIL: build
+ok    cleanand  rejected (exit 1): FAIL: build
+ok    classify6 rejected (exit 1): FAIL: build
+ALL TAMPERING TESTS REJECTED
+2026-11-19 12:34:12 step 1 + 2a done; summary written
+2026-11-19 12:34:12 step2b jobs: 0
+2026-11-19 12:34:12 layer 8b: 0 witness links, 0 rejected claims
+2026-11-19 12:34:12 ALL DONE
+linter (library): 0 warnings in 8 files
+linter (scratch): 0 warnings in 26 files
+| check | result |
+|---|---|
+| gate (layer 1) | PASS (36 declarations, standard axioms only) |
+| tamper (layer 2) | 8/8 planted defects rejected, ALL TAMPERING TESTS REJECTED |
+| baseline build | 8 of 8 files ok |
+| conclusion mutations (layer 4) | **1527/1544 rejected** (1514 by error, 13 by timeout/heartbeat); 17 SURVIVED, 0 unattributed |
+| contradiction probe (layer 5) | 0 contradictory, 347 probed ok — no-hyp 229 probe-invalid 1 |
+| satisfiability (layer 8) | 0/0 certified [0 with hypotheses, 0 hypothesis-free binders, 0 closed], 0 unresolved, 0 stmt-invalid |
+| satisfiability by linked hand-written witness (layer 8b, separate) | 0 theorems linked (0 not certified by layer 8); 0 rejected claims; layer 8 + 8b: 0/0 credited, 0 unresolved |
+| hypothesis ablation (layer 6) | 0 needed, **0 unused**, 0 skipped, 0 timeout; bad controls 0 |
+| linter, library (layer 7) | 0 warnings in 8 files |
+| linter, scratch (layer 7) | 0 warnings in 26 files |
+| bridge inventory (layer 9) | not run |
+
+mutation survivors (classify by hand): `cliffordChain_one` [lit1->2@15] own proof compiled; downstream errors at lines [233]; `ins_eval` [lit0->1@35] own proof compiled; downstream errors at lines [1647]; `dX_cD` [neg1->1@5] own proof compiled; downstream errors at lines [2761]; `dX_cD` [neg1->1@30] own proof compiled; downstream errors at lines [2761]; `dX_cD` [lit1->2@6] own proof compiled; downstream errors at lines [2761]; `dX_cD` [lit5->6@8] own proof compiled; downstream errors at lines [2761]; `dX_cD` [lit2->3@11] own proof compiled; downstream errors at lines [2761]; `p0_children_gcircleS_false` [lit2->3@19] ; `p0_children_gcircleS_genPos` [lit2->3@70] ; `kpe_P0` [lit5->6@14] own proof compiled; downstream errors at lines [3922]; `hodd_inf_zero` [lit2->3@70] ; `child_line_of_parent_mid_zero` [ne->eq@18] 
+== REPORT /Users/john/leancheck/reports/lean/paperL_john_20261119_143939.md
+LEANCHECK DONE Thu Nov 19 20:48:12 UTC 2026

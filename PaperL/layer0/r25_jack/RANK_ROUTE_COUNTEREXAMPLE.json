@@ -1,0 +1,35 @@
+{
+ "note": "GenPosN instance at k=0 (n=6) with parent crossVec V = 0: refutes 'GenPosN c -> crossVec (KP 6 c (conj c)) != 0', and in it the corner conclusion (grandchildren collinear) holds",
+ "c_re": [
+  0.8168627181938395,
+  -0.7019717073501857,
+  0.4655584073222821,
+  0.47826469772751634,
+  0.06952751779690333,
+  1.2897967637884833
+ ],
+ "c_im": [
+  0.43604032511388896,
+  1.5257899335140706,
+  0.018667685705802715,
+  0.2202385679137931,
+  0.04356728641421674,
+  0.707423711310158
+ ],
+ "V_abs_max": 4.1569560214061683e-10,
+ "min_abs_triP": 0.010170120725570008,
+ "min_abs_cycP": 0.001325558080298268,
+ "min_abs_transversal": 0.010543381080246383,
+ "min_pairwise_dist": 0.20197096417547172,
+ "min_abs_c": 0.08204988833933355,
+ "subfamily_tests": [
+  {
+   "i": 4,
+   "abs_P0": 0.04394888598347342,
+   "min_mid": 0.002682474004555456,
+   "collinear_max_dev": 3.8909551479159806e-05,
+   "point_scale": 0.7166434414899997
+  }
+ ],
+ "caveat": "numerical evidence at k=0, not a Lean proof. |V|max 4e-10 with GenPosN margins all nonzero (triP 1e-2, cycP 1.3e-3, transversal 1e-2, pairwise distance 0.2, min |c| 0.08). An earlier solver run at looser margins (triP 0.14, cycP 0.024, transversal 0.04) also gave |V| 1e-9 with grandchild collinearity 1e-8, i.e. the corner is nonempty AND its conclusion holds. Conclusion drawn: the route 'GenPosN c -> crossVec (KP (2k+6) c conj c) != 0' cannot be the way to close C5."
+}

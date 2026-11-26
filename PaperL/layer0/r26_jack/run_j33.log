@@ -1,0 +1,1569 @@
+[0m
+> build · claude-opus-5-5
+[0m
+[0m$ [0mls ~/paperL_jack 2>&1 | head; ls /tmp/afmrun/paperL/j33_cornerQL | head; ls ~/paperL_jack/scratch 2>&1 | head -30
+Clifford
+Clifford.lean
+GENERAL_REPORT.md
+PROGRESS.md
+REPORT.md
+build.log
+gate.sh
+gate0.log
+lake-manifest.json
+lakefile.toml
+BRIEF.md
+launch.sh
+opencode.json
+run.log
+ChainDegenerate.lean
+ChainEvenCorner.lean
+ChainEvenHeven.lean
+ChainEvenInf.lean
+ChainEvenLine.lean
+ChainEvenParentMid.lean
+ChainEvenSubP0.lean
+ChainMiquel.lean
+ChainOddBridge.lean
+ChainOddGen.lean
+ChainOddGenK.lean
+ChainOddHodd.lean
+ChainOddHodd2.lean
+ChainOddOne.lean
+ChainP0Line.lean
+ChainProjective.lean
+Classify.lean
+Counter6.lean
+E.lean
+G.lean
+General.lean
+OddGen_K.lean
+REPORT_CIRCLES.md
+REPORT_ODDGEN.md
+REPORT_PROJECTIVE.md
+T.lean
+T2.lean
+__pycache__
+_collect_J19.lean
+_collect_J19_checks.lean
+[0m
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && cp scratch/ChainEvenCorner.lean scratch/ChainEvenCornerQL.lean && sha256sum scratch/ChainEvenCornerQL.lean && wc -l scratch/ChainEvenCornerQL.lean && (time lake env lean scratch/ChainEvenCornerQL.lean) 2>&1 | tail -20
+0d1839e876c0cd72d79540f3e9d20f111cd1bcf5c93d31bcf33518a830a0f55f  scratch/ChainEvenCornerQL.lean
+5344 scratch/ChainEvenCornerQL.lean
+                  (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                    (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                  ⟨k + 2, ⋯⟩ ≠
+                0) →
+            ∃ p u,
+              u ≠ 0 ∧
+                ∀ (j : Fin (2 * k + 5)),
+                  ∃ t,
+                    Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                        (Clifford.MorleyKernel.crossVec
+                          (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                            (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+                      p + ↑t * u
+Clifford.MorleyKernel.evenCorner_of_cornerQL : Clifford.MorleyKernel.EvenCornerQL → Clifford.MorleyKernel.EvenCorner
+'Clifford.MorleyKernel.evenCorner_of_QL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.evenCorner_of_cornerQL' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m56.680s
+user	5m10.746s
+sys	0m3.773s
+[0m
+[0m✗ [0mRead /home/user/paperL_jack/scratch/ChainEvenCornerQL.lean failed[90m [offset=5286][0m
+[91m[1mError: [0mFile not found: /home/user/paperL_jack/scratch/ChainEvenCornerQL.lean
+[0m✗ [0mRead /home/user/paperL_jack/scratch/ChainEvenCornerQL.lean failed[90m [offset=1, limit=260][0m
+[91m[1mError: [0mFile not found: /home/user/paperL_jack/scratch/ChainEvenCornerQL.lean
+[0m
+[0m$ [0mecho ~
+/home/jackagent
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCornerQL.lean[90m [offset=5286][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCornerQL.lean[90m [offset=1, limit=260][0m
+[0m
+[0m$ [0mcd ~/paperL_jack/scratch && grep -n "def GenPosN\|def Transversal\|theorem hc_of_genPos\|tOf_inj\|Injective (tOf\|GenPosN.*Transversal\|theorem kpe\|theorem det_border\|def levelPointN\|def EvenCorner \|def EvenCorner\b\|heven_inf_all_of_corner\|cliffordChainS_of_corner\|def CliffordChainS" ChainEvenCornerQL.lean | head -30
+452:noncomputable def levelPointN (n : ℕ) (v : Fin (n + 1) → ℂ) : ℂ :=
+727:theorem det_border {n : ℕ} (w : Fin (n + 1) → R) (A : Matrix (Fin n) (Fin (n + 1)) R) :
+735:theorem det_border_single {n : ℕ} (A : Matrix (Fin n) (Fin (n + 1)) R) (j : Fin (n + 1))
+2582:theorem hc_of_genPos {n : ℕ} (hn : 2 ≤ n) (c : Fin n → ℂ) (h : GenPosN c) (j : Fin n) :
+3904:theorem kpe_P0 (k : ℕ) (x y : R) : kpe (2 * k + 5) x y 0 = y ^ (k + 3) := by
+3908:theorem kpe_Q0 (k : ℕ) (x y : R) : kpe (2 * k + 5) x y (k + 3) = -y ^ (k + 2) := by
+3913:theorem kpe_QL (k : ℕ) (x y : R) : kpe (2 * k + 5) x y (2 * k + 5) = -(-x) ^ (k + 2) := by
+4414:theorem kpe_odd_eq_mul_y (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ 2 * k + 4) :
+4424:theorem kpe_odd_succ_eq_mul_x (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ 2 * k + 4) (hm : j ≠ k + 2) :
+4749:theorem kpe5_lo (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ k + 2) :
+4754:theorem kpe6_lo (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ k + 3) :
+4759:theorem kpe5_hi (k : ℕ) (x y : R) (j : ℕ) (hj : k + 3 ≤ j) (hj' : j ≤ 2 * k + 5) :
+4766:theorem kpe6_hi (k : ℕ) (x y : R) (j : ℕ) (hj : k + 4 ≤ j) (hj' : j ≤ 2 * k + 6) :
+5264:def EvenCorner : Prop :=
+5274:theorem heven_inf_all_of_corner (hC : EvenCorner) :
+5280:theorem cliffordChainS_of_corner (hC : EvenCorner) (n : ℕ) (hn : 3 ≤ n) : CliffordChainS n :=
+5281:  cliffordChainS_of_inf' (heven_inf_all_of_corner hC) n hn
+5285:#check @Clifford.MorleyKernel.heven_inf_all_of_corner
+5286:#check @Clifford.MorleyKernel.cliffordChainS_of_corner
+5287:#print axioms Clifford.MorleyKernel.heven_inf_all_of_corner
+5288:#print axioms Clifford.MorleyKernel.cliffordChainS_of_corner
+[0m
+[0m$ [0mcd ~/paperL_jack/scratch && grep -n "GenPosN" ChainEvenCornerQL.lean | head -20; grep -n "def kpe\b\|def kpe \|theorem KP_eq_kpe\|KP.*= kpe" ChainEvenCornerQL.lean | head
+2208:/-- Under `GenPosN` the `P₂` coordinate of four circles is nonzero (it is `mD`). -/
+2209:theorem crossVec_KP4_P2_ne_zero (c : Fin 4 → ℂ) (h : GenPosN c) :
+2216:theorem Ept_four (c : Fin 4 → ℂ) (h : GenPosN c) :
+2222:theorem h4_pt (c : Fin 4 → ℂ) (h : GenPosN c) : ChainS 4 c {Ept 4 c} := by
+2299:theorem c5_genPosN : GenPosN c5 := by
+2327:    GenPosN c5 ∧ crossVec (KP 5 c5 (fun j => conj (c5 j))) 0 = 0 :=
+2512:theorem c6_genPosN : GenPosN c6 := by
+2542:    GenPosN c6 ∧ crossVec (KP 6 c6 (fun j => conj (c6 j))) ⟨3, by omega⟩ = 0 :=
+2577:theorem h4_pt_inf (c : Fin 4 → ℂ) (h : GenPosN c) : ChainS 4 c {EptInf 4 c} := by
+2581:/-- Under `GenPosN` (with `n ≥ 2`) no centre is `0`. -/
+2582:theorem hc_of_genPos {n : ℕ} (hn : 2 ≤ n) (c : Fin n → ℂ) (h : GenPosN c) (j : Fin n) :
+2775:/-! ### The corrected `k = 0` packaging: under `GenPosN` the five child level points lie on one
+2779:theorem levelPt_child_five (d : Fin 5 → ℂ) (h : GenPosN d) (i : Fin 5) :
+2784:theorem hodd_five (d : Fin 5 → ℂ) (h : GenPosN d) :
+2793:/-- **Target B, corrected (`k = 0`)**: with `GenPosN` in place of `∀ j, d j ≠ 0` the exact
+2795:theorem p0_children_gcircleS_genPos (d : Fin (2 * 0 + 5) → ℂ) (h : GenPosN d)
+2848:theorem d7_genPosN : GenPosN d7 := by
+3633:theorem hodd_one_P0_line (d : Fin 7 → ℂ) (h : GenPosN d)
+4161:theorem hodd_P0_line (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4193:theorem hodd_one_P0_line' (d : Fin 7 → ℂ) (h : GenPosN d)
+3701:def kpe (n : ℕ) (x y : R) (j : ℕ) : R :=
+3705:theorem KP_eq_kpe (n : ℕ) (x y : Fin n → R) (r : Fin n) (j : Fin (n + 1)) :
+3706:    KP n x y r j = kpe n (x r) (y r) j := rfl
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCornerQL.lean[90m [offset=700, limit=60][0m
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "def GenPosN\|def Transversal" Clifford/ scratch/ChainEvenCornerQL.lean | head; sed -n 3695,3712p scratch/ChainEvenCornerQL.lean; sed -n 4745,4775p scratch/ChainEvenCornerQL.lean; sed -n 2578,2595p scratch/ChainEvenCornerQL.lean
+Clifford/Clean.lean:177:def GenPosN {n : ℕ} (c : Fin n → ℂ) : Prop :=
+Clifford/Basic.lean:398:def Transversal (c d : ℂ) : Prop := conj c * d ≠ c * conj d
+namespace Clifford.MorleyKernel
+open Complex ComplexConjugate Matrix
+
+section J21
+variable {R : Type*} [CommRing R]
+
+def kpe (n : ℕ) (x y : R) (j : ℕ) : R :=
+  if j ≤ n / 2 then (-x) ^ j * y ^ (n - n / 2 - j)
+    else -((-x) ^ (j - (n / 2 + 1)) * y ^ (n - n / 2 - 1 - (j - (n / 2 + 1))))
+
+theorem KP_eq_kpe (n : ℕ) (x y : Fin n → R) (r : Fin n) (j : Fin (n + 1)) :
+    KP n x y r j = kpe n (x r) (y r) j := rfl
+
+def extN {N : ℕ} (w : Fin N → R) (j : ℕ) : R := if h : j < N then w ⟨j, h⟩ else 0
+
+theorem extN_fin {N : ℕ} (w : Fin N → R) (j : Fin N) : extN w j = w j := by
+  simp [extN, j.isLt]
+
+
+section J28
+variable {R : Type*} [CommRing R]
+
+theorem kpe5_lo (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ k + 2) :
+    kpe (2 * k + 5) x y j = (-x) ^ j * y ^ (k + 3 - j) := by
+  unfold kpe
+  rw [if_pos (show j ≤ (2 * k + 5) / 2 by omega), show 2 * k + 5 - (2 * k + 5) / 2 - j = k + 3 - j by omega]
+
+theorem kpe6_lo (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ k + 3) :
+    kpe (2 * k + 6) x y j = (-x) ^ j * y ^ (k + 3 - j) := by
+  unfold kpe
+  rw [if_pos (show j ≤ (2 * k + 6) / 2 by omega), show 2 * k + 6 - (2 * k + 6) / 2 - j = k + 3 - j by omega]
+
+theorem kpe5_hi (k : ℕ) (x y : R) (j : ℕ) (hj : k + 3 ≤ j) (hj' : j ≤ 2 * k + 5) :
+    kpe (2 * k + 5) x y j = -((-x) ^ (j - (k + 3)) * y ^ (2 * k + 5 - j)) := by
+  unfold kpe
+  rw [if_neg (show ¬ j ≤ (2 * k + 5) / 2 by omega),
+    show j - ((2 * k + 5) / 2 + 1) = j - (k + 3) by omega,
+    show 2 * k + 5 - (2 * k + 5) / 2 - 1 - (j - (k + 3)) = 2 * k + 5 - j by omega]
+
+theorem kpe6_hi (k : ℕ) (x y : R) (j : ℕ) (hj : k + 4 ≤ j) (hj' : j ≤ 2 * k + 6) :
+    kpe (2 * k + 6) x y j = -((-x) ^ (j - (k + 4)) * y ^ (2 * k + 6 - j)) := by
+  unfold kpe
+  rw [if_neg (show ¬ j ≤ (2 * k + 6) / 2 by omega),
+    show j - ((2 * k + 6) / 2 + 1) = j - (k + 4) by omega,
+    show 2 * k + 6 - (2 * k + 6) / 2 - 1 - (j - (k + 4)) = 2 * k + 6 - j by omega]
+
+end J28
+
+/-- **The parent level point kills the subfamily's `MN` matrix.** The rows of the subfamily are
+  rw [EptInf_eq_coe 4 c (crossVec_KP4_P2_ne_zero c h)]
+  exact h4_pt c h
+
+/-- Under `GenPosN` (with `n ≥ 2`) no centre is `0`. -/
+theorem hc_of_genPos {n : ℕ} (hn : 2 ≤ n) (c : Fin n → ℂ) (h : GenPosN c) (j : Fin n) :
+    c j ≠ 0 := by
+  intro h0
+  obtain ⟨i, hij⟩ : ∃ i : Fin n, i ≠ j := by
+    by_cases hj : (j : ℕ) = 0
+    · exact ⟨⟨1, by omega⟩, fun e => by have := congrArg Fin.val e; simp at this; omega⟩
+    · exact ⟨⟨0, by omega⟩, fun e => by have := congrArg Fin.val e; simp at this; omega⟩
+  have := h.1 i j hij
+  simp [Transversal, h0] at this
+
+end Clifford.MorleyKernel
+
+#print axioms Clifford.MorleyKernel.EptInf_eq_infty
+#print axioms Clifford.MorleyKernel.EptInf_eq_coe
+[0m
+[0m$ [0mcd ~/paperL_jack && sed -n 170,190p Clifford/Clean.lean; sed -n 900,960p scratch/ChainEvenCornerQL.lean
+if n % 2 = 0 then
+      IsGCircle X ∧ ∀ i : Fin (n + 3), ∃ p, Chain (n + 2) (c ∘ i.succAbove) {p} ∧ p ∈ X
+    else
+      ∃ p, X = {p} ∧ ∀ i : Fin (n + 3), ∃ Y, Chain (n + 2) (c ∘ i.succAbove) Y ∧ p ∈ Y
+
+/-- `n` circles through `M` in general position (pairwise transversal, every triple in general
+position). -/
+def GenPosN {n : ℕ} (c : Fin n → ℂ) : Prop :=
+  (∀ i j, i ≠ j → Transversal (c i) (c j)) ∧
+    ∀ i j k, i < j → j < k → GenTriple (c i) (c j) (c k)
+
+/-- **The Clifford chain** for `n` circles: in general position the Clifford object of level `n`
+exists (odd `n ≥ 3`: the points of level `n - 1` are concyclic, on a generalized circle;
+even `n ≥ 4`: the circles of level `n - 1` are concurrent). -/
+def CliffordChain (n : ℕ) : Prop := ∀ c : Fin n → ℂ, GenPosN c → ∃ X, Chain n c X
+
+theorem chain3_of (c : Fin 3 → ℂ) (q : ℂ)
+    (hq : OnCircle3 (second (c 0) (c 1)) (second (c 0) (c 2)) (second (c 1) (c 2)) q) :
+    ∃ Y, Chain 3 c Y ∧ q ∈ Y := by
+  obtain ⟨o, r, hr⟩ := hq
+  have hm : ∀ z, z ∈ ({second (c 0) (c 1), second (c 0) (c 2), second (c 1) (c 2), q} : Set ℂ) →
+      crossVec (KP n (fun k => conj (c k)) c) j := by
+  simp only [crossVec, map_mul, map_pow, map_neg, map_one]
+  congr 1
+  rw [RingHom.map_det]
+  congr 1
+  ext k l
+  simp only [RingHom.mapMatrix_apply, Matrix.map_apply, Matrix.submatrix_apply, KP, id]
+  split_ifs <;> simp
+
+/-- **Target 1 (general `m`).** `conj P_{m+1} = P₀`. -/
+theorem conj_crossVec_even (m : ℕ) (c : Fin (2 * m + 2) → ℂ) :
+    conj (crossVec (KP (2 * m + 2) c (fun k => conj (c k))) ⟨m + 1, by omega⟩)
+      = crossVec (KP (2 * m + 2) c (fun k => conj (c k))) 0 := by
+  rw [conj_crossVec_KP, crossVec_KP_swap_P]
+
+/-- **Target 1 (general `m`), `Q`-part.** `conj Q_m = -Q₀`. -/
+theorem conj_crossVec_even_Q (m : ℕ) (c : Fin (2 * m + 2) → ℂ) :
+    conj (crossVec (KP (2 * m + 2) c (fun k => conj (c k))) (Fin.last _))
+      = -crossVec (KP (2 * m + 2) c (fun k => conj (c k))) ⟨m + 2, by omega⟩ := by
+  rw [conj_crossVec_KP, crossVec_KP_swap_Q]
+
+theorem crossVec_even_P0_ne_zero (m : ℕ) (c : Fin (2 * m + 2) → ℂ)
+    (h : crossVec (KP (2 * m + 2) c (fun k => conj (c k))) ⟨m + 1, by omega⟩ ≠ 0) :
+    crossVec (KP (2 * m + 2) c (fun k => conj (c k))) 0 ≠ 0 := by
+  rw [← conj_crossVec_even]; exact (map_ne_zero _).2 h
+
+/-- The level point's conjugate, general `m`: `conj (-Q_m / P_{m+1}) = Q₀ / P₀`. -/
+theorem conj_levelPointN_even (m : ℕ) (c : Fin (2 * m + 2) → ℂ) :
+    conj (levelPointN (2 * m + 2) (crossVec (KP (2 * m + 2) c (fun k => conj (c k))))) =
+      crossVec (KP (2 * m + 2) c (fun k => conj (c k))) ⟨m + 2, by omega⟩ /
+        crossVec (KP (2 * m + 2) c (fun k => conj (c k))) 0 := by
+  have e : (⟨(2 * m + 2) / 2, by omega⟩ : Fin (2 * m + 2 + 1)) = ⟨m + 1, by omega⟩ := by
+    ext; exact (by omega : (2 * m + 2) / 2 = m + 1)
+  rw [levelPointN, e, map_div₀, map_neg, conj_crossVec_even_Q, conj_crossVec_even, neg_neg]
+
+/-! ### Instances `m = 2` (reproduces `conj_crossVec_KP6`/`crossVec_KP6_swap*`) and `m = 3` -/
+
+theorem conj_crossVec_KP6_P (c : Fin 6 → ℂ) :
+    conj (crossVec (KP 6 c (fun k => conj (c k))) 3) = crossVec (KP 6 c (fun k => conj (c k))) 0 :=
+  conj_crossVec_even 2 c
+
+theorem conj_crossVec_KP6_Q (c : Fin 6 → ℂ) :
+    conj (crossVec (KP 6 c (fun k => conj (c k))) 6) = -crossVec (KP 6 c (fun k => conj (c k))) 4 :=
+  conj_crossVec_even_Q 2 c
+
+theorem conj_crossVec_KP8_P (c : Fin 8 → ℂ) :
+    conj (crossVec (KP 8 c (fun k => conj (c k))) 4) = crossVec (KP 8 c (fun k => conj (c k))) 0 :=
+  conj_crossVec_even 3 c
+
+theorem conj_crossVec_KP8_Q (c : Fin 8 → ℂ) :
+    conj (crossVec (KP 8 c (fun k => conj (c k))) 8) = -crossVec (KP 8 c (fun k => conj (c k))) 5 :=
+  conj_crossVec_even_Q 3 c
+
+/-- Consistency with the J5 brute-force lemma (now a corollary of the abstract one). -/
+example {R : Type*} [CommRing R] (x y : Fin 6 → R) :
+    crossVec (KP 6 y x) 3 = crossVec (KP 6 x y) 0 := crossVec_KP_swap_P 2 x y
+
+end Clifford.MorleyKernel
+
+/-! # Paper L / J6, target 2: `StepOdd 2` (variant with one extra `triP` hypothesis) -/
+[0m
+[0m$ [0mcd ~/paperL_jack && head -5 Clifford/Mobius.lean; sed -n 4776,4800p scratch/ChainEvenCornerQL.lean; sed -n 5260,5284p scratch/ChainEvenCornerQL.lean
+import Clifford.Classify
+
+/-!
+# Clifford's chain on the Riemann sphere
+
+rows of the parent `KP (2k+6)`; the parent cross vector, with its column `Q₀ = k+3` moved to the
+end (sign flipped), is a nonzero kernel vector once `z̄ V₀ = V_{k+4}` and `z V_{k+3} = −V_last`. -/
+theorem parent_det_MN (k : ℕ) (c : Fin (2*k+6) → ℂ) (i : Fin (2*k+6))
+    (hmid : crossVec (KP (2*k+6) c (fun j => conj (c j))) ⟨k+3, by omega⟩ ≠ 0) :
+    let z := levelPointN (2*k+6) (crossVec (KP (2*k+6) c (fun j => conj (c j))))
+    (MN k (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))
+      (fun r => conj ((c ∘ i.succAbove) r) ^ (k + 3) - conj z * conj ((c ∘ i.succAbove) r) ^ (k + 2))
+      (fun r => z * -(-(c ∘ i.succAbove) r) ^ (k + 2) - (-(c ∘ i.succAbove) r) ^ (k + 3))).det = 0 := by
+  intro z
+  set V := crossVec (KP (2*k+6) c (fun j => conj (c j))) with hV
+  have hV0 : V 0 ≠ 0 := crossVec_even_P0_ne_zero (k + 2) c hmid
+  set W := extN V with hW
+  have hz : z * W (k + 3) + W (2 * k + 6) = 0 := by
+    have e1 : (⟨(2 * k + 6) / 2, by omega⟩ : Fin (2 * k + 6 + 1)) = ⟨k + 3, by omega⟩ := by
+      ext; simp only; omega
+    have e2 : (Fin.last (2 * k + 6)) = (⟨2 * k + 6, by omega⟩ : Fin (2 * k + 6 + 1)) := rfl
+    have w3 : W (k + 3) = V ⟨k + 3, by omega⟩ := extN_fin V ⟨k + 3, by omega⟩
+    have w6 : W (2 * k + 6) = V ⟨2 * k + 6, by omega⟩ := extN_fin V ⟨2 * k + 6, by omega⟩
+    rw [w3, w6]
+    show -V (Fin.last (2 * k + 6)) / V ⟨(2 * k + 6) / 2, by omega⟩ * V ⟨k + 3, by omega⟩ +
+      V ⟨2 * k + 6, by omega⟩ = 0
+    rw [e1, div_mul_cancel₀ _ hmid, e2]; ring
+  have hZ : conj z * W 0 - W (k + 4) = 0 := by
+    have h := conj_levelPointN_even (k + 2) c
+    have h' : conj z = V ⟨k + 4, by omega⟩ / V 0 := h
+open Complex ComplexConjugate Matrix
+
+/-- **The residual corner, as a named proposition** (NOT proved): `V = 0`, `P₀(d) ≠ 0`, every
+grandchild finite ⇒ the grandchildren are collinear. -/
+def EvenCorner : Prop :=
+  ∀ (k : ℕ) (c : Fin (2*k+6) → ℂ), GenPosN c → ∀ i : Fin (2*k+6),
+    crossVec (KP (2*k+6) c (fun j => conj (c j))) = 0 →
+    crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))) 0 ≠ 0 →
+    (∀ j : Fin (2*k+5), crossVec (KP (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove)
+        (fun r => conj (((c ∘ i.succAbove) ∘ j.succAbove) r))) ⟨k+2, by omega⟩ ≠ 0) →
+    ∃ p u : ℂ, u ≠ 0 ∧ ∀ j : Fin (2*k+5), ∃ t : ℝ,
+      levelPointN (2*k+4) (crossVec (KP (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove)
+        (fun r => conj (((c ∘ i.succAbove) ∘ j.succAbove) r)))) = p + (t : ℂ) * u
+
+theorem heven_inf_all_of_corner (hC : EvenCorner) :
+    ∀ (k : ℕ) (c : Fin (2*k+6) → ℂ), GenPosN c → ∀ i : Fin (2*k+6),
+      ∃ Y, Clifford.IsGCircleS Y ∧ EptInf (2*k+6) c ∈ Y ∧
+        ∀ j : Fin (2*k+5), EptInf (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y :=
+  fun k c h i => heven_inf_of_corner k c h i (hC k c h i)
+
+theorem cliffordChainS_of_corner (hC : EvenCorner) (n : ℕ) (hn : 3 ≤ n) : CliffordChainS n :=
+  cliffordChainS_of_inf' (heven_inf_all_of_corner hC) n hn
+
+end Clifford.MorleyKernel
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -n "Polynomial\|sum_range_add\|natDegree\|card_roots\|theorem.*extN\|theorem mulVec_KP\|theorem .*_ker\b" scratch/ChainEvenCornerQL.lean | head -30
+113:theorem K_exists_ker (n : ℕ) (a t : Fin n → ℂ) : ∃ v ≠ 0, K n a t *ᵥ v = 0 :=
+117:theorem Kc_exists_ker (n : ℕ) (a t : Fin n → ℂ) : ∃ v ≠ 0, Kc n a t *ᵥ v = 0 :=
+200:/-! ## Polynomial (row-scaled) form and explicit coordinates -/
+212:/-- Polynomial (row-scaled) Morley matrix in `x = c`, `y = conj c`: row `k` of `Kf` times
+305:theorem crossVec_KP_mem_ker {n : ℕ} (c : Fin n → ℂ) (hc : ∀ k, c k ≠ 0) :
+1712:`MvPolynomial (Fin 10) ℂ` and evaluates. -/
+1744:arguments (no non-collinearity hypothesis): polynomial cancellation in `MvPolynomial (Fin 10) ℂ`. -/
+1751:  let X : Fin 10 → MvPolynomial (Fin 10) ℂ := MvPolynomial.X
+1755:    have h' := congrArg (MvPolynomial.eval (![1, 2, 3, 0, 0, 1, 4, 9, 0, 0] : Fin 10 → ℂ)) h
+1759:  have h' := congrArg (MvPolynomial.eval (![x₁, x₂, x₃, x₄, x₅, y₁, y₂, y₃, y₄, y₅] : Fin 10 → ℂ)) hH
+1761:    X, MvPolynomial.eval_X] at h'
+3582:theorem levelPointN_six_of_ker (A : Matrix (Fin 6) (Fin 7) ℂ) (h3 : crossVec A ⟨3, by omega⟩ ≠ 0)
+3710:theorem extN_fin {N : ℕ} (w : Fin N → R) (j : Fin N) : extN w j = w j := by
+3763:    rw [e1, Finset.sum_range_add, sub_eq_add_neg, ← Finset.sum_neg_distrib]
+3799:  rw [e1, Finset.sum_range_add, B1, B2, A0, AL, Finset.sum_congr rfl A1, Finset.sum_congr rfl A2, ← e1, hG1]
+4109:theorem levelPointN_of_ker (k : ℕ) (A : Matrix (Fin (2 * k + 4)) (Fin (2 * k + 5)) ℂ)
+4840:    rw [e2, Finset.sum_range_add, C1, C2, C3, C4] at hR
+4841:    rw [e1, Finset.sum_range_add, B1, B2]
+4963:  rw [e2, Finset.sum_range_add, C1, C2, C3, C4] at hR
+4964:  rw [e1, Finset.sum_range_add, B1, B2]
+[0m
+[0m$ [0mcd ~/paperL_jack && sed -n 860,900p scratch/ChainEvenCornerQL.lean; sed -n 3712,3720p scratch/ChainEvenCornerQL.lean; grep -n "^variable\|^section\|^end\|^namespace\|^open" scratch/ChainEvenCornerQL.lean | sed -n 1,400p | awk -F: '$1>3690 && $1<3720'
+show m + 1 - 1 - c = (j : ℕ) - (m + 1 + 1) by omega]
+    rw [aux_pow_swap, show (j : ℕ) - (m + 1 + 1) + c = m by omega]; ring
+
+/-- The swap relation, general `m`: `crossVec (KP y x) (m+1) = crossVec (KP x y) 0`. -/
+theorem crossVec_KP_swap_P {R : Type*} [CommRing R] (m : ℕ) (x y : Fin (2 * m + 2) → R) :
+    crossVec (KP (2 * m + 2) y x) ⟨m + 1, by omega⟩ = crossVec (KP (2 * m + 2) x y) 0 := by
+  have H := crossVec_colPerm (KP (2 * m + 2) x y) (KP (2 * m + 2) y x) (blockRev m)
+    (blockSign m) (KP_swap_entry m x y) ⟨m + 1, by omega⟩
+  have hσ : blockRev m ⟨m + 1, by omega⟩ = 0 := by
+    ext; rw [blockRev_val]; simp
+  rw [prod_blockSign, sign_blockRev, hσ, one_mul] at H
+  simp only [blockSign, le_refl, if_true] at H
+  push_cast at H
+  have hu : ((-1 : R) ^ (m + 1)) * (-1) ^ (m + 1) = 1 := by
+    rw [← pow_add]; exact Even.neg_one_pow ⟨m + 1, rfl⟩
+  linear_combination ((-1 : R) ^ (m + 1)) * H -
+    (crossVec (KP (2 * m + 2) y x) ⟨m + 1, by omega⟩ - crossVec (KP (2 * m + 2) x y) 0) * hu
+
+/-- The swap relation, general `m`: `crossVec (KP y x) Q_m = - crossVec (KP x y) Q_0`. -/
+theorem crossVec_KP_swap_Q {R : Type*} [CommRing R] (m : ℕ) (x y : Fin (2 * m + 2) → R) :
+    crossVec (KP (2 * m + 2) y x) (Fin.last _) = -crossVec (KP (2 * m + 2) x y) ⟨m + 2, by omega⟩ := by
+  have H := crossVec_colPerm (KP (2 * m + 2) x y) (KP (2 * m + 2) y x) (blockRev m)
+    (blockSign m) (KP_swap_entry m x y) (Fin.last _)
+  have hσ : blockRev m (Fin.last _) = ⟨m + 2, by omega⟩ := by
+    ext; rw [blockRev_val, Fin.val_last, if_neg (by omega)]
+    show 3 * m + 4 - (2 * m + 2) = m + 2; omega
+  rw [prod_blockSign, sign_blockRev, hσ, one_mul] at H
+  have hn : ¬ ((Fin.last (2 * m + 2) : Fin _) : ℕ) ≤ m + 1 := by rw [Fin.val_last]; omega
+  simp only [blockSign, hn, if_false] at H
+  push_cast at H
+  have hu : ((-1 : R) ^ m) * (-1) ^ m = 1 := by
+    rw [← pow_add]; exact Even.neg_one_pow ⟨m, rfl⟩
+  rw [pow_succ] at H
+  linear_combination ((-1 : R) ^ m) * H -
+    (crossVec (KP (2 * m + 2) y x) (Fin.last _) + crossVec (KP (2 * m + 2) x y) ⟨m + 2, by omega⟩) * hu
+
+/-- Complex conjugation of the polynomial cross vector = the cross vector with `x ↔ y`
+(all `n`; generalizes `conj_crossVec_KP6`). -/
+theorem conj_crossVec_KP (n : ℕ) (c : Fin n → ℂ) (j : Fin (n + 1)) :
+    conj (crossVec (KP n c (fun k => conj (c k))) j) =
+      crossVec (KP n (fun k => conj (c k)) c) j := by
+
+def gN (k : ℕ) (x y : R) (w : Fin (2 * k + 5) → R) : R :=
+  ∑ j : Fin (2 * k + 5), kpe (2 * k + 4) x y j * w j
+
+def colN (k : ℕ) (x y a b : R) (j : ℕ) : R :=
+  if j = 0 then a else if j = 2 * k + 4 then b
+    else kpe (2 * k + 5) x y (if j ≤ k + 2 then j else j + 1)
+
+def uNat (k : ℕ) (xi yi : R) (W : ℕ → R) (j : ℕ) : R :=
+3695:namespace Clifford.MorleyKernel
+3696:open Complex ComplexConjugate Matrix
+3698:section J21
+3699:variable {R : Type*} [CommRing R]
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "eq_zero_of_natDegree_lt_card_of_eval_eq_zero\b" .lake/packages/mathlib/Mathlib/ | head -3; grep -rn "theorem coeff_mul_of_natDegree_le\b\|theorem det_succ_row \|theorem exists_succAbove_eq \|theorem natDegree_sum_le_of_forall_le" .lake/packages/mathlib/Mathlib/ | head
+.lake/packages/mathlib/Mathlib/Algebra/Lie/CartanExists.lean:290:  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ ?hcard
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Roots.lean:722:lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Roots.lean:746:  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ hf
+.lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean:771:theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin n.succ) :
+[0m
+[0m$ [0mcd ~/paperL_jack && sed -n 715,750p .lake/packages/mathlib/Mathlib/Algebra/Polynomial/Roots.lean; grep -rn "theorem eq_self_or_eq_succAbove\|theorem natDegree_sum_le_of_forall_le\|theorem coeff_mul_of_natDegree_le\b\|theorem natDegree_C_mul_X_pow_le\|theorem sum_univ_eq_sum_range" .lake/packages/mathlib/Mathlib/ | head; sed -n 771,776p .lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean; sed -n 395,400p Clifford/Basic.lean
+[Monoid G] [MulSemiringAction G R] [SMulCommClass G S R]
+    [Monoid H] [MulSemiringAction H R] [SMulCommClass H S R]
+    [SMul G H] [IsScalarTower G H R] (f : S[X]) : IsScalarTower G H (f.rootSet R) where
+  smul_assoc _ _ _ := Subtype.ext <| smul_assoc _ _ _
+
+end Roots
+
+lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
+    (p : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
+    (heval : ∀ i, p.eval (f i) = 0) (hcard : natDegree p < Fintype.card ι) : p = 0 := by
+  classical
+  by_contra hp
+  refine lt_irrefl #p.roots.toFinset ?_
+  calc
+    #p.roots.toFinset ≤ Multiset.card p.roots := Multiset.toFinset_card_le _
+    _ ≤ natDegree p := Polynomial.card_roots' p
+    _ < Fintype.card ι := hcard
+    _ = Fintype.card (Set.range f) := (Set.card_range_of_injective hf).symm
+    _ = #(Finset.univ.image f) := by rw [← Set.toFinset_card, Set.toFinset_range]
+    _ ≤ #p.roots.toFinset := Finset.card_mono ?_
+  intro _
+  simp only [Finset.mem_image, Finset.mem_univ, true_and, Multiset.mem_toFinset, mem_roots', ne_eq,
+    IsRoot.def, forall_exists_index, hp, not_false_eq_true]
+  rintro x rfl
+  exact heval _
+
+lemma eq_of_natDegree_lt_card_of_eval_eq {R} [CommRing R] [IsDomain R]
+    (p q : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
+    (heval : ∀ i : ι, eval (f i) p = eval (f i) q)
+    (hcard : max p.natDegree q.natDegree < Fintype.card ι) : p = q := by
+  rw [← sub_eq_zero]
+  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ hf
+  · simpa [sub_eq_zero]
+  · grind [natDegree_sub_le]
+
+lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R]
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Defs.lean:365:theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤ n :=
+.lake/packages/mathlib/Mathlib/Data/Fin/Tuple/Basic.lean:843:theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
+theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin n.succ) :
+    det A =
+      ∑ j : Fin n.succ, (-1) ^ (i + j : ℕ) * A i j * det (A.submatrix i.succAbove j.succAbove) := by
+  simp_rw [pow_add, mul_assoc, ← mul_sum]
+  have : det A = (-1 : R) ^ (i : ℕ) * (Perm.sign i.cycleRange⁻¹) * det A := by
+    calc
+
+/-- The circles with centres `c`, `d` through `M` meet transversally, i.e. `M`, `c`, `d` are not
+collinear (equivalently: the second intersection exists and differs from `M`). -/
+def Transversal (c d : ℂ) : Prop := conj c * d ≠ c * conj d
+
+/-- A triple of circles is in general position: the centres are not collinear and the three second
+[0m
+[0m$ [0mmkdir -p /tmp/opencode/olean && cd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && cp scratch/ChainEvenCornerQL.lean /tmp/opencode/QLPrefix.lean && (time lake env lean -o /tmp/opencode/olean/QLPrefix.olean /tmp/opencode/QLPrefix.lean) 2>&1 | tail -3; grep -rn "theorem natDegree_sum_le_of_forall_le\|theorem coeff_mul_of_natDegree_le " .lake/packages/mathlib/Mathlib/ | head
+real	0m0.516s
+user	0m0.255s
+sys	0m0.277s
+[0m
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && lake env lean -o /tmp/opencode/olean/QLPrefix.olean /tmp/opencode/QLPrefix.lean 2>&1 | head; ls -la /tmp/opencode/olean; cat lakefile.toml
+input file '/tmp/opencode/QLPrefix.lean' must be contained in root directory (/home/jackagent/paperL_jack/)
+total 0
+drwxrwxr-x 2 jackagent jackagent 40 Nov 18 16:59 .
+drwxrwxr-x 3 jackagent jackagent 80 Nov 18 16:59 ..
+name = "Clifford"
+version = "0.1.0"
+defaultTargets = ["Clifford"]
+
+[leanOptions]
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.33.1"
+
+[[lean_lib]]
+name = "Clifford"
+[0m
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && cp scratch/ChainEvenCornerQL.lean scratch/QLPrefix.lean && (time lake env lean -o /tmp/opencode/olean/QLPrefix.olean scratch/QLPrefix.lean) 2>&1 | tail -3; ls /tmp/opencode/olean; lake env printenv LEAN_PATH
+real	1m2.482s
+user	5m15.781s
+sys	0m3.826s
+QLPrefix.olean
+/home/jackagent/gates/primitive-root-families/.lake/packages/Cli/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/batteries/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/Qq/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/aesop/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/proofwidgets/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/importGraph/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/plausible/.lake/build/lib/lean:/home/jackagent/gates/primitive-root-families/.lake/packages/mathlib/.lake/build/lib/lean:/home/jackagent/paperL_jack/.lake/build/lib/lean:/home/jackagent/.elan/toolchains/leanprover--lean4---v4.33.1/lib/lean
+[0m
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && rm scratch/QLPrefix.lean && cat > scratch/ql_probe.lean <<'EOF'
+import QLPrefix
+open Polynomial
+#check @Polynomial.coeff_mul_of_natDegree_le
+#check @Polynomial.natDegree_sum_le_of_forall_le
+#check @Polynomial.coeff_C_mul_X_pow
+#check @Finset.sum_range_reflect
+#check @Fin.sum_univ_eq_sum_range
+#check @Fin.insertNth_apply_succAbove
+#check @Fin.insertNth_apply_same
+#check @Fin.sum_univ_succAbove
+#check @Polynomial.finset_sum_coeff
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -40
+scratch/ql_probe.lean:3:8: error(lean.unknownIdentifier): Unknown constant `Polynomial.coeff_mul_of_natDegree_le`
+@natDegree_sum_le_of_forall_le : ∀ {ι : Type u_1} (s : Finset ι) {S : Type u_2} [inst : Semiring S] {n : ℕ}
+  (f : ι → S[X]), (∀ i ∈ s, (f i).natDegree ≤ n) → (∑ i ∈ s, f i).natDegree ≤ n
+@coeff_C_mul_X_pow : ∀ {R : Type u_1} [inst : Semiring R] (x : R) (k n : ℕ),
+  (C x * X ^ k).coeff n = if n = k then x else 0
+@Finset.sum_range_reflect : ∀ {δ : Type u_1} [inst : AddCommMonoid δ] (f : ℕ → δ) (n : ℕ),
+  ∑ j ∈ Finset.range n, f (n - 1 - j) = ∑ j ∈ Finset.range n, f j
+@Fin.sum_univ_eq_sum_range : ∀ {α : Type u_1} [inst : AddCommMonoid α] (f : ℕ → α) (n : ℕ),
+  ∑ i, f ↑i = ∑ i ∈ Finset.range n, f i
+@Fin.insertNth_apply_succAbove : ∀ {n : ℕ} {α : Fin (n + 1) → Sort u_1} (i : Fin (n + 1)) (x : α i)
+  (p : (j : Fin n) → α (i.succAbove j)) (j : Fin n), i.insertNth x p (i.succAbove j) = p j
+@Fin.insertNth_apply_same : ∀ {n : ℕ} {α : Fin (n + 1) → Sort u_1} (i : Fin (n + 1)) (x : α i)
+  (p : (j : Fin n) → α (i.succAbove j)), i.insertNth x p i = x
+@Fin.sum_univ_succAbove : ∀ {M : Type u_1} [inst : AddCommMonoid M] {n : ℕ} (f : Fin (n + 1) → M) (x : Fin (n + 1)),
+  ∑ i, f i = f x + ∑ i, f (x.succAbove i)
+scratch/ql_probe.lean:11:8: warning: `Polynomial.finset_sum_coeff` has been deprecated: Use `Polynomial.finsetSum_coeff` instead
+@finset_sum_coeff : ∀ {R : Type u_1} [inst : Semiring R] {ι : Type u_2} (s : Finset ι) (f : ι → R[X]) (n : ℕ),
+  (∑ b ∈ s, f b).coeff n = ∑ b ∈ s, (f b).coeff n
+
+real	0m3.082s
+user	0m1.914s
+sys	0m1.247s
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "theorem coeff_mul_of_natDegree_le\|lemma coeff_mul_of_natDegree_le\|theorem coeff_mul_natDegree_add\|theorem insertNth_apply_below\|theorem insertNth_apply_above\|theorem succAbove_of_castSucc_lt \|theorem succAbove_of_le_castSucc " .lake/packages/mathlib/Mathlib/ | head
+.lake/packages/mathlib/Mathlib/Data/Fin/Tuple/Basic.lean:931:theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
+.lake/packages/mathlib/Mathlib/Data/Fin/Tuple/Basic.lean:936:theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "coeff_mul_of_natDegree_le\|theorem coeff_mul_of_le\|natDegree_mul_le_of_le" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -5; grep -rn "theorem succAbove_of_castSucc_lt\|theorem succAbove_of_le_castSucc\|theorem val_succAbove\|lemma val_succAbove\|theorem coe_succAbove" .lake/packages/mathlib/Mathlib/ | head
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Defs.lean:475:theorem natDegree_mul_le_of_le (hp : natDegree p ≤ m) (hg : natDegree q ≤ n) :
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "(p \* q).coeff (m + n) = p.coeff m \* q.coeff n\|coeff (m + n) = coeff p m \* coeff q n" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -5; grep -rn "theorem succAbove_of_castSucc_lt\|theorem succAbove_of_le_castSucc\|lemma succAbove_of_castSucc_lt\|lemma succAbove_of_le_castSucc" .lake/packages/mathlib/Mathlib/ | head
+.lake/packages/mathlib/Mathlib/Data/Fin/SuccPred.lean:514:lemma succAbove_of_castSucc_lt (p : Fin (n + 1)) (i : Fin n) (h : castSucc i < p) :
+.lake/packages/mathlib/Mathlib/Data/Fin/SuccPred.lean:523:lemma succAbove_of_le_castSucc (p : Fin (n + 1)) (i : Fin n) (h : p ≤ castSucc i) :
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "natDegree_le.*coeff (m + n)\|coeff_mul_of_natDegree_le\|theorem coeff_mul_natDegree_add_natDegree\|lemma coeff_mul_of_natDegree" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -5; grep -rn "theorem eq_self_or_eq_succAbove" -A1 .lake/packages/mathlib/Mathlib/Data/Fin/ | head
+.lake/packages/mathlib/Mathlib/Data/Fin/Tuple/Basic.lean:843:theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ ∃ j, i = p.succAbove j :=
+.lake/packages/mathlib/Mathlib/Data/Fin/Tuple/Basic.lean-844-  succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "coeff (m + n) = \|coeff (m + n) =" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -5
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Lemmas.lean:147:    (p * q).coeff (m + n) = 0 :=
+[0m
+[0m$ [0mcd ~/paperL_jack && sed -n 3740,3770p scratch/ChainEvenCornerQL.lean; grep -rn "theorem natDegree_sub_le_of_le\|theorem natDegree_sub_le " .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -3
+have hwa : w ⟨k + 2, by omega⟩ = W (k + 2) := (extN_fin w _).symm
+  have hwb : w ⟨2 * k + 4, by omega⟩ = W (2 * k + 4) := (extN_fin w _).symm
+  have hwc : w ⟨k + 3, by omega⟩ = W (k + 3) := (extN_fin w _).symm
+  rw [hw0, hwa, hwb, hwc]
+  set A := y ^ (k + 3) - Z * y ^ (k + 2) with hA
+  set B := z * -(-x) ^ (k + 2) - (-x) ^ (k + 3) with hB
+  have hS : ∑ j : Fin (2 * k + 5), colN k x y A B j * uN k xi yi w j =
+      ∑ j ∈ Finset.range (2 * k + 5), colN k x y A B j * uNat k xi yi W j :=
+    Fin.sum_univ_eq_sum_range (fun j => colN k x y A B j * uNat k xi yi W j) _
+  have hG : gN k x y w = ∑ j ∈ Finset.range (2 * k + 5), kpe (2 * k + 4) x y j * W j := by
+    rw [gN, ← Fin.sum_univ_eq_sum_range (fun j => kpe (2 * k + 4) x y j * W j)]
+    refine Finset.sum_congr rfl fun j _ => ?_
+    rw [hW, extN_fin]
+  rw [hS, hG]
+  set F : ℕ → R := fun j => colN k x y A B j * uNat k xi yi W j with hF
+  set G : ℕ → R := fun j => kpe (2 * k + 4) x y j * W j with hGd
+  set p : ℕ → R := fun t => (-x) ^ t * y ^ (k + 2 - t) with hp
+  set q : ℕ → R := fun t => (-x) ^ t * y ^ (k + 1 - t) with hq
+  have e1 : 2 * k + 5 = (k + 3) + (k + 2) := by omega
+  have h4 : (2 * k + 4) / 2 = k + 2 := by omega
+  have h5 : (2 * k + 5) / 2 = k + 2 := by omega
+  have hG1 : ∑ j ∈ Finset.range (2 * k + 5), G j =
+      ∑ t ∈ Finset.range (k + 3), p t * W t - ∑ t ∈ Finset.range (k + 2), q t * W (k + 3 + t) := by
+    rw [e1, Finset.sum_range_add, sub_eq_add_neg, ← Finset.sum_neg_distrib]
+    congr 1
+    · refine Finset.sum_congr rfl fun t ht => ?_
+      have ht := Finset.mem_range.1 ht
+      simp only [hGd, kpe, h4, hp, if_pos (show t ≤ k + 2 by omega)]
+      rw [show 2 * k + 4 - (k + 2) - t = k + 2 - t by omega]
+    · refine Finset.sum_congr rfl fun t ht => ?_
+      have ht := Finset.mem_range.1 ht
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Defs.lean:533:theorem natDegree_sub_le (p q : R[X]) : natDegree (p - q) ≤ max (natDegree p) (natDegree q) := by
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Defs.lean:536:theorem natDegree_sub_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n) :
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "theorem coeff_mul_of_natDegree_le\|theorem coeff_mul_of_natDegree_le'\|coeff_mul_of_natDegree_le" .lake/packages/mathlib/Mathlib/ | head -5; grep -rn "lemma coe_succAbove\|theorem coe_succAbove\|lemma val_succAbove\|succAbove_val" .lake/packages/mathlib/Mathlib/Data/Fin/ | head
+.lake/packages/mathlib/Mathlib/Data/Fin/Embedding.lean:141:@[simp, norm_cast] lemma coe_succAboveEmb (p : Fin (n + 1)) : p.succAboveEmb = p.succAbove := rfl
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "lemma coeff_mul_of\|theorem coeff_mul_of" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -10; grep -rn "theorem coeff_mul_degree_add_degree\|theorem natDegree_finset_sum_le\|theorem eval_finset_sum" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Coeff.lean:177:@[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Operations.lean:280:theorem coeff_mul_degree_add_degree (p q : R[X]) :
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "coeff (m + n) = p.coeff m \* q.coeff n\|p.coeff m \* q.coeff n" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -5; grep -rn "cycleRange_symm_zero\|cycleRange_symm_succ" .lake/packages/mathlib/Mathlib/ | head -4
+.lake/packages/mathlib/Mathlib/GroupTheory/Perm/Fin.lean:256:theorem cycleRange_symm_zero [NeZero n] (i : Fin n) : i.cycleRange.symm 0 = i :=
+.lake/packages/mathlib/Mathlib/GroupTheory/Perm/Fin.lean:260:theorem cycleRange_symm_succ (i : Fin (n + 1)) (j : Fin n) :
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "natDegree ≤ m) (qn\|(pm : p.natDegree ≤ m)" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head -5; sed -n 256,264p .lake/packages/mathlib/Mathlib/GroupTheory/Perm/Fin.lean; grep -rn "theorem det_permute\b\|theorem det_permute " -A3 .lake/packages/mathlib/Mathlib/LinearAlgebra/Matrix/Determinant/Basic.lean | head
+theorem cycleRange_symm_zero [NeZero n] (i : Fin n) : i.cycleRange.symm 0 = i :=
+  i.cycleRange.injective (by simp)
+
+@[simp]
+theorem cycleRange_symm_succ (i : Fin (n + 1)) (j : Fin n) :
+    i.cycleRange.symm j.succ = i.succAbove j :=
+  i.cycleRange.injective (by simp)
+
+@[simp]
+213:theorem det_permute (σ : Perm n) (M : Matrix n n R) :
+214-    (M.submatrix σ id).det = Perm.sign σ * M.det :=
+215-  ((detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_perm M σ).trans (by simp [Units.smul_def, det])
+216-
+--
+218:theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
+219-    (M.submatrix id σ).det = Perm.sign σ * M.det := by
+220-  rw [← det_transpose, transpose_submatrix, det_permute, det_transpose]
+221-
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "(p \* q).coeff (m + n)\|coeff (p \* q) (m + n)" .lake/packages/mathlib/Mathlib/ | head -5; grep -rn "theorem natDegree_add_le_of_degree_le\|theorem coeff_eq_zero_of_natDegree_lt\|theorem eval_finset_sum" .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Lemmas.lean:147:    (p * q).coeff (m + n) = 0 :=
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Defs.lean:341:theorem natDegree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : natDegree p ≤ n)
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Operations.lean:85:theorem coeff_eq_zero_of_natDegree_lt {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "lemma coeff_mul_add_eq_of_natDegree_le\|theorem coeff_mul_add_eq_of_natDegree_le\|coeff_mul_of_natDegree_le" .lake/packages/mathlib/Mathlib/ | head -5; grep -rn "coeff_mul_add_eq" .lake/packages/mathlib/Mathlib/ | head -3
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Operations.lean:442:theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
+.lake/packages/mathlib/Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Degree.lean:204:  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
+.lake/packages/mathlib/Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Degree.lean:340:  · rw [coeff_mul_add_eq_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2,
+.lake/packages/mathlib/Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Degree.lean:392:  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
+[0m
+[0m$ [0mcd ~/paperL_jack && sed -n 440,450p .lake/packages/mathlib/Mathlib/Algebra/Polynomial/Degree/Operations.lean
+exact coeff_mul_degree_add_degree _ _
+
+theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
+    (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
+    (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
+  rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
+  · rw [mem_antidiagonal]
+  rintro ⟨df', dg'⟩ hmem hne
+  obtain h | hdf' := lt_or_ge df df'
+  · rw [coeff_eq_zero_of_natDegree_lt (hdf.trans_lt h), zero_mul]
+  obtain h | hdg' := lt_or_ge dg dg'
+[0m
+[0m# [0mTodos
+[•] Lemma: column shift kpe5 = kpe6 ∘ succAbove(k+3)
+[ ] Lemma: child row eq holds at all parent points (row i via det_border)
+[ ] Lemma: dehomogenise row sum = y^(k+2)(y p(t) - q(t))
+[ ] Lemma: conjugation / reversal, injectivity of t, resultant degree+coeff
+[ ] Main theorem + one-liners, compile, REPORT.md
+[0m
+[0m$ [0mcd ~/paperL_jack && sed -n 3920,3935p scratch/ChainEvenCornerQL.lean; grep -n "theorem GenPosN.comp_succAbove\|comp_succAbove" scratch/ChainEvenCornerQL.lean Clifford/*.lean | head -3
+explicit sign `(-1)^(k+3)` (`= +1` at `k = 1`, recovering `det_M7_D`). -/
+theorem det_MN_D (k : ℕ) (x y : Fin (2 * k + 5) → R) :
+    (MN k x y (fun r => y r ^ (k + 3)) (fun r => -(-x r) ^ (k + 2))).det =
+      (-1) ^ (k + 3) * crossVec (KP (2 * k + 5) x y) ⟨k + 3, by omega⟩ := by
+  have e : MN k x y (fun r => y r ^ (k + 3)) (fun r => -(-x r) ^ (k + 2)) =
+      (KP (2 * k + 5) x y).submatrix id (Fin.succAbove ⟨k + 3, by omega⟩) := by
+    ext r j
+    simp only [Matrix.submatrix_apply, id, KP_eq_kpe]
+    have hv := val_succAbove (⟨k + 3, by omega⟩ : Fin (2 * k + 6)) j
+    simp only [Fin.val_mk] at hv
+    rw [hv]
+    by_cases h0 : (j : ℕ) = 0
+    · have : j = 0 := Fin.ext h0
+      subst this; rw [MN_col_zero, Fin.val_zero, if_pos (show 0 < k + 3 by omega), kpe_P0]
+    · by_cases hL : (j : ℕ) = 2 * k + 4
+      · have : j = Fin.last _ := Fin.ext hL
+scratch/ChainEvenCornerQL.lean:2782:  levelPointN_four_cross _ (crossVec_KP4_P2_ne_zero _ (h.comp_succAbove i))
+scratch/ChainEvenCornerQL.lean:4362:  hodd_inf 0 d h (fun _ i => crossVec_KP4_P2_ne_zero _ (h.comp_succAbove i))
+scratch/ChainEvenCornerQL.lean:4699:#check @Clifford.GenPosN.comp_succAbove
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -n "theorem val_succAbove" -A8 scratch/ChainEvenCornerQL.lean | head -12; grep -n "theorem hc_of_genPos\|^variable\|^section\|^end " scratch/ChainEvenCornerQL.lean | awk -F: '$1>4740 && $1<4760'
+1181:theorem val_succAbove {n : ℕ} (p : Fin (n + 1)) (e : Fin n) :
+1182-    ((p.succAbove e : Fin (n + 1)) : ℕ) = if (e : ℕ) < (p : ℕ) then (e : ℕ) else (e : ℕ) + 1 := by
+1183-  rcases Nat.lt_or_ge (e : ℕ) (p : ℕ) with h | h
+1184-  · rw [Fin.succAbove_of_castSucc_lt _ _ (by simp [Fin.lt_def]; omega), if_pos h]; simp
+1185-  · rw [Fin.succAbove_of_le_castSucc _ _ (by simp [Fin.le_def]; omega), if_neg (by omega)]; simp
+1186-
+1187-/-- The subfamily vector `w`. -/
+1188-abbrev subVec (m : ℕ) (x y : Fin (2 * m + 2) → R) (i : Fin (2 * m + 2)) : Fin (2 * m + 2) → R :=
+1189-  crossVec (KP (2 * m + 1) (x ∘ i.succAbove) (y ∘ i.succAbove))
+4746:section J28
+4747:variable {R : Type*} [CommRing R]
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -n "theorem kpe_P0" -B3 scratch/ChainEvenCornerQL.lean | head; grep -n "Finset.sum_range_add" -B2 -A12 scratch/ChainEvenCornerQL.lean | sed -n 1,5p
+3901-  rw [ea, eb, det_MN_left, det_MN_right, det_MN_right]
+3902-  ring
+3903-
+3904:theorem kpe_P0 (k : ℕ) (x y : R) : kpe (2 * k + 5) x y 0 = y ^ (k + 3) := by
+3761-  have hG1 : ∑ j ∈ Finset.range (2 * k + 5), G j =
+3762-      ∑ t ∈ Finset.range (k + 3), p t * W t - ∑ t ∈ Finset.range (k + 2), q t * W (k + 3 + t) := by
+3763:    rw [e1, Finset.sum_range_add, sub_eq_add_neg, ← Finset.sum_neg_distrib]
+3764-    congr 1
+3765-    · refine Finset.sum_congr rfl fun t ht => ?_
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "theorem eval_finset_sum\|theorem coeff_X_mul\b\|theorem coeff_X_mul " .lake/packages/mathlib/Mathlib/Algebra/Polynomial/ | head
+.lake/packages/mathlib/Mathlib/Algebra/Polynomial/Coeff.lean:259:theorem coeff_X_mul (p : R[X]) (n : ℕ) : coeff (X * p) (n + 1) = coeff p n := by
+[0m
+[0m$ [0mcd ~/paperL_jack && cat > scratch/ql_probe.lean <<'EOF'
+import QLPrefix
+
+namespace Clifford.MorleyKernel
+open Complex ComplexConjugate Matrix Polynomial
+
+section J33
+variable {R : Type*} [CommRing R]
+
+/-- The child matrix `KP (2k+5)` is the parent `KP (2k+6)` with column `k+3` deleted. -/
+theorem kpe5_eq_kpe6_succAbove (k : ℕ) (x y : R) (j : Fin (2 * k + 6)) :
+    kpe (2 * k + 5) x y j = kpe (2 * k + 6) x y ((⟨k + 3, by omega⟩ : Fin (2 * k + 7)).succAbove j) := by
+  rw [val_succAbove]
+  simp only [Fin.val_mk]
+  have hj := j.isLt
+  split_ifs with h
+  · rw [kpe5_lo k x y _ (by omega), kpe6_lo k x y _ (by omega)]
+  · rw [kpe5_hi k x y _ (by omega) (by omega), kpe6_hi k x y _ (by omega) (by omega),
+      show (j : ℕ) + 1 - (k + 4) = j - (k + 3) by omega, show 2 * k + 6 - ((j : ℕ) + 1) = 2 * k + 5 - j by omega]
+
+/-- Dehomogenised row sum of `KP (2k+5)` at `x = -(t y)`. -/
+theorem kpe5_row_dehom (k : ℕ) (t y : R) (w : Fin (2 * k + 6) → R) :
+    ∑ j : Fin (2 * k + 6), kpe (2 * k + 5) (-(t * y)) y j * w j =
+      y ^ (k + 3) * ∑ j ∈ Finset.range (k + 3), extN w j * t ^ j -
+        y ^ (k + 2) * ∑ j ∈ Finset.range (k + 3), extN w (k + 3 + j) * t ^ j := by
+  have e : ∑ j : Fin (2 * k + 6), kpe (2 * k + 5) (-(t * y)) y j * w j =
+      ∑ j ∈ Finset.range (2 * k + 6), kpe (2 * k + 5) (-(t * y)) y j * extN w j := by
+    rw [← Fin.sum_univ_eq_sum_range (fun j => kpe (2 * k + 5) (-(t * y)) y j * extN w j)]
+    refine Finset.sum_congr rfl fun j _ => ?_
+    rw [extN_fin]
+  rw [e, show 2 * k + 6 = (k + 3) + (k + 3) by omega, Finset.sum_range_add, Finset.mul_sum,
+    Finset.mul_sum, sub_eq_add_neg, ← Finset.sum_neg_distrib]
+  congr 1
+  · refine Finset.sum_congr rfl fun j hj => ?_
+    have hj := Finset.mem_range.1 hj
+    rw [kpe5_lo k _ _ _ (by omega), neg_neg, mul_pow]
+    have : y ^ (k + 3) = y ^ j * y ^ (k + 3 - j) := by rw [← pow_add]; congr 1; omega
+    rw [this]; ring
+  · refine Finset.sum_congr rfl fun j hj => ?_
+    have hj := Finset.mem_range.1 hj
+    rw [kpe5_hi k _ _ _ (by omega) (by omega), neg_neg, mul_pow,
+      show k + 3 + j - (k + 3) = j by omega]
+    have : y ^ (k + 2) = y ^ j * y ^ (2 * k + 5 - (k + 3 + j)) := by rw [← pow_add]; congr 1; omega
+    rw [this]; ring
+
+theorem reflect_sum_pow (k : ℕ) (a : ℕ → R) (t u : R) (htu : t * u = 1) :
+    t ^ (k + 2) * ∑ j ∈ Finset.range (k + 3), a j * u ^ j =
+      ∑ j ∈ Finset.range (k + 3), a j * t ^ (k + 2 - j) := by
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun j hj => ?_
+  have hj := Finset.mem_range.1 hj
+  have : t ^ (k + 2) = t ^ (k + 2 - j) * t ^ j := by rw [← pow_add]; congr 1; omega
+  rw [this]
+  have h2 : t ^ j * u ^ j = 1 := by rw [← mul_pow, htu, one_pow]
+  linear_combination (a j * t ^ (k + 2 - j)) * h2
+
+end J33
+
+end Clifford.MorleyKernel
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -40
+scratch/ql_probe.lean:13:13: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ql_probe.lean:30:9: error: Tactic `rewrite` failed: motive is not type correct:
+  fun _a =>
+    ∑ j ∈ Finset.range _a, kpe (2 * k + 5) (-(t * y)) y j * extN w j =
+      y ^ (k + 3) * ∑ j ∈ Finset.range (k + 3), extN w j * t ^ j -
+        y ^ (k + 2) * ∑ j ∈ Finset.range (k + 3), extN w (k + 3 + j) * t ^ j
+Error: Application type mismatch: The argument
+  w
+has type
+  Fin (2 * k + 6) → R
+but is expected to have type
+  Fin _a → R
+in the application
+  extN w
+
+Explanation: The rewrite tactic rewrites an expression 'e' using an equality 'a = b' by the following process. First, it looks for all 'a' in 'e'. Second, it tries to abstract these occurrences of 'a' to create a function 'm := fun _a => ...', called the *motive*, with the property that 'm a' is definitionally equal to 'e'. Third, we observe that 'congrArg' implies that 'm a = m b', which can be used with lemmas such as 'Eq.mpr' to change the goal. However, if 'e' depends on specific properties of 'a', then the motive 'm' might not typecheck.
+
+Possible solutions: use rewrite's 'occs' configuration option to limit which occurrences are rewritten, or use 'simp' or 'conv' mode, which have strategies for certain kinds of dependencies (these tactics can handle proofs and 'Decidable' instances whose types depend on the rewritten term, and 'simp' can apply user-defined '@[congr]' theorems as well).
+
+R : Type u_1
+inst✝ : CommRing R
+k : ℕ
+t y : R
+w : Fin (2 * k + 6) → R
+e :
+  ∑ j, kpe (2 * k + 5) (-(t * y)) y ↑j * w j = ∑ j ∈ Finset.range (2 * k + 6), kpe (2 * k + 5) (-(t * y)) y j * extN w j
+⊢ ∑ j ∈ Finset.range (2 * k + 6), kpe (2 * k + 5) (-(t * y)) y j * extN w j =
+    y ^ (k + 3) * ∑ j ∈ Finset.range (k + 3), extN w j * t ^ j -
+      y ^ (k + 2) * ∑ j ∈ Finset.range (k + 3), extN w (k + 3 + j) * t ^ j
+
+real	0m3.122s
+user	0m2.110s
+sys	0m1.191s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("""  rw [e, show 2 * k + 6 = (k + 3) + (k + 3) by omega, Finset.sum_range_add, Finset.mul_sum,""","""  rw [e, show Finset.range (2 * k + 6) = Finset.range ((k + 3) + (k + 3)) by congr 1,
+    Finset.sum_range_add, Finset.mul_sum,""")
+s=s.replace("""  rw [val_succAbove]
+  simp only [Fin.val_mk]
+""","""  rw [val_succAbove]
+""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -40
+scratch/ql_probe.lean:15:28: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  b - c ≤ -1
+  a ≥ 0
+  a - b ≤ -3
+  2*a - b ≥ -5
+  2*a - c ≥ -6
+where
+ a := ↑k
+ b := ↑↑j
+ c := ↑↑⟨k + 3, ⋯⟩
+scratch/ql_probe.lean:15:56: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  b - c ≤ -1
+  a ≥ 0
+  a - b ≤ -4
+  2*a - b ≥ -5
+  2*a - c ≥ -6
+where
+ a := ↑k
+ b := ↑↑j
+ c := ↑↑⟨k + 3, ⋯⟩
+scratch/ql_probe.lean:16:28: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 0
+  a ≥ 0
+  a - b ≥ -2
+  2*a - b ≥ -5
+  2*a - c ≥ -6
+where
+ a := ↑k
+ b := ↑↑j
+ c := ↑↑⟨k + 3, ⋯⟩
+scratch/ql_probe.lean:16:67: error: omega could not prove the goal:
+
+real	0m3.417s
+user	0m2.435s
+sys	0m1.235s
+[0m
+Need the simp after all (with a different form).
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("""  rw [val_succAbove]
+  have hj := j.isLt
+  split_ifs with h""","""  rw [val_succAbove]
+  have hj := j.isLt
+  have h3 : ((⟨k + 3, by omega⟩ : Fin (2 * k + 7)) : ℕ) = k + 3 := rfl
+  rw [h3]
+  split_ifs with h""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -40
+scratch/ql_probe.lean:31:9: error: unsolved goals
+R : Type u_1
+inst✝ : CommRing R
+k : ℕ
+t y : R
+w : Fin (2 * k + 6) → R
+e :
+  ∑ j, kpe (2 * k + 5) (-(t * y)) y ↑j * w j = ∑ j ∈ Finset.range (2 * k + 6), kpe (2 * k + 5) (-(t * y)) y j * extN w j
+⊢ 2 * k + 6 = k + 3 + (k + 3)
+
+real	0m3.275s
+user	0m2.328s
+sys	0m1.222s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("Finset.range ((k + 3) + (k + 3)) by congr 1,","Finset.range ((k + 3) + (k + 3)) by congr 1; omega,")
+s=s.replace("end J33\n","""/-- Row `r` of the child matrix, seen at a parent point: the child cross vector `w` satisfies the
+child row equation at **every** parent point, including the deleted one `i`, when the parent minor
+with column `k+3` removed vanishes. -/
+theorem child_row_all (k : ℕ) (x y : Fin (2 * k + 6) → R) (i : Fin (2 * k + 6))
+    (hV : crossVec (KP (2 * k + 6) x y) ⟨k + 3, by omega⟩ = 0) (r : Fin (2 * k + 6)) :
+    ∑ l : Fin (2 * k + 6), kpe (2 * k + 5) (x r) (y r) l *
+      crossVec (KP (2 * k + 5) (x ∘ i.succAbove) (y ∘ i.succAbove)) l = 0 := by
+  set B := KP (2 * k + 5) (x ∘ i.succAbove) (y ∘ i.succAbove) with hB
+  rcases Fin.eq_self_or_eq_succAbove i r with rfl | ⟨r', rfl⟩
+  · set A' : Matrix (Fin (2 * k + 6)) (Fin (2 * k + 6)) R :=
+      (KP (2 * k + 6) x y).submatrix id (Fin.succAbove ⟨k + 3, by omega⟩) with hA'
+    have hdet : A'.det = 0 := by
+      have h := hV
+      simp only [crossVec] at h
+      exact (isUnit_neg_one.pow _).mul_right_eq_zero.1 h
+    have hE : border (fun l => A' r l) B = A'.submatrix r.cycleRange.symm id := by
+      ext a l
+      refine Fin.cases ?_ (fun s => ?_) a
+      · simp only [border, Matrix.of_apply, Fin.cases_zero, Matrix.submatrix_apply, id,
+          Fin.cycleRange_symm_zero]
+      · simp only [border, Matrix.of_apply, Fin.cases_succ, Matrix.submatrix_apply, id,
+          Fin.cycleRange_symm_succ, hA', hB, KP_eq_kpe, Function.comp_apply]
+        exact kpe5_eq_kpe6_succAbove k _ _ l
+    have h1 := det_border (fun l => A' r l) B
+    rw [hE, det_permute, hdet, mul_zero] at h1
+    rw [h1]
+    refine Finset.sum_congr rfl fun l _ => ?_
+    simp only [hA', Matrix.submatrix_apply, id, KP_eq_kpe]
+    rw [kpe5_eq_kpe6_succAbove]
+  · have h := congrFun (mulVec_crossVec B) r'
+    simpa [mulVec, dotProduct, hB, KP_eq_kpe] using h
+
+end J33
+""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+real	0m3.281s
+user	0m2.471s
+sys	0m1.230s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("end J33\n","""end J33
+
+/-- The four dehomogenised polynomials of a child vector `W` (as `ℕ → ℂ`). -/
+noncomputable def polyP (k : ℕ) (W : ℕ → ℂ) : ℂ[X] := ∑ j ∈ Finset.range (k + 3), C (W j) * X ^ j
+noncomputable def polyQ (k : ℕ) (W : ℕ → ℂ) : ℂ[X] := ∑ j ∈ Finset.range (k + 3), C (W (k + 3 + j)) * X ^ j
+noncomputable def polyPs (k : ℕ) (W : ℕ → ℂ) : ℂ[X] :=
+  ∑ j ∈ Finset.range (k + 3), C (conj (W j)) * X ^ (k + 2 - j)
+noncomputable def polyQs (k : ℕ) (W : ℕ → ℂ) : ℂ[X] :=
+  ∑ j ∈ Finset.range (k + 3), C (conj (W (k + 3 + j))) * X ^ (k + 2 - j)
+noncomputable def polyF (k : ℕ) (W : ℕ → ℂ) : ℂ[X] :=
+  -(X * polyQ k W * polyPs k W) - polyP k W * polyQs k W
+
+theorem eval_sum_C_mul_X_pow (s : Finset ℕ) (a : ℕ → ℂ) (e : ℕ → ℕ) (t : ℂ) :
+    (∑ j ∈ s, C (a j) * X ^ (e j)).eval t = ∑ j ∈ s, a j * t ^ (e j) := by
+  rw [eval_finset_sum]; simp
+
+theorem natDegree_sum_C_mul_X_pow_le (s : Finset ℕ) (a : ℕ → ℂ) (e : ℕ → ℕ) (n : ℕ)
+    (h : ∀ j ∈ s, e j ≤ n) : (∑ j ∈ s, C (a j) * X ^ (e j)).natDegree ≤ n :=
+  natDegree_sum_le_of_forall_le _ _ fun j hj => (natDegree_C_mul_X_pow_le _ _).trans (h j hj)
+
+theorem polyF_eval_zero (k : ℕ) (W : ℕ → ℂ) (c : ℂ) (hc : c ≠ 0)
+    (h : conj c * (polyP k W).eval (-c / conj c) = (polyQ k W).eval (-c / conj c)) :
+    (polyF k W).eval (-c / conj c) = 0 := by
+  have hc' : conj c ≠ 0 := (map_ne_zero _).2 hc
+  set t := -c / conj c with ht
+  set u := -conj c / c with hu
+  have htu : t * u = 1 := by rw [ht, hu]; field_simp; ring
+  have hconjt : conj t = u := by rw [ht, hu]; simp
+  set A := (polyP k W).eval t
+  set B := (polyQ k W).eval t
+  have hA : A = ∑ j ∈ Finset.range (k + 3), W j * t ^ j := eval_sum_C_mul_X_pow _ _ _ _
+  have hB : B = ∑ j ∈ Finset.range (k + 3), W (k + 3 + j) * t ^ j := eval_sum_C_mul_X_pow _ _ _ _
+  have hAs : (polyPs k W).eval t = t ^ (k + 2) * conj A := by
+    rw [polyPs, eval_sum_C_mul_X_pow, hA, map_sum]
+    simp only [map_mul, map_pow, hconjt]
+    exact (reflect_sum_pow k (fun j => conj (W j)) t u htu).symm
+  have hBs : (polyQs k W).eval t = t ^ (k + 2) * conj B := by
+    rw [polyQs, eval_sum_C_mul_X_pow, hB, map_sum]
+    simp only [map_mul, map_pow, hconjt]
+    exact (reflect_sum_pow k (fun j => conj (W (k + 3 + j))) t u htu).symm
+  have hcj : c * conj A = conj B := by
+    have := congrArg conj h; simpa using this
+  have hct : c = -(t * conj c) := by rw [ht]; field_simp
+  simp only [polyF, eval_sub, eval_neg, eval_mul, eval_X, hAs, hBs]
+  rw [← hcj, ← h]
+  rw [hct]; ring
+""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+scratch/ql_probe.lean:104:6: warning: `Polynomial.eval_finset_sum` has been deprecated: Use `Polynomial.eval_finsetSum` instead
+scratch/ql_probe.lean:113:28: error: Ambiguous term
+  map_ne_zero
+Possible interpretations:
+  _root_.map_ne_zero ?m.71 : ?m.71 ?m.72 ≠ 0 ↔ ?m.72 ≠ 0
+  
+  Polynomial.map_ne_zero ?m.71 : Polynomial.map ?m.70 ?m.69 ≠ 0
+scratch/ql_probe.lean:116:54: error: No goals to be solved
+scratch/ql_probe.lean:134:13: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  B
+in the target expression
+  -(t * eval t (polyQ k W) * (t ^ (k + 2) * (starRingEnd ℂ) A)) -
+      eval t (polyP k W) * (t ^ (k + 2) * (c * (starRingEnd ℂ) A)) =
+    0
+
+k : ℕ
+W : ℕ → ℂ
+c : ℂ
+hc : c ≠ 0
+hc' : (starRingEnd ℂ) c ≠ 0
+t : ℂ := -c / (starRingEnd ℂ) c
+ht : t = -c / (starRingEnd ℂ) c
+u : ℂ := -(starRingEnd ℂ) c / c
+hu : u = -(starRingEnd ℂ) c / c
+htu : t * u = 1
+hconjt : (starRingEnd ℂ) t = u
+A : ℂ := eval t (polyP k W)
+B : ℂ := eval t (polyQ k W)
+h : (starRingEnd ℂ) c * A = B
+hA : A = ∑ j ∈ Finset.range (k + 3), W j * t ^ j
+hB : B = ∑ j ∈ Finset.range (k + 3), W (k + 3 + j) * t ^ j
+hAs : eval t (polyPs k W) = t ^ (k + 2) * (starRingEnd ℂ) A
+hBs : eval t (polyQs k W) = t ^ (k + 2) * (starRingEnd ℂ) B
+hcj : c * (starRingEnd ℂ) A = (starRingEnd ℂ) B
+hct : c = -(t * (starRingEnd ℂ) c)
+⊢ -(t * eval t (polyQ k W) * (t ^ (k + 2) * (starRingEnd ℂ) A)) -
+      eval t (polyP k W) * (t ^ (k + 2) * (c * (starRingEnd ℂ) A)) =
+    0
+
+real	0m3.453s
+user	0m2.903s
+sys	0m1.215s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("eval_finset_sum","eval_finsetSum")
+s=s.replace("have hc' : conj c ≠ 0 := (map_ne_zero _).2 hc\n  set t","have hc' : conj c ≠ 0 := (_root_.map_ne_zero _).2 hc\n  set t")
+s=s.replace("have htu : t * u = 1 := by rw [ht, hu]; field_simp; ring","have htu : t * u = 1 := by rw [ht, hu]; field_simp")
+s=s.replace("""  rw [← hcj, ← h]
+  rw [hct]; ring""","""  rw [← hcj]
+  have hB' : (polyQ k W).eval t = conj c * (polyP k W).eval t := h.symm
+  rw [hB', hct]; ring""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+scratch/ql_probe.lean:112:42: error: unsolved goals
+k : ℕ
+W : ℕ → ℂ
+c : ℂ
+hc : c ≠ 0
+hc' : (starRingEnd ℂ) c ≠ 0
+t : ℂ := -c / (starRingEnd ℂ) c
+ht : t = -c / (starRingEnd ℂ) c
+u : ℂ := -(starRingEnd ℂ) c / c
+hu : u = -(starRingEnd ℂ) c / c
+htu : t * u = 1
+hconjt : (starRingEnd ℂ) t = u
+A : ℂ := eval t (polyP k W)
+B : ℂ := eval t (polyQ k W)
+h : (starRingEnd ℂ) c * A = B
+hA : A = ∑ j ∈ Finset.range (k + 3), W j * t ^ j
+hB : B = ∑ j ∈ Finset.range (k + 3), W (k + 3 + j) * t ^ j
+hAs : eval t (polyPs k W) = t ^ (k + 2) * (starRingEnd ℂ) A
+hBs : eval t (polyQs k W) = t ^ (k + 2) * (starRingEnd ℂ) B
+hcj : c * (starRingEnd ℂ) A = (starRingEnd ℂ) B
+hct : c = -(t * (starRingEnd ℂ) c)
+hB' : eval t (polyQ k W) = (starRingEnd ℂ) c * eval t (polyP k W)
+⊢ t ^ 3 * t ^ k * (starRingEnd ℂ) c * eval t (polyP k W) * (starRingEnd ℂ) A -
+      t ^ 3 * t ^ k * (starRingEnd ℂ) (-(t * (starRingEnd ℂ) c)) * eval t (polyP k W) * (starRingEnd ℂ) A =
+    0
+
+real	0m3.432s
+user	0m2.904s
+sys	0m1.202s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("""  rw [hB', hct]; ring""","""  rw [hB']
+  linear_combination ((polyP k W).eval t * t ^ (k + 2) * conj A) * hct""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+scratch/ql_probe.lean:137:2: error: ring failed, ring expressions not equal
+k : ℕ
+W : ℕ → ℂ
+c : ℂ
+hc : c ≠ 0
+hc' : (starRingEnd ℂ) c ≠ 0
+t : ℂ := ⋯
+ht : t = -c / (starRingEnd ℂ) c
+u : ℂ := ⋯
+hu : u = -(starRingEnd ℂ) c / c
+htu : t * u = 1
+hconjt : (starRingEnd ℂ) t = u
+A : ℂ := ⋯
+B : ℂ := ⋯
+h : (starRingEnd ℂ) c * A = B
+hA : A = ∑ j ∈ Finset.range (k + 3), W j * t ^ j
+hB : B = ∑ j ∈ Finset.range (k + 3), W (k + 3 + j) * t ^ j
+hAs : eval t (polyPs k W) = t ^ (k + 2) * (starRingEnd ℂ) A
+hBs : eval t (polyQs k W) = t ^ (k + 2) * (starRingEnd ℂ) B
+hcj : c * (starRingEnd ℂ) A = (starRingEnd ℂ) B
+hct : c = -(t * (starRingEnd ℂ) c)
+hB' : eval t (polyQ k W) = (starRingEnd ℂ) c * eval t (polyP k W)
+⊢ c ^ 3 * c ^ k * (starRingEnd ℂ) c * ((starRingEnd ℂ) c)⁻¹ ^ 3 * ((starRingEnd ℂ) c)⁻¹ ^ k * eval t (polyP k W) *
+            (starRingEnd ℂ) A *
+          (-1) ^ k *
+        2 -
+      c ^ 3 * c ^ k * ((starRingEnd ℂ) c)⁻¹ ^ 2 * ((starRingEnd ℂ) c)⁻¹ ^ k * eval t (polyP k W) * (starRingEnd ℂ) A *
+          (-1) ^ k *
+        2 =
+    0
+
+real	0m3.509s
+user	0m2.887s
+sys	0m1.266s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("""linear_combination ((polyP k W).eval t * t ^ (k + 2) * conj A) * hct""","""linear_combination (-((polyP k W).eval t * t ^ (k + 2) * conj A)) * hct""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+real	0m3.413s
+user	0m2.791s
+sys	0m1.229s
+[0m
+[0m$ [0mcd ~/paperL_jack && cat >> scratch/ql_probe.lean <<'EOF'
+
+theorem polyF_natDegree_le (k : ℕ) (W : ℕ → ℂ) : (polyF k W).natDegree ≤ 2 * k + 5 := by
+  have hP := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) W (fun j => j) (k + 2)
+    (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hQ := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => W (k + 3 + j))
+    (fun j => j) (k + 2) (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hPs := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W j))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+  have hQs := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W (k + 3 + j)))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+  have h1 : (X * polyQ k W * polyPs k W).natDegree ≤ 2 * k + 5 := by
+    have := natDegree_mul_le_of_le (natDegree_mul_le_of_le (natDegree_X_le (R := ℂ)) hQ) hPs
+    omega
+  have h2 : (polyP k W * polyQs k W).natDegree ≤ 2 * k + 5 := by
+    have := natDegree_mul_le_of_le hP hQs
+    omega
+  unfold polyF
+  exact (natDegree_sub_le_of_le (natDegree_neg _ ▸ h1) h2).trans (by omega)
+
+theorem polyF_coeff_top (k : ℕ) (W : ℕ → ℂ) :
+    (polyF k W).coeff (2 * k + 5) = -(W (2 * k + 5) * conj (W 0)) := by
+  have hP := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) W (fun j => j) (k + 2)
+    (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hQ := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => W (k + 3 + j))
+    (fun j => j) (k + 2) (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hPs := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W j))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+  have hQs := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W (k + 3 + j)))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+  have hXQ : (X * polyQ k W).natDegree ≤ k + 3 := by
+    have := natDegree_mul_le_of_le (natDegree_X_le (R := ℂ)) hQ; omega
+  have c1 : (X * polyQ k W * polyPs k W).coeff (2 * k + 5) =
+      (X * polyQ k W).coeff (k + 3) * (polyPs k W).coeff (k + 2) := by
+    rw [show 2 * k + 5 = (k + 3) + (k + 2) by omega]
+    exact coeff_mul_add_eq_of_natDegree_le hXQ hPs
+  have c2 : (polyP k W * polyQs k W).coeff (2 * k + 5) = 0 :=
+    coeff_eq_zero_of_natDegree_lt ((natDegree_mul_le_of_le hP hQs).trans_lt (by omega))
+  have c3 : (X * polyQ k W).coeff (k + 3) = W (2 * k + 5) := by
+    rw [show k + 3 = (k + 2) + 1 by omega, coeff_X_mul, polyQ, finsetSum_coeff]
+    simp only [coeff_C_mul_X_pow]
+    rw [Finset.sum_eq_single (k + 2)]
+    · rw [if_pos rfl]; congr 1
+    · intro b _ hb; rw [if_neg (Ne.symm hb)]
+    · intro h; exact absurd (Finset.mem_range.2 (by omega)) h
+  have c4 : (polyPs k W).coeff (k + 2) = conj (W 0) := by
+    rw [polyPs, finsetSum_coeff]
+    simp only [coeff_C_mul_X_pow]
+    rw [Finset.sum_eq_single 0]
+    · rw [if_pos rfl]
+    · intro b hb hb0; have := Finset.mem_range.1 hb; rw [if_neg (by omega)]
+    · intro h; exact absurd (Finset.mem_range.2 (by omega)) h
+  unfold polyF
+  rw [coeff_sub, coeff_neg, c1, c2, c3, c4, sub_zero]
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+scratch/ql_probe.lean:141:50: error: Function expected at
+  polyF
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  k
+
+Hint: The identifier `polyF` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+scratch/ql_probe.lean:142:13: error(lean.unknownIdentifier): Unknown identifier `natDegree_sum_C_mul_X_pow_le`
+scratch/ql_probe.lean:141:86: error: unsolved goals
+x✝ : Sort u_1
+polyF : x✝
+k : ℕ
+W : ℕ → ℂ
+⊢ sorry ≤ 2 * k + 5
+scratch/ql_probe.lean:160:5: error: Function expected at
+  polyF
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  k
+
+Hint: The identifier `polyF` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+scratch/ql_probe.lean:160:54: error: Function expected at
+  conj
+but this term has type
+  ?m.2
+
+Note: Expected a function because this term is being applied to the argument
+  (W 0)
+
+Hint: The identifier `conj` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+scratch/ql_probe.lean:161:13: error(lean.unknownIdentifier): Unknown identifier `natDegree_sum_C_mul_X_pow_le`
+scratch/ql_probe.lean:160:69: error: unsolved goals
+x✝¹ : Sort u_1
+polyF : x✝¹
+x✝ : Sort u_2
+conj : x✝
+k : ℕ
+W : ℕ → ℂ
+⊢ sorry = -(W (2 * k + 5) * sorry)
+
+real	0m3.633s
+user	0m3.091s
+sys	0m1.224s
+[0m
+Appended after `end` of namespace; move the `end` to the end.
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("\nend Clifford.MorleyKernel\n","\n",1)
+s+="\nend Clifford.MorleyKernel\n"
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+scratch/ql_probe.lean:151:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  g ≥ 0
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ -2
+  a - c ≥ -2
+  a - d ≥ -2
+  a - e ≥ -2
+  2*a - f ≥ -5
+  2*a - g ≤ -6
+where
+ a := ↑k
+ b := ↑(∑ j ∈ Finset.range (k + 3), C (W j) * X ^ j).natDegree
+ c := ↑(∑ j ∈ Finset.range (k + 3), C (W (k + 3 + j)) * X ^ j).natDegree
+ d := ↑(∑ j ∈ Finset.range (k + 3), C ((starRingEnd ℂ) (W j)) * X ^ (k + 2 - j)).natDegree
+ e := ↑(∑ j ∈ Finset.range (k + 3), C ((starRingEnd ℂ) (W (k + 3 + j))) * X ^ (k + 2 - j)).natDegree
+ f := ↑((X * ∑ j ∈ Finset.range (k + 3), C (W (k + 3 + j)) * X ^ j) *
+      ∑ j ∈ Finset.range (k + 3), C ((starRingEnd ℂ) (W j)) * X ^ (k + 2 - j)).natDegree
+ g := ↑(X * polyQ k W * polyPs k W).natDegree
+scratch/ql_probe.lean:154:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≥ 0
+  g ≥ 0
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ -2
+  a - c ≥ -2
+  a - d ≥ -2
+  a - e ≥ -2
+  2*a - f ≥ -5
+  2*a - g ≥ -4
+  2*a - h ≤ -6
+where
+ a := ↑k
+ b := ↑(∑ j ∈ Finset.range (k + 3), C (W j) * X ^ j).natDegree
+ c := ↑(∑ j ∈ Finset.range (k + 3), C (W (k + 3 + j)) * X ^ j).natDegree
+ d := ↑(∑ j ∈ Finset.range (k + 3), C ((starRingEnd ℂ) (W j)) * X ^ (k + 2 - j)).natDegree
+ e := ↑(∑ j ∈ Finset.range (k + 3), C ((starRingEnd ℂ) (W (k + 3 + j))) * X ^ (k + 2 - j)).natDegree
+ f := ↑(X * polyQ k W * polyPs k W).natDegree
+ g := ↑((∑ j ∈ Finset.range (k + 3), C (W j) * X ^ j) *
+      ∑ j ∈ Finset.range (k + 3), C ((starRingEnd ℂ) (W (k + 3 + j))) * X ^ (k + 2 - j)).natDegree
+
+real	0m4.749s
+user	0m4.526s
+sys	0m1.264s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+old_hdr="""  have hP := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) W (fun j => j) (k + 2)
+    (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hQ := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => W (k + 3 + j))
+    (fun j => j) (k + 2) (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hPs := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W j))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+  have hQs := natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W (k + 3 + j)))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+"""
+new_hdr="""  have hP : (polyP k W).natDegree ≤ k + 2 :=
+    natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) W (fun j => j) (k + 2)
+    (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hQ : (polyQ k W).natDegree ≤ k + 2 :=
+    natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => W (k + 3 + j))
+    (fun j => j) (k + 2) (fun j hj => by have := Finset.mem_range.1 hj; omega)
+  have hPs : (polyPs k W).natDegree ≤ k + 2 :=
+    natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W j))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+  have hQs : (polyQs k W).natDegree ≤ k + 2 :=
+    natDegree_sum_C_mul_X_pow_le (Finset.range (k + 3)) (fun j => conj (W (k + 3 + j)))
+    (fun j => k + 2 - j) (k + 2) (fun j _ => by omega)
+"""
+assert s.count(old_hdr)==2
+s=s.replace(old_hdr,new_hdr)
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+scratch/ql_probe.lean:160:33: error: typeclass instance problem is stuck
+  Ring ?m.336
+
+Note: Lean will not try to resolve this typeclass instance problem because the type argument to `Ring` is a metavariable. This argument must be fully determined before Lean will try to resolve the typeclass.
+
+Hint: Adding type annotations and supplying implicit arguments to functions can give Lean more information for typeclass resolution. For example, if you have a variable `x` that you intend to be a `Nat`, but Lean reports it as having an unresolved type like `?m`, replacing `x` with `(x : Nat)` can get typeclass resolution un-stuck.
+scratch/ql_probe.lean:160:69: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≥ 0
+  g ≥ 0
+  f ≥ 0
+  e ≥ 0
+  d ≥ 0
+  c ≥ 0
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ -2
+  a - c ≥ -2
+  a - d ≥ -2
+  a - e ≥ -2
+  2*a - f ≥ -5
+  2*a - g ≥ -5
+  2*a - h ≤ -6
+where
+ a := ↑k
+ b := ↑(polyP k W).natDegree
+ c := ↑(polyQ k W).natDegree
+ d := ↑(polyPs k W).natDegree
+ e := ↑(polyQs k W).natDegree
+ f := ↑(X * polyQ k W * polyPs k W).natDegree
+ g := ↑(polyP k W * polyQs k W).natDegree
+ h := ↑?m.325
+scratch/ql_probe.lean:188:4: error: unsolved goals
+k : ℕ
+W : ℕ → ℂ
+hP : (polyP k W).natDegree ≤ k + 2
+hQ : (polyQ k W).natDegree ≤ k + 2
+hPs : (polyPs k W).natDegree ≤ k + 2
+hQs : (polyQs k W).natDegree ≤ k + 2
+hXQ : (X * polyQ k W).natDegree ≤ k + 3
+c1 : (X * polyQ k W * polyPs k W).coeff (2 * k + 5) = (X * polyQ k W).coeff (k + 3) * (polyPs k W).coeff (k + 2)
+c2 : (polyP k W * polyQs k W).coeff (2 * k + 5) = 0
+⊢ k + 3 + (k + 2) = 2 * k + 5
+scratch/ql_probe.lean:195:10: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  if ?m.621 = ?m.621 then ?m.623 else ?m.624
+in the target expression
+  (if k + 2 = k + 2 - 0 then (starRingEnd ℂ) (W 0) else 0) = (starRingEnd ℂ) (W 0)
+
+k : ℕ
+W : ℕ → ℂ
+
+real	0m3.478s
+user	0m3.136s
+sys	0m1.233s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("""  unfold polyF
+  exact (natDegree_sub_le_of_le (natDegree_neg _ ▸ h1) h2).trans (by omega)""","""  unfold polyF
+  have h1' : (-(X * polyQ k W * polyPs k W)).natDegree ≤ 2 * k + 5 := by rw [natDegree_neg]; exact h1
+  have := natDegree_sub_le_of_le h1' h2
+  omega""")
+s=s.replace("""    · rw [if_pos rfl]; congr 1""","""    · rw [if_pos rfl]; congr 1; omega""")
+s=s.replace("""    rw [Finset.sum_eq_single 0]
+    · rw [if_pos rfl]""","""    rw [Finset.sum_eq_single 0]
+    · rw [if_pos (by omega)]""")
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -50
+real	0m3.519s
+user	0m3.304s
+sys	0m1.187s
+[0m
+[0m$ [0mcd ~/paperL_jack && python3 - <<'EOF'
+p='scratch/ql_probe.lean'
+s=open(p).read()
+s=s.replace("\nend Clifford.MorleyKernel\n","")
+s+='''
+/-- **J33: the corner identity.** In the corner `V = 0` the subfamily's last coordinate vanishes. -/
+theorem evenCornerQL_proof : EvenCornerQL := by
+  intro k c h i hV hP0 _hall
+  have hc : ∀ r, c r ≠ 0 := hc_of_genPos (by omega) c h
+  set w := crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))) with hw
+  set W : ℕ → ℂ := extN w with hW
+  have hV3 : crossVec (KP (2*k+6) c (fun j => conj (c j))) ⟨k + 3, by omega⟩ = 0 := by
+    rw [hV]; rfl
+  set tt : Fin (2*k+6) → ℂ := fun r => -c r / conj (c r) with htt
+  have hinj : Function.Injective tt := by
+    intro a b hab
+    by_contra hne
+    have hT := h.1 a b hne
+    have ha : conj (c a) ≠ 0 := (_root_.map_ne_zero _).2 (hc a)
+    have hb : conj (c b) ≠ 0 := (_root_.map_ne_zero _).2 (hc b)
+    simp only [htt] at hab
+    rw [div_eq_div_iff ha hb] at hab
+    exact hT (by linear_combination hab)
+  have hroot : ∀ r, (polyF k W).eval (tt r) = 0 := by
+    intro r
+    have hy : conj (c r) ≠ 0 := (_root_.map_ne_zero _).2 (hc r)
+    have h1 := child_row_all k c (fun j => conj (c j)) i hV3 r
+    have hx : c r = -(tt r * conj (c r)) := by simp only [htt]; field_simp
+    have h2 : ∑ l : Fin (2 * k + 6), kpe (2 * k + 5) (-(tt r * conj (c r))) (conj (c r)) l * w l = 0 := by
+      rw [← hx]; exact h1
+    rw [kpe5_row_dehom] at h2
+    apply polyF_eval_zero k W (c r) (hc r)
+    rw [polyP, polyQ, eval_sum_C_mul_X_pow, eval_sum_C_mul_X_pow]
+    have h3 : conj (c r) ^ (k + 2) * (conj (c r) * ∑ j ∈ Finset.range (k + 3), W j * tt r ^ j -
+        ∑ j ∈ Finset.range (k + 3), W (k + 3 + j) * tt r ^ j) = 0 := by
+      rw [← h2]; ring
+    rcases mul_eq_zero.1 h3 with h4 | h4
+    · exact absurd h4 (pow_ne_zero _ hy)
+    · exact sub_eq_zero.1 h4
+  have hF : polyF k W = 0 :=
+    eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ hinj hroot
+      (by simpa using (polyF_natDegree_le k W).trans_lt (by omega : 2 * k + 5 < 2 * k + 6))
+  have htop := polyF_coeff_top k W
+  rw [hF, coeff_zero] at htop
+  have hW0 : W 0 = w 0 := extN_fin w 0
+  have hWL : W (2 * k + 5) = w (Fin.last _) := extN_fin w (Fin.last _)
+  rw [hW0, hWL] at htop
+  have hc0 : conj (w 0) ≠ 0 := (_root_.map_ne_zero _).2 hP0
+  have := neg_eq_zero.1 htop.symm
+  exact (mul_eq_zero.1 this).resolve_right hc0
+
+theorem EvenCorner_proof : EvenCorner := evenCorner_of_cornerQL evenCornerQL_proof
+
+theorem heven_inf_all :
+    ∀ (k : ℕ) (c : Fin (2*k+6) → ℂ), GenPosN c → ∀ i : Fin (2*k+6),
+      ∃ Y, Clifford.IsGCircleS Y ∧ EptInf (2*k+6) c ∈ Y ∧
+        ∀ j : Fin (2*k+5), EptInf (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y :=
+  heven_inf_all_of_corner EvenCorner_proof
+
+theorem cliffordChainS_inf (n : ℕ) (hn : 3 ≤ n) : CliffordChainS n :=
+  cliffordChainS_of_corner EvenCorner_proof n hn
+
+end Clifford.MorleyKernel
+
+#print axioms Clifford.MorleyKernel.evenCornerQL_proof
+#print axioms Clifford.MorleyKernel.EvenCorner_proof
+#print axioms Clifford.MorleyKernel.heven_inf_all
+#print axioms Clifford.MorleyKernel.cliffordChainS_inf
+'''
+open(p,'w').write(s)
+EOF
+time env LEAN_PATH=$(lake env printenv LEAN_PATH):/tmp/opencode/olean lean scratch/ql_probe.lean 2>&1 | head -60
+'Clifford.MorleyKernel.evenCornerQL_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.EvenCorner_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.heven_inf_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.cliffordChainS_inf' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m3.560s
+user	0m3.428s
+sys	0m1.250s
+[0m
+Probe compiles with only the standard axioms. Now append to the deliverable.
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && python3 - <<'EOF'
+s=open('scratch/ql_probe.lean').read()
+s=s.replace("import QLPrefix\n","\n/-! ## J33: `EvenCornerQL` (resultant argument: dehomogenise, reflect by conjugation,\ndegree `2k+5` polynomial with `2k+6` distinct roots `-c_r / conj c_r`) -/\n",1)
+open('scratch/ChainEvenCornerQL.lean','a').write(s)
+EOF
+wc -l scratch/ChainEvenCornerQL.lean; head -5344 scratch/ChainEvenCornerQL.lean | sha256sum; (time lake env lean scratch/ChainEvenCornerQL.lean) 2>&1 | tail -12
+5611 scratch/ChainEvenCornerQL.lean
+0d1839e876c0cd72d79540f3e9d20f111cd1bcf5c93d31bcf33518a830a0f55f  -
+                      p + ↑t * u
+Clifford.MorleyKernel.evenCorner_of_cornerQL : Clifford.MorleyKernel.EvenCornerQL → Clifford.MorleyKernel.EvenCorner
+'Clifford.MorleyKernel.evenCorner_of_QL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.evenCorner_of_cornerQL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.evenCornerQL_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.EvenCorner_proof' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.heven_inf_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.cliffordChainS_inf' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m58.184s
+user	5m13.967s
+sys	0m3.698s
+[0m
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && lake env lean scratch/ChainEvenCornerQL.lean > /tmp/opencode/full.log 2>&1; echo rc=$?; grep -c "error" /tmp/opencode/full.log; grep -n "ql_probe\|5[3-6][0-9][0-9]:" /tmp/opencode/full.log | head; tail -n +5345 scratch/ChainEvenCornerQL.lean | grep -n "sorry\|admit\|axiom \|native_decide\|#eval\|set_option" | head; rm -f /tmp/opencode/olean/QLPrefix.*
+rc=0
+0
+[0m
+[0m$ [0mcd ~/paperL_jack && rm scratch/ql_probe.lean && head -5 REPORT.md && grep -n "^theorem\|^noncomputable def" scratch/ChainEvenCornerQL.lean | awk -F: '$1>5344'
+# J32 — `EvenCorner`: status report
+
+## Outcome
+`EvenCorner_proof` is **not** closed within the 30-min box. What *is* done and compiles
+(`lake env lean scratch/ChainEvenCorner.lean` → rc = 0, ~57 s, prefix lines 1–5288 untouched,
+5356:theorem kpe5_eq_kpe6_succAbove (k : ℕ) (x y : R) (j : Fin (2 * k + 6)) :
+5368:theorem kpe5_row_dehom (k : ℕ) (t y : R) (w : Fin (2 * k + 6) → R) :
+5393:theorem reflect_sum_pow (k : ℕ) (a : ℕ → R) (t u : R) (htu : t * u = 1) :
+5407:theorem child_row_all (k : ℕ) (x y : Fin (2 * k + 6) → R) (i : Fin (2 * k + 6))
+5439:noncomputable def polyP (k : ℕ) (W : ℕ → ℂ) : ℂ[X] := ∑ j ∈ Finset.range (k + 3), C (W j) * X ^ j
+5440:noncomputable def polyQ (k : ℕ) (W : ℕ → ℂ) : ℂ[X] := ∑ j ∈ Finset.range (k + 3), C (W (k + 3 + j)) * X ^ j
+5441:noncomputable def polyPs (k : ℕ) (W : ℕ → ℂ) : ℂ[X] :=
+5443:noncomputable def polyQs (k : ℕ) (W : ℕ → ℂ) : ℂ[X] :=
+5445:noncomputable def polyF (k : ℕ) (W : ℕ → ℂ) : ℂ[X] :=
+5448:theorem eval_sum_C_mul_X_pow (s : Finset ℕ) (a : ℕ → ℂ) (e : ℕ → ℕ) (t : ℂ) :
+5452:theorem natDegree_sum_C_mul_X_pow_le (s : Finset ℕ) (a : ℕ → ℂ) (e : ℕ → ℕ) (n : ℕ)
+5456:theorem polyF_eval_zero (k : ℕ) (W : ℕ → ℂ) (c : ℂ) (hc : c ≠ 0)
+5486:theorem polyF_natDegree_le (k : ℕ) (W : ℕ → ℂ) : (polyF k W).natDegree ≤ 2 * k + 5 := by
+5510:theorem polyF_coeff_top (k : ℕ) (W : ℕ → ℂ) :
+5550:theorem evenCornerQL_proof : EvenCornerQL := by
+5595:theorem EvenCorner_proof : EvenCorner := evenCorner_of_cornerQL evenCornerQL_proof
+5597:theorem heven_inf_all :
+5603:theorem cliffordChainS_inf (n : ℕ) (hn : 3 ≤ n) : CliffordChainS n :=
+[0m
+[0m← [0mWrite /home/jackagent/paperL_jack/REPORT.md
+Wrote file successfully.
+[0m
+I closed the target: `evenCornerQL_proof : EvenCornerQL` is proved in `scratch/ChainEvenCornerQL.lean`, along with `EvenCorner_proof`, `heven_inf_all` and `cliffordChainS_inf`.
+
+**Checks**
+- Lines 1–5344 are unchanged: their sha256 is still `0d1839e8…0a0f55f`.
+- I added 267 lines, so the file is now 5611 lines.
+- `lake env lean scratch/ChainEvenCornerQL.lean` gives rc = 0 with no errors, in about 58 s.
+- All four new theorems depend only on `[propext, Classical.choice, Quot.sound]`.
+- The new lines contain no `sorry`, `admit`, `axiom`, `native_decide`, `#eval` or new `set_option`.
+
+**How the proof goes**
+I followed the paper's three steps, with one change: steps 2–3 work directly on polynomials in `t = −c/c̄` rather than on kernel vectors.
+1. **Step 1 (`child_row_all`):** the subfamily vector `w` satisfies the row equation at every parent point, including the deleted row `i`. For row `i`, the bordered determinant (`det_border`) is a row-permuted copy of the parent minor without column `k+3`, which is zero by `hV`.
+2. **Conjugation:**
+   - The row equation at `t_r` and its complex conjugate (using `conj t = 1/t`) show that a resultant polynomial `polyF` of degree ≤ `2k+5` vanishes at each `t_r`.
+   - Its top coefficient is `−w_last · conj(w 0)`.
+3. **Root count:** `Transversal` makes the `2k+6` values `t_r` distinct, so `polyF = 0` by `eq_zero_of_natDegree_lt_card_of_eval_eq_zero`. Then `w 0 ≠ 0` gives `w_last = 0`.
+
+As the brief predicted, only `hV` (its `k+3` entry), `hP0` and the transversality half of `GenPosN` are used; `hall` is not.
+
+To test lemmas quickly I compiled the prefix once to a temporary `.olean` and checked my additions against it. The temporary files are deleted, and the final file was compiled from scratch as above. `REPORT.md` at the project root has the full write-up and line counts. It replaces the previous round's (J32) report, which was in that file.

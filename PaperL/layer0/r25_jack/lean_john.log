@@ -1,0 +1,1824 @@
+warning: mathlib: repository '/Users/john/lean/paperL_john/.lake/packages/mathlib' has local changes
+warning: batteries: repository '/Users/john/lean/paperL_john/.lake/packages/batteries' has local changes
+scratch/ChainEvenCorner.lean:1024:0: warning: automatically included section variable(s) unused in theorem `Clifford.MorleyKernel.colBorder_transpose`:
+  [CommRing R]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [CommRing R] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+scratch/ChainEvenCorner.lean:1100:67: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1100:54: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1100:67: warning: Unused tactic linter: `(congr 3 <;> omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1120:35: warning: This simp argument is unused:
+  Fin.val_last
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_zero, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1120:49: warning: This simp argument is unused:
+  Fin.val_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1120:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1121:49: warning: This simp argument is unused:
+  Fin.val_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1121:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1122:49: warning: This simp argument is unused:
+  Fin.val_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1122:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1124:49: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last] at ha hb hc
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1126:85: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1127:89: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1126:102: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1126:65: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1126:102: warning: Unused tactic linter: `omega` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1135:35: warning: This simp argument is unused:
+  Fin.val_last
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_zero, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1135:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1136:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1137:49: warning: This simp argument is unused:
+  Fin.val_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1137:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1139:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero] at ha hb hc
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1141:89: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1142:89: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1202:80: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [val_succAbove, Fin.val_last]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1202:123: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1202:142: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1204:101: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1202:123: warning: Unused tactic linter: `(simp_all; done)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1202:142: warning: Unused tactic linter: `(simp_all; omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1204:93: warning: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1204:101: warning: Unused tactic linter: `(simp_all; omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1211:111: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1211:130: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1213:101: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1211:111: warning: Unused tactic linter: `(simp_all; done)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1211:130: warning: Unused tactic linter: `(simp_all; omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1213:93: warning: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1213:101: warning: Unused tactic linter: `(simp_all; omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1216:28: warning: Variable name `hm` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hm
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+scratch/ChainEvenCorner.lean:1222:115: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1222:107: warning: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1222:115: warning: Unused tactic linter: `(simp_all; omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1231:115: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1231:107: warning: Unused tactic linter: `done` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1231:115: warning: Unused tactic linter: `(simp_all; omega)` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1249:32: warning: This simp argument is unused:
+  neg_one_sq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [pow_succ, pow_mul, one_pow] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1249:44: warning: This simp argument is unused:
+  one_pow
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [pow_succ, pow_mul, neg_one_sq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1261:42: warning: This simp argument is unused:
+  neg_one_sq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [pow_succ, pow_zero, pow_mul, one_pow] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1261:54: warning: This simp argument is unused:
+  one_pow
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [pow_succ, pow_zero, pow_mul, neg_one_sq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1275:21: warning: This simp argument is unused:
+  crossVec_KP5_Q0
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [subVec, crossVec_KP5_Q2, Function.comp_apply] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1275:38: warning: This simp argument is unused:
+  crossVec_KP5_Q2
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [subVec, crossVec_KP5_Q0, Function.comp_apply] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1275:55: warning: This simp argument is unused:
+  Function.comp_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [subVec, crossVec_KP5_Q0, crossVec_KP5_Q2] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1471:13: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only at hl
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1473:58: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1473:80: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1510:56: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1512:29: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [blockSignOdd]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1525:58: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_succ, val_succAbove, Fin.val_last]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1527:58: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_succ, val_succAbove, Fin.val_last, elim2]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1528:29: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only at *
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1614:27: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_zero, Fin.val_last, pow_zero, one_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1603:61: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1605:57: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1610:57: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1612:57: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1603:61: warning: Unused tactic linter: `fin_idx` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1624:15: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_last, pow_succ, pow_mul, neg_one_sq, one_pow]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1624:60: warning: This simp argument is unused:
+  neg_one_sq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_mk, Fin.val_last, pow_succ, pow_mul, one_pow]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1624:72: warning: This simp argument is unused:
+  one_pow
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_mk, Fin.val_last, pow_succ, pow_mul, neg_one_sq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1625:70: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1626:70: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1632:15: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_last, pow_succ, pow_mul, neg_one_sq, one_pow, one_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1632:60: warning: This simp argument is unused:
+  neg_one_sq
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_mk, Fin.val_last, pow_succ, pow_mul, one_pow, one_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1632:72: warning: This simp argument is unused:
+  one_pow
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_mk, Fin.val_last, pow_succ, pow_mul, neg_one_sq, one_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1632:81: warning: This simp argument is unused:
+  one_mul
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_mk, Fin.val_last, pow_succ, pow_mul, neg_one_sq, one_pow]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1633:70: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1634:70: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1648:65: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero] at ha hb hc
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1650:91: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1651:91: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.stepOdd_two' depends on axioms: [propext, Classical.choice, Quot.sound]
+scratch/ChainEvenCorner.lean:1850:35: warning: `Fin.coe_castSucc` has been deprecated: Use `Fin.val_castSucc` instead
+scratch/ChainEvenCorner.lean:1892:35: warning: This simp argument is unused:
+  Fin.val_last
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_zero, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1892:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1893:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1894:49: warning: This simp argument is unused:
+  Fin.val_zero
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_mk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1894:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1896:63: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [ne_eq, Fin.ext_iff, Fin.val_last, Fin.val_zero] at ha hb hc
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1898:89: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1899:89: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:1906:41: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+scratch/ChainEvenCorner.lean:1907:37: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1906:41: warning: Unused tactic linter: `fin_idxO` does nothing
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+scratch/ChainEvenCorner.lean:1914:37: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+scratch/ChainEvenCorner.lean:1915:37: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Clifford.MorleyKernel.KP_sub_eq_odd' depends on axioms: [propext, Quot.sound]
+'Clifford.MorleyKernel.cramerO_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.cramerO_Q0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.stepOdd_cleared_gen' depends on axioms: [propext, Classical.choice, Quot.sound]
+scratch/ChainEvenCorner.lean:2011:31: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2015:50: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Fin.val_succ, hv, hv2, elimO]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2016:29: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only at *
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2084:4: warning: This simp argument is unused:
+  cL
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [map_add, map_mul, map_sub, map_pow, map_neg, map_one, map_zero, hPc, hPbc, c0, cP, c2] at Ec
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.cramerO_QL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.stepOdd_core' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.stepOdd_gen' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.stepOdd_three' depends on axioms: [propext, Classical.choice, Quot.sound]
+scratch/ChainEvenCorner.lean:2155:13: warning: `Set.mem_setOf_eq` has been deprecated: Use `Set.mem_ofPred_eq` instead
+'Clifford.MorleyKernel.kernelCircle_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.kernelCircle_eq_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.kernelCircle_isGCircleS' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_levelPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.crossVec_KP4_P2_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.Ept_four' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.h4_pt' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.heven_levelPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+scratch/ChainEvenCorner.lean:2302:34: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c5, Fin.mk_one, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2302:48: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c5, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2302:60: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c5, Fin.zero_eta, Fin.mk_one, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2302:77: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c5, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2305:50: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c5, Fin.mk_one, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2305:64: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c5, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2305:76: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c5, Fin.zero_eta, Fin.mk_one, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2306:8: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c5, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.j13_mk_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_mk_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_mk_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_mk_conj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_mk_eq_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_ofReal' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.j13_mk_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.c5_genPosN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.KP5_c5_sub_mulVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.c5_P0_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.genpos_p0_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.z5_eq_div' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.z5_0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.z5_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.z5_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.z5_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.z5_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d5_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d5_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.p0_levelpts_collinear' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.p0_levelpts_collinear'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.p0_levelpts_gcircleS' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.genpos_p0_zero : Clifford.GenPosN Clifford.MorleyKernel.c5 ∧
+  Clifford.MorleyKernel.crossVec
+      (Clifford.MorleyKernel.KP 5 Clifford.MorleyKernel.c5 fun j => (starRingEnd ℂ) (Clifford.MorleyKernel.c5 j)) 0 =
+    0
+Clifford.MorleyKernel.p0_levelpts_collinear : ∀ (i : Fin 5),
+  Clifford.MorleyKernel.z5 i = Clifford.MorleyKernel.z5 0 + ↑(Clifford.MorleyKernel.t5 i) * Clifford.MorleyKernel.d5
+Clifford.MorleyKernel.p0_levelpts_collinear' : ∀ (i : Fin 5),
+  Clifford.MorleyKernel.levelPointN 4
+      (Clifford.MorleyKernel.crossVec
+        (Clifford.MorleyKernel.KP 4 (Clifford.MorleyKernel.c5 ∘ i.succAbove) fun r =>
+          (starRingEnd ℂ) ((Clifford.MorleyKernel.c5 ∘ i.succAbove) r))) =
+    Clifford.MorleyKernel.levelPointN 4
+        (Clifford.MorleyKernel.crossVec
+          (Clifford.MorleyKernel.KP 4 (Clifford.MorleyKernel.c5 ∘ Fin.succAbove 0) fun r =>
+            (starRingEnd ℂ) ((Clifford.MorleyKernel.c5 ∘ Fin.succAbove 0) r))) +
+      ↑(Clifford.MorleyKernel.t5 i) * Clifford.MorleyKernel.d5
+Clifford.MorleyKernel.p0_levelpts_gcircleS : ∃ Y,
+  Clifford.IsGCircleS Y ∧ ∀ (i : Fin 5), ↑(Clifford.MorleyKernel.z5 i) ∈ Y
+scratch/ChainEvenCorner.lean:2515:34: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c6, Fin.mk_one, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2515:48: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c6, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2515:60: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c6, Fin.zero_eta, Fin.mk_one, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2515:77: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, c6, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2518:50: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c6, Fin.mk_one, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2518:64: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c6, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2518:76: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c6, Fin.zero_eta, Fin.mk_one, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2519:8: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, c6, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.c6_genPosN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.KP6_c6_sub_mulVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.c6_P3_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.genpos_mid_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.genpos_mid_zero : Clifford.GenPosN Clifford.MorleyKernel.c6 ∧
+  Clifford.MorleyKernel.crossVec
+      (Clifford.MorleyKernel.KP 6 Clifford.MorleyKernel.c6 fun j => (starRingEnd ℂ) (Clifford.MorleyKernel.c6 j))
+      ⟨3, ⋯⟩ =
+    0
+'Clifford.MorleyKernel.EptInf_eq_infty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.EptInf_eq_coe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.EptInf_c6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.h4_pt_inf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hc_of_genPos' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.EptInf : (n : ℕ) → (Fin n → ℂ) → OnePoint ℂ
+Clifford.MorleyKernel.EptInf_eq_coe : ∀ (n : ℕ) (c : Fin n → ℂ),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP n c fun j => (starRingEnd ℂ) (c j)) ⟨n / 2, ⋯⟩ ≠ 0 →
+    Clifford.MorleyKernel.EptInf n c = Clifford.MorleyKernel.Ept n c
+Clifford.MorleyKernel.h4_pt_inf : ∀ (c : Fin 4 → ℂ),
+  Clifford.GenPosN c → Clifford.ChainS 4 c {Clifford.MorleyKernel.EptInf 4 c}
+@Clifford.MorleyKernel.hc_of_genPos : ∀ {n : ℕ}, 2 ≤ n → ∀ (c : Fin n → ℂ), Clifford.GenPosN c → ∀ (j : Fin n), c j ≠ 0
+scratch/ChainEvenCorner.lean:2645:69: warning: Variable name `hd` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hd
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+scratch/ChainEvenCorner.lean:2677:42: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [dX, Fin.mk_one, Fin.reduceFinMk, Fin.isValue, ne_eq, j13_mk_eq_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2677:56: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [dX, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue, ne_eq, j13_mk_eq_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2677:68: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [dX, Fin.zero_eta, Fin.mk_one, Fin.isValue, ne_eq, j13_mk_eq_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2677:85: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [dX, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk, ne_eq, j13_mk_eq_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.oddCircleEq_of_P0_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.norm_Q0_eq_QL_sub' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.kernel_eq_zero_of_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_levelPt_kernel_line' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_levelPt_kernel_line_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.levelPointN_four_div' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_z0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_z1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_z2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_mD4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_z4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.dX_cD' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.p0_children_gcircleS_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.levelPt_child_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_five' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.p0_children_gcircleS_genPos' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.kernel_eq_zero_of_P0 : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+    ∀ (z : ℂ),
+      Clifford.MorleyKernel.oddCircleEq (k + 2)
+          (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j))) z =
+        0
+Clifford.MorleyKernel.child_levelPt_kernel_line : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  (∀ (j : Fin (2 * k + 5)), d j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      ∀ (i : Fin (2 * k + 5)),
+        Clifford.MorleyKernel.oddCircleEq (k + 2)
+            (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)))
+            (Clifford.MorleyKernel.levelPointN (2 * k + 4)
+              (Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                  (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) =
+          0
+Clifford.MorleyKernel.child_levelPt_kernel_line_five : ∀ (d : Fin 5 → ℂ),
+  (∀ (j : Fin 5), d j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 5 d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      ∀ (i : Fin 5),
+        Clifford.MorleyKernel.oddCircleEq 2
+            (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 5 d fun j => (starRingEnd ℂ) (d j)))
+            (Clifford.MorleyKernel.levelPointN 4
+              (Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP 4 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) =
+          0
+Clifford.MorleyKernel.p0_children_gcircleS_false : ¬∀ (d : Fin (2 * 0 + 5) → ℂ),
+    (∀ (j : Fin (2 * 0 + 5)), d j ≠ 0) →
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * 0 + 5) d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            ∀ (i : Fin (2 * 0 + 5)),
+              ↑(Clifford.MorleyKernel.levelPointN (2 * 0 + 4)
+                    (Clifford.MorleyKernel.crossVec
+                      (Clifford.MorleyKernel.KP (2 * 0 + 4) (d ∘ i.succAbove) fun r =>
+                        (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+                Y
+Clifford.MorleyKernel.hodd_five : ∀ (d : Fin 5 → ℂ),
+  Clifford.GenPosN d →
+    ∃ Y,
+      Clifford.IsGCircleS Y ∧
+        ∀ (i : Fin 5),
+          ↑(Clifford.MorleyKernel.levelPointN 4
+                (Clifford.MorleyKernel.crossVec
+                  (Clifford.MorleyKernel.KP 4 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+            Y
+Clifford.MorleyKernel.p0_children_gcircleS_genPos : ∀ (d : Fin (2 * 0 + 5) → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * 0 + 5) d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      ∃ Y,
+        Clifford.IsGCircleS Y ∧
+          ∀ (i : Fin (2 * 0 + 5)),
+            ↑(Clifford.MorleyKernel.levelPointN (2 * 0 + 4)
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * 0 + 4) (d ∘ i.succAbove) fun r =>
+                      (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+              Y
+scratch/ChainEvenCorner.lean:2851:34: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, d7, Fin.mk_one, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2851:48: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, d7, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2851:60: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, d7, Fin.zero_eta, Fin.mk_one, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2851:77: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Transversal, d7, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2854:50: warning: This simp argument is unused:
+  Fin.zero_eta
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, d7, Fin.mk_one, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2854:64: warning: This simp argument is unused:
+  Fin.mk_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, d7, Fin.zero_eta, Fin.reduceFinMk, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2854:76: warning: This simp argument is unused:
+  Fin.reduceFinMk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, d7, Fin.zero_eta, Fin.mk_one, Fin.isValue]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2855:8: warning: This simp argument is unused:
+  Fin.isValue
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [GenTriple, triP, cycP, det3, d7, Fin.zero_eta, Fin.mk_one, Fin.reduceFinMk]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2926:14: warning: This simp argument is unused:
+  Fin.succAbove
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [KP, Fin.lt_def, d7, A7_0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2926:29: warning: This simp argument is unused:
+  Fin.lt_def
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [KP, Fin.succAbove, d7, A7_0]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2940:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_0, B7_0, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:2987:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_1, B7_1, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3034:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_2, B7_2, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3081:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_3, B7_3, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3128:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_4, B7_4, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3175:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_5, B7_5, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3222:49: warning: This simp argument is unused:
+  Matrix.one_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [A7_6, B7_6, Fin.succAbove, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.d7_genPosN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.KP7_d7_sub_mulVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.levelPointN_six_of_cert' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_0_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_0_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_0_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_1_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_1_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_1_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_2_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_2_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_2_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_3_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_3_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_3_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_4_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_4_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_4_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_5_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_5_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_5_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_5' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_6_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.A7_6_w' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.B7_6_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_child_6' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_children_P3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.u7_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_children_collinear' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_children_gcircleS' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.d7_genPosN : Clifford.GenPosN Clifford.MorleyKernel.d7
+Clifford.MorleyKernel.d7_P0 : Clifford.MorleyKernel.crossVec
+    (Clifford.MorleyKernel.KP 7 Clifford.MorleyKernel.d7 fun j => (starRingEnd ℂ) (Clifford.MorleyKernel.d7 j)) 0 =
+  0
+Clifford.MorleyKernel.d7_children_P3 : ∀ (i : Fin 7),
+  Clifford.MorleyKernel.crossVec
+      (Clifford.MorleyKernel.KP 6 (Clifford.MorleyKernel.d7 ∘ i.succAbove) fun r =>
+        (starRingEnd ℂ) ((Clifford.MorleyKernel.d7 ∘ i.succAbove) r))
+      ⟨3, ⋯⟩ ≠
+    0
+Clifford.MorleyKernel.d7_children_collinear : ∃ p u,
+  u ≠ 0 ∧
+    ∀ (i : Fin 7),
+      Clifford.MorleyKernel.levelPointN 6
+          (Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP 6 (Clifford.MorleyKernel.d7 ∘ i.succAbove) fun r =>
+              (starRingEnd ℂ) ((Clifford.MorleyKernel.d7 ∘ i.succAbove) r))) =
+        p + ↑(Clifford.MorleyKernel.t7 i) * u
+Clifford.MorleyKernel.d7_children_gcircleS : ∃ Y,
+  Clifford.IsGCircleS Y ∧
+    ∀ (i : Fin 7),
+      ↑(Clifford.MorleyKernel.levelPointN 6
+            (Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (Clifford.MorleyKernel.d7 ∘ i.succAbove) fun r =>
+                (starRingEnd ℂ) ((Clifford.MorleyKernel.d7 ∘ i.succAbove) r)))) ∈
+        Y
+scratch/ChainEvenCorner.lean:3391:48: warning: This simp argument is unused:
+  Matrix.cons_val_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [M7g, u7v, mulVec, dotProduct, Fin.sum_univ_succ, Fin.sum_univ_zero, Matrix.of_apply,
+    Matrix.cons_val_zero, Matrix.cons_val_succ, Matrix.head_cons, Fin.succ_zero_eq_one, Fin.succ_one_eq_two] at h ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3391:69: warning: This simp argument is unused:
+  Matrix.head_cons
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [M7g, u7v, mulVec, dotProduct, Fin.sum_univ_succ, Fin.sum_univ_zero, Matrix.of_apply,
+    Matrix.cons_val_zero, Matrix.cons_val_succ, Matrix.cons_val_one, Fin.succ_zero_eq_one, Fin.succ_one_eq_two] at h ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3391:87: warning: This simp argument is unused:
+  Fin.succ_zero_eq_one
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [M7g, u7v, mulVec, dotProduct, Fin.sum_univ_succ, Fin.sum_univ_zero, Matrix.of_apply,
+    Matrix.cons_val_zero, Matrix.cons_val_succ, Matrix.cons_val_one, Matrix.head_cons, Fin.succ_one_eq_two] at h ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3392:4: warning: This simp argument is unused:
+  Fin.succ_one_eq_two
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [M7g, u7v, mulVec, dotProduct, Fin.sum_univ_succ, Fin.sum_univ_zero, Matrix.of_apply,
+    Matrix.cons_val_zero, Matrix.cons_val_succ, Matrix.cons_val_one, Matrix.head_cons, Fin.succ_zero_eq_one] at h ⊢
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3399:40: warning: This simp argument is unused:
+  updateCol_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3401:40: warning: This simp argument is unused:
+  updateCol_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3403:40: warning: This simp argument is unused:
+  updateCol_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3410:40: warning: This simp argument is unused:
+  updateCol_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3412:40: warning: This simp argument is unused:
+  updateCol_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3414:40: warning: This simp argument is unused:
+  updateCol_apply
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3454:41: warning: This simp argument is unused:
+  Fin.succAbove
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g, KP, sig7, Fin.lt_def]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:3454:56: warning: This simp argument is unused:
+  Fin.lt_def
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [M7g, KP, sig7, Fin.succAbove]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'Clifford.MorleyKernel.rowRel7_scalar' depends on axioms: [propext, Quot.sound]
+'Clifford.MorleyKernel.M7g_mulVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_M7g_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_M7g_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_M7_expand' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_M7_D' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_M7_F' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_det_M7' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_line_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.collinear_of_reallin' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_mulVec_of_parent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.levelPointN_six_of_ker' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.Q3_zero_of_P0_Q0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.children_eq_of_P0_Q0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_one_P0_line' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_children_gcircleS'' depends on axioms: [propext, Classical.choice, Quot.sound]
+@Clifford.MorleyKernel.rowRel7_scalar : ∀ {R : Type u_1} [inst : CommRing R] (x y xi yi z Z : R) (w : Fin 7 → R),
+  (y ^ 4 - Z * y ^ 3) * (-xi * w 0) + -x * y ^ 3 * (-yi * w 0 - xi * w 1) + x ^ 2 * y ^ 2 * (-yi * w 1 - xi * w 2) +
+              -x ^ 3 * y * (-yi * w 2 - xi * w 3) +
+            x * y ^ 2 * (-yi * w 4 - xi * w 5) +
+          -x ^ 2 * y * (-yi * w 5 - xi * w 6) +
+        (z * x ^ 3 - x ^ 4) * (yi * w 3) -
+      (yi * x - xi * y) * Clifford.MorleyKernel.g7 x y w =
+    yi * x ^ 3 * (z * w 3 + w 6) + xi * y ^ 3 * (Z * w 0 - w 4)
+@Clifford.MorleyKernel.M7g_mulVec : ∀ {R : Type u_1} [inst : CommRing R] (x y : Fin 7 → R) (xi yi z Z : R)
+  (w : Fin 7 → R) (k : Fin 7),
+  (Clifford.MorleyKernel.M7g x y (fun k => y k ^ 4 - Z * y k ^ 3) fun k => z * x k ^ 3 - x k ^ 4).mulVec
+      (Clifford.MorleyKernel.u7v xi yi w) k =
+    (yi * x k - xi * y k) * Clifford.MorleyKernel.g7 (x k) (y k) w + yi * x k ^ 3 * (z * w 3 + w 6) +
+      xi * y k ^ 3 * (Z * w 0 - w 4)
+@Clifford.MorleyKernel.det_M7_expand : ∀ {R : Type u_1} [inst : CommRing R] (x y : Fin 7 → R) (z Z : R),
+  (Clifford.MorleyKernel.M7g x y (fun k => y k ^ 4 - Z * y k ^ 3) fun k => z * x k ^ 3 - x k ^ 4).det =
+    (Clifford.MorleyKernel.M7g x y (fun k => y k ^ 4) fun k => -x k ^ 4).det +
+          z * (Clifford.MorleyKernel.M7g x y (fun k => y k ^ 4) fun k => x k ^ 3).det +
+        Z * (Clifford.MorleyKernel.M7g x y (fun k => -y k ^ 3) fun k => -x k ^ 4).det +
+      z * Z * (Clifford.MorleyKernel.M7g x y (fun k => -y k ^ 3) fun k => x k ^ 3).det
+@Clifford.MorleyKernel.det_M7_D : ∀ {R : Type u_1} [inst : CommRing R] (x y : Fin 7 → R),
+  (Clifford.MorleyKernel.M7g x y (fun k => y k ^ 4) fun k => x k ^ 3).det =
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 x y) 4
+@Clifford.MorleyKernel.det_M7_F : ∀ {R : Type u_1} [inst : CommRing R] (x y : Fin 7 → R),
+  (Clifford.MorleyKernel.M7g x y (fun k => -y k ^ 3) fun k => x k ^ 3).det =
+    ↑↑(Equiv.Perm.sign Clifford.MorleyKernel.sig7) * Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 x y) 0
+Clifford.MorleyKernel.child_det_M7 : ∀ (c : Fin 7 → ℂ),
+  (∀ (j : Fin 7), c j ≠ 0) →
+    ∀ (i : Fin 7),
+      Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP 6 (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) ⟨3, ⋯⟩ ≠
+          0 →
+        have z :=
+          Clifford.MorleyKernel.levelPointN 6
+            (Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)));
+        (Clifford.MorleyKernel.M7g c (fun k => (starRingEnd ℂ) (c k))
+              (fun k => (starRingEnd ℂ) (c k) ^ 4 - (starRingEnd ℂ) z * (starRingEnd ℂ) (c k) ^ 3) fun k =>
+              z * c k ^ 3 - c k ^ 4).det =
+          0
+Clifford.MorleyKernel.child_line_P0 : ∀ (c : Fin 7 → ℂ),
+  (∀ (j : Fin 7), c j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 c fun j => (starRingEnd ℂ) (c j)) 0 = 0 →
+      ∀ (i : Fin 7),
+        Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) ⟨3, ⋯⟩ ≠
+            0 →
+          have z :=
+            Clifford.MorleyKernel.levelPointN 6
+              (Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP 6 (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)));
+          (Clifford.MorleyKernel.M7g c (fun k => (starRingEnd ℂ) (c k)) (fun k => (starRingEnd ℂ) (c k) ^ 4) fun k =>
+                    -c k ^ 4).det +
+                Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 c fun j => (starRingEnd ℂ) (c j)) 4 * z +
+              (Clifford.MorleyKernel.M7g c (fun k => (starRingEnd ℂ) (c k)) (fun k => -(starRingEnd ℂ) (c k) ^ 3)
+                    fun k => -c k ^ 4).det *
+                (starRingEnd ℂ) z =
+            0
+@Clifford.MorleyKernel.collinear_of_reallin : ∀ {ι : Type u_1} (z : ι → ℂ) (i0 : ι) (l m n : ℂ),
+  l ≠ 0 → (∀ (i : ι), l * z i + m * (starRingEnd ℂ) (z i) + n = 0) → ∃ p u, u ≠ 0 ∧ ∀ (i : ι), ∃ t, z i = p + ↑t * u
+Clifford.MorleyKernel.children_eq_of_P0_Q0 : ∀ (d : Fin 7 → ℂ),
+  (∀ (j : Fin 7), d j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 d fun j => (starRingEnd ℂ) (d j)) 4 = 0 →
+        (∀ (i : Fin 7),
+            Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP 6 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)) ⟨3, ⋯⟩ ≠
+              0) →
+          ∃ p,
+            ∀ (i : Fin 7),
+              Clifford.MorleyKernel.levelPointN 6
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP 6 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))) =
+                p
+Clifford.MorleyKernel.hodd_one_P0_line : ∀ (d : Fin 7 → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      (∀ (i : Fin 7),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)) ⟨3, ⋯⟩ ≠
+            0) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            ∀ (i : Fin 7),
+              ↑(Clifford.MorleyKernel.levelPointN 6
+                    (Clifford.MorleyKernel.crossVec
+                      (Clifford.MorleyKernel.KP 6 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+                Y
+Clifford.MorleyKernel.d7_children_gcircleS' : ∃ Y,
+  Clifford.IsGCircleS Y ∧
+    ∀ (i : Fin 7),
+      ↑(Clifford.MorleyKernel.levelPointN 6
+            (Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (Clifford.MorleyKernel.d7 ∘ i.succAbove) fun r =>
+                (starRingEnd ℂ) ((Clifford.MorleyKernel.d7 ∘ i.succAbove) r)))) ∈
+        Y
+scratch/ChainEvenCorner.lean:3929:15: warning: This simp argument is unused:
+  Fin.val_mk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only at hv
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+scratch/ChainEvenCorner.lean:4004:53: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+'Clifford.MorleyKernel.rowRelN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.MN_mulVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_MN_left' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_MN_right' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_MN_expand' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_MN_D' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.sign_sigN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.sigN_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.det_MN_F' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.MN_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.uN_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.gN_crossVec' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_det_MN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_line_P0N' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_mulVec_of_parentN' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.levelPointN_of_ker' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.QL_zero_of_P0_Q0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.children_eq_of_P0_Q0N' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_P0_line' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_one_P0_line'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.d7_children_gcircleS''' depends on axioms: [propext, Classical.choice, Quot.sound]
+@Clifford.MorleyKernel.rowRelN : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y xi yi z Z : R)
+  (w : Fin (2 * k + 5) → R),
+  ∑ j,
+        Clifford.MorleyKernel.colN k x y (y ^ (k + 3) - Z * y ^ (k + 2)) (z * -(-x) ^ (k + 2) - (-x) ^ (k + 3)) ↑j *
+          Clifford.MorleyKernel.uN k xi yi w j -
+      (yi * x - xi * y) * Clifford.MorleyKernel.gN k x y w =
+    -yi * (-x) ^ (k + 2) * (z * w ⟨k + 2, ⋯⟩ + w ⟨2 * k + 4, ⋯⟩) + xi * y ^ (k + 2) * (Z * w 0 - w ⟨k + 3, ⋯⟩)
+@Clifford.MorleyKernel.MN_mulVec : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y : Fin (2 * k + 5) → R)
+  (xi yi z Z : R) (w : Fin (2 * k + 5) → R) (r : Fin (2 * k + 5)),
+  (Clifford.MorleyKernel.MN k x y (fun r => y r ^ (k + 3) - Z * y r ^ (k + 2)) fun r =>
+          z * -(-x r) ^ (k + 2) - (-x r) ^ (k + 3)).mulVec
+      (Clifford.MorleyKernel.uN k xi yi w) r =
+    (yi * x r - xi * y r) * Clifford.MorleyKernel.gN k (x r) (y r) w +
+      (-yi * (-x r) ^ (k + 2) * (z * w ⟨k + 2, ⋯⟩ + w ⟨2 * k + 4, ⋯⟩) + xi * y r ^ (k + 2) * (Z * w 0 - w ⟨k + 3, ⋯⟩))
+@Clifford.MorleyKernel.det_MN_left : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y a a' b : Fin (2 * k + 5) → R)
+  (s : R),
+  (Clifford.MorleyKernel.MN k x y (fun r => a r + s * a' r) b).det =
+    (Clifford.MorleyKernel.MN k x y a b).det + s * (Clifford.MorleyKernel.MN k x y a' b).det
+@Clifford.MorleyKernel.det_MN_right : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y a b b' : Fin (2 * k + 5) → R)
+  (s : R),
+  (Clifford.MorleyKernel.MN k x y a fun r => b r + s * b' r).det =
+    (Clifford.MorleyKernel.MN k x y a b).det + s * (Clifford.MorleyKernel.MN k x y a b').det
+@Clifford.MorleyKernel.det_MN_expand : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y : Fin (2 * k + 5) → R)
+  (z Z : R),
+  (Clifford.MorleyKernel.MN k x y (fun r => y r ^ (k + 3) - Z * y r ^ (k + 2)) fun r =>
+        z * -(-x r) ^ (k + 2) - (-x r) ^ (k + 3)).det =
+    (Clifford.MorleyKernel.MN k x y (fun r => y r ^ (k + 3)) fun r => -(-x r) ^ (k + 3)).det +
+          z * (Clifford.MorleyKernel.MN k x y (fun r => y r ^ (k + 3)) fun r => -(-x r) ^ (k + 2)).det +
+        Z * (Clifford.MorleyKernel.MN k x y (fun r => -y r ^ (k + 2)) fun r => -(-x r) ^ (k + 3)).det +
+      z * Z * (Clifford.MorleyKernel.MN k x y (fun r => -y r ^ (k + 2)) fun r => -(-x r) ^ (k + 2)).det
+@Clifford.MorleyKernel.det_MN_D : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y : Fin (2 * k + 5) → R),
+  (Clifford.MorleyKernel.MN k x y (fun r => y r ^ (k + 3)) fun r => -(-x r) ^ (k + 2)).det =
+    (-1) ^ (k + 3) * Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) x y) ⟨k + 3, ⋯⟩
+@Clifford.MorleyKernel.det_MN_F : ∀ {R : Type u_1} [inst : CommRing R] (k : ℕ) (x y : Fin (2 * k + 5) → R),
+  (Clifford.MorleyKernel.MN k x y (fun r => -y r ^ (k + 2)) fun r => -(-x r) ^ (k + 2)).det =
+    ↑↑(Equiv.Perm.sign (Clifford.MorleyKernel.sigN k)) *
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) x y) 0
+Clifford.MorleyKernel.sign_sigN : ∀ (k : ℕ), ↑(Equiv.Perm.sign (Clifford.MorleyKernel.sigN k)) = (-1) ^ (k + 2)
+Clifford.MorleyKernel.sigN_one : Clifford.MorleyKernel.sigN 1 = Clifford.MorleyKernel.sig7
+@Clifford.MorleyKernel.MN_one : ∀ {R : Type u_1} [inst : CommRing R] (x y a b : Fin 7 → R),
+  Clifford.MorleyKernel.MN 1 x y a b = Clifford.MorleyKernel.M7g x y a b
+@Clifford.MorleyKernel.uN_one : ∀ {R : Type u_1} [inst : CommRing R] (xi yi : R) (w : Fin 7 → R),
+  Clifford.MorleyKernel.uN 1 xi yi w = Clifford.MorleyKernel.u7v xi yi w
+Clifford.MorleyKernel.child_det_MN : ∀ (k : ℕ) (c : Fin (2 * k + 5) → ℂ),
+  (∀ (j : Fin (2 * k + 5)), c j ≠ 0) →
+    ∀ (i : Fin (2 * k + 5)),
+      Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 4) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+            ⟨k + 2, ⋯⟩ ≠
+          0 →
+        have z :=
+          Clifford.MorleyKernel.levelPointN (2 * k + 4)
+            (Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)));
+        (Clifford.MorleyKernel.MN k c (fun r => (starRingEnd ℂ) (c r))
+              (fun r => (starRingEnd ℂ) (c r) ^ (k + 3) - (starRingEnd ℂ) z * (starRingEnd ℂ) (c r) ^ (k + 2)) fun r =>
+              z * -(-c r) ^ (k + 2) - (-c r) ^ (k + 3)).det =
+          0
+Clifford.MorleyKernel.child_line_P0N : ∀ (k : ℕ) (c : Fin (2 * k + 5) → ℂ),
+  (∀ (j : Fin (2 * k + 5)), c j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) c fun j => (starRingEnd ℂ) (c j)) 0 = 0 →
+      ∀ (i : Fin (2 * k + 5)),
+        Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ ≠
+            0 →
+          have z :=
+            Clifford.MorleyKernel.levelPointN (2 * k + 4)
+              (Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 4) (c ∘ i.succAbove) fun r =>
+                  (starRingEnd ℂ) ((c ∘ i.succAbove) r)));
+          (Clifford.MorleyKernel.MN k c (fun r => (starRingEnd ℂ) (c r)) (fun r => (starRingEnd ℂ) (c r) ^ (k + 3))
+                    fun r => -(-c r) ^ (k + 3)).det +
+                (-1) ^ (k + 3) *
+                    Clifford.MorleyKernel.crossVec
+                      (Clifford.MorleyKernel.KP (2 * k + 5) c fun j => (starRingEnd ℂ) (c j)) ⟨k + 3, ⋯⟩ *
+                  z +
+              (Clifford.MorleyKernel.MN k c (fun r => (starRingEnd ℂ) (c r)) (fun r => -(starRingEnd ℂ) (c r) ^ (k + 2))
+                    fun r => -(-c r) ^ (k + 3)).det *
+                (starRingEnd ℂ) z =
+            0
+Clifford.MorleyKernel.children_eq_of_P0_Q0N : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  (∀ (j : Fin (2 * k + 5)), d j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j))
+            ⟨k + 3, ⋯⟩ =
+          0 →
+        (∀ (i : Fin (2 * k + 5)),
+            Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+                ⟨k + 2, ⋯⟩ ≠
+              0) →
+          ∃ p,
+            ∀ (i : Fin (2 * k + 5)),
+              Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                      (starRingEnd ℂ) ((d ∘ i.succAbove) r))) =
+                p
+Clifford.MorleyKernel.hodd_P0_line : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      (∀ (i : Fin (2 * k + 5)),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ ≠
+            0) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            ∀ (i : Fin (2 * k + 5)),
+              ↑(Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                    (Clifford.MorleyKernel.crossVec
+                      (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                        (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+                Y
+Clifford.MorleyKernel.hodd_one_P0_line' : ∀ (d : Fin 7 → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP 7 d fun j => (starRingEnd ℂ) (d j)) 0 = 0 →
+      (∀ (i : Fin 7),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)) ⟨3, ⋯⟩ ≠
+            0) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            ∀ (i : Fin 7),
+              ↑(Clifford.MorleyKernel.levelPointN 6
+                    (Clifford.MorleyKernel.crossVec
+                      (Clifford.MorleyKernel.KP 6 (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+                Y
+Clifford.MorleyKernel.d7_children_gcircleS'' : ∃ Y,
+  Clifford.IsGCircleS Y ∧
+    ∀ (i : Fin 7),
+      ↑(Clifford.MorleyKernel.levelPointN 6
+            (Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP 6 (Clifford.MorleyKernel.d7 ∘ i.succAbove) fun r =>
+                (starRingEnd ℂ) ((Clifford.MorleyKernel.d7 ∘ i.succAbove) r)))) ∈
+        Y
+'Clifford.MorleyKernel.EptInf_child_eq_coe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.EptInf_child_eq_infty' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf_P0_ne' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf_P0_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf_all' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.hodd_inf : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+        ∀ (i : Fin (2 * k + 5)),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ ≠
+            0) →
+      ∃ Y,
+        Clifford.IsGCircleS Y ∧ ∀ (i : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) (d ∘ i.succAbove) ∈ Y
+Clifford.MorleyKernel.hodd_inf_all : (∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+    Clifford.GenPosN d →
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+        ∀ (i : Fin (2 * k + 5)),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ ≠
+            0) →
+  ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+    Clifford.GenPosN d →
+      ∃ Y,
+        Clifford.IsGCircleS Y ∧ ∀ (i : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) (d ∘ i.succAbove) ∈ Y
+Clifford.MorleyKernel.hodd_inf_zero : ∀ (d : Fin (2 * 0 + 5) → ℂ),
+  Clifford.GenPosN d →
+    ∃ Y, Clifford.IsGCircleS Y ∧ ∀ (i : Fin (2 * 0 + 5)), Clifford.MorleyKernel.EptInf (2 * 0 + 4) (d ∘ i.succAbove) ∈ Y
+'Clifford.MorleyKernel.cliffordChainS_of_inf' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.cliffordChainS_of_inf : (∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+    Clifford.GenPosN d →
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+        ∀ (i : Fin (2 * k + 5)),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ ≠
+            0) →
+  (∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+      Clifford.GenPosN c →
+        ∀ (i : Fin (2 * k + 6)),
+          ∃ Y,
+            Clifford.IsGCircleS Y ∧
+              Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+                ∀ (j : Fin (2 * k + 5)),
+                  Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y) →
+    ∀ (n : ℕ), 3 ≤ n → Clifford.CliffordChainS n
+'Clifford.MorleyKernel.kpe_odd_eq_mul_y' depends on axioms: [propext, Quot.sound]
+'Clifford.MorleyKernel.kpe_odd_succ_eq_mul_x' depends on axioms: [propext, Quot.sound]
+'Clifford.MorleyKernel.gN_range' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.rowV_N' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.rowS_N' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.parent_ker_zero_of_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_crossVec_zero_of_P3' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.parent_detL_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.children_eq_of_P3_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_line_of_P3_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf_P0_ne_some' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.hodd_inf_all'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.cliffordChainS_of_inf'' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.child_crossVec_zero_of_P3 : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+    ∀ (i : Fin (2 * k + 5)),
+      Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+            ⟨k + 2, ⋯⟩ =
+          0 →
+        Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)) =
+          0
+Clifford.MorleyKernel.parent_detL_zero : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (i : Fin (2 * k + 5)),
+  Clifford.MorleyKernel.crossVec
+        (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r)) =
+      0 →
+    ((Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)).submatrix id
+          (Fin.last (2 * k + 5)).succAbove).det =
+      0
+Clifford.MorleyKernel.children_eq_of_P3_zero : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+      (∃ i,
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ =
+            0) →
+        ∃ p,
+          ∀ (i : Fin (2 * k + 5)),
+            Clifford.MorleyKernel.crossVec
+                  (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                    (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+                  ⟨k + 2, ⋯⟩ ≠
+                0 →
+              Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                      (starRingEnd ℂ) ((d ∘ i.succAbove) r))) =
+                p
+Clifford.MorleyKernel.child_line_of_P3_zero : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+      (∃ i,
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ =
+            0) →
+        ∃ p u,
+          u ≠ 0 ∧
+            ∀ (i : Fin (2 * k + 5)),
+              Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                      (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+                    ⟨k + 2, ⋯⟩ ≠
+                  0 →
+                ∃ t,
+                  Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                      (Clifford.MorleyKernel.crossVec
+                        (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                          (starRingEnd ℂ) ((d ∘ i.succAbove) r))) =
+                    p + ↑t * u
+Clifford.MorleyKernel.hodd_inf_P0_ne_some : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+      (∃ i,
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ =
+            0) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            ∀ (i : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) (d ∘ i.succAbove) ∈ Y
+Clifford.MorleyKernel.hodd_inf' : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    ∃ Y, Clifford.IsGCircleS Y ∧ ∀ (i : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) (d ∘ i.succAbove) ∈ Y
+Clifford.MorleyKernel.hodd_inf_all' : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  Clifford.GenPosN d →
+    ∃ Y, Clifford.IsGCircleS Y ∧ ∀ (i : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) (d ∘ i.succAbove) ∈ Y
+Clifford.MorleyKernel.cliffordChainS_of_inf' : (∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+    Clifford.GenPosN c →
+      ∀ (i : Fin (2 * k + 6)),
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+              ∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y) →
+  ∀ (n : ℕ), 3 ≤ n → Clifford.CliffordChainS n
+Clifford.MorleyKernel.stepEven_gen : ∀ (m : ℕ), 1 ≤ m → Clifford.MorleyKernel.StepEven m
+Clifford.MorleyKernel.stepOdd_gen : ∀ (m : ℕ), Clifford.MorleyKernel.StepOdd (m + 1)
+Clifford.MorleyKernel.kernelCircle_isGCircleS : ∀ (m : ℕ) (v : Fin (2 * m + 2) → ℂ),
+  v 0 ≠ 0 → Clifford.IsGCircleS (OnePoint.some '' {z | Clifford.MorleyKernel.oddCircleEq m v z = 0})
+Clifford.MorleyKernel.hodd_levelPoint : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ),
+  (∀ (j : Fin (2 * k + 5)), d j ≠ 0) →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 5) d fun j => (starRingEnd ℂ) (d j)) 0 ≠ 0 →
+      (∀ (i : Fin (2 * k + 5)),
+          Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+              ⟨k + 2, ⋯⟩ ≠
+            0) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            ∀ (i : Fin (2 * k + 5)),
+              ↑(Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                    (Clifford.MorleyKernel.crossVec
+                      (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r =>
+                        (starRingEnd ℂ) ((d ∘ i.succAbove) r)))) ∈
+                Y
+Clifford.MorleyKernel.EptInf_child_eq_coe : ∀ (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (i : Fin (2 * k + 5)),
+  Clifford.MorleyKernel.crossVec
+        (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))
+        ⟨k + 2, ⋯⟩ ≠
+      0 →
+    Clifford.MorleyKernel.EptInf (2 * k + 4) (d ∘ i.succAbove) =
+      ↑(Clifford.MorleyKernel.levelPointN (2 * k + 4)
+          (Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 4) (d ∘ i.succAbove) fun r => (starRingEnd ℂ) ((d ∘ i.succAbove) r))))
+Clifford.MorleyKernel.EptInf_eq_coe : ∀ (n : ℕ) (c : Fin n → ℂ),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP n c fun j => (starRingEnd ℂ) (c j)) ⟨n / 2, ⋯⟩ ≠ 0 →
+    Clifford.MorleyKernel.EptInf n c = Clifford.MorleyKernel.Ept n c
+@Clifford.GenPosN.comp_succAbove : ∀ {n : ℕ} {c : Fin (n + 1) → ℂ},
+  Clifford.GenPosN c → ∀ (i : Fin (n + 1)), Clifford.GenPosN (c ∘ i.succAbove)
+Clifford.MorleyKernel.heven_kernel : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.GenPosN c →
+    ∀ (i : Fin (2 * k + 6)),
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j))
+            ⟨k + 3, ⋯⟩ ≠
+          0 →
+        Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+              0 ≠
+            0 →
+          (∀ (j : Fin (2 * k + 5)),
+              Clifford.MorleyKernel.crossVec
+                  (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                    (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                  ⟨k + 2, ⋯⟩ ≠
+                0) →
+            ∃ Y,
+              Clifford.IsGCircleS Y ∧
+                Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+                  ∀ (j : Fin (2 * k + 5)),
+                    Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+'Clifford.MorleyKernel.heven_kernel' depends on axioms: [propext, Classical.choice, Quot.sound]
+scratch/ChainEvenCorner.lean:4884:60: warning: Variable name `h` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _h
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+scratch/ChainEvenCorner.lean:4887:5: warning: Variable name `hQ0` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hQ0
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Clifford.MorleyKernel.parent_on_child_line : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.GenPosN c →
+    ∀ (i : Fin (2 * k + 6)),
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j))
+            ⟨k + 3, ⋯⟩ ≠
+          0 →
+        Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+              0 =
+            0 →
+          Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+                ⟨k + 3, ⋯⟩ ≠
+              0 →
+            have z :=
+              Clifford.MorleyKernel.levelPointN (2 * k + 6)
+                (Clifford.MorleyKernel.crossVec
+                  (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)));
+            (Clifford.MorleyKernel.MN k (c ∘ i.succAbove) (fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+                      (fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r) ^ (k + 3)) fun r =>
+                      -(-(c ∘ i.succAbove) r) ^ (k + 3)).det +
+                  (-1) ^ (k + 3) *
+                      Clifford.MorleyKernel.crossVec
+                        (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r =>
+                          (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+                        ⟨k + 3, ⋯⟩ *
+                    z +
+                (Clifford.MorleyKernel.MN k (c ∘ i.succAbove) (fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+                      (fun r => -(starRingEnd ℂ) ((c ∘ i.succAbove) r) ^ (k + 2)) fun r =>
+                      -(-(c ∘ i.succAbove) r) ^ (k + 3)).det *
+                  (starRingEnd ℂ) z =
+              0
+'Clifford.MorleyKernel.parent_on_child_line' depends on axioms: [propext, Classical.choice, Quot.sound]
+scratch/ChainEvenCorner.lean:5047:69: warning: Variable name `h` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _h
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Clifford.MorleyKernel.parent_mid_ker_MNF : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ) (i : Fin (2 * k + 6)),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) ⟨k + 3, ⋯⟩ =
+      0 →
+    ((Clifford.MorleyKernel.MN k (c ∘ i.succAbove) (fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+            (fun r => -(starRingEnd ℂ) ((c ∘ i.succAbove) r) ^ (k + 2)) fun r =>
+            -(-(c ∘ i.succAbove) r) ^ (k + 2)).mulVec
+        fun j =>
+        (fun j =>
+            if j = 0 then
+              Clifford.MorleyKernel.extN
+                (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)))
+                (k + 4)
+            else
+              if j ≤ k + 2 then
+                Clifford.MorleyKernel.extN
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)))
+                  j
+              else
+                Clifford.MorleyKernel.extN
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)))
+                  (j + 2))
+          ↑j) =
+      0
+Clifford.MorleyKernel.parent_crossVec_zero_of_mid : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ) (i : Fin (2 * k + 6)),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) ⟨k + 3, ⋯⟩ =
+      0 →
+    Clifford.MorleyKernel.crossVec
+          (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) 0 ≠
+        0 →
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) = 0
+Clifford.MorleyKernel.child_line_of_parent_mid_zero : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.GenPosN c →
+    ∀ (i : Fin (2 * k + 6)),
+      Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) ≠ 0 →
+        Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j))
+              ⟨k + 3, ⋯⟩ =
+            0 →
+          Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+                0 ≠
+              0 →
+            ∃ p u,
+              u ≠ 0 ∧
+                ∀ (j : Fin (2 * k + 5)),
+                  Clifford.MorleyKernel.crossVec
+                        (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                          (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                        ⟨k + 2, ⋯⟩ ≠
+                      0 →
+                    ∃ t,
+                      Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                          (Clifford.MorleyKernel.crossVec
+                            (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                              (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+                        p + ↑t * u
+'Clifford.MorleyKernel.parent_crossVec_zero_of_mid' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.child_line_of_parent_mid_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.subfamily_P0_zero_gen : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) ⟨k + 3, ⋯⟩ =
+      0 →
+    Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j))
+          (Fin.last (2 * k + 6)) ≠
+        0 →
+      ∀ (i : Fin (2 * k + 6)),
+        Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) 0 =
+          0
+'Clifford.MorleyKernel.subfamily_P0_zero_gen' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.heven_of_line : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ) (i : Fin (2 * k + 6)) (p u : ℂ),
+  u ≠ 0 →
+    (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) ⟨k + 3, ⋯⟩ ≠
+          0 →
+        ∃ t,
+          Clifford.MorleyKernel.levelPointN (2 * k + 6)
+              (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j))) =
+            p + ↑t * u) →
+      (∀ (j : Fin (2 * k + 5)),
+          Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                  (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                ⟨k + 2, ⋯⟩ ≠
+              0 →
+            ∃ t,
+              Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                  (Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                      (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+                p + ↑t * u) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+              ∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+Clifford.MorleyKernel.heven_of_common : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ) (i : Fin (2 * k + 6)) (q : ℂ),
+  (∀ (j : Fin (2 * k + 5)),
+      Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+              (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+            ⟨k + 2, ⋯⟩ ≠
+          0 →
+        Clifford.MorleyKernel.levelPointN (2 * k + 4)
+            (Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+          q) →
+    ∃ Y,
+      Clifford.IsGCircleS Y ∧
+        Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+          ∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+Clifford.MorleyKernel.heven_line_of_P0 : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.GenPosN c →
+    ∀ (i : Fin (2 * k + 6)),
+      Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) 0 =
+          0 →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+              ∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+Clifford.MorleyKernel.heven_inf_of_corner : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.GenPosN c →
+    ∀ (i : Fin (2 * k + 6)),
+      (Clifford.MorleyKernel.crossVec (Clifford.MorleyKernel.KP (2 * k + 6) c fun j => (starRingEnd ℂ) (c j)) = 0 →
+          Clifford.MorleyKernel.crossVec
+                (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+                0 ≠
+              0 →
+            (∀ (j : Fin (2 * k + 5)),
+                Clifford.MorleyKernel.crossVec
+                    (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                      (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                    ⟨k + 2, ⋯⟩ ≠
+                  0) →
+              ∃ p u,
+                u ≠ 0 ∧
+                  ∀ (j : Fin (2 * k + 5)),
+                    ∃ t,
+                      Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                          (Clifford.MorleyKernel.crossVec
+                            (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                              (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+                        p + ↑t * u) →
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+              ∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+'Clifford.MorleyKernel.heven_of_line' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.heven_of_common' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.heven_line_of_P0' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.heven_inf_of_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.heven_inf_all_of_corner : Clifford.MorleyKernel.EvenCorner →
+  ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+    Clifford.GenPosN c →
+      ∀ (i : Fin (2 * k + 6)),
+        ∃ Y,
+          Clifford.IsGCircleS Y ∧
+            Clifford.MorleyKernel.EptInf (2 * k + 6) c ∈ Y ∧
+              ∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+Clifford.MorleyKernel.cliffordChainS_of_corner : Clifford.MorleyKernel.EvenCorner →
+  ∀ (n : ℕ), 3 ≤ n → Clifford.CliffordChainS n
+'Clifford.MorleyKernel.heven_inf_all_of_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.cliffordChainS_of_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+Clifford.MorleyKernel.evenCorner_of_QL : ∀ (k : ℕ) (c : Fin (2 * k + 6) → ℂ),
+  Clifford.GenPosN c →
+    ∀ (i : Fin (2 * k + 6)),
+      Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) 0 ≠
+          0 →
+        Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+              (Fin.last (2 * k + 5)) =
+            0 →
+          (∀ (j : Fin (2 * k + 5)),
+              Clifford.MorleyKernel.crossVec
+                  (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                    (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                  ⟨k + 2, ⋯⟩ ≠
+                0) →
+            ∃ p u,
+              u ≠ 0 ∧
+                ∀ (j : Fin (2 * k + 5)),
+                  ∃ t,
+                    Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                        (Clifford.MorleyKernel.crossVec
+                          (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                            (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+                      p + ↑t * u
+Clifford.MorleyKernel.evenCorner_of_cornerQL : Clifford.MorleyKernel.EvenCornerQL → Clifford.MorleyKernel.EvenCorner
+'Clifford.MorleyKernel.evenCorner_of_QL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.evenCorner_of_cornerQL' depends on axioms: [propext, Classical.choice, Quot.sound]

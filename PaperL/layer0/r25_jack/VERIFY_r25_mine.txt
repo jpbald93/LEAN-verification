@@ -1,0 +1,40 @@
+Paper L round 25 (j32b_corner) — my verification on the hosts, 2026-11-18 08:58–09:05 EST
+
+Deliverable: jack ~/paperL_jack/scratch/ChainEvenCorner.lean
+  lines 5344, bytes 323072
+  sha256 0d1839e876c0cd72d79540f3e9d20f111cd1bcf5c93d31bcf33518a830a0f55f
+Prefix: head -n 5288 | cmp - scratch/ChainEvenInf.lean  -> PREFIX_OK
+  (ChainEvenInf.lean sha256 7117c1e914f090ea586533add87fcf94ae9fc1b6b739bb11c217e07187494ded)
+
+Process: finished by itself at 13:44Z (21 min after the 13:23:46Z launch), within its 30-min box.
+Deliverable mtime 13:35:35Z. REPORT.md was written to the project root (~/paperL_jack/REPORT.md),
+not to scratch/ — collected as REPORT_j32b.md.
+
+1. Compile on jack
+   export PATH=$HOME/.elan/bin:$PATH; s=$(date +%s); lake env lean scratch/ChainEvenCorner.lean; e=$(date +%s)
+   RC = 0, WALL = 57 s, 0 errors.
+
+2. Forbidden tokens (word boundary), lines 5289..5344
+   grep -nwE 'sorry|admit|native_decide|axiom|opaque' -> 0 hits.
+
+3. New declarations
+   evenCorner_of_QL        : [propext, Classical.choice, Quot.sound]
+   evenCorner_of_cornerQL  : [propext, Classical.choice, Quot.sound]   (EvenCornerQL -> EvenCorner)
+   EvenCornerQL            : def : Prop (named, unproved — the residual)
+   NO EvenCorner_proof; EvenCorner still only reachable through a hypothesis.
+
+4. Clifford/*.lean + gate.sh unchanged
+   Clifford/Mobius.lean f8c9f013188f7767b8c2f5850b0f761cfb689d0e490a782d5c9e10ddaec83200  mtime 2026-11-17 04:02:12Z
+   gate.sh              fa304f455e3c1f94459685f7b0d755ab6b6380c3ebd92113baedf2ac91884465  mtime 2026-11-17 03:31:35Z
+
+5. Second-machine receipt (john, ~/lean/paperL_john)
+   scratch/ChainEvenCorner.lean sha256 0d1839e8…f55f — SAME BYTES
+   head -n 5288 | cmp - scratch/ChainEvenInf_receipt.lean -> PREFIX_OK_JOHN
+   lake env lean: RC = 0, WALL = 68 s, 0 errors; 0 forbidden tokens after 5288.
+
+6. Numerical check of the residual identity `EvenCornerQL` (w_last = 0 in the corner), k = 0
+   Corner point refined by least squares on three maximal minors: |minors| = 4.3e-15, |V| = 6.9e-15
+   (machine precision).  Then for every i = 0..5:  |w_last| / |w0| = 2e-10 … 7e-10, i.e. w_last
+   vanishes to the same relative precision as V.  (At the earlier, looser corner point, |V| 4e-10 and a
+   constant ratio 6.3e-5 — the fold in the V = 0 variety, not a counterexample.)  Configuration saved in
+   CORNER_EXACT_k0.json.  So the residual identity is numerically TRUE; only its formalisation is missing.

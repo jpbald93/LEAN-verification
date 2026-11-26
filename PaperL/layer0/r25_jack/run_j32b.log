@@ -1,0 +1,379 @@
+[0m
+> build · claude-opus-5-5
+[0m
+[0m$ [0mcd ~/paperL_jack && pwd && ls && cp scratch/ChainEvenInf.lean scratch/ChainEvenCorner.lean && wc -l scratch/ChainEvenCorner.lean; ls /tmp/afmrun/paperL/j32b_corner
+/home/jackagent/paperL_jack
+Clifford
+Clifford.lean
+GENERAL_REPORT.md
+PROGRESS.md
+build.log
+gate.sh
+gate0.log
+lake-manifest.json
+lakefile.toml
+lean-toolchain
+numerics
+scratch
+tamper.log
+tests
+5288 scratch/ChainEvenCorner.lean
+BRIEF.md
+launch.sh
+opencode.json
+run.log
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=5094, limit=195][0m
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -n "^theorem\|^lemma\|^def\|^noncomputable def\|^abbrev" scratch/ChainEvenCorner.lean | awk -F: '$1>3400' | head -120
+3407:theorem det_M7g_right (x y a b b' : Fin 7 → R) (s : R) :
+3419:theorem det_M7_expand (x y : Fin 7 → R) (z Z : R) :
+3433:theorem det_M7_D (x y : Fin 7 → R) :
+3441:def sig7 : Equiv.Perm (Fin 7) where
+3448:theorem det_M7_F (x y : Fin 7 → R) :
+3461:theorem child_det_M7 (c : Fin 7 → ℂ) (hc : ∀ j, c j ≠ 0) (i : Fin 7)
+3498:theorem child_line_P0 (c : Fin 7 → ℂ) (hc : ∀ j, c j ≠ 0)
+3512:theorem collinear_of_reallin {ι : Type*} (z : ι → ℂ) (i0 : ι) (l m n : ℂ) (hl : l ≠ 0)
+3568:theorem child_mulVec_of_parent (d : Fin 7 → ℂ) (hd : ∀ j, d j ≠ 0) (V : Fin 7 → ℂ)
+3582:theorem levelPointN_six_of_ker (A : Matrix (Fin 6) (Fin 7) ℂ) (h3 : crossVec A ⟨3, by omega⟩ ≠ 0)
+3599:theorem Q3_zero_of_P0_Q0 (d : Fin 7 → ℂ)
+3616:theorem children_eq_of_P0_Q0 (d : Fin 7 → ℂ) (hd : ∀ j, d j ≠ 0)
+3633:theorem hodd_one_P0_line (d : Fin 7 → ℂ) (h : GenPosN d)
+3673:theorem d7_children_gcircleS' :
+3701:def kpe (n : ℕ) (x y : R) (j : ℕ) : R :=
+3705:theorem KP_eq_kpe (n : ℕ) (x y : Fin n → R) (r : Fin n) (j : Fin (n + 1)) :
+3708:def extN {N : ℕ} (w : Fin N → R) (j : ℕ) : R := if h : j < N then w ⟨j, h⟩ else 0
+3710:theorem extN_fin {N : ℕ} (w : Fin N → R) (j : Fin N) : extN w j = w j := by
+3713:def gN (k : ℕ) (x y : R) (w : Fin (2 * k + 5) → R) : R :=
+3716:def colN (k : ℕ) (x y a b : R) (j : ℕ) : R :=
+3720:def uNat (k : ℕ) (xi yi : R) (W : ℕ → R) (j : ℕ) : R :=
+3726:def uN (k : ℕ) (xi yi : R) (w : Fin (2 * k + 5) → R) : Fin (2 * k + 5) → R :=
+3729:def MN (k : ℕ) (x y a b : Fin (2 * k + 5) → R) : Matrix (Fin (2 * k + 5)) (Fin (2 * k + 5)) R :=
+3732:theorem rowRelN (k : ℕ) (x y xi yi z Z : R) (w : Fin (2 * k + 5) → R) :
+3834:theorem MN_mulVec (k : ℕ) (x y : Fin (2 * k + 5) → R) (xi yi z Z : R) (w : Fin (2 * k + 5) → R)
+3845:theorem MN_col_zero (k : ℕ) (x y a b : Fin (2 * k + 5) → R) (r : Fin (2 * k + 5)) :
+3848:theorem MN_col_last (k : ℕ) (x y a b : Fin (2 * k + 5) → R) (r : Fin (2 * k + 5)) :
+3852:theorem MN_col_mid (k : ℕ) (x y a b a' b' : Fin (2 * k + 5) → R) (r : Fin (2 * k + 5))
+3858:theorem det_MN_left (k : ℕ) (x y a a' b : Fin (2 * k + 5) → R) (s : R) :
+3874:theorem det_MN_right (k : ℕ) (x y a b b' : Fin (2 * k + 5) → R) (s : R) :
+3890:theorem det_MN_expand (k : ℕ) (x y : Fin (2 * k + 5) → R) (z Z : R) :
+3904:theorem kpe_P0 (k : ℕ) (x y : R) : kpe (2 * k + 5) x y 0 = y ^ (k + 3) := by
+3908:theorem kpe_Q0 (k : ℕ) (x y : R) : kpe (2 * k + 5) x y (k + 3) = -y ^ (k + 2) := by
+3913:theorem kpe_QL (k : ℕ) (x y : R) : kpe (2 * k + 5) x y (2 * k + 5) = -(-x) ^ (k + 2) := by
+3921:theorem det_MN_D (k : ℕ) (x y : Fin (2 * k + 5) → R) :
+3948:def sigN (k : ℕ) : Equiv.Perm (Fin (2 * k + 5)) := (Fin.cycleRange ⟨k + 2, by omega⟩).symm
+3950:theorem sign_sigN (k : ℕ) : (Equiv.Perm.sign (sigN k) : ℤ) = (-1) ^ (k + 2) := by
+3953:theorem sigN_one : sigN 1 = sig7 := by
+3956:theorem val_cycleRange {n : ℕ} (i j : Fin n) :
+3965:theorem det_MN_F (k : ℕ) (x y : Fin (2 * k + 5) → R) :
+4003:theorem MN_one (x y a b : Fin 7 → R) : MN 1 x y a b = M7g x y a b := by
+4007:theorem uN_one (xi yi : R) (w : Fin 7 → R) : uN 1 xi yi w = u7v xi yi w := by
+4031:theorem gN_crossVec (k : ℕ) (x y : Fin (2 * k + 4) → ℂ) (r : Fin (2 * k + 4)) :
+4036:theorem child_det_MN (k : ℕ) (c : Fin (2 * k + 5) → ℂ) (hc : ∀ j, c j ≠ 0) (i : Fin (2 * k + 5))
+4076:theorem child_line_P0N (k : ℕ) (c : Fin (2 * k + 5) → ℂ) (hc : ∀ j, c j ≠ 0)
+4093:theorem child_mulVec_of_parentN (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (hd : ∀ j, d j ≠ 0)
+4109:theorem levelPointN_of_ker (k : ℕ) (A : Matrix (Fin (2 * k + 4)) (Fin (2 * k + 5)) ℂ)
+4126:theorem QL_zero_of_P0_Q0 (k : ℕ) (d : Fin (2 * k + 5) → ℂ)
+4142:theorem children_eq_of_P0_Q0N (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (hd : ∀ j, d j ≠ 0)
+4161:theorem hodd_P0_line (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4193:theorem hodd_one_P0_line' (d : Fin 7 → ℂ) (h : GenPosN d)
+4202:theorem d7_children_gcircleS'' :
+4251:theorem EptInf_child_eq_coe (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (i : Fin (2 * k + 5))
+4262:theorem EptInf_child_eq_infty (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (i : Fin (2 * k + 5))
+4271:theorem hodd_inf_P0_ne (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4281:theorem hodd_inf_P0_eq (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4337:theorem hodd_inf (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4349:theorem hodd_inf_all
+4359:theorem hodd_inf_zero (d : Fin (2 * 0 + 5) → ℂ) (h : GenPosN d) :
+4382:theorem cliffordChainS_of_inf
+4414:theorem kpe_odd_eq_mul_y (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ 2 * k + 4) :
+4424:theorem kpe_odd_succ_eq_mul_x (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ 2 * k + 4) (hm : j ≠ k + 2) :
+4437:def shN (W : ℕ → R) (j : ℕ) : R := if j = 0 then 0 else W (j - 1)
+4439:theorem gN_range (k : ℕ) (x y : R) (w : Fin (2 * k + 5) → R) :
+4446:theorem rowV_N (k : ℕ) (x y : R) (w : Fin (2 * k + 5) → R) :
+4458:theorem rowS_N (k : ℕ) (x y : R) (w : Fin (2 * k + 5) → R) (hw : w ⟨k + 2, by omega⟩ = 0) :
+4475:theorem parent_ker_zero_of_P0 (k : ℕ) (d : Fin (2 * k + 5) → ℂ)
+4491:theorem child_crossVec_zero_of_P3 (k : ℕ) (d : Fin (2 * k + 5) → ℂ)
+4572:theorem parent_detL_zero (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (i : Fin (2 * k + 5))
+4594:theorem children_eq_of_P3_zero (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4612:theorem child_line_of_P3_zero (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4625:theorem hodd_inf_P0_ne_some (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d)
+4642:theorem hodd_inf' (k : ℕ) (d : Fin (2 * k + 5) → ℂ) (h : GenPosN d) :
+4654:theorem hodd_inf_all' :
+4661:theorem cliffordChainS_of_inf'
+4708:theorem heven_kernel (k : ℕ) (c : Fin (2*k+6) → ℂ) (h : GenPosN c) (i : Fin (2*k+6))
+4749:theorem kpe5_lo (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ k + 2) :
+4754:theorem kpe6_lo (k : ℕ) (x y : R) (j : ℕ) (hj : j ≤ k + 3) :
+4759:theorem kpe5_hi (k : ℕ) (x y : R) (j : ℕ) (hj : k + 3 ≤ j) (hj' : j ≤ 2 * k + 5) :
+4766:theorem kpe6_hi (k : ℕ) (x y : R) (j : ℕ) (hj : k + 4 ≤ j) (hj' : j ≤ 2 * k + 6) :
+4778:theorem parent_det_MN (k : ℕ) (c : Fin (2*k+6) → ℂ) (i : Fin (2*k+6))
+4884:theorem parent_on_child_line (k : ℕ) (c : Fin (2*k+6) → ℂ) (h : GenPosN c) (i : Fin (2*k+6))
+4915:theorem parent_mid_ker_MNF (k : ℕ) (c : Fin (2*k+6) → ℂ) (i : Fin (2*k+6))
+5009:theorem parent_crossVec_zero_of_mid (k : ℕ) (c : Fin (2*k+6) → ℂ) (i : Fin (2*k+6))
+5047:theorem child_line_of_parent_mid_zero (k : ℕ) (c : Fin (2*k+6) → ℂ) (h : GenPosN c)
+5072:theorem subfamily_P0_zero_gen (k : ℕ) (c : Fin (2*k+6) → ℂ)
+5102:theorem heven_of_line (k : ℕ) (c : Fin (2*k+6) → ℂ) (i : Fin (2*k+6)) (p u : ℂ) (hu : u ≠ 0)
+5130:theorem heven_of_common (k : ℕ) (c : Fin (2*k+6) → ℂ) (i : Fin (2*k+6)) (q : ℂ)
+5148:theorem heven_line_of_P0 (k : ℕ) (c : Fin (2*k+6) → ℂ) (h : GenPosN c) (i : Fin (2*k+6))
+5223:theorem heven_inf_of_corner (k : ℕ) (c : Fin (2*k+6) → ℂ) (h : GenPosN c) (i : Fin (2*k+6))
+5264:def EvenCorner : Prop :=
+5274:theorem heven_inf_all_of_corner (hC : EvenCorner) :
+5280:theorem cliffordChainS_of_corner (hC : EvenCorner) (n : ℕ) (hn : 3 ≤ n) : CliffordChainS n :=
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=4031, limit=95][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=4680, limit=70][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=4770, limit=325][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=3698, limit=36][0m
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -n "^theorem\|^lemma\|^def\|^noncomputable def" scratch/ChainEvenCorner.lean | awk -F: '$1<1400' | head -80
+31:def LineOf (a t w : ℂ) : Prop := w = a + t * conj w
+33:theorem norm_t_eq_one {c : ℂ} (hc : c ≠ 0) : ‖-c / conj c‖ = 1 := by
+37:theorem lineOf_iff {c w : ℂ} (hc : c ≠ 0) :
+44:theorem onCircleM_iff_lineOf {c z : ℂ} (hc : c ≠ 0) (hz : z ≠ 0) :
+55:theorem lineOf_eq_line {c : ℂ} (hc : c ≠ 0) :
+70:theorem exists_line {c : ℂ} (hc : c ≠ 0) :
+81:def K (n : ℕ) (a t : Fin n → ℂ) : Matrix (Fin n) (Fin (n / 2 + 1) ⊕ Fin (n / 2 + 1)) ℂ :=
+88:def Kc (n : ℕ) (a t : Fin n → ℂ) : Matrix (Fin n) (Fin (n / 2 + 1) ⊕ Fin (n - n / 2)) ℂ :=
+95:def Kf (n : ℕ) (a t : Fin n → ℂ) : Matrix (Fin n) (Fin (n + 1)) ℂ :=
+99:theorem exists_ker_of_lt {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq κ]
+106:theorem card_cols_K (n : ℕ) : Fintype.card (Fin (n / 2 + 1) ⊕ Fin (n / 2 + 1)) = 2 * (n / 2) + 2 := by
+109:theorem card_cols_Kc (n : ℕ) : Fintype.card (Fin (n / 2 + 1) ⊕ Fin (n - n / 2)) = n + 1 := by
+113:theorem K_exists_ker (n : ℕ) (a t : Fin n → ℂ) : ∃ v ≠ 0, K n a t *ᵥ v = 0 :=
+117:theorem Kc_exists_ker (n : ℕ) (a t : Fin n → ℂ) : ∃ v ≠ 0, Kc n a t *ᵥ v = 0 :=
+121:theorem finrank_ker_add_rank {ι κ : Type*} [Fintype ι] [Fintype κ] [DecidableEq κ]
+129:theorem K_finrank_ker_ge_two {n : ℕ} (hn : n % 2 = 0) (a t : Fin n → ℂ) :
+137:theorem finrank_ker_eq_one {n : ℕ} {κ : Type*} [Fintype κ] [DecidableEq κ]
+150:theorem Kc_finrank_ker_eq_one {n : ℕ} (a t : Fin n → ℂ)
+159:def crossVec {R : Type*} [CommRing R] {n : ℕ} (A : Matrix (Fin n) (Fin (n + 1)) R) :
+164:theorem mulVec_crossVec {R : Type*} [CommRing R] {n : ℕ} (A : Matrix (Fin n) (Fin (n + 1)) R) :
+179:theorem crossVec_ne_zero {R : Type*} [CommRing R] {n : ℕ} (A : Matrix (Fin n) (Fin (n + 1)) R)
+187:theorem Kf_ker_eq_span {n : ℕ} (a t : Fin n → ℂ) (j : Fin (n + 1))
+204:theorem det_fin_four' {R : Type*} [CommRing R] (A : Matrix (Fin 4) (Fin 4) R) :
+214:def KP {R : Type*} [CommRing R] (n : ℕ) (x y : Fin n → R) : Matrix (Fin n) (Fin (n + 1)) R :=
+219:noncomputable def aOf {n : ℕ} (c : Fin n → ℂ) : Fin n → ℂ := fun k => 1 / conj (c k)
+220:noncomputable def tOf {n : ℕ} (c : Fin n → ℂ) : Fin n → ℂ := fun k => -c k / conj (c k)
+222:theorem KP_eq_scale {n : ℕ} (c : Fin n → ℂ) (hc : ∀ k, c k ≠ 0) (k : Fin n) (j : Fin (n + 1)) :
+236:theorem KP_mulVec_eq_zero_iff {n : ℕ} (c : Fin n → ℂ) (hc : ∀ k, c k ≠ 0) (v : Fin (n + 1) → ℂ) :
+248:theorem det_fin_five' {R : Type*} [CommRing R] (A : Matrix (Fin 5) (Fin 5) R) :
+258:theorem crossVec_KP5_P0 {R : Type*} [CommRing R] (x y : Fin 5 → R) :
+265:theorem crossVec_KP4_P2 {R : Type*} [CommRing R] (x y : Fin 4 → R) :
+272:theorem crossVec_KP4_Q1 {R : Type*} [CommRing R] (x y : Fin 4 → R) :
+281:theorem ker_eq_span_crossVec {n : ℕ} (A : Matrix (Fin n) (Fin (n + 1)) ℂ) (j : Fin (n + 1))
+295:theorem Kf_ker_smul {n : ℕ} (c : Fin n → ℂ) (hc : ∀ k, c k ≠ 0) (j : Fin (n + 1))
+305:theorem crossVec_KP_mem_ker {n : ℕ} (c : Fin n → ℂ) (hc : ∀ k, c k ≠ 0) :
+312:noncomputable def levelPoint (m : ℕ) (v : Fin (2 * m + 1) → ℂ) : ℂ :=
+315:theorem c4_ne_zero {c : Fin 4 → ℂ} (h : GenPos4 (c 0) (c 1) (c 2) (c 3)) : ∀ k, c k ≠ 0 := by
+321:theorem levelPoint_four {c : Fin 4 → ℂ} (h : GenPos4 (c 0) (c 1) (c 2) (c 3))
+337:theorem Kf_four_finrank {c : Fin 4 → ℂ} (h : GenPos4 (c 0) (c 1) (c 2) (c 3)) :
+357:def lap2 {R : Type*} [CommRing R] (m₁₂ m₁₃ m₁₄ m₁₅ m₂₃ m₂₄ m₂₅ m₃₄ m₃₅ m₄₅ p₁ p₂ p₃ p₄ p₅ q₁ q₂ q₃ q₄ q₅ : R) : R :=
+360:theorem det5_lap2 {R : Type*} [CommRing R] (a₁ b₁ c₁ a₂ b₂ c₂ a₃ b₃ c₃ a₄ b₄ c₄ a₅ b₅ c₅ p₁ p₂ p₃ p₄ p₅ q₁ q₂ q₃ q₄ q₅ : R) :
+365:theorem plucker_abs {R : Type*} [CommRing R] (m₁₂ m₁₃ m₁₄ m₁₅ m₂₃ m₂₄ m₂₅ m₃₄ m₃₅ m₄₅ u₁ u₂ u₃ u₄ u₅ v₁ v₂ v₃ v₄ v₅ w₁ w₂ w₃ w₄ w₅ s₁ s₂ s₃ s₄ s₅ : R)
+372:theorem plucker5 {R : Type*} [CommRing R] (a₁ b₁ c₁ a₂ b₂ c₂ a₃ b₃ c₃ a₄ b₄ c₄ a₅ b₅ c₅ u₁ u₂ u₃ u₄ u₅ v₁ v₂ v₃ v₄ v₅ w₁ w₂ w₃ w₄ w₅ s₁ s₂ s₃ s₄ s₅ : R) :
+381:def kA57 (x₁ x₂ x₃ x₄ x₅ y₁ y₂ y₃ y₄ y₅ : R) : R :=
+389:def kA46 (x₁ x₂ x₃ x₄ x₅ y₁ y₂ y₃ y₄ y₅ : R) : R :=
+396:theorem map_kA57 {S : Type*} [CommRing S] (f : R →+* S) (x₁ x₂ x₃ x₄ x₅ y₁ y₂ y₃ y₄ y₅ : R) :
+401:theorem kA57_swap (x₁ x₂ x₃ x₄ x₅ y₁ y₂ y₃ y₄ y₅ : R) :
+406:theorem k0k3_sub_k1k2 (x₁ x₂ x₃ x₄ x₅ y₁ y₂ y₃ y₄ y₅ : R) :
+426:theorem crossVec_KP5_Q0 (x y : Fin 5 → R) :
+432:theorem crossVec_KP5_Q2 (x y : Fin 5 → R) :
+446:noncomputable def oddCircleEq (m : ℕ) (v : Fin (2 * m + 2) → ℂ) (z : ℂ) : ℂ :=
+452:noncomputable def levelPointN (n : ℕ) (v : Fin (n + 1) → ℂ) : ℂ :=
+455:theorem levelPointN_four {c : Fin 4 → ℂ} (h : GenPos4 (c 0) (c 1) (c 2) (c 3))
+462:theorem oddCircleEq_five_cross (c : Fin 5 → ℂ) (z : ℂ) :
+488:theorem oddCircle_five {c : Fin 5 → ℂ} (hc : ∀ k, c k ≠ 0)
+507:theorem oddCircleEq_five_degenerate (c : Fin 5 → ℂ)
+514:theorem step_four_five {c : Fin 5 → ℂ} (h : GenPos5 (c 0) (c 1) (c 2) (c 3) (c 4))
+531:theorem Kf_border_even (m : ℕ) (a t : Fin (2 * m + 1) → ℂ) :
+541:theorem Kf_border_odd (m : ℕ) (a t : Fin (2 * m + 2) → ℂ) :
+560:def StepEven (m : ℕ) : Prop :=
+571:def StepOdd (m : ℕ) : Prop :=
+591:theorem rowRel1 {R : Type*} [CommRing R] (x0 x1 x2 x3 x4 y0 y1 y2 y3 y4 v0 v1 v2 v3 v4 v5 v6 : R)
+601:theorem rowRel2 {R : Type*} [CommRing R] (x0 x1 x2 x3 x4 y0 y1 y2 y3 y4 v0 v1 v2 v3 v4 v5 v6 : R)
+614:theorem KP6_row {R : Type*} [CommRing R] (x y : Fin 6 → R) (k : Fin 6) :
+624:theorem det6_expand {R : Type*} [CommRing R] (A : Matrix (Fin 6) (Fin 6) R) :
+637:theorem crossVec_KP6_swap3 {R : Type*} [CommRing R] (x y : Fin 6 → R) :
+643:theorem crossVec_KP6_swap6 {R : Type*} [CommRing R] (x y : Fin 6 → R) :
+649:theorem conj_crossVec_KP6 (c : Fin 6 → ℂ) (j : Fin 7) :
+662:theorem stepEven_two : StepEven 2 := by
+723:def border {n : ℕ} (w : Fin (n + 1) → R) (A : Matrix (Fin n) (Fin (n + 1)) R) :
+727:theorem det_border {n : ℕ} (w : Fin (n + 1) → R) (A : Matrix (Fin n) (Fin (n + 1)) R) :
+735:theorem det_border_single {n : ℕ} (A : Matrix (Fin n) (Fin (n + 1)) R) (j : Fin (n + 1))
+742:theorem crossVec_colPerm {n : ℕ} (A B : Matrix (Fin n) (Fin (n + 1)) R)
+767:theorem sign_revPerm_succ (k : ℕ) :
+788:def blockEquiv (m : ℕ) : Fin (m + 2) ⊕ Fin (m + 1) ≃ Fin (2 * m + 2 + 1) :=
+792:def blockRev (m : ℕ) : Perm (Fin (2 * m + 2 + 1)) :=
+795:theorem blockEquiv_inl (m : ℕ) (a : Fin (m + 2)) : ((blockEquiv m (Sum.inl a)) : ℕ) = a := by
+798:theorem blockEquiv_inr (m : ℕ) (b : Fin (m + 1)) :
+802:theorem blockRev_blockEquiv (m : ℕ) (s : Fin (m + 2) ⊕ Fin (m + 1)) :
+806:theorem blockRev_val (m : ℕ) (j : Fin (2 * m + 2 + 1)) :
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=3732, limit=20][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=3834, limit=170][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=159, limit=5][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=4126, limit=16][0m
+[0m
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && cat >> scratch/ChainEvenCorner.lean <<'EOF'
+
+/-! ## J32: towards `EvenCorner_proof` (work in progress) -/
+EOF
+time lake env lean scratch/ChainEvenCorner.lean 2>&1 | tail -5; echo rc=${PIPESTATUS[0]}
+∀ (j : Fin (2 * k + 5)), Clifford.MorleyKernel.EptInf (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) ∈ Y
+Clifford.MorleyKernel.cliffordChainS_of_corner : Clifford.MorleyKernel.EvenCorner →
+  ∀ (n : ℕ), 3 ≤ n → Clifford.CliffordChainS n
+'Clifford.MorleyKernel.heven_inf_all_of_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.cliffordChainS_of_corner' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m56.471s
+user	5m10.686s
+sys	0m3.301s
+rc=0
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=214, limit=5][0m
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -rn "GenPosN\b" Clifford/*.lean scratch/ChainEvenCorner.lean | grep -n "def\|structure" | head; grep -n "theorem hc_of_genPos\|theorem GenPosN\.\|lemma GenPosN" -r Clifford scratch/ChainEvenCorner.lean | head
+5:Clifford/Clean.lean:177:def GenPosN {n : ℕ} (c : Fin n → ℂ) : Prop :=
+6:Clifford/Clean.lean:184:def CliffordChain (n : ℕ) : Prop := ∀ c : Fin n → ℂ, GenPosN c → ∃ X, Chain n c X
+13:Clifford/Mobius.lean:46:def CliffordChainS (n : ℕ) : Prop := ∀ c : Fin n → ℂ, GenPosN c → ∃ X, ChainS n c X
+Clifford/Clean.lean:209:theorem GenPosN.pos4 {c : Fin 4 → ℂ} (h : GenPosN c) : GenPos4 (c 0) (c 1) (c 2) (c 3) :=
+Clifford/Clean.lean:215:theorem GenPosN.pos5 {c : Fin 5 → ℂ} (h : GenPosN c) : GenPos5 (c 0) (c 1) (c 2) (c 3) (c 4) :=
+Clifford/Mobius.lean:292:theorem GenPosN.comp_succAbove {n : ℕ} {c : Fin (n + 1) → ℂ} (h : GenPosN c) (i : Fin (n + 1)) :
+Clifford/Classify.lean:167:theorem GenPosN.exists_snoc {n : ℕ} (hn : 2 ≤ n) {c : Fin n → ℂ} (h : GenPosN c) :
+scratch/ChainEvenCorner.lean:2582:theorem hc_of_genPos {n : ℕ} (hn : 2 ≤ n) (c : Fin n → ℂ) (h : GenPosN c) (j : Fin n) :
+[0m
+Checkpoint passed: the file compiles with rc 0 in 56 s. Next I'll add a reduction lemma that brings the target down to a single scalar identity. Then I'll test whether that identity can be proved.
+[0m$ [0mcd ~/paperL_jack && export PATH=$HOME/.elan/bin:$PATH && cat >> scratch/ChainEvenCorner.lean <<'EOF'
+
+namespace Clifford.MorleyKernel
+open Complex ComplexConjugate Matrix
+
+/-- **Reduction of the corner.** If the subfamily cross vector `w` has `w_last = 0` (and `w₀ ≠ 0`),
+then `w` without its last entry is a common kernel vector of every grandchild matrix, so all finite
+grandchild level points coincide (`= -w_{2k+4} / w_{k+2}`), in particular they are collinear. -/
+theorem evenCorner_of_QL (k : ℕ) (c : Fin (2*k+6) → ℂ) (h : GenPosN c) (i : Fin (2*k+6))
+    (hP0 : crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))) 0 ≠ 0)
+    (hQL : crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r)))
+      (Fin.last _) = 0)
+    (hall : ∀ j : Fin (2*k+5), crossVec (KP (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove)
+        (fun r => conj (((c ∘ i.succAbove) ∘ j.succAbove) r))) ⟨k+2, by omega⟩ ≠ 0) :
+    ∃ p u : ℂ, u ≠ 0 ∧ ∀ j : Fin (2*k+5), ∃ t : ℝ,
+      levelPointN (2*k+4) (crossVec (KP (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove)
+        (fun r => conj (((c ∘ i.succAbove) ∘ j.succAbove) r)))) = p + (t : ℂ) * u := by
+  have hdg : GenPosN (c ∘ i.succAbove) := h.comp_succAbove i
+  have hd : ∀ j, (c ∘ i.succAbove) j ≠ 0 := hc_of_genPos (by omega) _ hdg
+  set A := KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r)) with hA
+  set w := crossVec A with hw
+  set U : Fin (2*k+5) → ℂ := fun l => w (Fin.castSucc l) with hU
+  have hU0 : U ≠ 0 := by
+    intro h0
+    have := congrFun h0 0
+    exact hP0 this
+  have hker : A.submatrix id (Fin.last (2*k+5)).succAbove *ᵥ U = 0 := by
+    funext r
+    have h1 := congrFun (mulVec_crossVec A) r
+    simp only [mulVec, dotProduct, Pi.zero_apply] at h1 ⊢
+    rw [Fin.sum_univ_castSucc] at h1
+    rw [← hw, hQL, mul_zero, add_zero] at h1
+    simpa [Matrix.submatrix_apply, Fin.succAbove_last, hU] using h1
+  refine ⟨-U (Fin.last _) / U ⟨k + 2, by omega⟩, 1, one_ne_zero, fun j => ⟨0, ?_⟩⟩
+  rw [levelPointN_of_ker k _ (hall j) U (child_mulVec_of_parentN k _ hd U hker j) hU0]
+  simp
+
+/-- The residual scalar identity: in the corner the subfamily's last coordinate vanishes. -/
+def EvenCornerQL : Prop :=
+  ∀ (k : ℕ) (c : Fin (2*k+6) → ℂ), GenPosN c → ∀ i : Fin (2*k+6),
+    crossVec (KP (2*k+6) c (fun j => conj (c j))) = 0 →
+    crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))) 0 ≠ 0 →
+    (∀ j : Fin (2*k+5), crossVec (KP (2*k+4) ((c ∘ i.succAbove) ∘ j.succAbove)
+        (fun r => conj (((c ∘ i.succAbove) ∘ j.succAbove) r))) ⟨k+2, by omega⟩ ≠ 0) →
+    crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))) (Fin.last _) = 0
+
+theorem evenCorner_of_cornerQL (hQ : EvenCornerQL) : EvenCorner :=
+  fun k c h i hV hP0 hall => evenCorner_of_QL k c h i hP0 (hQ k c h i hV hP0 hall) hall
+
+end Clifford.MorleyKernel
+
+#check @Clifford.MorleyKernel.evenCorner_of_QL
+#check @Clifford.MorleyKernel.evenCorner_of_cornerQL
+#print axioms Clifford.MorleyKernel.evenCorner_of_QL
+#print axioms Clifford.MorleyKernel.evenCorner_of_cornerQL
+EOF
+time lake env lean scratch/ChainEvenCorner.lean 2>&1 | tail -25; echo rc=${PIPESTATUS[0]}
+Clifford.MorleyKernel.crossVec
+            (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r)) 0 ≠
+          0 →
+        Clifford.MorleyKernel.crossVec
+              (Clifford.MorleyKernel.KP (2 * k + 5) (c ∘ i.succAbove) fun r => (starRingEnd ℂ) ((c ∘ i.succAbove) r))
+              (Fin.last (2 * k + 5)) =
+            0 →
+          (∀ (j : Fin (2 * k + 5)),
+              Clifford.MorleyKernel.crossVec
+                  (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                    (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))
+                  ⟨k + 2, ⋯⟩ ≠
+                0) →
+            ∃ p u,
+              u ≠ 0 ∧
+                ∀ (j : Fin (2 * k + 5)),
+                  ∃ t,
+                    Clifford.MorleyKernel.levelPointN (2 * k + 4)
+                        (Clifford.MorleyKernel.crossVec
+                          (Clifford.MorleyKernel.KP (2 * k + 4) ((c ∘ i.succAbove) ∘ j.succAbove) fun r =>
+                            (starRingEnd ℂ) (((c ∘ i.succAbove) ∘ j.succAbove) r))) =
+                      p + ↑t * u
+Clifford.MorleyKernel.evenCorner_of_cornerQL : Clifford.MorleyKernel.EvenCornerQL → Clifford.MorleyKernel.EvenCorner
+'Clifford.MorleyKernel.evenCorner_of_QL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Clifford.MorleyKernel.evenCorner_of_cornerQL' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+real	0m57.778s
+user	5m12.667s
+sys	0m3.810s
+rc=0
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=440, limit=16][0m
+[0m
+[0m$ [0mcd ~/paperL_jack && grep -n "theorem stepOdd_gen\|theorem kernel_eq_zero_of_P0\|theorem oddCircleEq_of_P0_zero\|theorem kernelCircle_isGCircleS\|theorem conj_crossVec_odd\|theorem rowRel1_gen\|theorem rowRel2_gen\|theorem conj_crossVec_even\|theorem crossVec_even_P0_ne_zero\|theorem subRowsOdd_entry\|theorem subRowsEven" scratch/ChainEvenCorner.lean | head -20
+910:theorem conj_crossVec_even (m : ℕ) (c : Fin (2 * m + 2) → ℂ) :
+916:theorem conj_crossVec_even_Q (m : ℕ) (c : Fin (2 * m + 2) → ℂ) :
+921:theorem crossVec_even_P0_ne_zero (m : ℕ) (c : Fin (2 * m + 2) → ℂ)
+1242:theorem rowRel1_gen (m : ℕ) (hm : 1 ≤ m) (x y : Fin (2 * m + 2) → R) (i : Fin (2 * m + 2)) :
+1254:theorem rowRel2_gen (m : ℕ) (hm : 1 ≤ m) (x y : Fin (2 * m + 2) → R) (i : Fin (2 * m + 2)) :
+1535:theorem conj_crossVec_odd_P0 (m : ℕ) (c : Fin (2 * m + 1) → ℂ) :
+1541:theorem conj_crossVec_odd_last (m : ℕ) (c : Fin (2 * m + 1) → ℂ) :
+1868:theorem subRowsOdd_entry (m : ℕ) (x y : Fin (2 * m + 3) → R) (i : Fin (2 * m + 3))
+2099:theorem stepOdd_gen (m : ℕ) : StepOdd (m + 1) := by
+2171:theorem kernelCircle_isGCircleS (m : ℕ) (v : Fin (2 * m + 2) → ℂ) (hv0 : v 0 ≠ 0) :
+2610:theorem oddCircleEq_of_P0_zero (m : ℕ) (v : Fin (2 * m + 2) → ℂ) (h : v 0 = 0) (z : ℂ) :
+2635:theorem kernel_eq_zero_of_P0 (k : ℕ) (d : Fin (2 * k + 5) → ℂ)
+[0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=1225, limit=45][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/scratch/ChainEvenCorner.lean[90m [offset=2582, limit=10][0m
+[0m→ [0mRead /home/jackagent/paperL_jack/Clifford/Clean.lean[90m [offset=150, limit=35][0m
+[0m
+[0m← [0mWrite /home/jackagent/paperL_jack/REPORT.md
+Wrote file successfully.
+[0m
+I did not prove `EvenCorner_proof` within the 30-minute box. I reduced it to one scalar identity, which is also unproved. `REPORT.md` has the details.
+
+**Build status:** `lake env lean scratch/ChainEvenCorner.lean` returns rc = 0 in about 57 s. Lines 1–5288 are unchanged, and the new lemmas depend only on the standard axioms (`propext`, `Classical.choice`, `Quot.sound`).
+
+**What I added (after line 5288):**
+- `evenCorner_of_QL`: write `w` for the subfamily cross vector `crossVec (KP (2k+5) d d̄)`, with `d = c ∘ i.succAbove`. If `w (Fin.last _) = 0` and `w 0 ≠ 0`, then `w` with its last entry dropped is a nonzero kernel vector for every grandchild matrix (via `child_mulVec_of_parentN`). So all finite grandchild level points are the same point, `-w_{2k+4}/w_{k+2}` (via `levelPointN_of_ker`), and the conclusion holds with `u = 1`, `t = 0`.
+- `EvenCornerQL` is that remaining identity stated as a named proposition, and `evenCorner_of_cornerQL : EvenCornerQL → EvenCorner`.
+
+**Residual goal** (after `intro k c h i hV hP0 hall`):
+```
+crossVec (KP (2*k+5) (c ∘ i.succAbove) (fun r => conj ((c ∘ i.succAbove) r))) (Fin.last _) = 0
+```
+In words: in the corner, the subfamily's kernel circle has radius 0. This fits your fact 2: a genuine circle meets a line in at most two points, so five collinear grandchildren on it force it to degenerate.
+
+**Proof on paper** (written out in `REPORT.md`; I have not checked it numerically or formally, and it does not use `hall`):
+1. Insert a 0 into `w` at column `k+3`. The result is a kernel vector of the parent matrix `KP (2k+6)`. Rows other than `i` follow from `mulVec_crossVec`. Row `i` is a Laplace expansion equal to `±V_{k+3}`, which is 0.
+2. Apply the conjugation symmetry behind `conj_crossVec_even` to get a second kernel vector `s`. It has `s_{k+3} = conj w₀`, which is nonzero by `hP0`.
+3. Combine the two vectors into a binary form of degree `2k+5`. It vanishes at the `2k+6` points `(c_r : c̄_r)`, which are pairwise distinct by `Transversal`, so it is identically zero. Its top coefficient is `−conj w₀ · w_last`, so `w_last = 0`.
+
+**Missing lemmas**, none of which is in the prefix:
+- the row-`i` Laplace identity for `KP (2k+6)` with column `k+3` removed;
+- a kernel-vector version of the conjugation symmetry (only the `crossVec` form exists);
+- "a binary form of degree `2m+1` with `2m+2` distinct zeros is zero", plus extracting its top coefficient.
+
+No branch of my case split is mathematically stuck; the only open piece is `EvenCornerQL`. I estimate the formalisation at 250–400 lines. I did not add the `heven_inf_all` / `cliffordChainS_inf` one-liners because the target is not done.

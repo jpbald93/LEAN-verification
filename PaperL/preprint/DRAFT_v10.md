@@ -1,14 +1,14 @@
 # Clifford's chain for every n: point–circle configurations on the Riemann sphere, in Lean 4
 
-**Draft v0.9 — 2026-11-26.** This draft is assembled only from recorded artifacts: the plan
+**Draft v0.10 — 2026-11-26.** This draft is assembled only from recorded artifacts: the plan
 (`PLAN.md`), the novelty scout and its verdict table (`SCOUT.md`), the round records in
 `notes/math-papers.md`, the machine-generated layer reports on the build host
 (`layer10/REPORT_L10.md`, `layer11/ANCHORS.md`, `~/leancheck/reports/paperL_jack_20261119_020713.md`),
 and the check files in `check/`. No number below is estimated. Everything not yet established is
 marked **OPEN** at the point where it would be needed. **Appendix C** lists what changed from v0.2 in v0.3, what the v0.3 review changed in v0.4, what the late-block mutation run of 2026-11-25 changed in v0.5, and
 what the late-block contradiction probes and the re-run of the unattributed rows changed in v0.6,
-what the two-machine satisfiability passes changed in v0.7, and what the publication of the code
-repository changed in v0.9.
+what the two-machine satisfiability passes changed in v0.7, what the publication of the code
+repository changed in v0.9, and what the referee pass on v0.9 changed in v0.10.
 
 Axiom shorthand used throughout: **std** = `[propext, Classical.choice, Quot.sound]`.
 
@@ -79,13 +79,16 @@ which forces the parent cross vector `V = 0` (from `hmid = 0` and `P₀(d) ≠ 0
 `parent_crossVec_zero_of_mid`, `Clifford/MorleyKernel.lean:4998`; the packaging lemma
 `heven_inf_of_corner` additionally requires all grandchildren finite). The corner is not vacuous in
 practice: a numerical search found configurations approximately in it, with the grandchildren's level
-points collinear to 1e-8; exact membership is not claimed from that search, and the theorem below does
-not need it. The recorded witness has `triP` 1e-2, `cycP` 1.3e-3, transversals ≥ 1e-2 and
+points collinear in the search (`1e-8` in the earlier, looser run, `3.9e-5` for the tuple the JSON
+stores); exact membership is not claimed from that search, and the theorem below does not need it. The recorded witness has `triP` 1e-2, `cycP` 1.3e-3, transversals ≥ 1e-2 and
 all `|c| ≥ 0.08`; an earlier, looser solver run had `triP` 0.14, `cycP` 0.024, transversals 0.04 (the
 JSON records both runs separately). That witness is **numerical evidence, not a certificate** — small floating-point
 residuals do not prove the exact vanishing of `V` — and it is bundled at
-`layer0/r25_jack/RANK_ROUTE_COUNTEREXAMPLE.json` (see Appendix A); it also refuted the tempting
-rank route. The exact statement proved later is stronger than collinearity: `evenCorner_of_QL`
+`layer0/r25_jack/RANK_ROUTE_COUNTEREXAMPLE.json` (see Appendix A). It provided numerical evidence
+against the tempting rank route — the stored tuple has `|V|` max `4.2e-10` and a subfamily
+collinearity deviation of `3.9e-5`, while the `1e-9` residual and the `1e-8` collinearity figure
+belong to the earlier, looser run that the JSON records separately. It is not an exact refutation of
+that route, and the exact statement proved later does not rest on it. The exact statement proved later is stronger than collinearity: `evenCorner_of_QL`
 (`Clifford/MorleyKernel.lean:5287`) and `evenCornerQL_proof` (`Clifford/MorleyKernel.lean:5539`)
 show that in the exact corner all `2k+5` grandchild level points **coincide** at the single point
 `−w_{2k+4}/w_{k+2}`. Round 25 reduced the corner to the scalar identity `w_last = 0` for the
@@ -460,7 +463,7 @@ the 5,600 pinned here).
 
 Every `file:line` citation in this draft — prose, code comments, comma lists and tables alike — is
 machine-checked by `namegate.py` (layer 11, `L11_NAMEGATE.md`): **143 occurrences of 98 distinct
-`Clifford/File.lean:N` pairs**, each resolving to a declaration in the pinned tree, and the 22 checks
+`Clifford/File.lean:N` pairs**, each resolving to a declaration in the pinned tree, and the 25 checks
 written in the form `` `name` (`file:line`) `` additionally checked against the name the draft
 attributes to them. Bare single-line citations have been removed; the three "lines A–B" spans left
 name a region of a file or of a log, not a declaration. The script counts a citation inside a table
@@ -474,12 +477,13 @@ reviewed v0.1 — see §5.11).
 `lakefile.toml`, `lean-toolchain` and `lake-manifest.json` at the pinned commit, and the two check
 files of §1.1 and §5.4 in `check/` on `main`. `lake build` compiles the library, `./gate.sh` prints
 the gate verdict and the `#print axioms` report for all 36 required declarations, and
-`tests/tamper.sh` runs the nine-test tamper suite; the two `.bak-r26` files are the pre-promotion
+`bash tests/tamper.sh` runs the eight-test tamper suite; the two `.bak-r26` files are the pre-promotion
 copies, kept so the round-26 edits of §4 can be audited. The paper-side material — the layer reports,
 the review rounds and their triages, the layer-13/14/15 comparisons, the mutation, contradiction and
 satisfiability reports, and `namegate.py` — is published in the `PaperL` folder of
-[github.com/jpbald93/LEAN-verification](https://github.com/jpbald93/LEAN-verification), which mirrors
-the artifact directory every path in Appendix A is relative to.
+[github.com/jpbald93/LEAN-verification](https://github.com/jpbald93/LEAN-verification), arranged as
+`preprint/`, `reports/`, `reviews/`, `layer0/`, `layer13/`, `check/` and `evidence/`; Appendix A gives
+the mapping from the artifact-relative paths this paper uses.
 
 ### 3.1 The 36 gate declarations
 
@@ -629,7 +633,7 @@ was developed for this paper series. Host: `jack`. Report
 | 2 | tampering: 8 hand-made cheat attempts must be rejected | **8/8 rejected** — the log records `ALL TAMPERING TESTS REJECTED` |
 | baseline | the 8 audited source files compile as given | **8/8 ok** |
 | 4 | mutation: inject a wrong constant at a declaration and require a downstream error | battery (2026-11-19, re-run 2026-11-25): **535 decisive kills + 95 timeout/heartbeat**, **1 SURVIVED**, **0 error-unattributed** over 259 declarations of 8 source files, only 61 of `MorleyKernel.lean`'s 343; late block (2026-11-25): **872 kills + 3 timeout**, **16 SURVIVED**, 0 unattributed over 257 further `MorleyKernel` declarations — together **318 of the 343** in that file (see §5.1) |
-| 5 | contradiction probes: try to prove `False` from a theorem's hypotheses with limited tactics | **0 CONTRADICTORY** over 551 of the 577 declarations (310 `ok`, 218 no-hypothesis, 22 timeout, 1 probe-invalid, 0 error-unattributed): the battery's 294 plus a late block over 257 further `MorleyKernel` declarations at lines 816–5592 (163 `ok`, 93 no-hypothesis, 1 probe-invalid). `ok` means the limited search failed, not that unsatisfiability was certified (§5.2) |
+| 5 | contradiction probes: try to prove `False` from a theorem's hypotheses with limited tactics | **0 CONTRADICTORY** over 551 of the 577 declarations (310 `ok`, 218 no-hypothesis, 22 timeout, 1 probe-invalid, 0 error-unattributed): the battery's 294 plus a late block over 257 further `MorleyKernel` declarations at lines 816–5592 (163 `ok`, 93 no-hypothesis, 1 probe-invalid). `ok` means the limited search failed, not that satisfiability was certified (§5.2) |
 | 6 | ablation: delete a hypothesis and check whether the proof still compiles | **501 needed / 8 unused**, 0 skipped, 0 timeout, 0 bad-control, over 262 declarations |
 | 7 | linter (library files) | **0 warnings in 8 files**; the scratch leg was not run by the battery and is quoted from `layer10/REPORT_L10.md` (§4 below) |
 | 8 | satisfiability certification | **run on two machines, 2026-11-25/26**: jack **400 of 596 (67.1%)**, john **394 of 584 (67.5%)** certified; across the 577 declarations both ran, **397 (68.8%)** are certified by at least one and 180 by neither; 0 stmt-invalid, nothing refuted (§5.2) |
@@ -658,7 +662,7 @@ whose statement is level-parametric, not a hole in the proof; nothing in the bat
 either.
 
 Build receipts at the pin. On jack: `lake build Clifford` rc = 0 (8,716 jobs at the layer-10
-collection), `gate.sh` PASS (36 declarations, standard axioms only), `tests/tamper.sh` 8/8 rejected.
+collection), `gate.sh` PASS (36 declarations, standard axioms only), `bash tests/tamper.sh` 8/8 rejected.
 The scratch file `scratch/ChainEvenCornerQL.lean` has 5,611 lines, sha `b4d07119…`, its first 5,344
 lines are byte-identical to `scratch/ChainEvenCorner.lean`, and its last 267 lines are byte-identical
 to the promoted suffix; it compiles in **58 s on jack**, and its `#print axioms` block names all four
@@ -706,14 +710,15 @@ in descending order of consequence for a reader.
    files. Of the sixteen late-block survivors, nine compile their own mutant proof and are caught
    downstream (at lines 1647, 2761, 3922 and 5574); three change `2*0+5` to `3*0+5` in a `k = 0`
    statement, where both are 5, so the mutant is the same proposition and the row is vacuous; and
-   four mutate the hypothesis `u ≠ 0` of `child_line_of_parent_mid_zero` and are caught nowhere
-   (§5.8). **No survivor is a hole in a headline statement.** The 25 declarations with no mutant on
+   four alter the conjunct `u ≠ 0` in the *conclusion* of `child_line_of_parent_mid_zero` — a branch
+   lemma whose hypotheses are inconsistent on purpose (`hmid` and `P₀ ≠ 0` force `V = 0`, contradicting
+   `hv`), so no proof obligation reaches the mutant (§5.8). **No survivor is a hole in a headline statement.** The 25 declarations with no mutant on
    jack split in two: six primed names that jack's collector skips
    (`d7_children_gcircleS'`/`''`, `hodd_inf'`, `hodd_inf_all'`, `hodd_one_P0_line'`,
    `p0_levelpts_collinear'`), which john's second-machine run mutates and kills every mutant of, and
    nineteen whose conclusion the generator cannot alter — `evenCornerQL_proof`, `EvenCorner_proof`
-   and `cliffordChainS_inf` are of that kind — which rest on the gate, tamper and axiom checks
-   alone. Contradiction probes ran in two blocks as well: the battery's 294 declarations, all 234
+   and `cliffordChainS_inf` are of that kind — which are not covered by mutation: they rest on the gate, tamper and axiom checks and, where the
+   declaration has hypotheses, on the satisfiability layer. Contradiction probes ran in two blocks as well: the battery's 294 declarations, all 234
    outside `MorleyKernel.lean` and 60 of its 343, every one before line 816, and on 2026-11-25 a late
    block over 257 further `MorleyKernel` declarations at lines 816–5592 — 163 `ok`, 93 with no
    hypothesis and one `probe-invalid`, **0 CONTRADICTORY**. That is **551 of the 577 declarations
@@ -727,7 +732,7 @@ in descending order of consequence for a reader.
    `child_line_P0N`, `p0_levelpts_gcircleS`). One late-block row is invalid rather than passing: for
    `subfamily_P0_zero_gen` the `True` control itself failed to compile (`conj` is bound as an
    implicit variable under `autoImplicit`), so the probe never ran and no contradiction claim is
-   made for it. **OPEN**: an expected-job manifest; a satisfiability pass (item 2).
+   made for it. **OPEN**: an expected-job manifest for the late block.
 
 2. **Satisfiability was run on two machines; about a third of the declarations remain unresolved.** The
    2026-11-19 battery ran with `--fast`, which replaces the job list with `sat = []`: that row was a
@@ -757,14 +762,23 @@ in descending order of consequence for a reader.
    both directions.** `L13_FULL_COMPARE.md` and `layer13/BlindCompareFull.lean` (compile exit 0,
    2.8 s, no `sorry`) compare the blind writer's real types — `BlindGenPos`, `BlindSecond`,
    `BlindIsGCircle` with `0 < r`, `BlindCliffordP`, `BlindCliffordFin` — against the paired library
-   theorems. Four rows (S4, S5, S6, S7) are **definitional** differences: the two sides assert
-   the same geometric content over independently invented predicates. Rows S2 and S3 add a
+   theorems. Rows S6 and S7 are **definitional** differences: the two sides assert the same geometric content
+   over independently invented predicates, and the bridge layer now proves both directions. Rows S4
+   and S5 are not: the writer's finite-plane variant (`BlindCliffordFin`) requires every level object
+   to lie in `BlindPlane`, so a level object that is a line — which contains ∞ — is unrepresentable,
+   while the library's `CliffordChain` admits lines. That is a difference in the predicate, not in
+   presentation: the `BlindGenPos` triple of `layer13/BRIDGE_NOTES.md` (three centres on a circle
+   through `M`, whose second intersections are distinct and collinear) satisfies the writer's
+   hypotheses, and a blind finite-plane level-3 object would have to be a positive-radius circle
+   through three distinct collinear points (impossible) or a line (excluded by the plane conjunct),
+   so the writer's S4 statement is false as written at `n = 3`; the library's cutoff is unaffected
+   and includes `n = 3`. S5 is stated over the same encoding. Rows S2 and S3 add a
    quantifier difference: the writer asks for existence plus incidence of **every** certified point
    on one generalized circle, while the real payloads place the canonical `EptInf` only; the
    uniqueness step that would identify the two is false (§5.4). S1 is definitional *as well as*
    carrying a hypothesis-strength gap — the writer quantifies over `BlindGenPos`, the library over the
    strictly stronger `GenPosN` — so its two sides do **not** assert the same content, which is why it
-   is excluded from the four definitional rows above and stays open. Because the real propositions are
+   is excluded from the two definitional rows above and stays open. Because the real propositions are
    theorems, the blind statement implies each of them trivially — that direction is closed for all
    seven rows and carries no information. The informative direction, real theorem ⇒ writer's
    statement, is now **proved in Lean for S7 and S6**. `layer13/BridgeBlind.lean` (sha
@@ -788,8 +802,9 @@ in descending order of consequence for a reader.
    this paper does not claim it.
    The general transport `blindOfChainS` also stays open on one branch: `IsGCircleS` admits the
    radius-zero circle (a finite singleton) where `BlindIsGCircle` requires `0 < r`. **OPEN**: S2/S3
-   need a universal-incidence theorem, not uniqueness; S4/S5 need the plane ⇄ sphere encoding
-   translation; S1 needs the statement decision above. The comparison file itself does run on a
+   need a universal-incidence theorem, not uniqueness; S4/S5 need a corrected writer-side encoding of
+   the finite plane (S4 is false as written, because the encoding forbids the line case that the
+   library admits); S1 needs the statement decision above. The comparison file itself does run on a
    second machine: `BlindCompareFull.lean` (sha `32dfa1b2…`) is byte-identical to
    `john:~/lean/paperL_john/layer13_receipt.lean` and compiles there (rc 0, 5.4 s against jack's
    2.8 s); the blind writer was not re-run on john.
@@ -813,8 +828,8 @@ in descending order of consequence for a reader.
    the six primed declarations jack's collector skips, killing all of their mutants. The v0.4 numbers
    quoted from `notes/math-papers.md` — 1,536 mutant rows over 520 declarations with 17 survivors,
    and 573 contradiction declarations — came from john's earlier wide run over a different tree and
-   are **superseded** by this like-for-like rerun. What remains external: the round-26b timings (71 s
-   and 74 s jack, 67 s john) and the build/gate/tamper receipts, quoted from the notes and not re-run
+   are **superseded** by this like-for-like rerun. What remains external: the round-26b timings (71 s on jack and 74 s on
+   john for the promotion build, 67 s for the scratch receipt on john) and the build/gate/tamper receipts, quoted from the notes and not re-run
    here; and layers 6 and 9 were never run on john. Full comparison:
    `layer0/john_receipt_20261119/RECEIPT_VERDICT.md`.
 
@@ -842,10 +857,13 @@ in descending order of consequence for a reader.
    and `cramer2_Qm` both still take `(hm : 1 ≤ m)`; `child_levelPt_kernel_line` takes
    `(hd : ∀ j, d j ≠ 0)`; `p0_children_gcircleS_genPos` takes a `_hP0` it does not use;
    `kpe_odd_succ_eq_mul_x`, `kpe5_hi`, `kpe6_hi` take bound hypotheses `hj`, `hj'` that are unused;
-   and `parent_on_child_line` takes `(hQ0 : … ≠ 0)`. The late-block mutation run adds
-   `child_line_of_parent_mid_zero`, whose hypothesis `(u ≠ 0)` survives four separate mutants
-   (`u = 0`, `u ≠ 1`, and two others) with no downstream error anywhere, so `u ≠ 0` does no work
-   there either; that is again not an error, and the lemma is auxiliary. An unused hypothesis is not an error, but a
+   and `parent_on_child_line` takes `(hQ0 : … ≠ 0)`. The late-block mutation run adds a different case, not an unused input:
+   `child_line_of_parent_mid_zero` concludes `∃ p u, u ≠ 0 ∧ …` from `hv : V ≠ 0`, `hmid` and
+   `P₀ ≠ 0`, and its proof is `absurd (parent_crossVec_zero_of_mid …) hv` — the branch is empty, so
+   the four mutants of the conjunct `u ≠ 0` in its *conclusion* have no proof obligation to break and
+   survive. The lemma is an empty-branch closer that mutation cannot test; that is a limit of the
+   audit, not an unused hypothesis, and it is why `0 CONTRADICTORY` in layer 5 does not by itself
+   exclude this source-visible vacuity. An unused hypothesis is not an error, but a
    reader should know that these eight *auxiliary* lemmas carry assumptions their proofs do not use;
    removing them would strengthen those lemmas, and the headline statements of §2 are unaffected
    either way. To them add `evenCornerQL_proof`'s unused `_hall` (§2.4), which layer 6 could not
@@ -876,8 +894,11 @@ in descending order of consequence for a reader.
     closing S6 and S7 in both directions (§5.3). Layer 14 was cut from v0.2 and **re-cut and re-run on
     v0.7**; layer 15 was built on v0.2 and **re-built on v0.7** (`L14_RESTATEMENTS_v07.md`,
     `L15_PRIOR_ART_v07.md`).
-    On machine count: layers 4, 5 and 8 and the layer-13 comparison ran on **both** jack and john
-    (§5.2, §5.5, §5.3); layers 1, 2, 6, 7, 9, 10, 11, 12, 14 and 15 are jack-only. The upload is no
+    On machine count: layers 4 and 5 were reproduced on **both** machines for `MorleyKernel.lean` (the
+    like-for-like receipt, §5.5); layer 8 ran on **both** over their full inventories (§5.2); and the
+    layer-13 comparison file `BlindCompareFull.lean` compiles on both, while the later bridge file
+    `BridgeBlind.lean` was checked on jack only. Layers 1, 2, 6, 7, 9, 10, 11, 12, 14 and 15 are
+    jack-only. The upload is no
     longer open: the pin is commit `d15464f`, the repository is public at that commit and the
     supporting material is published (§3); the Zenodo deposit is the authors' remaining step and is
     not described here as done.
@@ -931,18 +952,19 @@ directory must be read through this mapping; the files themselves are the ones n
 | 10 | code + `BridgeL10.lean` | definition bridges: 19 theorems, 13 notions bridged, 25 INTERNAL, 75 left | `layer10/REPORT_L10.md` |
 | 11 | v0.1, re-run on v0.2 through v0.9 (evidence-only edits in v0.5–v0.9) | citation gate: 143 occurrences / 98 distinct, all resolving; 85 table rows, 30 of them signature anchors | `L11_NAMEGATE.md` |
 | 12 | v0.1, v0.2 (three models), v0.3 | prose versus code (independent reviewers): v0.1 review 5 MAJOR / 6 MINOR → v0.2; three-model round on v0.2 → 19 rows → v0.3; v0.3 review 0 MAJOR / 6 MINOR / 3 NOTE → v0.4 | `L12_REVIEW.md`, `REVIEW_*_v02.md`, `REVIEW_TRIAGE_v02.md`, `REVIEW_gpt-6-astra_v03.md`, `REVIEW_TRIAGE_v03b.md` |
-| 13 | v0.3 prose, blind writer re-run after the parity repair | blind re-formalisation: seven rows compared against the writer's real types; the bridge layer now proves the real ⇒ writer direction for S6 and S7 (§5.3) | `layer13/L13_REPORT.md` and `layer13/L13_FULL_COMPARE.md`, with `jack:~/paperL_jack/scratch/` for the comparison sources and `jack:~/reformal/` for the blind files |
+| 13 | v0.3 prose, blind writer re-run after the parity repair | blind re-formalisation: seven rows compared against the writer's real types; the bridge layer now proves the real ⇒ writer direction for S6 and S7 (§5.3); S4/S5 are stated over the writer's finite-plane encoding, which excludes lines, and S4 is false as written there | `layer13/L13_REPORT.md` and `layer13/L13_FULL_COMPARE.md`, with `jack:~/paperL_jack/scratch/` for the comparison sources and `jack:~/reformal/` for the blind files |
 | 14 | v0.2, re-cut and re-run on v0.7 | independent restatement of the seven signatures: 7 of 7 faithful; two wording notes | `L14_RESTATEMENTS_v07.md` (v0.2 pass: `layer13/L14_RESTATEMENTS.md`) |
 | 15 | v0.2 + `SCOUT.md`, rebuilt on v0.7 | prior-art verdict table: PASS with recorded search limits | `L15_PRIOR_ART_v07.md` (v0.2 table: `L15_PRIOR_ART.md`) |
 
-Second-machine reproduction: layers 4 and 5 are reproduced on john at the same pin — 1,083 mutants
-over 324 declarations, the identical sixteen survivors, zero contradictions
-(`layer0/john_receipt_20261119/RECEIPT_VERDICT.md`), and the layer-13 comparison file also compiles
-there byte-identically. Layers 6 and 9 were not run on john; the round-26b build/gate/tamper timings
+Second-machine reproduction: layers 4 and 5 are reproduced on john at the same pin for
+`MorleyKernel.lean` — 1,083 mutants over 324 declarations, the identical sixteen survivors, zero
+contradictions (`layer0/john_receipt_20261119/RECEIPT_VERDICT.md`) — and the layer-13 comparison file
+`BlindCompareFull.lean` also compiles there byte-identically; the later bridge file was compiled on
+jack only. Layers 6 and 9 were not run on john; the round-26b build/gate/tamper timings
 are still quoted from the notes; and the re-runs of layers 11 and 13 are re-runs on new inputs, not
 reproductions.
 
-## Appendix C — changes in v0.3 through v0.9
+## Appendix C — changes in v0.3 through v0.10
 
 ### v0.3 — all nineteen rows of `REVIEW_TRIAGE_v02.md`
 
@@ -1100,19 +1122,55 @@ dispositions in `REVIEW_TRIAGE_v07.md`.
 
 ### v0.9 — publication of the code repository (2026-11-26)
 
-No statement, proof, definition, number or citation changed; this version records the publication of
-the artifacts the earlier versions pinned.
+No mathematical statement, proof, definition or citation changed; this version records the publication
+of the artifacts the earlier versions pinned, and corrects the inventory count.
 
 1. §3: the repository is named with its URL and the pin, and the file count is corrected from 153 to
    156 — commit `d15464f` also carries `.gitignore` and the two `.bak-r26` files, added after the
    earlier count was taken.
 2. §3: a new **Availability** paragraph names the repository, the pin, the two check files, the three
    commands that reproduce the gate and the tamper suite, and the `PaperL` folder of
-   `LEAN-verification`, which mirrors the artifact directory that every path in Appendix A is relative
-   to.
+   `LEAN-verification`, whose layout is mapped from the artifact-relative paths of Appendix A.
 3. §5.11: the upload leaves the OPEN list — the repository is public at the pinned commit and the
    supporting material is published; the Zenodo deposit is recorded there as the authors' remaining
    step, not as done.
 4. App. B: rows 14 and 15 now record the v0.7 re-cuts (`L14_RESTATEMENTS_v07.md`,
    `L15_PRIOR_ART_v07.md`) that §5.11 and §5 already described, and row 11's re-run list is brought
    up to v0.9 with a typo fixed.
+
+### v0.10 — corrections from the referee pass on v0.9 (2026-11-26)
+
+Source: `REVIEW_v09_astra.md` (one independent instrument; input: this draft, the pinned tree and the
+published reports), dispositions in `REVIEW_TRIAGE_v09.md`. Two findings were MAJOR and eight MINOR;
+all ten were accepted after each was checked against the source or the record. No Lean proof,
+statement or definition changed.
+
+1. §5.3: the layer-13 classification of S4/S5 is corrected. They are not definitional variants: the
+   writer's finite-plane encoding forbids ∞ at every level, so a level object that is a line is
+   unrepresentable. The recorded `BlindGenPos` triple with collinear second points satisfies the
+   writer's hypotheses and admits no blind finite-plane level-3 object, so the writer's S4 statement
+   is false as written at `n = 3`; the library's cutoff includes `n = 3` and is unaffected. S6/S7
+   remain definitional, and both directions are bridged.
+2. §5.1/§5.8/App. C: the four surviving mutants of `child_line_of_parent_mid_zero` are re-described —
+   they alter a conjunct in the **conclusion** of a lemma whose hypotheses are inconsistent on
+   purpose, so the branch is empty and no proof obligation reaches the mutant. The lemma leaves the
+   unused-input account; the layer-6 501/8 tally is unchanged.
+3. §3: the tamper suite is **eight** tests, not nine, and the reproducer is `bash tests/tamper.sh`
+   (the file is mode 100644 at the pin); the citation gate makes **25** name-attribution checks, not
+   22.
+4. §3/App. A: the supporting folder is described by its layout instead of as a mirror, the
+   artifact-relative path convention is stated once, and john's original battery report is removed
+   from the externally-hosted class — it is published in `layer0/john_receipt_20261119/`.
+5. §1.1: the rank-route sentence now says numerical evidence, not refutation, and ties the `1e-9`
+   residual and the `1e-8` collinearity figure to the earlier, looser run (`3.9e-5` collinearity for
+   the stored tuple).
+6. §5.1/§5.5/App. C: the stale satisfiability OPEN item is removed (only the expected-job manifest
+   remains), the round-26b timings are labelled by machine and operation, and the v0.9 entry no longer
+   says that no number changed.
+7. §4: layer 5's warning now says that a failed search does not certify **satisfiability**.
+8. §5.1/§5.11/App. B: "checks alone" and the machine-count summaries are scoped — layers 4/5 on john
+   cover `MorleyKernel.lean`, layer 13 on john covers `BlindCompareFull.lean`, and the bridge file is
+   jack-only.
+9. Supporting reports: `L13_BRIDGE_STATUS.md`'s stale `sorryAx` line and `L13_FULL_COMPARE.md`'s
+   "only definitional row" sentence are corrected with a dated note, and `L13_REPORT.md` carries a
+   supersession header. The audited pin and the raw logs are untouched.

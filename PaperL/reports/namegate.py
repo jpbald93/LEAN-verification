@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Layer 11 name/line gate for Paper L (v0.3).
+"""Layer 11 name/line gate for Paper L (v0.10).
 
 Checks every `Clifford/<File>.lean:N` citation in DRAFT.md against a line-numbered dump of the
 pinned tree. All citation forms are read: backticked, inside code comments, comma lists
@@ -111,7 +111,7 @@ def main():
 
     if report:
         out = []
-        out.append('# Layer 11 — name/line gate, Paper L draft v0.3\n')
+        out.append('# Layer 11 — name/line gate, Paper L draft v0.10\n')
         out.append('Instrument: `namegate.py` (this directory), run against a full line-numbered dump '
                    'of the pinned tree (`jack:~/paperL_jack`, `Clifford/MorleyKernel.lean` sha '
                    '`dce7b011…`). It reads every `Clifford/File.lean:N` citation, not only backticked '
@@ -135,7 +135,7 @@ def main():
         out.append('Names and lines only. It does not compare signatures or hypotheses; the '
                    'signature anchors for the statement declarations are the table rows of §3.3 '
                    'above, which anchor a line, not a type. The hypothesis-level audit is layer '
-                   '12\'s job and has run on v0.1 and v0.2 text only (§5.11 of the draft).\n')
+                   '12\'s job, run on v0.1; the independent review rounds on v0.2, v0.3 and v0.7 are separately recorded (§5.11 of the draft).\n')
         open('L11_NAMEGATE.md', 'w', encoding='utf-8').write('\n'.join(out) + '\n')
         print('report written: L11_NAMEGATE.md')
 

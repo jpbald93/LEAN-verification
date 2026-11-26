@@ -11,7 +11,7 @@ propositions universally close the paired library theorem types.
 | 2 | `PaperLBlind_writer_v2.lean:98-102`: `∀ k d, BlindGenPos d → ∃ Y, BlindIsGCircle Y ∧ ∀ i, (∃ p, BlindClifford ... {p}) ∧ ∀ p, BlindClifford ... {p} → p ∈ Y` | `Clifford/MorleyKernel.lean:4643`: `hodd_inf_all' : ∀ k d, GenPosN d → ∃ Y, IsGCircleS Y ∧ ∀ i, EptInf ... ∈ Y` | **CLOSED** (`N2_BR`) | **UNCLOSED**: needs all blind/library definition bridges and a theorem that every certified even-level point lies on the selected `Y`; uniqueness cannot supply it because general `UniqEven` is false | **DIFFERENCE REAL** (universal incidence versus canonical `EptInf`; also definitional gaps) | The real theorem proves RealN2 independently. It certifies incidence of one canonical point, not the writer's universal incidence over every certified singleton. |
 | 3 | `PaperLBlind_writer_v2.lean:111-117`: for each `k,c,i`, one `Y` with existence plus universal incidence for the level `2k+6` parent and every twice-deleted level `2k+4` singleton | `Clifford/MorleyKernel.lean:5586`: `heven_inf_all : ∀ k c, GenPosN c → ∀ i, ∃ Y, IsGCircleS Y ∧ EptInf (2k+6) c ∈ Y ∧ ∀ j, EptInf (2k+4) (...) ∈ Y` | **CLOSED** (`N3_BR`) | **UNCLOSED**: needs definition bridges and universal incidence for every certified parent and child singleton; false general uniqueness cannot identify them all with `EptInf` | **DIFFERENCE REAL** (universal incidence at two levels versus canonical `EptInf`; also definitional gaps) | `heven_inf_all` proves RealN3 independently. Canonical chain certificates provide existential witnesses only, not either universal clause. |
 | 5 | `PaperLBlind_writer_v2.lean:132-136`: blind general position of `BlindSix`; no `BlindClifford 6` top set contained in `BlindPlane`; and failure of universal `BlindCliffordFin` existence for every `n ≥ 6` | `Clifford/Counter6.lean:33`: `cx_genPosN`; `:227`: `not_cliffordChain_six`; `Clifford/Classify.lean:219`: `not_cliffordChain_of_six_le : 6 ≤ n → ¬ CliffordChain n` | **CLOSED** (`N5_BR`) | **UNCLOSED**: needs `GenPosN cx → BlindGenPos BlindSix`, translation between plane `Chain` and both top-contained `BlindClifford` and recursively restricted `BlindCliffordFin` | **DIFFERENCE DEFINITIONAL** (plane encoding and blind predicates) | The three real results prove RealN5 independently. Writer clause two restricts only the top sphere object, while clause three restricts every recursive level; neither is the real plane predicate definitionally. |
-| 4 | `PaperLBlind_writer_v2.lean:122-123`: `∀ n, 1 ≤ n → ((∀ c, BlindGenPos c → ∃ X, BlindCliffordFin n c X) ↔ n ≤ 5)` | `Clifford/Classify.lean:227`: `cliffordChain_iff (n) : CliffordChain n ↔ n ≤ 5` | **CLOSED** (`N4_BR`) | **UNCLOSED**: for each `n ≥ 1`, needs equivalence of universal blind finite-plane existence and `CliffordChain n`, including `BlindGenPos`/`GenPosN` and recursive plane/sphere translation | **DIFFERENCE DEFINITIONAL** (`BlindCliffordFin` plane encoding; `BlindIsGCircle` radius restriction) | The real classification proves RealN4 independently, including `n = 0`. The blind side is sphere-valued with containment at every recursion node; real `Chain` is plane-valued. |
+| 4 | `PaperLBlind_writer_v2.lean:122-123`: `∀ n, 1 ≤ n → ((∀ c, BlindGenPos c → ∃ X, BlindCliffordFin n c X) ↔ n ≤ 5)` | `Clifford/Classify.lean:227`: `cliffordChain_iff (n) : CliffordChain n ↔ n ≤ 5` | **CLOSED** (`N4_BR`) | **UNCLOSED** | **DIFFERENCE REAL — encoding not faithful (corrected 2026-11-26)**: the writer's `BlindCliffordFin` forbids ∞ at every level, so the line case is unrepresentable while `CliffordChain` admits lines; the `BlindGenPos` triple below with collinear second points satisfies the writer's hypotheses and admits no blind finite-plane level-3 object, so the writer's S4 is false as written at `n = 3` | The real classification proves RealN4 independently, including `n = 0`. The blind side is sphere-valued with containment at every recursion node; real `Chain` is plane-valued. |
 
 ## Row 1
 
@@ -107,9 +107,10 @@ closed the existence half of `N6_RB` by an explicit per-level construction over 
 `BlindSix = Counter6.cx`: level 6 as the even singleton `{∞}`, the six level-5 children by
 `blindCliffordP5_of_chainS`, and every level-4 child as a finite singleton via fifteen concrete
 `chainS4_finite_XXXX` lemmas covering all four-subsets of `Fin 6`. `#print axioms N6_RB` is std.
-**Row 6 is now closed in both directions**, like row 7. Rows 2, 3, 4, 5 and 1 are unchanged; S1 remains
-the only definitional row whose real ⇒ writer direction has no proof, and its obstruction is the
-`BlindGenPos`/`GenPosN` gap, not a missing bridge.
+**Row 6 is now closed in both directions**, like row 7. Rows 2, 3, 4, 5 and 1 are unchanged; of the
+rows not yet closed in the real ⇒ writer direction, S1's obstruction is the `BlindGenPos`/`GenPosN`
+gap, S2/S3 need a universal-incidence theorem, and S4/S5 are stated over an encoding of the finite
+plane that excludes lines (see the 2026-11-26 update below).
 
 ## Update 2026-11-25 15:50Z — S1 direct proof, first pass
 
@@ -150,3 +151,18 @@ Consequence for row 1: the paper can now say S1 is proved through level 5 and th
 statement reduces to one named lemma, with the degenerate all-four-triples case (`mD = 0`,
 level-4 object `∞`, line + `∞` as the level-5 object) the concrete instance that is checked
 numerically in `run5/BRIDGE_REPORT5.md` but not yet proved.
+
+## Update 2026-11-26 — S4's verdict corrected from DEFINITIONAL to REAL
+
+The row-4 verdict above said "definitional"; that was wrong, and the paper's v0.10 says so. The
+writer's `BlindCliffordFin` carries `X ⊆ BlindPlane` at every recursion level, so a level object that
+is a line — which contains ∞ — cannot satisfy it, whereas the library's `CliffordChain` is
+`Set ℂ`-valued and admits lines. The two predicates therefore disagree on truth, not only on
+presentation: the `BlindGenPos` triple recorded in `BRIDGE_NOTES.md` §2 (centres `1+i`, `2`,
+`3/2 + i√3/2`, second intersections `2+2i`, `(1−√3/2)+i(1+√3/2)`, `3+i√3` — distinct and collinear)
+satisfies the writer's hypotheses, and at `n = 3` a blind finite-plane level-3 object would have to be
+a positive-radius circle through three distinct collinear points (impossible) or a line (excluded by
+the plane conjunct). The writer's S4 statement is thus false as written at `n = 3`; the library's
+cutoff includes `n = 3` and is unaffected. S5 is stated over the same encoding. S6/S7 remain
+definitional, and both directions are bridged. No Lean file was changed by this correction: it is a
+reading of the definitions the writer used, checked against the recorded triple.

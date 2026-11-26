@@ -1,29 +1,29 @@
 # Paper L — Clifford's chain for every n, in Lean 4
 
 Supporting material for the paper *Clifford's chain for every n: point–circle configurations on the
-Riemann sphere, in Lean 4* (draft v0.9, 26 November 2026).
+Riemann sphere, in Lean 4* (draft v0.10, 26 November 2026; v0.9 superseded in `preprint/superseded/`).
 
 **Lean code:** <https://github.com/jpbald93/paperl_clifford_chain> — the audited tree is commit
 `d15464f` (156 files). Every `File:line` anchor in the paper resolves at that commit. `main` carries
-two later, additive changes only: `README.md` and `check/`.
+later commits that only add `check/` and revise `README.md`; the pinned tree itself is unchanged.
 
-**Paper:** [`preprint/Cliffords chain for every n - Paper L draft v0.9.pdf`](preprint/) (24 pp) and
-its source `preprint/DRAFT_v09.md`. Built with pandoc/xelatex from the markdown; the PDF has a table
+**Paper:** [`preprint/Cliffords chain for every n - Paper L draft v0.10.pdf`](preprint/) (25 pp) and
+its source `preprint/DRAFT_v10.md`. Built with pandoc/xelatex from the markdown; the PDF has a table
 of contents and live links.
 
 ## Contents
 
 | path | what it is |
 |---|---|
-| `preprint/` | draft v0.9, PDF and markdown |
+| `preprint/` | draft v0.10, PDF and markdown; v0.9 kept in `preprint/superseded/` |
 | `reports/L11_NAMEGATE.md`, `reports/namegate.py` | layer 11: the citation gate and its exact result — 143 occurrences, 98 distinct `Clifford/File.lean:N` pairs, 25 attribution checks, 85 table rows, all resolving at the pin |
 | `reports/L12_REVIEW.md`, `L12_TRIAGE.md` | layer 12: prose-versus-code review of v0.1 and its dispositions |
-| `reports/L13_*`, `layer13/` | layer 13: blind re-formalisation of the seven rows (writer and comparer on different models), the seven-row comparison, the bridge layer (`BridgeBlind.lean`, 9 of 11 statements proved in both directions, 2 open), the S1 direct-proof runs (`BlindChain.lean`, one `sorry` at `blindClifford_second`), and the S1 counterexample search (`s1_counterexample/`) |
+| `reports/L13_*`, `layer13/` | layer 13: blind re-formalisation of the seven rows (writer and comparer on different models), the seven-row comparison, the bridge layer (`BridgeBlind.lean`, 9 of 11 statements proved in both directions, 2 open); S6/S7 are bridged in both directions, while S4/S5 are stated over the writer's finite-plane encoding, which forbids lines — S4 is false as written at `n = 3` (see `layer13/L13_FULL_COMPARE.md`, update of 2026-11-26), the S1 direct-proof runs (`BlindChain.lean`, one `sorry` at `blindClifford_second`), and the S1 counterexample search (`s1_counterexample/`) |
 | `reports/L14_RESTATEMENTS_v07.md` | layer 14 on v0.7: seven blind restatements, 7 of 7 faithful |
 | `reports/L15_PRIOR_ART_v07.md` | layer 15 on v0.7: claim-by-claim prior-art table, PASS with recorded search gaps |
 | `reports/PLAN.md`, `SCOUT.md` | the plan and the novelty scout (verdict table, 26 search rows, and the sources recorded as *not searched*) |
 | `reports/JOHN_LEG.md` | the second-machine leg: what ran on the second build host and what is only recorded |
-| `reviews/` | every review round and its triage: the three-model round on v0.2, the v0.3 review, the v0.7 referee pass that produced v0.8 |
+| `reviews/` | every review round and its triage: the three-model round on v0.2, the v0.3 review, the v0.7 referee pass that produced v0.8, and the v0.9 referee pass that produced v0.10 (`REVIEW_TRIAGE_v09.md`) |
 | `layer0/` | the machine-produced run records: the round-25/26 collections, the late-block mutation run, the late-block contradiction probes, the two satisfiability passes (jack and john), the curated witness-table round, and the second-machine receipt with its verdict |
 | `check/` | `allN.lean` (the all-n composition of the two headline theorems) and `not_UniqEven.lean` (the counterexample to uniqueness of the even-level point) |
 | `evidence/` | the excerpt of the round records the paper's provenance appendix cites |
@@ -37,7 +37,7 @@ files in `layer0/` and the run records in `reports/`.
 |---|---|
 | 1 gate | **PASS** — 36 required declarations present, `#print axioms` ⊆ `[propext, Classical.choice, Quot.sound]` |
 | 2 tamper | **8/8 rejected** (`ALL TAMPERING TESTS REJECTED`) |
-| 4 mutation | **1,407 decisive kills** and 98 timeout/heartbeat rows over 516 declarations; **17 survivors**, all listed — 16 vacuous or caught downstream, 1 true-but-weaker (`cliffordChain_one`); 0 unattributed |
+| 4 mutation | **1,407 decisive kills** and 98 timeout/heartbeat rows over 516 declarations; **17 survivors**, all accounted for — 9 caught downstream, 3 vacuous, 4 in a deliberately empty branch, 1 true-but-weaker (`cliffordChain_one`); 0 unattributed |
 | 5 contradiction probes | **0 CONTRADICTORY** over 551 of the 577 declarations; 1 probe-invalid (its own control failed to compile) |
 | 6 ablation | **501 needed / 8 unused** over 262 declarations |
 | 7 linter | 0 warnings in 8 library files; 0 warnings across the 31 compiling scratch files |
@@ -47,7 +47,7 @@ files in `layer0/` and the run records in `reports/`.
 | 11 name/line anchors | **PASS** — 143 / 98 / 25 / 85, 0 bare-line |
 
 Layer 8 is a certificate layer, not a truth layer: `unresolved` is a failed search, not a
-refutation, and layer 5's `ok` means the limited search failed, not that unsatisfiability is
+refutation, and layer 5's `ok` means the limited search failed, not that satisfiability is
 certified. The paper says both in §5.2.
 
 ## What is not here

@@ -1,5 +1,11 @@
 # Layer 13 — blind re-formalisation of Paper L (report)
 
+> **Superseded in part (2026-11-26).** The authoritative latest state is
+> `L13_FULL_COMPARE.md` (with its 2026-11-26 update on S4) and `L13_BRIDGE_STATUS.md`. This report's
+> stage-4a paragraph describes the first comparison pass, in which the writer's payloads had already
+> been re-typed; the paper's §5.3 and the compare file carry the corrected account. The audited pin
+> and the raw run logs are unchanged.
+
 **Run 2026-11-24** on `jack` (Mathlib-only project `~/reformal` for the blind side, `~/paperL_jack` for
 the real side). **Corrected 2026-11-24 (v0.3 pass)** after the paper's review round: the stage-4b
 section below now reports what was compared rather than what was assumed, and stage 5 records that

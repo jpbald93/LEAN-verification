@@ -1,5 +1,9 @@
 # Layer 13 bridge layer — status (2026-11-25, second pass)
 
+> **Superseded line, corrected 2026-11-26.** Earlier copies of the axiom paragraph listed `N6_RB`
+> with `sorryAx`; that was true only before 13:05Z on 2026-11-25. The paragraph below and the fresh
+> check at the end of this file are authoritative.
+
 State of `layer13/BridgeBlind.lean`. First pass collected 11:35Z (8 of 11 targets); second pass
 13:05Z closed the existence half of `N6_RB` by an explicit per-level construction. **Row 6 is now
 closed in both directions.**
@@ -21,8 +25,9 @@ Separate file, separate question — `layer13/BlindChain.lean` (the direct S1 ro
   `chainS_of_blind` changed form — `:= by` became a pattern-match `| …` — with the type text
   unchanged. **No statement weakened, no hypothesis added, nothing restated.**
 - Axioms (`#print axioms` on the whole file): every proved target depends only on
-  `[propext, Classical.choice, Quot.sound]`. `blindOfChainS`, `N1_RB`, `N6_RB` additionally depend
-  on `sorryAx`; nothing else does.
+  `[propext, Classical.choice, Quot.sound]`. `blindOfChainS` and `N1_RB` additionally depend on
+  `sorryAx`; nothing else does. (`N6_RB` was in that list before the 13:05Z pass closed its
+  existence half; the later fresh check at the end of this file records it on std alone.)
 
 ## The eleven targets
 

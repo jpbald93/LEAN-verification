@@ -1,8 +1,7 @@
 # Paper L — Clifford's chain for every n, in Lean 4
 
 Supporting material for the paper *Clifford's chain for every n: point–circle configurations on the
-Riemann sphere, formalised in Lean 4* (v1.2, 26 November 2026; v0.9–v1.1 superseded in
-`preprint/superseded/`).
+Riemann sphere, formalised in Lean 4* (v1.2, 26 November 2026).
 
 **Companion:** [`preprint/COMPANION.md`](preprint/COMPANION.md) is the verification record — per-file
 hashes, the gate's 37 declarations, the mutation, contradiction and satisfiability runs, the two-machine
@@ -22,7 +21,7 @@ link to the pinned commit.
 
 | path | what it is |
 |---|---|
-| `preprint/` | v1.2: LaTeX source, PDF, markdown, the companion and the build script; v0.9–v1.1 kept in `preprint/superseded/` |
+| `preprint/` | v1.2: LaTeX source, PDF, markdown, the companion and the build script |
 | `reports/L11_NAMEGATE.md`, `reports/namegate.py` | layer 11: the citation gate and its exact result on v1.1 — 66 occurrences, 63 distinct `Clifford/File.lean:N` pairs, 33 attribution checks, all resolving at the pin |
 | `reports/L12_REVIEW.md`, `L12_TRIAGE.md` | layer 12: prose-versus-code review of v0.1 and its dispositions |
 | `reports/L13_*`, `layer13/` | layer 13: blind re-formalisation of the seven rows (writer and comparer on different models), the seven-row comparison, the bridge layer (`BridgeBlind.lean`, 9 of 11 statements proved in both directions, 2 open); S6/S7 are bridged in both directions, while S4/S5 are stated over the writer's finite-plane encoding, which forbids lines — S4 is false as written at `n = 3` (see `layer13/L13_FULL_COMPARE.md`, update of 2026-11-26), the S1 direct-proof runs (`BlindChain.lean`, one `sorry` at `blindClifford_second`), and the S1 counterexample search (`s1_counterexample/`) |

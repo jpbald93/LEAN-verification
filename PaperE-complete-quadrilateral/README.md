@@ -23,8 +23,6 @@ The paper's line links for the version-1 theorems still point at the version-1 c
 - `layer14_15/blind_writer/`: the textbook statements written by the blind writer (`classical_statements.txt`),
   its report (`CLASSICAL_REPORT.md`) and, where present, the statement collector's sources (`statements_sources.md`).
 - `layer14_15/BLIND_TRANSCRIPT_AUDIT.md`: audit of the blind writers' tool calls (all runs, all papers).
-- `v1_archive/`: the redacted version-1 supporting material.
-- The `.jsonl` data files (battery results and numerical outputs) of the version-1 material are included under `v1_archive/`.
 - `SHA256SUMS.archive`: checksums of every file in this folder (written when the folder was assembled).
 
 Machine names, IP addresses and home-directory paths are redacted throughout. No raw model transcripts are included.
@@ -44,4 +42,4 @@ Machine names, IP addresses and home-directory paths are redacted throughout. No
 - `layer14_15/BLIND_TRANSCRIPT_AUDIT.md`
 
 ## Complete zip archives
-`zip/` contains the complete source archive(s) as originally prepared (version 1 and/or version 2). The unpacked files in this folder are the version-2 contents; `v1_archive/` (where present) holds the unpacked version-1 contents.
+`zip/` contains the complete source archive as originally prepared (version 2). The unpacked files in this folder are the version-2 contents.

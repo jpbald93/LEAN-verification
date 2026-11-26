@@ -15,4 +15,3 @@ Zenodo: this version https://doi.org/10.5281/zenodo.23653616 · all versions (co
 Machine names, IP addresses and home-directory paths are redacted throughout.
 
 ## Complete zip archives
-`zip/` contains the complete source archive(s) as originally prepared (version 1 and/or version 2). The unpacked files in this folder are the version-2 contents; `v1_archive/` (where present) holds the unpacked version-1 contents.
